@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Write Skill"
+  short_description: "Create concise reusable Codex skills"
+  default_prompt: "Use $rb-write-skill to create or update a concise reusable Codex skill."

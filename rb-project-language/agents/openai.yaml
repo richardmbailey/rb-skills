@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Project Language"
+  short_description: "Build project vocabulary and context"
+  default_prompt: "Use $rb-project-language to build or update project vocabulary and CONTEXT.md."

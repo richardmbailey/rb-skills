@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Multi-Agent Systems"
+  short_description: "Design robust multi-agent LLM systems"
+  default_prompt: "Use $rb-multi-agent-systems to design or review this multi-agent LLM architecture."

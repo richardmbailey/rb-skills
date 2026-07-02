@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB TDD Scientific Code"
+  short_description: "Test-drive scientific code changes"
+  default_prompt: "Use $rb-tdd-scientific-code to implement this scientific code change with focused tests."

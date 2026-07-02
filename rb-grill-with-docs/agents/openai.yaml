@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Grill with Docs"
+  short_description: "Clarify requirements before implementation"
+  default_prompt: "Use $rb-grill-with-docs to clarify the change, read relevant docs, and produce an implementation plan."

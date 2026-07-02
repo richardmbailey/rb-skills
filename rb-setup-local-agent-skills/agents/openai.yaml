@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Setup Workflow"
+  short_description: "Verify RB skill and resource setup"
+  default_prompt: "Use $rb-setup-local-agent-skills to verify the RB global skill installation and project resources."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Start Project"
+  short_description: "Guided project onboarding from any folder"
+  default_prompt: "Use $rb-start-project to run guided project onboarding from the current folder."

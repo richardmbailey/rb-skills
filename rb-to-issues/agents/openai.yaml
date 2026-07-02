@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB To Issues"
+  short_description: "Split plans into ordered issues"
+  default_prompt: "Use $rb-to-issues to split this PRD or implementation plan into ordered issues."

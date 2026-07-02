@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Session Handoff"
+  short_description: "Create continuity notes for session handoff"
+  default_prompt: "Use $rb-session-handoff to prepare a handoff brief for continuing this project in a new session."

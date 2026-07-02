@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Research Question Gate"
+  short_description: "Audit novelty before implementation"
+  default_prompt: "Use $rb-research-question-gate to test whether this research idea should proceed before PRD or implementation."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Continue Session"
+  short_description: "Resume from diary and handoff context"
+  default_prompt: "Use $rb-continue-session to resume this repository from the latest working diary and handoff."

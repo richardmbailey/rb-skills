@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Architecture Review"
+  short_description: "Review code structure and refactoring risks"
+  default_prompt: "Use $rb-architecture-review to inspect architecture risks and suggest a prioritized refactoring plan."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Diagnose"
+  short_description: "Debug failures with evidence"
+  default_prompt: "Use $rb-diagnose to investigate a failing test or surprising behavior with a tight feedback loop."

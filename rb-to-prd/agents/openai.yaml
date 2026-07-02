@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB To PRD"
+  short_description: "Turn rough ideas into practical PRDs"
+  default_prompt: "Use $rb-to-prd to turn this rough idea into a practical PRD."

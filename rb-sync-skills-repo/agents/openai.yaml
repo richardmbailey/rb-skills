@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Sync Skills Repo"
+  short_description: "Install skills from a versioned repo"
+  default_prompt: "Use $rb-sync-skills-repo to sync my Codex skills from a Git repo into the local skills directory."

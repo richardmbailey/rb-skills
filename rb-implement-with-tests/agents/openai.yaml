@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Implement With Tests"
+  short_description: "Implement changes in verified increments"
+  default_prompt: "Use $rb-implement-with-tests to implement this change with focused tests and checks."
