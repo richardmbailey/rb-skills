@@ -19,6 +19,7 @@ Use this skill for explicit implementation planning and phase execution.
 - For greenfield LLM-backed Python workflows, consider PydanticAI for LLM interfaces and typed agent/tool outputs, but verify this against project constraints and current official docs before implementation.
 - For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to define agent boundaries, tools, handoffs, state, observability, evals, retrieval, provider routing, and durability.
 - For local LLM use, prefer the repository's existing provider/runtime. If the work is greenfield and the human has no preference, Ollama is a reasonable local default to propose rather than assume silently.
+- For text-processing work, plan deterministic parsing only for stable structure and syntax; plan an LLM-backed step when success depends on semantic understanding of natural language.
 
 ## Phase Checklist Convention
 
@@ -50,8 +51,9 @@ When drafting or revising an implementation plan:
 5. Include fail-fast diagnostics for missing dependencies, provider failures, validation errors, unsupported states, and policy blocks.
 6. Record the existing stack and project conventions first. For greenfield Python/LLM systems, propose structured/LLM stack choices such as Pydantic, PydanticAI, and Ollama only as defaults to confirm, not as mandatory replacements.
 7. For multi-LLM-agent systems, record the stack choice, agent/tool boundaries, handoffs, state, tracing/evals, retrieval, provider routing, and durability plan from `$rb-multi-agent-systems`.
-8. Include tests or verification checks for every task.
-9. For each phase, create or reference a dedicated phase implementation file with:
+8. For text-heavy features, identify which steps are deterministic structure handling and which require semantic LLM judgment. Do not plan elaborate regexes or keyword heuristics as substitutes for understanding natural-language meaning.
+9. Include tests or verification checks for every task.
+10. For each phase, create or reference a dedicated phase implementation file with:
    - phase goal
    - scope and non-scope
    - dependencies
@@ -81,6 +83,7 @@ When reviewing an existing implementation plan:
 - Flag fallback paths that may hide defects.
 - Flag stack or dependency changes that ignore existing repo conventions.
 - For multi-LLM-agent plans, confirm `$rb-multi-agent-systems` concerns are addressed explicitly.
+- For text-processing plans, flag semantic tasks implemented only with brittle regex, keyword matching, or ad hoc string scoring.
 - Flag tasks without test or verification coverage.
 - Check whether task status uses `[ ]`, `[x]`, and `[v]` correctly.
 - Confirm no phase is marked complete unless all tasks are `[v]`.
@@ -90,5 +93,6 @@ When reviewing an existing implementation plan:
 - walking skeleton summary
 - proposed phases with `[ ]` task lists
 - stack/dependency assumptions and which are existing vs proposed
+- text-processing split, where relevant: deterministic parsing vs semantic LLM calls
 - verification plan and phase exit criteria
 - risks, open questions, and decisions needed from the human

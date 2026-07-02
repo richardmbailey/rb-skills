@@ -16,9 +16,12 @@ Use this before implementing non-trivial features or changes.
 3. Identify ambiguous points.
 4. Ask targeted questions one at a time.
 5. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to clarify stack, tools, state, observability, evals, retrieval, and provider routing.
-6. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.
-7. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.
-8. Produce a short implementation plan.
+6. For text-processing requests, clarify whether each text step is syntax-bound or semantic:
+   - Syntax-bound means stable structure, exact markers, structured formats, IDs, URLs, logs, or protocol fields, and can usually be deterministic.
+   - Semantic means meaning, intent, relevance, classification, summarisation, ambiguity resolution, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence, and should usually use an LLM-backed path.
+7. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.
+8. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.
+9. Produce a short implementation plan.
 
 ## Stop condition
 
