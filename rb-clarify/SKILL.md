@@ -1,9 +1,9 @@
 ---
-name: "rb-grill-with-docs"
+name: "rb-clarify"
 description: "Use before implementing non-trivial features or changes to clarify requirements, read relevant docs, identify ambiguity, and produce an implementation plan."
 ---
 
-# /rb:grill — clarify before coding
+# /rb:clarify — clarify before coding
 
 ## Purpose
 

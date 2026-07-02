@@ -48,8 +48,8 @@ Use this when the human wants continuity from durable project context rather tha
 
 ## Routing
 
-- If the next step is ordinary feature or product work, recommend `$rb-grill-with-docs` before `$rb-implement-with-tests`.
-- If the next step is scientific, numerical, modelling, simulation, or domain-sensitive work, recommend `$rb-grill-with-docs` before `$rb-tdd-scientific-code`.
+- If the next step is ordinary feature or product work, recommend `$rb-clarify` before `$rb-implement-with-tests`.
+- If the next step is scientific, numerical, modelling, simulation, or domain-sensitive work, recommend `$rb-clarify` before `$rb-tdd-scientific-code`.
 - If the next step is a bug, regression, failing test, or surprising output, recommend `$rb-diagnose`.
 - If the next step is understanding an unfamiliar area, recommend `$rb-zoom-out`.
 - If the next step is structural review, recommend `$rb-architecture-review`.

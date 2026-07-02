@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Full Start"
   short_description: "Install RB skills and project resources"
-  default_prompt: "Use $rb-full-start to fully prepare this repository and begin /start onboarding."
+  default_prompt: "Use $rb-full-start to fully prepare this repository and begin start-project onboarding."

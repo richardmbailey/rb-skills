@@ -1,16 +1,17 @@
 ---
 name: "rb-start-project"
-description: "Use when the user types /start or asks to start a new project, onboard a repository, set up an agent-guided project workflow, run project onboarding, or be guided through setup questions before coding. Works globally from any folder; uses .rb-agent only for project resources when present."
+description: "Use when the user invokes rb-start-project, asks to start a new project, onboard a repository, set up an agent-guided project workflow, run project onboarding, or be guided through setup questions before coding. Works globally from any folder; uses .rb-agent only for project resources when present."
 ---
 
 # RB Start Project
 
-Use this skill as the global `/start` entrypoint for guided project onboarding.
+Use this skill as the global start-project entrypoint for guided project onboarding.
 
 ## Invocation
 
 ```text
-/start
+Codex: $rb-start-project
+Claude Code: /rb-start-project
 ```
 
 ## Goal
@@ -43,7 +44,7 @@ inspect repo -> ask setup questions -> summarise answers -> propose context upda
    - test/check commands discovered
    - missing setup information
 
-Continue with this global skill. `.rb-agent/` may contain project resources, prompts, templates, or workflows, but skills are globally installed from the canonical pack `skills/` directory.
+Continue with this global skill. `.rb-agent/` may contain project resources, prompts, templates, or workflows, but reusable skills are installed globally from the versioned `rb-skills` source repo.
 
 ## Question Sequence
 
@@ -64,18 +65,18 @@ Ask these in order unless the answer is already clear from the repository:
 
 Choose the next workflow from the first task:
 
-- New feature or meaningful product/code change: grill requirements first, then use `$rb-implement-with-tests` after plan approval.
-- Scientific, numerical, modelling, simulation, or domain-sensitive change: grill requirements first, then use `$rb-tdd-scientific-code` after plan approval.
+- New feature or meaningful product/code change: clarify requirements first, then use `$rb-implement-with-tests` after plan approval.
+- Scientific, numerical, modelling, simulation, or domain-sensitive change: clarify requirements first, then use `$rb-tdd-scientific-code` after plan approval.
 - Bug, regression, failing test, or surprising output: diagnose before proposing a fix.
 - Vague idea, product direction, or planning request: produce a PRD, then optionally split into issues.
 - Unfamiliar existing codebase with no immediate change request: zoom out and explain structure.
 - Structural concerns, boundaries, maintainability, or refactoring strategy: architecture review.
 - Review requested for a diff, branch, or PR: review.
 
-Name the matching global RB skill:
+Name the matching global RB skill. Use `$rb-name` syntax in Codex and `/rb-name` syntax in Claude Code:
 
-- ordinary implementation: `$rb-grill-with-docs`, then `$rb-implement-with-tests`
-- scientific implementation: `$rb-grill-with-docs`, then `$rb-tdd-scientific-code`
+- ordinary implementation: `$rb-clarify`, then `$rb-implement-with-tests`
+- scientific implementation: `$rb-clarify`, then `$rb-tdd-scientific-code`
 - bug work: `$rb-diagnose`
 - planning: `$rb-to-prd`, then optionally `$rb-to-issues`
 - unfamiliar codebase: `$rb-zoom-out`
@@ -101,7 +102,7 @@ For non-trivial projects, update `$rb-working-diary` with the project path, summ
 For feature work, ask:
 
 ```text
-Proceed into the grill session for the first task now? After requirements are resolved, I will continue into the appropriate implementation workflow only after you approve the implementation plan.
+Proceed into the clarify session for the first task now? After requirements are resolved, I will continue into the appropriate implementation workflow only after you approve the implementation plan.
 ```
 
 For bug work, ask:
@@ -116,9 +117,9 @@ For planning work, ask:
 Proceed into PRD drafting now?
 ```
 
-## Inline Grill Fallback
+## Inline Clarify Fallback
 
-If the human approves feature-work handoff and `$rb-grill-with-docs` is not available:
+If the human approves feature-work handoff and `$rb-clarify` is not available:
 
 1. Restate the requested change.
 2. Identify ambiguous behavior, interface, edge cases, failure modes, compatibility constraints, and tests.

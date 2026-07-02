@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install or sync Codex skill folders from a local repository."""
+"""Install or sync agent skill folders from a local repository."""
 
 from __future__ import annotations
 
@@ -45,11 +45,50 @@ class SkillCandidate:
     frontmatter_name: str | None
 
 
-def default_dest() -> Path:
+@dataclass(frozen=True)
+class Destination:
+    path: Path
+    agent: str
+    reason: str
+
+
+def codex_dest() -> Path:
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
         return Path(codex_home).expanduser() / "skills"
     return Path.home() / ".codex" / "skills"
+
+
+def claude_dest() -> Path:
+    return Path.home() / ".claude" / "skills"
+
+
+def looks_like_claude_code() -> bool:
+    if os.environ.get("CLAUDE_PROJECT_DIR") or os.environ.get("CLAUDE_SESSION_ID"):
+        return True
+    if (Path.home() / ".claude").exists():
+        return True
+    return shutil.which("claude") is not None
+
+
+def default_dest(agent: str) -> Destination:
+    if agent == "codex":
+        return Destination(codex_dest(), "codex", "forced with --agent codex")
+    if agent == "claude":
+        return Destination(claude_dest(), "claude", "forced with --agent claude")
+
+    codex_home = os.environ.get("CODEX_HOME")
+    if codex_home:
+        return Destination(codex_dest(), "codex", "CODEX_HOME is set")
+
+    codex_path = Path.home() / ".codex"
+    if codex_path.exists():
+        return Destination(codex_path / "skills", "codex", "~/.codex exists")
+
+    if looks_like_claude_code():
+        return Destination(claude_dest(), "claude", "Claude Code was detected")
+
+    return Destination(codex_path / "skills", "codex", "default fallback")
 
 
 def parse_frontmatter_name(skill_md: Path) -> str | None:
@@ -180,10 +219,16 @@ def install_candidate(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Install or sync Codex skill folders from a local repository.",
+        description="Install or sync Codex or Claude Code skill folders from a local repository.",
     )
     parser.add_argument("source", nargs="?", help="Repo root, skills subdirectory, or a single skill folder.")
-    parser.add_argument("--dest", type=Path, default=default_dest(), help="Destination skills directory.")
+    parser.add_argument(
+        "--agent",
+        choices=("auto", "codex", "claude"),
+        default="auto",
+        help="Destination agent for default install path. Auto tries Codex first, then Claude Code.",
+    )
+    parser.add_argument("--dest", type=Path, help="Destination skills directory. Overrides --agent.")
     parser.add_argument("--mode", choices=("symlink", "copy"), default="symlink", help="Install mode.")
     parser.add_argument("--skills", nargs="+", help="Specific skill folder names to install.")
     parser.add_argument("--dry-run", action="store_true", help="Print planned actions without writing.")
@@ -199,7 +244,11 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("source is required")
 
     source = Path(args.source).expanduser()
-    dest = args.dest.expanduser()
+    if args.dest:
+        destination = Destination(args.dest.expanduser(), "custom", "set with --dest")
+    else:
+        destination = default_dest(args.agent)
+    dest = destination.path
     candidates = discover_skills(source, args.allow_name_mismatch)
     candidates = filter_candidates(candidates, args.skills)
 
@@ -209,7 +258,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     print(f"Source: {source.resolve()}")
-    print(f"Destination: {dest.resolve()}")
+    print(f"Destination: {dest.resolve()} ({destination.agent}; {destination.reason})")
     print(f"Mode: {args.mode}")
     print(f"Skills: {', '.join(candidate.name for candidate in candidates)}")
 
@@ -217,7 +266,12 @@ def main(argv: list[str] | None = None) -> int:
         print(install_candidate(candidate, dest, args.mode, args.replace, args.dry_run))
 
     if not args.dry_run:
-        print("Done. Restart Codex to pick up newly installed or updated skills.")
+        if destination.agent == "claude":
+            print("Done. Claude Code should pick up edits live when ~/.claude/skills is already watched; restart Claude Code if the skills directory was newly created.")
+        elif destination.agent == "codex":
+            print("Done. Restart Codex to pick up newly installed or updated skills.")
+        else:
+            print("Done. Restart or reload the target agent if newly installed skills are not visible.")
     return 0
 
 

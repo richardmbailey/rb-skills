@@ -9,7 +9,7 @@ description: "Use to implement ordinary software/product changes with focused te
 
 Implement agreed changes in small verified increments.
 
-Use `$rb-grill-with-docs` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-tdd-scientific-code` instead when the change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
+Use `$rb-clarify` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-tdd-scientific-code` instead when the change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
 
 ## Procedure
 

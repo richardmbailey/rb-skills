@@ -11,7 +11,7 @@ Implement scientific, numerical, modelling, simulation, or domain-sensitive chan
 
 ## Procedure
 
-1. Confirm requirements from the human, a PRD, or an implementation plan. If material ambiguity remains, use `$rb-grill-with-docs` first.
+1. Confirm requirements from the human, a PRD, or an implementation plan. If material ambiguity remains, use `$rb-clarify` first.
 2. Read `CONTEXT.md`, relevant docs, benchmark fixtures, tests, and source code for units, assumptions, invariants, tolerances, and trusted outputs. If these are missing or unclear, ask before implementing.
 3. If the change implements multi-LLM-agent behaviour, also use `$rb-multi-agent-systems` to define testable agent contracts, tool boundaries, traces, evals, and reproducibility expectations.
 4. Identify the smallest meaningful behaviour to test.

@@ -1,13 +1,15 @@
 ---
 name: rb-sync-skills-repo
-description: Install or sync personal Codex skills from a Git or GitHub repository into $CODEX_HOME/skills. Use when the user wants to move, share, version, clone, bootstrap, symlink, copy, update, or publish Codex skill folders across computers.
+description: Install or sync personal Codex or Claude Code skills from a Git or GitHub repository into the active agent skills directory. Use when the user wants to move, share, version, clone, bootstrap, symlink, copy, update, or publish skill folders across computers.
 ---
 
 # RB Sync Skills Repo
 
 ## Overview
 
-Use this skill to bootstrap or update Codex skills from a versioned repository. Prefer a local clone as the source of truth, then symlink selected skill folders into the discoverable skills directory; use copy mode when the user wants a standalone install.
+Use this skill to bootstrap or update agent skills from a versioned repository. Prefer a local clone as the source of truth, then symlink selected skill folders into the discoverable skills directory; use copy mode when the user wants a standalone install.
+
+By default, the bundled script chooses the destination automatically: use Codex first when `$CODEX_HOME` or `~/.codex` exists, otherwise use Claude Code's personal skills directory when Claude Code is detected.
 
 Bundled script: `scripts/sync_skills_repo.py`.
 
@@ -26,27 +28,29 @@ Bundled script: `scripts/sync_skills_repo.py`.
 3. Dry-run the install:
 
 ```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/rb-sync-skills-repo/scripts/sync_skills_repo.py" /path/to/skills-repo --dry-run
+python3 /path/to/skills-repo/rb-sync-skills-repo/scripts/sync_skills_repo.py /path/to/skills-repo --dry-run
 ```
 
 4. Install:
 
 ```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/rb-sync-skills-repo/scripts/sync_skills_repo.py" /path/to/skills-repo --mode symlink
+python3 /path/to/skills-repo/rb-sync-skills-repo/scripts/sync_skills_repo.py /path/to/skills-repo --mode symlink
 ```
 
-Use `--mode copy` if the cloned repo should not remain present. Use `--skills name-a name-b` to install a subset. Use `--replace` only after confirming existing destination folders should be moved to timestamped backups.
+Use `--agent codex` or `--agent claude` to force a target agent. Use `--dest /path/to/skills` for an explicit destination. Use `--mode copy` if the cloned repo should not remain present. Use `--skills name-a name-b` to install a subset. Use `--replace` only after confirming existing destination folders should be moved to timestamped backups.
 
-5. Tell the user to restart Codex so newly installed or updated skills are rediscovered.
+5. Tell the user to restart Codex so newly installed or updated Codex skills are rediscovered. For Claude Code, edits under an already-watched `~/.claude/skills` directory are usually detected live; restart Claude Code if the top-level skills directory was newly created.
 
 ## Script Usage
 
 ```bash
-python3 scripts/sync_skills_repo.py SOURCE [--dest DEST] [--mode symlink|copy] [--skills NAME ...] [--dry-run] [--replace] [--allow-name-mismatch]
+python3 scripts/sync_skills_repo.py SOURCE [--agent auto|codex|claude] [--dest DEST] [--mode symlink|copy] [--skills NAME ...] [--dry-run] [--replace] [--allow-name-mismatch]
 ```
 
 Defaults:
-- `DEST` is `${CODEX_HOME:-$HOME/.codex}/skills`.
+- `--agent auto` tries Codex first, then Claude Code.
+- Codex destination is `$CODEX_HOME/skills` when set, otherwise `~/.codex/skills`.
+- Claude Code destination is `~/.claude/skills`.
 - `--mode symlink` links each installed skill back to the clone.
 - Existing destinations are skipped unless `--replace` is set.
 - Replacement moves the existing destination to `DEST/.skill-backups/<skill-name>-<timestamp>`.

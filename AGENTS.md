@@ -1,6 +1,8 @@
 # Repository Guidance
 
-This repository contains reusable Codex skills. Keep skill instructions concise, procedural, and focused on decisions another agent must make.
+This repository contains reusable agent skills for Codex and Claude Code. Keep skill instructions concise, procedural, and focused on decisions another agent must make.
+
+When instructions name a skill as `$rb-name`, use that form in Codex and `/rb-name` in Claude Code. The workflow meaning is the same; only the direct invocation syntax changes.
 
 ## Deterministic vs Semantic Text Handling
 
