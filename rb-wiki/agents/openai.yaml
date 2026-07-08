@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Wiki"
+  short_description: "Build and maintain LLM-wikis"
+  default_prompt: "Use $rb-wiki to build, run, query, and maintain an LLM-agent-backed Markdown wiki."
