@@ -1,6 +1,5 @@
 # RB Agent Skills
-
-This repository contains reusable skills for Richard's preferred Codex and Claude Code workflows. A skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders.
+This repository contains reusable skills (some of which are heavily influenced by Matt Pocock's skills https://github.com/mattpocock/skills) for preferred Codex and Claude Code workflows. A skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders.
 
 The pack is designed to be cloned, versioned with Git, and installed by symlinking the skill folders into the active agent's skills directory.
 
@@ -211,7 +210,7 @@ The agent should preserve durable decisions, assumptions, status, and next actio
 
 ## Adding Or Updating Skills
 
-This repo should be the source of truth for Richard-owned global skills. When creating a new skill, prefer this workflow:
+This repo should be the source of truth for global skills. When creating a new skill, prefer this workflow:
 
 1. Create the skill folder in this repo, for example `rb-example-skill/`.
 2. Add `SKILL.md` with `name` and `description` frontmatter.
