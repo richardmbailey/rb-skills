@@ -1,0 +1,5 @@
+interface:
+  display_name: "RB New Wiki"
+  short_description: "Create a wiki from template"
+  default_prompt: "Use $rb-new-wiki to create a new LLM-wiki from wiki-template and validate the setup."
+

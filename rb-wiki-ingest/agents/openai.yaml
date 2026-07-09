@@ -1,0 +1,5 @@
+interface:
+  display_name: "RB Wiki Ingest"
+  short_description: "Process LLM-wiki inbox sources"
+  default_prompt: "Use $rb-wiki-ingest to process the selected LLM-wiki inbox and report what changed."
+

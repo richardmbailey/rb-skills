@@ -27,29 +27,33 @@ When Richard asks to create a wiki on a specified subject, treat the subject as 
 Required inputs:
 
 - subject or domain;
-- target directory or repository name;
+- target parent directory or repository name;
+- wiki base directory name;
 - initial source set, or confirmation that the wiki should start from seed pages and an empty inbox;
 - preferred upkeep cadence if different from the defaults below.
 
-If any input is missing and a conservative default is obvious, proceed and state the assumption. Ask only when the missing choice would change repository location, source handling, or automation behavior.
+If the wiki base directory name is missing, derive a conservative filesystem-safe name from the subject and suffix it with `-wiki` when the subject name does not already end in `wiki`. For example, a subject of `LLM-agents` should create `LLM-agent-wiki`. Ask only when the missing choice would change repository location, source handling, or automation behavior.
 
 Procedure:
 
 1. Read `references/design.md`.
-2. Create or enter the target repository.
-3. Build the skeleton and deterministic tools in the phase order below.
-4. Create subject-specific seed pages using the local frontmatter profile. Mark pages as `draft` or `needs-review` when they are not yet source-backed.
-5. If initial sources exist, ingest them through `inbox/`, `sources/raw/`, the source registry, and reference pages before writing synthesis.
-6. Generate `wiki/index.md`, `.wiki_cache/graph.json`, `wiki/log.md`, and an initial `reports/lint/` or `reports/review/` report.
-7. Run validation and quick lint.
-8. Set up upkeep schedules when requested, using the automation tooling described below.
-9. Finish with the wiki location, source/validation status, schedules created or proposed, and next human review points.
+2. Create or enter the target parent repository or directory.
+3. Create or enter the wiki base directory named for the wiki.
+4. Build the skeleton and deterministic tools inside that wiki base directory in the phase order below.
+5. Create subject-specific seed pages using the local frontmatter profile. Mark pages as `draft` or `needs-review` when they are not yet source-backed.
+6. If initial sources exist, ingest them through `inbox/`, `sources/raw/`, the source registry, and reference pages before writing synthesis.
+7. Generate `wiki/index.md`, `.wiki_cache/graph.json`, `wiki/log.md`, and an initial `reports/lint/` or `reports/review/` report.
+8. Run validation and quick lint from the wiki base directory.
+9. Set up upkeep schedules when requested, using the automation tooling described below.
+10. Finish with the wiki base directory location, source/validation status, schedules created or proposed, and next human review points.
 
 ## Build Workflow
 
 When creating a new LLM-wiki, build it in phases:
 
-1. Create the skeleton from `references/design.md`: `inbox/`, `sources/raw/`, `sources/_source_registry.yml`, `wiki/`, `schema/`, `tools/`, `reports/`, and `.wiki_cache/`.
+All paths in this workflow are relative to the wiki base directory, not necessarily the git repository root. A repository may contain multiple sibling wiki base directories, each with its own sources, wiki bundle, tools, cache, and reports.
+
+1. Create the skeleton from `references/design.md` inside the wiki base directory: `inbox/`, `sources/raw/`, `sources/_source_registry.yml`, `wiki/`, `schema/`, `tools/`, `reports/`, and `.wiki_cache/`.
 2. Add `AGENTS.md`, `README.md`, schema files, policy files, prompt files, reserved `wiki/index.md` and `wiki/log.md`, `wiki/overview.md`, and initial seed pages.
 3. Implement deterministic validation before heavy ingest:
    - `tools/validate_frontmatter.py`
@@ -80,7 +84,7 @@ Do not build large ingest or semantic search flows before reserved-file, frontma
 
 Use this routine for ordinary work:
 
-1. Start by checking `git status`, `wiki/index.md`, recent `wiki/log.md`, and available deterministic tools.
+1. Start by entering the relevant wiki base directory, then checking `git status`, `wiki/index.md`, recent `wiki/log.md`, and available deterministic tools.
 2. For queries, classify the request as lookup, comparison, synthesis, audit, maintenance, source-check, or contradiction-check.
 3. Route first with `wiki/index.md`, frontmatter, graph, search, source registry, and reference pages. Read full bodies only after narrowing candidates.
 4. For ingest, register raw sources before synthesis: copy original files into `sources/raw/`, hash them, update `sources/_source_registry.yml`, and create `wiki/references/` pages.
@@ -130,7 +134,7 @@ Default inbox behavior:
 4. Update `sources/_source_registry.yml`.
 5. Create or update a reference page in `wiki/references/`.
 6. Run deterministic routing before reading many wiki page bodies.
-7. Update only clearly relevant wiki pages with citations, or write an ingest report explaining why no synthesis update was made.
+7. In a manual agent session, update only clearly relevant wiki pages with citations; in scheduled polling, write proposed synthesis updates to an ingest report instead of editing content pages.
 8. Rebuild `wiki/index.md` and `.wiki_cache/graph.json`.
 9. Run validation and quick lint.
 10. Leave the inbox file in place or move it only according to the wiki's explicit processed-inbox policy. Never delete an inbox file unless all design conditions are satisfied and Richard has approved the deletion policy.
@@ -145,7 +149,7 @@ When Richard asks to set up schedules, recurring upkeep, monitoring, reminders, 
 
 Create or propose these default automations for a new subject wiki unless Richard asks for a different cadence:
 
-1. **Inbox processor:** poll `inbox/`, register and ingest supported new files, create reference pages, make safe cited wiki updates, rebuild index/graph, run quick validation, and write an ingest report. Use a frequent schedule for active projects or a daily early-morning schedule for quieter projects.
+1. **Inbox processor:** poll `inbox/`, register and ingest supported new files, create reference pages, rebuild index/graph, run quick validation, and write an ingest report with recommended synthesis updates. Scheduled inbox processors should not edit substantive content pages unless Richard explicitly asks for that behaviour. Use a frequent schedule for active projects or a daily early-morning schedule for quieter projects.
 2. **Daily tidy-up:** run at end of day or early morning, check registry integrity, validate frontmatter/reserved files/links, rebuild index and graph if needed, run quick lint, summarize new ingest reports, and list items needing Richard's review.
 3. **Weekly full wiki lint:** run full lint, detect orphans, duplicates, oversized pages, missing sources, stale high-degree pages, broken links, overview drift, and contradiction candidates. Produce a prioritized report without deleting or merging anything.
 4. **Monthly governance review:** review decisions, contradictions, stale or deprecated pages, schema/tool changes, repeated query themes that should become syntheses, and maintenance work requiring Richard's approval.

@@ -155,98 +155,105 @@ A locally maintained wiki should be stricter.
 
 # 4. Repository Structure
 
+Each wiki must live inside its own base directory named after the wiki. This allows a single parent repository or workspace to contain multiple separate LLM-wikis without mixing sources, generated caches, reports, or tools.
+
+All paths in the rest of this document are relative to one wiki base directory unless explicitly stated otherwise.
+
 Use this layout:
 
 ```text
-llm-wiki/
-  AGENTS.md
-  README.md
+wiki-parent/
+  LLM-agent-wiki/
+    AGENTS.md
+    README.md
 
-  inbox/
-    # Temporary drop zone for uncatalogued raw inputs.
+    inbox/
+      # Temporary drop zone for uncatalogued raw inputs.
 
-  sources/
-    raw/
-      # Immutable original files: PDFs, transcripts, web exports, notes, audio, etc.
-    _source_registry.yml
-      # Machine-readable registry of all source files.
+    sources/
+      raw/
+        # Immutable original files: PDFs, transcripts, web exports, notes, audio, etc.
+      _source_registry.yml
+        # Machine-readable registry of all source files.
 
-  wiki/
-    index.md
-    log.md
-    overview.md
+    wiki/
+      index.md
+      log.md
+      overview.md
 
-    concepts/
-      # Stable conceptual pages.
-    entities/
-      # People, institutions, projects, tools, datasets, papers, places.
-    summaries/
-      # Source-level or topic-level summaries.
-    syntheses/
-      # Higher-level answers, comparisons, arguments, research memos.
-    decisions/
-      # Decisions, design choices, policy records, resolved questions.
-    contradictions/
-      # Explicit contradiction or uncertainty records.
-    references/
-      # OKF concept documents describing sources and linking to raw evidence.
-    datasets/
-      # Dataset descriptions, schemas, joins, caveats, and examples.
-    methods/
-      # Methods, protocols, workflows, algorithms, and modelling approaches.
+      concepts/
+        # Stable conceptual pages.
+      entities/
+        # People, institutions, projects, tools, datasets, papers, places.
+      summaries/
+        # Source-level or topic-level summaries.
+      syntheses/
+        # Higher-level answers, comparisons, arguments, research memos.
+      decisions/
+        # Decisions, design choices, policy records, resolved questions.
+      contradictions/
+        # Explicit contradiction or uncertainty records.
+      references/
+        # OKF concept documents describing sources and linking to raw evidence.
+      datasets/
+        # Dataset descriptions, schemas, joins, caveats, and examples.
+      methods/
+        # Methods, protocols, workflows, algorithms, and modelling approaches.
+      tools/
+        # Software tools, scripts, packages, services, platforms.
+      projects/
+        # Project-level knowledge pages.
+
+    schema/
+      okf_profile.md
+      page_schema.yml
+      source_schema.yml
+      link_policy.md
+      ingest_policy.md
+      query_policy.md
+      lint_policy.md
+      prompts/
+        ingestor.md
+        querier.md
+        linter.md
+        reviewer.md
+
     tools/
-      # Software tools, scripts, packages, services, platforms.
-    projects/
-      # Project-level knowledge pages.
+      ingest.py
+      build_index.py
+      build_graph.py
+      query.py
+      lint.py
+      validate_frontmatter.py
+      check_links.py
+      source_registry.py
+      word_count.py
+      detect_duplicates.py
+      check_reserved_files.py
 
-  schema/
-    okf_profile.md
-    page_schema.yml
-    source_schema.yml
-    link_policy.md
-    ingest_policy.md
-    query_policy.md
-    lint_policy.md
-    prompts/
-      ingestor.md
-      querier.md
-      linter.md
-      reviewer.md
+    reports/
+      ingest/
+      lint/
+      review/
 
-  tools/
-    ingest.py
-    build_index.py
-    build_graph.py
-    query.py
-    lint.py
-    validate_frontmatter.py
-    check_links.py
-    source_registry.py
-    word_count.py
-    detect_duplicates.py
-    check_reserved_files.py
-
-  reports/
-    ingest/
-    lint/
-    review/
-
-  .wiki_cache/
-    frontmatter.sqlite
-    search.sqlite
-    graph.json
-    embeddings/
+    .wiki_cache/
+      frontmatter.sqlite
+      search.sqlite
+      graph.json
+      embeddings/
 ```
+
+For another subject, create a sibling base directory rather than reusing `LLM-agent-wiki/`.
 
 The important separation is:
 
 ```text
-sources/raw/ = immutable evidence
-wiki/ = OKF-compatible knowledge bundle
-schema/ = rules and prompts
-tools/ = deterministic machinery
-reports/ = audit outputs
-.wiki_cache/ = generated indexes and caches
+<wiki-base>/sources/raw/ = immutable evidence
+<wiki-base>/wiki/ = OKF-compatible knowledge bundle
+<wiki-base>/schema/ = rules and prompts
+<wiki-base>/tools/ = deterministic machinery
+<wiki-base>/reports/ = audit outputs
+<wiki-base>/.wiki_cache/ = generated indexes and caches
 ```
 
 Raw source files live outside the OKF bundle.
@@ -2817,7 +2824,7 @@ Before changing the schema:
 Create:
 
 ```text
-repository layout
+wiki base directory layout
 AGENTS.md
 README.md
 schema files
@@ -2957,7 +2964,7 @@ python tools/lint.py --quick
 python tools/lint.py --full
 ```
 
-The agent should know these commands and use them before reading many page bodies.
+These commands are run from the relevant wiki base directory. The agent should know these commands and use them before reading many page bodies.
 
 ---
 

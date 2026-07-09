@@ -1,0 +1,5 @@
+interface:
+  display_name: "RB Wiki Maintenance"
+  short_description: "Run LLM-wiki health checks"
+  default_prompt: "Use $rb-wiki-maintenance to run maintenance on the selected LLM-wiki and summarize review items."
+
