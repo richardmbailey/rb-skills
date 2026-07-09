@@ -160,7 +160,7 @@ This pack currently contains these skills:
 | `$rb-diagnose` | You have a bug, regression, failing test, surprising output, or unclear failure and need evidence before fixes. |
 | `$rb-install-skills` | You want the agent to install or verify RB global skills, project resources, visibility checks, and then start-project onboarding. |
 | `$rb-discuss` | You are considering a non-trivial feature or change and need to discuss requirements, docs, ambiguity, edge cases, and an implementation plan before coding. |
-| `$rb-implementation-phase-planner` | You need an implementation plan, phase checklist, MVP/walking-skeleton sequence, verification gates, or a review of an existing plan. |
+| `$rb-execute-plan` | You have an implementation plan, phase checklist, issue list, or agreed direction and want it turned into executable tasks, progress tracking, verification gates, or a plan review. |
 | `$rb-implement-with-tests` | Requirements are clear and you want ordinary software/product changes implemented with focused tests and executable checks. |
 | `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multi-LLM-agent systems, agent frameworks, tool/MCP architecture, routing, tracing, evals, retrieval, or durability. |
 | `$rb-project-language` | You need to capture or update project vocabulary, domain terms, invariants, assumptions, or `CONTEXT.md`, especially in scientific or domain-heavy repositories. |

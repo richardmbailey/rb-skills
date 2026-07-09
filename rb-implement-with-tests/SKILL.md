@@ -1,6 +1,6 @@
 ---
 name: "rb-implement-with-tests"
-description: "Use to implement ordinary software/product changes with focused tests and executable checks after requirements are clear. Use for non-scientific feature work, refactors, bug fixes with an agreed fix, and implementation plans that need small verified increments."
+description: "Use to implement ordinary software/product changes with focused tests, executable checks, and a final review+fix loop after requirements are clear. Use for non-scientific feature work, refactors, bug fixes with an agreed fix, and implementation plans that need small verified increments."
 ---
 
 # /rb:implement - implement with tests
@@ -31,6 +31,9 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 11. Refactor only while keeping checks green and only within the requested scope.
 12. Update `$rb-working-diary` at meaningful checkpoints with decisions, checks run, failures, and next steps.
 13. Repeat in small increments until the requested change is complete.
+14. Run a final review over the diff, tests, docs, and behavior. Use `$rb-review-pr-or-diff` for substantial, risky, or cross-cutting changes; for small changes, perform the same review discipline inline.
+15. Fix actionable review findings, rerun the relevant focused and broader checks, and re-review when findings were material.
+16. Do not call the implementation complete until no blocking review findings remain, or the human explicitly accepts the residual risk.
 
 ## Required Behaviour
 
@@ -42,10 +45,12 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 - Prefer the repository's existing style, tests, frameworks, and abstractions over new patterns.
 - For text-heavy code, keep a clear boundary between deterministic structure handling and semantic LLM judgment.
 - Do not build complex regex/string heuristics for tasks whose acceptance criteria depend on understanding the text.
+- Do not skip the final review+fix loop unless the human explicitly asks to stop before review.
 
 ## Output
 
 - what changed
 - checks run and exact outcome
+- review+fix findings, fixes applied, and checks rerun
 - checks not run and why
 - residual risks or follow-up work

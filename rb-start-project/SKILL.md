@@ -19,7 +19,7 @@ Claude Code: /rb-start-project
 Guide the human from an unstructured new project or unfamiliar repository into a clear first workflow:
 
 ```text
-inspect repo -> ask setup questions -> summarise answers -> propose context updates -> hand off to the next workflow
+inspect repo -> ask setup questions -> summarise answers -> propose context updates -> route through the right planning, execution, implementation, or review+fix workflow
 ```
 
 ## Required Behaviour
@@ -29,7 +29,7 @@ inspect repo -> ask setup questions -> summarise answers -> propose context upda
 - If repository files already answer a question, state the inferred answer and ask the human to confirm or correct it.
 - Keep a short onboarding state after each answer: known facts, unresolved questions, next question.
 - Do not invent domain assumptions, units, invariants, users, deployment targets, or success criteria.
-- Before continuing into implementation, ask for explicit approval to proceed into the next workflow.
+- Before continuing into planning, plan execution, implementation, or review+fix, ask for explicit approval to proceed into the next workflow.
 
 ## Repository Inspection
 
@@ -59,29 +59,41 @@ Ask these in order unless the answer is already clear from the repository:
 7. **Run/check loop:** How should the agent install, run, test, lint, benchmark, or validate work?
 8. **Domain language:** What project-specific terms, units, invariants, assumptions, or trusted outputs should be captured?
 9. **Definition of done:** What would make the first task acceptable?
-10. **Autonomy:** Should the agent ask before editing, make focused edits after planning, or proceed through implementation and verification unless blocked?
+10. **Autonomy:** Should the agent ask before editing, make focused edits after planning, or proceed through implementation, verification, and review+fix unless blocked?
 
 ## Workflow Routing
 
 Choose the next workflow from the first task:
 
-- New feature or meaningful product/code change: clarify requirements first, then use `$rb-implement-with-tests` after plan approval.
-- Scientific, numerical, modelling, simulation, or domain-sensitive change: clarify requirements first, then use `$rb-tdd-scientific-code` after plan approval.
+- New feature or meaningful product/code change: clarify requirements first, create or confirm the implementation plan for non-trivial work, use `$rb-execute-plan` when the plan needs granular phases or verification gates, then use `$rb-implement-with-tests` after plan approval, ending with review+fix.
+- Scientific, numerical, modelling, simulation, or domain-sensitive change: clarify requirements first, create or confirm the implementation plan for non-trivial work, use `$rb-execute-plan` when the plan needs granular phases or verification gates, then use `$rb-tdd-scientific-code` after plan approval, ending with review+fix.
 - Bug, regression, failing test, or surprising output: diagnose before proposing a fix.
-- Vague idea, product direction, or planning request: create an implementation plan, then optionally split into issues.
+- Vague idea, product direction, or planning request: create an implementation plan, then use `$rb-execute-plan` if the human wants to turn the approved plan into executable phase work, and optionally split into issues.
 - Unfamiliar existing codebase with no immediate change request: explain the codebase structure.
 - Structural concerns, boundaries, maintainability, or refactoring strategy: architecture review.
 - Review requested for a diff, branch, or PR: review.
 
 Name the matching global RB skill. Use `$rb-name` syntax in Codex and `/rb-name` syntax in Claude Code:
 
-- ordinary implementation: `$rb-discuss`, then `$rb-implement-with-tests`
-- scientific implementation: `$rb-discuss`, then `$rb-tdd-scientific-code`
+- ordinary implementation: `$rb-discuss`, then `$rb-create-implementation-plan` for non-trivial work, then `$rb-execute-plan` when phase execution or verification gates are needed, then `$rb-implement-with-tests`, then review+fix
+- scientific implementation: `$rb-discuss`, then `$rb-create-implementation-plan` for non-trivial work, then `$rb-execute-plan` when phase execution or verification gates are needed, then `$rb-tdd-scientific-code`, then review+fix
 - bug work: `$rb-diagnose`
-- planning: `$rb-create-implementation-plan`, then optionally `$rb-create-issues`
+- planning: `$rb-create-implementation-plan`, then `$rb-execute-plan` if the plan is ready to execute, then optionally `$rb-create-issues`
 - unfamiliar codebase: `$rb-explain-codebase`
 - architecture: `$rb-architecture-review`
 - review: `$rb-review-pr-or-diff`
+
+## Guided Implementation Sequence
+
+For non-trivial feature or project work, guide the human through this sequence unless the repository or human request clearly calls for a shorter route:
+
+```text
+$rb-discuss -> $rb-create-implementation-plan -> $rb-execute-plan -> implementation skill -> review+fix
+```
+
+Use `$rb-execute-plan` as the bridge between approved planning and coding when the work needs phase checklists, walking-skeleton sequencing, task status updates, or verification gates. Skip it for small, well-scoped changes where `$rb-discuss` can produce a sufficient short plan and the human approves moving directly to implementation.
+
+After implementation, run a review+fix cycle before treating the work as complete: self-review small changes inline or use `$rb-review-pr-or-diff` for substantial diffs, fix actionable findings, rerun relevant checks, and re-review until no blocking findings remain or remaining risks are explicitly accepted.
 
 If a named global skill is not available in the current session, run the equivalent workflow inline and note that the global skills may need to be installed or the session reloaded.
 
@@ -102,7 +114,7 @@ For non-trivial projects, update `$rb-working-diary` with the project path, summ
 For feature work, ask:
 
 ```text
-Proceed into the discuss session for the first task now? After requirements are resolved, I will continue into the appropriate implementation workflow only after you approve the implementation plan.
+Proceed into the discuss session for the first task now? After requirements are resolved, I will continue into implementation planning, plan execution, implementation, and review+fix only after you approve each step.
 ```
 
 For bug work, ask:
@@ -114,7 +126,7 @@ Proceed into diagnosis now?
 For planning work, ask:
 
 ```text
-Proceed into implementation planning now?
+Proceed into implementation planning now? Once the plan is approved, I can use $rb-execute-plan to turn it into verified phase work.
 ```
 
 ## Inline Discuss Fallback

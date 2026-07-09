@@ -1,6 +1,6 @@
 ---
 name: "rb-tdd-scientific-code"
-description: "Use for test-driven implementation of scientific, numerical, modelling, simulation, or domain-sensitive code with tight verification loops over units, invariants, reproducibility, benchmark fixtures, stochastic behaviour, and numerical tolerances. For ordinary product/software changes, use $rb-implement-with-tests."
+description: "Use for test-driven implementation of scientific, numerical, modelling, simulation, or domain-sensitive code with tight verification and review+fix loops over units, invariants, reproducibility, benchmark fixtures, stochastic behaviour, and numerical tolerances. For ordinary product/software changes, use $rb-implement-with-tests."
 ---
 
 # /rb:tdd - test-driven implementation for scientific code
@@ -24,6 +24,9 @@ Implement scientific, numerical, modelling, simulation, or domain-sensitive chan
 11. Refactor while keeping tests green.
 12. Update `$rb-working-diary` at meaningful checkpoints with decisions, checks run, failures, and next steps.
 13. Repeat in small increments.
+14. Run a final review over the diff, tests, scientific assumptions, units, tolerances, seeds, benchmarks, provenance, and validation gaps. Use `$rb-review-pr-or-diff` for substantial, risky, or cross-cutting changes; for small changes, perform the same review discipline inline.
+15. Fix actionable review findings, rerun the relevant focused checks plus any affected invariant, regression, stochastic, or benchmark checks, and re-review when findings were material.
+16. Do not call the implementation scientifically complete until no blocking review findings remain, or the human explicitly accepts the residual scientific or validation risk.
 
 ## Scientific test types
 
@@ -45,6 +48,7 @@ Implement scientific, numerical, modelling, simulation, or domain-sensitive chan
 - Do not silently change units, coordinate systems, sign conventions, random seeds, or calibration assumptions.
 - Do not claim scientific validity beyond the checks actually run.
 - Preserve existing validated outputs unless the human agrees they should change and the reason is documented.
+- Do not skip the final review+fix loop unless the human explicitly asks to stop before review.
 
 ## Output
 
@@ -52,4 +56,5 @@ Implement scientific, numerical, modelling, simulation, or domain-sensitive chan
 - scientific assumptions, units, tolerances, seeds, and fixtures used
 - tests/checks added or run
 - benchmark or invariant results
+- review+fix findings, fixes applied, checks rerun, and accepted scientific risks
 - remaining scientific uncertainty or validation gaps

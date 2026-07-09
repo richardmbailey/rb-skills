@@ -1,4 +1,0 @@
-interface:
-  display_name: "RB Implementation Phase Planner"
-  short_description: "Plan and verify implementation phases"
-  default_prompt: "Use $rb-implementation-phase-planner to create or review a verified implementation phase plan."

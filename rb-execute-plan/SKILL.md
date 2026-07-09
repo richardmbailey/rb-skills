@@ -1,11 +1,13 @@
 ---
-name: "rb-implementation-phase-planner"
-description: "Use when creating, updating, executing, or reviewing implementation plans, coding phases, phase checklists, MVP/walking-skeleton plans, or verification gates. Emphasizes vertical-slice planning, fail-fast diagnostics, repo-appropriate stack choices, and [ ] -> [x] -> [v] task verification."
+name: "rb-execute-plan"
+description: "Use when executing, refining, or reviewing an existing implementation plan or phase checklist, especially when turning phases into verified and reviewed [ ] -> [x] -> [v] task work with walking-skeleton and vertical-slice discipline."
 ---
 
-# RB Implementation Phase Planner
+# RB Execute Plan
 
-Use this skill for explicit implementation planning and phase execution.
+Use this skill for turning an existing implementation plan into executable, verified phase work.
+
+Use `$rb-create-implementation-plan` first when the human has a rough idea, feature request, or product goal and needs the top-level plan. Use `$rb-execute-plan` when there is already a plan, phase, issue list, checklist, or agreed direction that needs to become concrete tasks, implementation progress, verification gates, or a plan review.
 
 ## Core Defaults
 
@@ -35,14 +37,14 @@ Rules:
 2. After all tasks in the phase are `[x]`, run a second verification pass over every task.
 3. Mark a task `[v]` only after confirming its behavior with a relevant automated test or explicit verification check.
 4. If a task has no verification path, add a test/check or document why the best available check is manual before marking it `[v]`.
-5. Do not declare the phase complete until every task is `[v]`.
+5. Do not declare the phase complete until every task is `[v]` and the phase completion review+fix cycle is done.
 6. For multi-phase work, create a separate implementation file for each phase.
 7. Keep the main implementation plan as an overview; put the granular task list, verification notes, and phase-specific test plan in the phase file.
 8. Granular tasks should be small enough that completion and verification are unambiguous.
 
-## Planning Requirements
+## Phase Planning Requirements
 
-When drafting or revising an implementation plan:
+When converting an implementation plan into executable phases, or revising phase plans:
 
 1. Identify the walking skeleton before detailed phase planning.
 2. Make Phase 1 a runnable end-to-end slice, even if some internals are minimal.
@@ -73,6 +75,19 @@ When executing a phase:
 5. Add missing tests/checks before marking unverified work verified.
 6. Update verified tasks from `[x]` to `[v]`.
 7. Report any task that cannot be verified, with the diagnostic and next fix.
+8. After every task is `[v]`, run a phase completion review over the implemented diff, tests, docs, and phase notes.
+9. Fix actionable review findings, rerun the relevant checks, and update phase notes with the outcome.
+10. Re-review after fixes when findings were material. Do not close the phase until no blocking findings remain or the human explicitly accepts the residual risk.
+
+## Phase Completion Review
+
+Before marking a phase complete:
+
+- Review the implemented change for bugs, regressions, missing tests, architecture drift, hidden fallback behavior, documentation gaps, and unresolved plan assumptions.
+- Use `$rb-review-pr-or-diff` for substantial, high-risk, or cross-cutting diffs; for small phases, perform the same review discipline inline.
+- Fix actionable findings before completion whenever they are in scope.
+- Rerun focused and broader checks affected by the fixes.
+- Record any deferred finding, skipped check, or accepted residual risk in the phase notes and final output.
 
 ## Review Requirements
 
@@ -92,6 +107,8 @@ When reviewing an existing implementation plan:
 
 - walking skeleton summary
 - proposed phases with `[ ]` task lists
+- task status updates using `[ ]`, `[x]`, and `[v]` when executing a phase
+- review+fix findings, fixes applied, checks rerun, and accepted residual risks
 - stack/dependency assumptions and which are existing vs proposed
 - text-processing split, where relevant: deterministic parsing vs semantic LLM calls
 - verification plan and phase exit criteria
