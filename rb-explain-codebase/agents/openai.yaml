@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Explain Codebase"
+  short_description: "Explain unfamiliar codebases clearly"
+  default_prompt: "Use $rb-explain-codebase to map this unfamiliar repository before making changes."

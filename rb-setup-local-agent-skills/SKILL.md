@@ -13,7 +13,7 @@ Use this skill when the RB workflow setup itself may be missing, stale, or confu
 
 1. Confirm the active agent and skills path. For Codex, default to `$CODEX_HOME/skills`, or `~/.codex/skills` when `CODEX_HOME` is unset. For Claude Code, use `~/.claude/skills`.
 2. Locate the versioned `rb-skills` source repo when possible. Prefer `RB_AGENT_SKILLS_PACK`, the current directory or its parents, a sibling `rb-skills` directory, symlink targets from installed RB skills, or the legacy sibling `_rb-agent-skills` pack when that is all that exists.
-3. Check that the expected global `rb-*` skills exist, especially `$rb-start-project`, `$rb-working-diary`, `$rb-clarify`, `$rb-implement-with-tests`, `$rb-diagnose`, `$rb-project-language`, and `$rb-review-pr-or-diff`.
+3. Check that the expected global `rb-*` skills exist, especially `$rb-start-project`, `$rb-working-diary`, `$rb-discuss`, `$rb-implement-with-tests`, `$rb-diagnose`, `$rb-project-language`, and `$rb-review-pr-or-diff`.
 4. If the current flat `rb-skills` source repo is available, run or recommend:
 
    ```bash

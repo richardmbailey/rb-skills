@@ -1,4 +1,0 @@
-interface:
-  display_name: "RB Zoom Out"
-  short_description: "Map unfamiliar repositories quickly"
-  default_prompt: "Use $rb-zoom-out to map this unfamiliar repository before making changes."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "RB Triage"
-  short_description: "Prioritize tasks by risk and urgency"
-  default_prompt: "Use $rb-triage to classify and prioritize these tasks by risk, urgency, and next action."

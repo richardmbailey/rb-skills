@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Create Implementation Plan"
+  short_description: "Turn rough ideas into implementation plans"
+  default_prompt: "Use $rb-create-implementation-plan to turn this rough idea into a practical implementation plan."

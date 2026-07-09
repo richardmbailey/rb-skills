@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB End Session"
+  short_description: "End a session with continuity notes"
+  default_prompt: "Use $rb-end-session to prepare continuity notes before ending or handing off this project session."

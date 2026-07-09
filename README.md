@@ -1,7 +1,25 @@
 # RB Agent Skills
-This repository contains reusable skills (some of which are heavily influenced by Matt Pocock's skills https://github.com/mattpocock/skills) for preferred Codex and Claude Code workflows. A skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders.
+This repository contains reusable skills (some of which are strongly influenced by Matt Pocock's skills https://github.com/mattpocock/skills) to be used with Codex and Claude Code. A skill is a reusable set of instructions and resources an AI agent can use to complete tasks in ways you have directed. In practical terms, a skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders, which your agent is aware of. The agent can either choose to use a skill or the skill can be invoked directly by the user. These skills are ones I have used and developed over recent months for work on general coding projects, with a bias towards modelling projects. Expect them to change significantly as new generations of models are released - sometimes it's useful to direct AI models, sometimes it's just better to get out of their way!
 
-The pack is designed to be cloned, versioned with Git, and installed by symlinking the skill folders into the active agent's skills directory.
+## Easiest Setup
+
+If you are not comfortable installing this manually, clone or download this repository onto your computer, open the folder in Codex or Claude Code, and ask the agent to install it for you.
+
+Copy and paste this into Codex:
+
+```text
+I have cloned this rb-skills repository. Please install these skills for Codex. Run the sync script in dry-run mode first, then install using symlink mode, check that the skills are visible in my Codex skills directory, and tell me whether I need to restart Codex.
+```
+
+Copy and paste this into Claude Code:
+
+```text
+I have cloned this rb-skills repository. Please install these skills for Claude Code. Run the sync script in dry-run mode first, then install using symlink mode for Claude, check that the skills are visible in ~/.claude/skills, and tell me whether I need to restart Claude Code.
+```
+
+If you use both tools, ask the agent to install the skills for both Codex and Claude Code. After installation, restart the relevant app if the agent recommends it, then open the project you want to work on and start with `$rb-start-project` in Codex or `/rb-start-project` in Claude Code.
+
+For reference, the installer places skills where each tool expects to find them.
 
 Codex uses:
 
@@ -15,11 +33,9 @@ Claude Code personal skills use:
 $HOME/.claude/skills
 ```
 
-After installation, open the agent in the project you want to work on and start with `$rb-start-project` in Codex or `/rb-start-project` in Claude Code.
+## Manual Quick Start
 
-## Quick Start
-
-On a new computer:
+Use this route if you are comfortable running terminal commands yourself. On a new computer:
 
 ```bash
 git clone <repo-url> ~/src/rb-skills
@@ -49,12 +65,12 @@ Use them to:
 
 - start new coding or research projects in a structured way;
 - onboard an unfamiliar repository before editing;
-- clarify requirements before implementation;
+- discuss requirements before implementation;
 - debug bugs and failing tests without jumping to fixes too early;
 - implement changes with focused tests and checks;
 - handle scientific, modelling, numerical, or domain-sensitive code carefully;
 - review diffs and pull requests;
-- turn ideas into PRDs and issue plans;
+- turn ideas into implementation plans and ordered issues;
 - preserve continuity across long sessions;
 - sync this skills pack across computers.
 
@@ -107,18 +123,18 @@ After installing the pack:
 
 For a brand new or poorly documented project, `rb-start-project` is usually the right entrypoint. It should not write product code during onboarding. It should first understand the repository, clarify the goal, and only then ask whether to continue into implementation, diagnosis, planning, or review.
 
-If the whole repository needs RB workflow setup, ask for:
+If the whole repository needs RB workflow setup (new machine, missing `AGENTS.md` or `CONTEXT.md`, or the agent cannot see the RB skills), ask for:
 
 ```text
-Use $rb-full-start on this repository.
+Use $rb-install-skills on this repository.
 ```
 
-`$rb-full-start` prepares project resources such as `AGENTS.md`, `CONTEXT.md`, visibility checks, and then continues into start-project onboarding.
+`$rb-install-skills` installs or verifies the RB skills, prepares project resources such as `AGENTS.md` and `CONTEXT.md`, runs visibility checks, and then continues into start-project onboarding.
 
-If `$rb-full-start` reports that existing installed skills are not symlinks to this repo, rerun only after deciding those installed folders should be backed up and replaced:
+If `$rb-install-skills` reports that existing installed skills are not symlinks to this repo, rerun only after deciding those installed folders should be backed up and replaced:
 
 ```bash
-python3 rb-full-start/scripts/full_start.py --target "$PWD" --replace-skills
+python3 rb-install-skills/scripts/install_skills.py --target "$PWD" --replace-skills
 ```
 
 ## How Skills Are Invoked
@@ -140,27 +156,26 @@ This pack currently contains these skills:
 | --- | --- |
 | `$rb-architecture-review` | You want to inspect a codebase for architecture problems, unclear boundaries, duplication, hidden assumptions, or refactoring opportunities. |
 | `$rb-context-tokens` | You ask about current context size, token usage, the latest call, or `/tokens`. |
-| `$rb-continue-session` | You are resuming a mature project and want the agent to orient from diary notes, handoffs, git state, and existing project instructions before editing. |
+| `$rb-continue-project` | You are resuming a mature project and want the agent to orient from diary notes, handoffs, git state, and existing project instructions before editing. |
 | `$rb-diagnose` | You have a bug, regression, failing test, surprising output, or unclear failure and need evidence before fixes. |
-| `$rb-full-start` | You want the agent to prepare a repository end-to-end for RB workflows, including global skills, project resources, visibility checks, and then start-project onboarding. |
-| `$rb-clarify` | You are considering a non-trivial feature or change and need requirements, docs, ambiguity, edge cases, and an implementation plan clarified before coding. |
+| `$rb-install-skills` | You want the agent to install or verify RB global skills, project resources, visibility checks, and then start-project onboarding. |
+| `$rb-discuss` | You are considering a non-trivial feature or change and need to discuss requirements, docs, ambiguity, edge cases, and an implementation plan before coding. |
 | `$rb-implementation-phase-planner` | You need an implementation plan, phase checklist, MVP/walking-skeleton sequence, verification gates, or a review of an existing plan. |
 | `$rb-implement-with-tests` | Requirements are clear and you want ordinary software/product changes implemented with focused tests and executable checks. |
 | `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multi-LLM-agent systems, agent frameworks, tool/MCP architecture, routing, tracing, evals, retrieval, or durability. |
 | `$rb-project-language` | You need to capture or update project vocabulary, domain terms, invariants, assumptions, or `CONTEXT.md`, especially in scientific or domain-heavy repositories. |
 | `$rb-research-question-gate` | You are evaluating a research idea, scientific hypothesis, algorithm proposal, or technical novelty claim before investing in PRD/planning/coding. |
 | `$rb-review-pr-or-diff` | You want a review of a pull request, branch, or diff, with findings first and risks tied to file/line references. |
-| `$rb-session-handoff` | You want to pause, end, archive, hand off, or prepare continuity notes for another agent session. |
+| `$rb-end-session` | You want to pause, end, archive, hand off, or prepare continuity notes for another agent session. |
 | `$rb-setup-local-agent-skills` | You need to verify or repair RB global skill installation, project resources, `AGENTS.md`, `CONTEXT.md`, or agent skill discovery. |
 | `$rb-start-project` | You are starting a project, onboarding a repository, or want guided setup questions before coding. |
 | `$rb-sync-skills-repo` | You want to install, sync, copy, symlink, update, clone, publish, or share skills from this Git repo across computers. |
 | `$rb-tdd-scientific-code` | You are changing scientific, numerical, modelling, simulation, stochastic, or domain-sensitive code where units, invariants, tolerances, and reproducibility matter. |
-| `$rb-to-issues` | You want to split a PRD or implementation plan into ordered issues with scope, acceptance criteria, tests, risks, and dependencies. |
-| `$rb-to-prd` | You want to turn an idea or rough feature request into a practical PRD with goals, constraints, risks, success criteria, and validation approach. |
-| `$rb-triage` | You need to classify and prioritise tasks by urgency, importance, risk, dependency, effort, uncertainty, and validity implications. |
+| `$rb-create-issues` | You want to create ordered issues from a PRD or implementation plan, with scope, acceptance criteria, tests, risks, and dependencies. |
+| `$rb-create-implementation-plan` | You want to turn an idea or rough feature request into a practical implementation plan with goals, constraints, phased work, risks, success criteria, and validation approach. |
 | `$rb-working-diary` | Work is long-running or context-heavy and needs durable notes, assumptions, decisions, status, or next actions across sessions. |
 | `$rb-write-skill` | You want the agent to create or update a reusable RB-style skill with clear triggers, procedure, metadata, and supporting resources. |
-| `$rb-zoom-out` | You want to understand an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots before editing. |
+| `$rb-explain-codebase` | You want to understand an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots before editing. |
 
 Codex or Claude Code should automatically invoke these when the request clearly matches the `Invoke when` guidance. The table is mainly for orientation and for cases where you want to steer the agent explicitly.
 
@@ -172,9 +187,9 @@ For a new feature:
 $rb-start-project
 ```
 
-Then let the agent route to `$rb-clarify`. After requirements and docs are clear, it should produce an implementation plan and ask before continuing into `$rb-implement-with-tests`.
+Then let the agent route to `$rb-discuss`. After requirements and docs are clear, it should produce an implementation plan and ask before continuing into `$rb-implement-with-tests`.
 
-In Claude Code, direct invocations use slash commands, for example `/rb-start-project`, `/rb-clarify`, and `/rb-implement-with-tests`.
+In Claude Code, direct invocations use slash commands, for example `/rb-start-project`, `/rb-discuss`, and `/rb-implement-with-tests`.
 
 For a bug:
 
@@ -195,7 +210,7 @@ The agent should work test-first around units, invariants, tolerances, reproduci
 For an unfamiliar repository:
 
 ```text
-Use $rb-zoom-out before editing.
+Use $rb-explain-codebase before editing.
 ```
 
 The agent should explain structure, control flow, dependencies, change hotspots, and likely risks before proposing edits.

@@ -11,8 +11,8 @@ This is the frictionless setup path for new wikis. Use `rb-wiki` for broader des
 
 ## Required Context
 
-- A template wiki directory, usually `wiki-template` under `/Users/richardbailey/GitHub/LLM-wikis`.
-- A target parent directory, usually `/Users/richardbailey/GitHub/LLM-wikis`.
+- A template wiki directory, usually a `wiki-template` sibling inside the target LLM-wikis workspace.
+- A target parent directory, usually the current LLM-wikis workspace or another directory chosen by the user.
 - The new wiki's subject, display title, filesystem-safe base directory name, domain tag, and one-sentence description.
 
 Ask only for missing choices that materially affect the new wiki. If Richard gives a clear subject, derive conservative defaults and state them before running setup:
@@ -49,9 +49,9 @@ Scheduled inbox automations should not edit substantive content pages. They shou
 3. Run the bundled setup script from any working directory:
 
    ```bash
-   python3 /Users/richardbailey/GitHub/rb-skills/rb-new-wiki/scripts/new_wiki.py \
-     --template /Users/richardbailey/GitHub/LLM-wikis/wiki-template \
-     --parent /Users/richardbailey/GitHub/LLM-wikis \
+   python3 "${CODEX_HOME:-$HOME/.codex}/skills/rb-new-wiki/scripts/new_wiki.py" \
+     --template /path/to/LLM-wikis/wiki-template \
+     --parent /path/to/LLM-wikis \
      --name example-wiki \
      --title "Example Wiki" \
      --subject "example subject" \

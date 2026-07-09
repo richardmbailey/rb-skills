@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Create Issues"
+  short_description: "Create ordered implementation issues"
+  default_prompt: "Use $rb-create-issues to turn this PRD or implementation plan into ordered issues."

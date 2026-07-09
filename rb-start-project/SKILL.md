@@ -68,18 +68,18 @@ Choose the next workflow from the first task:
 - New feature or meaningful product/code change: clarify requirements first, then use `$rb-implement-with-tests` after plan approval.
 - Scientific, numerical, modelling, simulation, or domain-sensitive change: clarify requirements first, then use `$rb-tdd-scientific-code` after plan approval.
 - Bug, regression, failing test, or surprising output: diagnose before proposing a fix.
-- Vague idea, product direction, or planning request: produce a PRD, then optionally split into issues.
-- Unfamiliar existing codebase with no immediate change request: zoom out and explain structure.
+- Vague idea, product direction, or planning request: create an implementation plan, then optionally split into issues.
+- Unfamiliar existing codebase with no immediate change request: explain the codebase structure.
 - Structural concerns, boundaries, maintainability, or refactoring strategy: architecture review.
 - Review requested for a diff, branch, or PR: review.
 
 Name the matching global RB skill. Use `$rb-name` syntax in Codex and `/rb-name` syntax in Claude Code:
 
-- ordinary implementation: `$rb-clarify`, then `$rb-implement-with-tests`
-- scientific implementation: `$rb-clarify`, then `$rb-tdd-scientific-code`
+- ordinary implementation: `$rb-discuss`, then `$rb-implement-with-tests`
+- scientific implementation: `$rb-discuss`, then `$rb-tdd-scientific-code`
 - bug work: `$rb-diagnose`
-- planning: `$rb-to-prd`, then optionally `$rb-to-issues`
-- unfamiliar codebase: `$rb-zoom-out`
+- planning: `$rb-create-implementation-plan`, then optionally `$rb-create-issues`
+- unfamiliar codebase: `$rb-explain-codebase`
 - architecture: `$rb-architecture-review`
 - review: `$rb-review-pr-or-diff`
 
@@ -102,7 +102,7 @@ For non-trivial projects, update `$rb-working-diary` with the project path, summ
 For feature work, ask:
 
 ```text
-Proceed into the clarify session for the first task now? After requirements are resolved, I will continue into the appropriate implementation workflow only after you approve the implementation plan.
+Proceed into the discuss session for the first task now? After requirements are resolved, I will continue into the appropriate implementation workflow only after you approve the implementation plan.
 ```
 
 For bug work, ask:
@@ -114,12 +114,12 @@ Proceed into diagnosis now?
 For planning work, ask:
 
 ```text
-Proceed into PRD drafting now?
+Proceed into implementation planning now?
 ```
 
-## Inline Clarify Fallback
+## Inline Discuss Fallback
 
-If the human approves feature-work handoff and `$rb-clarify` is not available:
+If the human approves feature-work handoff and `$rb-discuss` is not available:
 
 1. Restate the requested change.
 2. Identify ambiguous behavior, interface, edge cases, failure modes, compatibility constraints, and tests.
