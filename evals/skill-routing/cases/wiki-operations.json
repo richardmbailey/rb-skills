@@ -1,0 +1,92 @@
+[
+  {
+    "id": "wiki-new-climate",
+    "family": "wiki-operations",
+    "prompt": "Create a new LLM wiki about climate adaptation from wiki-template, ask me for the setup choices, configure its title and tags, validate it, and offer the standard automations.",
+    "expected": {"outcome": "select", "skill": "rb-new-wiki"},
+    "forbidden_skills": ["rb-wiki-ingest", "rb-wiki-maintenance"],
+    "critical": true,
+    "rationale": "A new wiki must be instantiated and configured from the template."
+  },
+  {
+    "id": "wiki-new-copy-template",
+    "family": "wiki-operations",
+    "prompt": "Set up a fresh LLM wiki by copying wiki-template, replacing the example subject metadata, running the validators, and confirming it is ready for first use.",
+    "expected": {"outcome": "select", "skill": "rb-new-wiki"},
+    "forbidden_skills": ["rb-wiki-ingest", "rb-wiki-maintenance"],
+    "critical": true,
+    "rationale": "The request is fresh-wiki creation, not operation of an existing wiki."
+  },
+  {
+    "id": "wiki-new-research-domain",
+    "family": "wiki-operations",
+    "prompt": "I want a brand-new agent wiki for a research domain. Gather the configuration choices, instantiate the template, update its identity metadata, and verify the generated wiki.",
+    "expected": {"outcome": "select", "skill": "rb-new-wiki"},
+    "forbidden_skills": ["rb-wiki-ingest", "rb-wiki-maintenance", "rb-start-project"],
+    "critical": true,
+    "rationale": "The user wants a new wiki artifact created from the standard template."
+  },
+  {
+    "id": "wiki-ingest-inbox",
+    "family": "wiki-operations",
+    "prompt": "Process the new files in this existing LLM wiki's inbox: register the raw sources, create reference pages, validate them, move processed files, and report anything needing review.",
+    "expected": {"outcome": "select", "skill": "rb-wiki-ingest"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-maintenance"],
+    "critical": true,
+    "rationale": "New source intake into an existing wiki is the ingest workflow."
+  },
+  {
+    "id": "wiki-ingest-papers",
+    "family": "wiki-operations",
+    "prompt": "These papers were dropped into the inbox of an existing wiki. Run the supported source registration and ingestion path and leave review flags for uncertain material.",
+    "expected": {"outcome": "select", "skill": "rb-wiki-ingest"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-maintenance"],
+    "critical": true,
+    "rationale": "The task is bounded intake of new sources, not maintenance."
+  },
+  {
+    "id": "wiki-ingest-quick-validation",
+    "family": "wiki-operations",
+    "prompt": "Ingest the waiting source files into this wiki, update the source registry and reference pages, run the quick validation, and summarize the processed and deferred items.",
+    "expected": {"outcome": "select", "skill": "rb-wiki-ingest"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-maintenance"],
+    "critical": true,
+    "rationale": "Source processing plus intake validation is ingest."
+  },
+  {
+    "id": "wiki-maintenance-nightly",
+    "family": "wiki-operations",
+    "prompt": "Run the supported nightly maintenance on this existing LLM wiki, including health checks, index and graph updates, and a report of review items.",
+    "expected": {"outcome": "select", "skill": "rb-wiki-maintenance"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-ingest"],
+    "critical": true,
+    "rationale": "Routine upkeep of an existing wiki belongs to maintenance."
+  },
+  {
+    "id": "wiki-maintenance-lint",
+    "family": "wiki-operations",
+    "prompt": "Check this wiki's health with the quick lint, rebuild stale indexes if required, inspect the source registry, and summarize non-destructive repairs or review needs.",
+    "expected": {"outcome": "select", "skill": "rb-wiki-maintenance"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-ingest"],
+    "critical": true,
+    "rationale": "Linting and index health are operational maintenance."
+  },
+  {
+    "id": "wiki-maintenance-weekly",
+    "family": "wiki-operations",
+    "prompt": "Perform the weekly deep-clean workflow for this established wiki: validate graph and index consistency, check registry health, and produce a maintenance report.",
+    "expected": {"outcome": "select", "skill": "rb-wiki-maintenance"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-ingest"],
+    "critical": true,
+    "rationale": "The requested recurring operational work is maintenance."
+  },
+  {
+    "id": "wiki-ambiguous-update",
+    "family": "wiki-operations",
+    "prompt": "Please update my LLM wiki.",
+    "expected": {"outcome": "clarify"},
+    "forbidden_skills": ["rb-new-wiki", "rb-wiki-ingest", "rb-wiki-maintenance"],
+    "critical": true,
+    "rationale": "It is unclear whether update means ingest, maintenance, or a broader design change."
+  }
+]

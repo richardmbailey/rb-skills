@@ -1,6 +1,6 @@
 ---
 name: "rb-review-pr-or-diff"
-description: "Use to review a pull request or diff for bugs, regressions, missing tests, architecture issues, and concrete fixes. Findings should lead, with severity and file/line references."
+description: "Use when the user wants defects and risks found in a pull request or diff, including regressions, missing tests, and concrete fixes, with severity and file references. For a teaching-oriented change explanation, use $rb-explain-diff."
 ---
 
 # /rb:review - review a PR or diff

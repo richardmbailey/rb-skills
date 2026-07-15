@@ -1,6 +1,6 @@
 ---
 name: "rb-create-issues"
-description: "Use to create ordered implementation issues from a PRD or implementation plan, with scope, acceptance criteria, tests, risks, and dependencies."
+description: "Use when an existing PRD or implementation plan must become ordered, reviewable issue drafts with scope, acceptance criteria, tests, risks, and dependencies. Do not use for general planning or external tracker mutation unless separately requested."
 ---
 
 # /rb:create-issues - create ordered issues
@@ -20,6 +20,7 @@ description: "Use to create ordered implementation issues from a PRD or implemen
 - Do not create issues that are too broad to verify in one reviewable change.
 - Do not hide open product or technical questions inside implementation issues; call them out explicitly.
 - Preserve the PRD's non-goals and constraints.
+- Draft issue content by default. Creating or editing records in GitHub, Trello, or another external tracker requires a separate explicit request and the appropriate tool or workflow.
 
 ## Output
 

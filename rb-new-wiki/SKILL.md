@@ -1,6 +1,6 @@
 ---
 name: "rb-new-wiki"
-description: "Use when Richard asks Codex to create a new LLM-wiki from wiki-template, gather setup choices, copy the template, reconfigure subject/title/tag metadata, validate the new wiki, and optionally set up wiki automations."
+description: "Use when creating a new LLM wiki from wiki-template, including setup choices, template copying, subject and metadata configuration, validation, and optional automations. Do not use for ingesting into or maintaining an existing wiki."
 ---
 
 # RB New Wiki

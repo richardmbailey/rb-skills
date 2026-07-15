@@ -1,6 +1,6 @@
 ---
 name: rb-sync-skills-repo
-description: Install or sync personal Codex or Claude Code skills from a Git or GitHub repository into the active agent skills directory. Use when the user wants to move, share, version, clone, bootstrap, symlink, copy, update, or publish skill folders across computers.
+description: Use when copying, symlinking, cloning, updating, publishing, or otherwise synchronizing skill folders between a Git repository and Codex or Claude Code skill directories. For project-resource setup or discovery repair, use a setup or installation skill.
 ---
 
 # RB Sync Skills Repo

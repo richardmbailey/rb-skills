@@ -1,6 +1,6 @@
 ---
 name: "rb-architecture-review"
-description: "Use to inspect a codebase for architecture problems, unclear boundaries, duplication, hidden assumptions, and improvement opportunities."
+description: "Use when the user wants an architectural critique of a codebase, including boundaries, coupling, duplication, hidden assumptions, and improvement opportunities. For neutral orientation to an unfamiliar repository, use $rb-explain-codebase."
 ---
 
 # /rb:architecture - architecture review

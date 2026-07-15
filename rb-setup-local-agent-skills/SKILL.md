@@ -1,6 +1,6 @@
 ---
 name: "rb-setup-local-agent-skills"
-description: "Use to verify or repair RB global skill installation and project resource setup, including AGENTS.md, CONTEXT.md, .rb-agent prompts/templates/workflows, and Codex or Claude Code skill discovery. For normal project onboarding, use rb-start-project."
+description: "Use when an existing RB skill installation or project-resource setup is incomplete, stale, or undiscoverable and needs verification or repair, including AGENTS.md, CONTEXT.md, and skill discovery. Do not use for normal onboarding or repository synchronization alone."
 ---
 
 # RB Setup Local Agent Skills
@@ -12,19 +12,12 @@ Use this skill when the RB workflow setup itself may be missing, stale, or confu
 ## Procedure
 
 1. Confirm the active agent and skills path. For Codex, default to `$CODEX_HOME/skills`, or `~/.codex/skills` when `CODEX_HOME` is unset. For Claude Code, use `~/.claude/skills`.
-2. Locate the versioned `rb-skills` source repo when possible. Prefer `RB_AGENT_SKILLS_PACK`, the current directory or its parents, a sibling `rb-skills` directory, symlink targets from installed RB skills, or the legacy sibling `_rb-agent-skills` pack when that is all that exists.
+2. Locate the versioned flat `rb-skills` source repo when possible. Prefer `RB_AGENT_SKILLS_PACK`, the current directory or its parents, a sibling `rb-skills` directory, or symlink targets from installed RB skills. If only a legacy `_rb-agent-skills` pack is available, read `references/legacy-pack.md` and use that compatibility path.
 3. Check that the expected global `rb-*` skills exist, especially `$rb-start-project`, `$rb-working-diary`, `$rb-discuss`, `$rb-implement-with-tests`, `$rb-diagnose`, `$rb-project-language`, and `$rb-review-pr-or-diff`.
 4. If the current flat `rb-skills` source repo is available, run or recommend:
 
    ```bash
    python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --dry-run
-   ```
-
-   If the legacy pack source is available instead, run or recommend:
-
-   ```bash
-   python3 scripts/verify_pack.py
-   python3 scripts/audit_skill_visibility.py
    ```
 
 5. Treat non-RB skills in the active agent skills directory as informational unless they conflict with RB skill names or discovery.
@@ -45,7 +38,7 @@ Do not flag unrelated non-RB personal skills as setup failures unless they break
 
 ## Output
 
-- source repo or legacy pack status
+- source repo status, including legacy compatibility only when used
 - global RB skill installation status
 - project resource status
 - important files/directories

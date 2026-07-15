@@ -154,31 +154,34 @@ This pack currently contains these skills:
 
 | Skill | Invoke when |
 | --- | --- |
-| `$rb-explain-diff` | You want a rich, interactive HTML explanation of a code change, diff, branch, commit, or pull request, including background, intuition, diagrams, a code walkthrough, and a quiz. |
-| `$rb-create-skill-evals` | You want to create behavioural tests for an agent skill, check trigger boundaries and outcomes, compare runs with and without the skill, or decide whether the skill can be retired. |
-| `$rb-architecture-review` | You want to inspect a codebase for architecture problems, unclear boundaries, duplication, hidden assumptions, or refactoring opportunities. |
+| `$rb-explain-diff` | You want a teaching-oriented, interactive HTML explanation of a code change; use `$rb-review-pr-or-diff` when the aim is to find defects. |
+| `$rb-create-skill-evals` | You want behavioural evaluations for an agent skill, including trigger boundaries, outcomes, regressions, repeated trials, or ablation comparisons—not ordinary product-code tests. |
+| `$rb-architecture-review` | You want an architectural critique covering boundaries, coupling, duplication, hidden assumptions, and improvement opportunities, rather than neutral repository orientation. |
 | `$rb-context-tokens` | You ask about current context size, token usage, the latest call, or `/tokens`. |
-| `$rb-continue-project` | You are resuming a mature project and want the agent to orient from diary notes, handoffs, git state, and existing project instructions before editing. |
-| `$rb-diagnose` | You have a bug, regression, failing test, surprising output, or unclear failure and need evidence before fixes. |
-| `$rb-install-skills` | You want the agent to install or verify RB global skills, project resources, visibility checks, and then start-project onboarding. |
-| `$rb-discuss` | You are considering a non-trivial feature or change and need to discuss requirements, docs, ambiguity, edge cases, and an implementation plan before coding. |
-| `$rb-execute-plan` | You have an implementation plan, phase checklist, issue list, or agreed direction and want it turned into executable tasks, progress tracking, verification gates, or a plan review. |
+| `$rb-continue-project` | You are resuming a mature project from existing instructions, diary, handoff, and Git state; clarify if the user may instead want a standalone status artifact. |
+| `$rb-diagnose` | A bug, regression, failing test, or surprising output needs root-cause investigation before choosing a fix. |
+| `$rb-install-skills` | You want the full RB setup workflow: global skills, project resources, visibility checks, and initial onboarding—not sync-only or repair-only work. |
+| `$rb-discuss` | A non-trivial change still has unresolved material requirements, behaviour, interfaces, edge cases, or acceptance criteria that must be discussed before planning or coding. |
+| `$rb-execute-plan` | An implementation plan, phase checklist, issue list, or agreed direction already exists and needs execution, refinement, review, progress tracking, or verification gates. |
 | `$rb-implement-with-tests` | Requirements are clear and you want ordinary software/product changes implemented with focused tests, executable checks, and a final review+fix loop. |
-| `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multi-LLM-agent systems, agent frameworks, tool/MCP architecture, routing, tracing, evals, retrieval, or durability. |
-| `$rb-project-language` | You need to capture or update project vocabulary, domain terms, invariants, assumptions, or `CONTEXT.md`, especially in scientific or domain-heavy repositories. |
+| `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multiple LLM agents or orchestration layers, including boundaries, tools, handoffs, state, routing, failures, observability, evaluation, budgets, and durability. |
+| `$rb-project-language` | You need shared vocabulary or `CONTEXT.md` updated with domain terms, acronyms, units, invariants, assumptions, or modelling concepts. |
 | `$rb-research-question-gate` | You are evaluating a research idea, scientific hypothesis, algorithm proposal, or technical novelty claim before investing in PRD/planning/coding. |
-| `$rb-review-pr-or-diff` | You want a review of a pull request, branch, or diff, with findings first and risks tied to file/line references. |
-| `$rb-end-session` | You want to pause, end, archive, hand off, or prepare continuity notes for another agent session. |
-| `$rb-setup-local-agent-skills` | You need to verify or repair RB global skill installation, project resources, `AGENTS.md`, `CONTEXT.md`, or agent skill discovery. |
-| `$rb-start-project` | You are starting a project, onboarding a repository, or want guided setup questions before coding. |
-| `$rb-sync-skills-repo` | You want to install, sync, copy, symlink, update, clone, publish, or share skills from this Git repo across computers. |
+| `$rb-review-pr-or-diff` | You want defects and risks found in a pull request or diff, with findings first and risks tied to file references. |
+| `$rb-end-session` | You want to pause or close current work, prepare durable continuity notes, or create a handoff—not report ongoing project status. |
+| `$rb-setup-local-agent-skills` | An existing RB skill installation or project-resource setup is incomplete, stale, or undiscoverable and needs verification or repair. |
+| `$rb-start-project` | You are first onboarding a new or poorly understood project and need discovery, setup questions, goals, constraints, and workflow routing before coding. |
+| `$rb-sync-skills-repo` | You want to copy, symlink, clone, update, publish, or otherwise synchronize skill folders between a Git repository and agent skill directories. |
 | `$rb-tdd-scientific-code` | You are changing scientific, numerical, modelling, simulation, stochastic, or domain-sensitive code where units, invariants, tolerances, reproducibility, and review+fix matter. |
-| `$rb-create-issues` | You want to create ordered issues from a PRD or implementation plan, with scope, acceptance criteria, tests, risks, and dependencies. |
-| `$rb-create-implementation-plan` | You want to turn an idea or rough feature request into a practical implementation plan with goals, constraints, phased work, risks, success criteria, and validation approach. |
-| `$rb-where-are-we` | You want an evidence-backed HTML state-of-play report covering project goals, current phase, code health, risks, recent changes, and recommended next steps. |
-| `$rb-working-diary` | Work is long-running or context-heavy and needs durable notes, assumptions, decisions, status, or next actions across sessions. |
-| `$rb-write-skill` | You want the agent to create or update a reusable RB-style skill with clear triggers, procedure, metadata, and supporting resources. |
-| `$rb-explain-codebase` | You want to understand an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots before editing. |
+| `$rb-create-issues` | You want to decompose an existing PRD or implementation plan into ordered, reviewable issue drafts; external issue-tracker changes require a separate request. |
+| `$rb-create-implementation-plan` | An idea, rough feature request, or product goal needs a new top-level implementation plan; use `$rb-execute-plan` when a plan already exists. |
+| `$rb-where-are-we` | You want a deep, evidence-backed HTML state-of-play report covering goals, phase, progress, code health, risks, recent changes, and next steps. |
+| `$rb-working-diary` | Long-running or context-heavy work needs durable decisions, evidence, status, and next actions across compaction, sessions, or handoffs. |
+| `$rb-write-skill` | You want to create or update a reusable RB-style skill; use `$rb-create-skill-evals` when the work is behavioural evaluation rather than authoring. |
+| `$rb-explain-codebase` | You want neutral orientation to an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots. |
+| `$rb-new-wiki` | You want to create and configure a new LLM wiki from `wiki-template`, rather than operate an existing wiki. |
+| `$rb-wiki-ingest` | An existing LLM wiki has new inbox files to register, ingest, validate, and move through intake. |
+| `$rb-wiki-maintenance` | An existing LLM wiki needs operational upkeep such as linting, index rebuilding, registry checks, or health review. |
 
 Codex or Claude Code should automatically invoke these when the request clearly matches the `Invoke when` guidance. The table is mainly for orientation and for cases where you want to steer the agent explicitly.
 

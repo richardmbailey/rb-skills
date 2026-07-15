@@ -1,6 +1,6 @@
 ---
 name: "rb-explain-diff"
-description: "Use when the user asks for a rich explanation of a code change, working-tree diff, commit, branch comparison, or pull request. Explore the surrounding system and produce a self-contained interactive HTML explainer with background, intuition, a grouped code walkthrough, diagrams, and a five-question quiz."
+description: "Use when the user wants a teaching-oriented, interactive HTML explanation of a working-tree change, commit, branch comparison, or pull request, including background, intuition, diagrams, a grouped walkthrough, and quiz. For defect-finding review, use $rb-review-pr-or-diff."
 ---
 
 # RB Explain Diff

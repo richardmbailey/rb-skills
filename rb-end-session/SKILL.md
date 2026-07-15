@@ -1,6 +1,6 @@
 ---
 name: "rb-end-session"
-description: "Use when the user asks for rb-end-session, $rb-end-session, end session, pause, archive, hand off, create an agent handoff brief, or prepare continuity notes for another Codex/agent session."
+description: "Use when the user wants to pause or close the current work, prepare durable continuity notes, or create a handoff brief for another agent session. For an ongoing project status report, use $rb-where-are-we."
 ---
 
 # RB End Session

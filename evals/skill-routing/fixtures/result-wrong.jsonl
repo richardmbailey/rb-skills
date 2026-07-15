@@ -1,0 +1,1 @@
+{"case_id":"minimal-select","condition":"baseline","trial":1,"outcome":"select","skill":"rb-execute-plan","confidence":"high","explanation":"This incorrectly treats the request as an existing plan."}

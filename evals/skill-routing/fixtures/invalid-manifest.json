@@ -1,0 +1,27 @@
+{
+  "schema_version": 2,
+  "suite": "",
+  "baseline_commit": "",
+  "conditions": ["baseline", "baseline"],
+  "default_trials": 0,
+  "cases": [
+    {
+      "id": "duplicate",
+      "family": "",
+      "prompt": "",
+      "expected": {"outcome": "select", "skill": "not-a-skill"},
+      "forbidden_skills": ["not-a-skill", "not-a-skill"],
+      "critical": "yes",
+      "rationale": ""
+    },
+    {
+      "id": "duplicate",
+      "family": "broken",
+      "prompt": "Prompt",
+      "expected": {"outcome": "clarify", "skill": "rb-discuss"},
+      "forbidden_skills": [],
+      "critical": false,
+      "rationale": "Invalid clarify skill."
+    }
+  ]
+}

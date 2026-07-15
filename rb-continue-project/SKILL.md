@@ -1,6 +1,6 @@
 ---
 name: "rb-continue-project"
-description: "Use when the user asks for rb-continue-project, $rb-continue-project, /continue_project, continue_project, continue project, /continue_session, continue_session, continue session, resume this repo, continue from the working diary, continue from the latest handoff, or wants a mature project to orient from existing project instructions, diary notes, handoff notes, git state, and then summarise before editing."
+description: "Use when resuming a mature project from existing instructions, diary, handoff, and Git state, with a quick orientation before editing. Do not use for first onboarding. If the deliverable could instead be a standalone status artifact, clarify."
 ---
 
 # RB Continue Project

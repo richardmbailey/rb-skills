@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "contracts": [
+    {
+      "path": "instruction-bad.md",
+      "required": ["alpha", "beta"],
+      "forbidden": ["forbidden"],
+      "max_occurrences": {"alpha": 1},
+      "max_lines": 2
+    }
+  ]
+}

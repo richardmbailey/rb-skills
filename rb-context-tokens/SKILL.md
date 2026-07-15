@@ -1,6 +1,6 @@
 ---
 name: "rb-context-tokens"
-description: "Use when the user types /tokens or asks how many tokens the current Codex chat window, context window, latest call, or active session is using. Reports current context input tokens from Codex session JSONL token_count events and works globally from any folder."
+description: "Use only when the user asks for /tokens, current Codex context-window usage, latest-call input tokens, or active-session token counts. Read session token-count events and report measured values."
 ---
 
 # /tokens - report current Codex context token usage

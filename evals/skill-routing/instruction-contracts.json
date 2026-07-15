@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "contracts": [
+    {
+      "path": "rb-start-project/SKILL.md",
+      "required": [
+        "Do not write product code during onboarding.",
+        "ask for explicit approval",
+        "## Workflow Routing",
+        "| Material behaviour, interface, edge cases, or acceptance criteria are unresolved | `$rb-discuss` |",
+        "After implementation, require a review+fix cycle"
+      ],
+      "forbidden": ["## Guided Implementation Sequence", "## Inline Discuss Fallback"],
+      "max_occurrences": {"## Workflow Routing": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-execute-plan/SKILL.md",
+      "required": [
+        "`[ ]` planned",
+        "`[x]` implemented",
+        "`[v]` verified",
+        "Prefer a walking-skeleton approach",
+        "complete the review+fix gate",
+        "use `$rb-multi-agent-systems`"
+      ],
+      "forbidden": ["PydanticAI", "Ollama", "For greenfield Python projects"],
+      "max_occurrences": {"## Phase Completion Review": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-multi-agent-systems/SKILL.md",
+      "required": [
+        "deterministic tool vs embedded capability vs split agent vs orchestration layer",
+        "references/framework-selection.md",
+        "current official documentation",
+        "maximum model calls, tool calls, retries, wall-clock time, spend"
+      ],
+      "forbidden": [
+        "PydanticAI",
+        "FastMCP",
+        "LiteLLM",
+        "LangGraph",
+        "Temporal",
+        "DBOS",
+        "Restate",
+        "LlamaIndex",
+        "Langfuse",
+        "Logfire",
+        "Outlines",
+        "DSPy",
+        "OpenAI Agents SDK"
+      ],
+      "max_occurrences": {"## Review checklist": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-multi-agent-systems/references/framework-selection.md",
+      "required": ["PydanticAI", "OpenAI Agents SDK", "FastMCP", "LangGraph", "LiteLLM", "DSPy", "current official documentation"],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-setup-local-agent-skills/SKILL.md",
+      "required": ["references/legacy-pack.md", "current flat `rb-skills` source repo"],
+      "forbidden": ["python3 scripts/verify_pack.py", "python3 scripts/audit_skill_visibility.py"],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-setup-local-agent-skills/references/legacy-pack.md",
+      "required": ["python3 scripts/verify_pack.py", "python3 scripts/audit_skill_visibility.py", "Do not prefer it over the current flat repository."],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-working-diary/SKILL.md",
+      "required": ["For ordinary one-turn tasks, skip diary reads and writes", "Do not store secrets", "facts and useful synthesis, not a transcript"],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-discuss/SKILL.md",
+      "required": ["decisions that materially affect behaviour", "Ask one targeted question at a time", "Do not start coding until material ambiguity is resolved", "$rb-create-implementation-plan"],
+      "forbidden": ["Produce a short implementation plan", "Restate the requested change"],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-create-implementation-plan/SKILL.md",
+      "required": ["Produce the durable top-level plan", "assets/IMPLEMENTATION_PLAN.md", "Route an approved plan to `$rb-execute-plan`"],
+      "forbidden": ["Restate the idea.", "Ask clarifying questions if needed."],
+      "max_occurrences": {},
+      "max_lines": 500
+    }
+  ]
+}

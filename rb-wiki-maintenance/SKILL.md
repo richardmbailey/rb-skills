@@ -1,6 +1,6 @@
 ---
 name: "rb-wiki-maintenance"
-description: "Use when Richard asks Codex to run LLM-wiki maintenance, quick or full lint, nightly upkeep, weekly deep clean, graph/index rebuilding, source registry checks, or wiki health review."
+description: "Use when an existing LLM wiki needs operational upkeep such as linting, nightly or weekly maintenance, graph or index rebuilding, source-registry checks, and health review. Do not use for new-source ingestion or schema and design changes."
 ---
 
 # RB Wiki Maintenance
@@ -68,4 +68,3 @@ If multiple wiki base directories are present, choose the one the user named. If
 - A lint or review report under `reports/`.
 - Rebuilt `wiki/index.md` and `.wiki_cache/graph.json` when needed.
 - A concise final summary with overall status and prioritized next actions.
-

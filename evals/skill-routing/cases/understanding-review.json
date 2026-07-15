@@ -1,0 +1,146 @@
+[
+  {
+    "id": "understanding-codebase-map",
+    "family": "understanding-review",
+    "prompt": "I am new to this repository. Explain its major directories, runtime entry points, control flow, data flow, dependencies, and likely change hotspots before I edit anything.",
+    "expected": {"outcome": "select", "skill": "rb-explain-codebase"},
+    "forbidden_skills": ["rb-architecture-review", "rb-explain-diff", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "The user wants neutral repository orientation rather than criticism or change review."
+  },
+  {
+    "id": "understanding-codebase-request-path",
+    "family": "understanding-review",
+    "prompt": "Walk me through how a request travels through this unfamiliar service, where data is transformed and stored, and which modules I would need to understand before changing it.",
+    "expected": {"outcome": "select", "skill": "rb-explain-codebase"},
+    "forbidden_skills": ["rb-architecture-review", "rb-explain-diff", "rb-diagnose"],
+    "critical": true,
+    "rationale": "This is a codebase control-flow explanation, not a defect investigation."
+  },
+  {
+    "id": "understanding-codebase-onboarding-tour",
+    "family": "understanding-review",
+    "prompt": "Give an engineer a technical tour of this existing codebase: component responsibilities, dependency direction, important configuration, tests, and the safest places to make common changes.",
+    "expected": {"outcome": "select", "skill": "rb-explain-codebase"},
+    "forbidden_skills": ["rb-architecture-review", "rb-start-project", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "A focused code tour is narrower than full project onboarding or critique."
+  },
+  {
+    "id": "understanding-architecture-boundaries",
+    "family": "understanding-review",
+    "prompt": "Review this codebase architecture for unclear ownership, leaky boundaries, coupling, duplicated responsibilities, and hidden assumptions, then prioritize improvements.",
+    "expected": {"outcome": "select", "skill": "rb-architecture-review"},
+    "forbidden_skills": ["rb-explain-codebase", "rb-review-pr-or-diff", "rb-diagnose"],
+    "critical": true,
+    "rationale": "The user explicitly wants architectural critique and prioritized improvements."
+  },
+  {
+    "id": "understanding-architecture-refactor-risk",
+    "family": "understanding-review",
+    "prompt": "Assess whether the current module structure can support another product line. Identify architectural bottlenecks, dependency risks, and refactoring opportunities without implementing them.",
+    "expected": {"outcome": "select", "skill": "rb-architecture-review"},
+    "forbidden_skills": ["rb-explain-codebase", "rb-implement-with-tests", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "The task evaluates structural fitness rather than orienting or implementing."
+  },
+  {
+    "id": "understanding-architecture-duplication",
+    "family": "understanding-review",
+    "prompt": "Find architectural duplication and misplaced responsibilities across this repository, explain their consequences, and recommend an ordered remediation strategy.",
+    "expected": {"outcome": "select", "skill": "rb-architecture-review"},
+    "forbidden_skills": ["rb-explain-codebase", "rb-review-pr-or-diff", "rb-create-issues"],
+    "critical": true,
+    "rationale": "The repository-wide structural critique belongs to architecture review."
+  },
+  {
+    "id": "understanding-explain-diff-pr",
+    "family": "understanding-review",
+    "prompt": "Teach me how this pull request works. Build an interactive HTML explainer with the surrounding-system background, core intuition, diagrams, a grouped code walkthrough, and a five-question quiz.",
+    "expected": {"outcome": "select", "skill": "rb-explain-diff"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-explain-codebase", "rb-architecture-review"],
+    "critical": true,
+    "rationale": "The requested output is a pedagogical interactive change explanation."
+  },
+  {
+    "id": "understanding-explain-diff-commit",
+    "family": "understanding-review",
+    "prompt": "Create a self-contained web page that explains this commit to a new team member, starting with beginner background and using concrete examples and diagrams before covering the code changes.",
+    "expected": {"outcome": "select", "skill": "rb-explain-diff"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-explain-codebase", "rb-where-are-we"],
+    "critical": true,
+    "rationale": "The user wants teaching and a durable HTML artifact, not findings."
+  },
+  {
+    "id": "understanding-explain-diff-branches",
+    "family": "understanding-review",
+    "prompt": "Compare these two branches and explain the change in an engaging interactive HTML lesson, with reusable system diagrams, toy data, and an interactive knowledge check.",
+    "expected": {"outcome": "select", "skill": "rb-explain-diff"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-architecture-review", "rb-create-skill-evals"],
+    "critical": true,
+    "rationale": "This is an explanatory artifact, despite the branch comparison."
+  },
+  {
+    "id": "understanding-review-diff-regressions",
+    "family": "understanding-review",
+    "prompt": "Review this diff for bugs, regressions, missing tests, and unsafe edge cases. Lead with actionable findings, severity, and exact file references.",
+    "expected": {"outcome": "select", "skill": "rb-review-pr-or-diff"},
+    "forbidden_skills": ["rb-explain-diff", "rb-architecture-review", "rb-diagnose"],
+    "critical": true,
+    "rationale": "The deliverable is a defect-focused code review."
+  },
+  {
+    "id": "understanding-review-pr-risk",
+    "family": "understanding-review",
+    "prompt": "Inspect this pull request and tell me what could break, whether its tests are sufficient, and what concrete fixes are required before merge.",
+    "expected": {"outcome": "select", "skill": "rb-review-pr-or-diff"},
+    "forbidden_skills": ["rb-explain-diff", "rb-architecture-review", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The user asks for pre-merge risk findings, not implementation."
+  },
+  {
+    "id": "understanding-review-working-tree",
+    "family": "understanding-review",
+    "prompt": "Audit the current working-tree changes and report only concrete correctness, compatibility, and test-coverage findings, ordered by severity.",
+    "expected": {"outcome": "select", "skill": "rb-review-pr-or-diff"},
+    "forbidden_skills": ["rb-explain-diff", "rb-explain-codebase", "rb-diagnose"],
+    "critical": true,
+    "rationale": "This is a findings-first review of a specific change set."
+  },
+  {
+    "id": "understanding-diagnose-flaky-test",
+    "family": "understanding-review",
+    "prompt": "This test fails intermittently and we do not know why. Reproduce it, gather evidence, isolate the root cause, and preserve a check that proves the diagnosis; do not implement a speculative fix yet.",
+    "expected": {"outcome": "select", "skill": "rb-diagnose"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-implement-with-tests", "rb-tdd-scientific-code"],
+    "critical": true,
+    "rationale": "Unknown cause and explicit evidence gathering require diagnosis."
+  },
+  {
+    "id": "understanding-diagnose-output",
+    "family": "understanding-review",
+    "prompt": "The API now returns duplicate records after deployment. Investigate the actual cause using logs, tests, and code paths, and explain the evidence before proposing changes.",
+    "expected": {"outcome": "select", "skill": "rb-diagnose"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-architecture-review", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "A production symptom with unknown cause needs root-cause investigation."
+  },
+  {
+    "id": "understanding-diagnose-regression",
+    "family": "understanding-review",
+    "prompt": "A previously passing import now crashes on one fixture. Determine when and why the regression occurs and establish a minimal reproduction before anyone edits the implementation.",
+    "expected": {"outcome": "select", "skill": "rb-diagnose"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-explain-diff", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The user wants causal evidence before fixing."
+  },
+  {
+    "id": "understanding-ambiguous-review",
+    "family": "understanding-review",
+    "prompt": "Can you look over these changes?",
+    "expected": {"outcome": "clarify"},
+    "forbidden_skills": ["rb-explain-diff", "rb-review-pr-or-diff", "rb-architecture-review"],
+    "critical": true,
+    "rationale": "It is unclear whether the user wants explanation, defect review, or architectural assessment."
+  }
+]

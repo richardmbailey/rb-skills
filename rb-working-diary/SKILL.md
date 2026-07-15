@@ -1,6 +1,6 @@
 ---
 name: "rb-working-diary"
-description: "Use for long-running or context-heavy work to preserve durable task notes across chat compaction, session handoff, investigation, planning, debugging, reviews, and project onboarding."
+description: "Use when long-running or context-heavy work needs durable notes across compaction, sessions, or handoffs, including decisions, evidence, status, and next actions. Do not use for ordinary one-turn tasks whose state is already visible in the conversation."
 ---
 
 # RB Working Diary
@@ -35,10 +35,10 @@ Use the diary when any of these are true:
 
 - the task is long-running, investigative, or likely to span compaction;
 - you read many files, run meaningful experiments, or form conclusions future-you should not rediscover;
-- the user asks for handoff, continuity, onboarding, review, diagnosis, architecture work, planning, or implementation phases;
-- the repo has an existing diary entry for the current project.
+- the user explicitly asks for durable continuity or cross-session notes;
+- the repository has an existing diary entry whose state is needed for the current multi-step work.
 
-For tiny one-shot tasks, skip diary writes unless the user explicitly asks.
+For ordinary one-turn tasks, skip diary reads and writes unless the user explicitly asks for them.
 
 ## Start Of Work
 

@@ -1,6 +1,6 @@
 ---
 name: "rb-create-skill-evals"
-description: "Use when the user wants to create tests or evals for an agent skill, prove whether a skill triggers correctly or improves outcomes, add regression coverage for a SKILL.md, compare performance with and without a skill, or decide whether a skill can be retired. Inspect the target skill and build a repository-local behavioural evaluation suite with positive and negative cases, isolated fixtures, suitable validators, repeat trials, and ablation conditions."
+description: "Use when creating behavioural evaluations for an agent skill: trigger boundaries, outcome quality, regression coverage, repeated trials, or with-skill versus without-skill comparisons. Do not use for ordinary product-code tests; use the appropriate implementation skill."
 ---
 
 # RB Create Skill Evals

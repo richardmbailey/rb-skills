@@ -1,0 +1,173 @@
+[
+  {
+    "id": "context-diary-long-investigation",
+    "family": "context-research-architecture",
+    "prompt": "This investigation will span several sessions and may be compacted. Keep a durable working diary of evidence, decisions, status, unresolved questions, and exact next actions as we go.",
+    "expected": {"outcome": "select", "skill": "rb-working-diary"},
+    "forbidden_skills": ["rb-end-session", "rb-where-are-we", "rb-continue-project", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "Ongoing cross-session continuity needs a durable diary."
+  },
+  {
+    "id": "context-diary-compaction",
+    "family": "context-research-architecture",
+    "prompt": "Preserve the important assumptions, checks, failures, and next steps for this context-heavy task so the work survives chat compaction without reconstructing it from scratch.",
+    "expected": {"outcome": "select", "skill": "rb-working-diary"},
+    "forbidden_skills": ["rb-end-session", "rb-where-are-we", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "The user explicitly needs durable continuity across compaction."
+  },
+  {
+    "id": "context-diary-research-trail",
+    "family": "context-research-architecture",
+    "prompt": "Maintain compact durable notes during this long debugging and planning effort, recording only decisions, evidence, verified status, and what the next session must do.",
+    "expected": {"outcome": "select", "skill": "rb-working-diary"},
+    "forbidden_skills": ["rb-end-session", "rb-continue-project", "rb-create-implementation-plan", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "The task needs an ongoing durable evidence and decision trail."
+  },
+  {
+    "id": "context-language-glossary",
+    "family": "context-research-architecture",
+    "prompt": "Build a shared project glossary and update CONTEXT.md with our domain terms, acronyms, units, invariants, and assumptions so future agents interpret the model consistently.",
+    "expected": {"outcome": "select", "skill": "rb-project-language"},
+    "forbidden_skills": ["rb-explain-codebase", "rb-working-diary", "rb-start-project"],
+    "critical": true,
+    "rationale": "The requested artifact is shared domain vocabulary and context."
+  },
+  {
+    "id": "context-language-units",
+    "family": "context-research-architecture",
+    "prompt": "Document what each scientific variable means, its units and valid range, plus the model's core invariants and terminology, in the project's context file.",
+    "expected": {"outcome": "select", "skill": "rb-project-language"},
+    "forbidden_skills": ["rb-tdd-scientific-code", "rb-explain-codebase", "rb-working-diary"],
+    "critical": true,
+    "rationale": "This is terminology and invariant documentation, not scientific implementation."
+  },
+  {
+    "id": "context-language-acronyms",
+    "family": "context-research-architecture",
+    "prompt": "Future contributors keep confusing our acronyms and domain concepts. Create an authoritative vocabulary section in CONTEXT.md with definitions and important distinctions.",
+    "expected": {"outcome": "select", "skill": "rb-project-language"},
+    "forbidden_skills": ["rb-explain-codebase", "rb-architecture-review", "rb-start-project"],
+    "critical": true,
+    "rationale": "The problem is inconsistent project language rather than code structure."
+  },
+  {
+    "id": "context-tokens-command",
+    "family": "context-research-architecture",
+    "prompt": "/tokens",
+    "expected": {"outcome": "select", "skill": "rb-context-tokens"},
+    "forbidden_skills": ["rb-working-diary", "rb-where-are-we", "rb-end-session"],
+    "critical": true,
+    "rationale": "The exact command uniquely requests context-token measurements."
+  },
+  {
+    "id": "context-tokens-latest-call",
+    "family": "context-research-architecture",
+    "prompt": "How many input tokens did the latest Codex call use, and how full is the current context window?",
+    "expected": {"outcome": "select", "skill": "rb-context-tokens"},
+    "forbidden_skills": ["rb-working-diary", "rb-where-are-we", "rb-diagnose"],
+    "critical": true,
+    "rationale": "The request is specifically for measured session token usage."
+  },
+  {
+    "id": "context-tokens-session",
+    "family": "context-research-architecture",
+    "prompt": "Report the current active-session token count from Codex's token-count events.",
+    "expected": {"outcome": "select", "skill": "rb-context-tokens"},
+    "forbidden_skills": ["rb-working-diary", "rb-where-are-we", "rb-continue-project"],
+    "critical": true,
+    "rationale": "The narrow token-count request has a unique owner, so no negative sentence is required beyond 'Use only'."
+  },
+  {
+    "id": "context-multi-agent-boundaries",
+    "family": "context-research-architecture",
+    "prompt": "Design a system with a planner agent, retrieval agent, and execution agent. Define their boundaries, tool permissions, handoffs, shared state, budgets, observability, evaluation, and failure containment.",
+    "expected": {"outcome": "select", "skill": "rb-multi-agent-systems"},
+    "forbidden_skills": ["rb-architecture-review", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The core task is multi-agent orchestration architecture."
+  },
+  {
+    "id": "context-multi-agent-debug",
+    "family": "context-research-architecture",
+    "prompt": "Our multi-agent workflow loops between two agents and loses ownership of state. Review the orchestration, handoff contracts, termination rules, traces, and recovery design.",
+    "expected": {"outcome": "select", "skill": "rb-multi-agent-systems"},
+    "forbidden_skills": ["rb-diagnose", "rb-architecture-review", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "The failure is specifically in agent orchestration and state ownership."
+  },
+  {
+    "id": "context-multi-agent-scale",
+    "family": "context-research-architecture",
+    "prompt": "Decide whether these LLM capabilities should remain deterministic tools, become embedded model capabilities, split into specialist agents, or require a durable orchestration layer.",
+    "expected": {"outcome": "select", "skill": "rb-multi-agent-systems"},
+    "forbidden_skills": ["rb-architecture-review", "rb-create-implementation-plan", "rb-research-question-gate"],
+    "critical": true,
+    "rationale": "Capability decomposition across agents is the central multi-agent decision."
+  },
+  {
+    "id": "context-research-novel-algorithm",
+    "family": "context-research-architecture",
+    "prompt": "Before we plan or code this new optimization algorithm, test whether the research claim is novel, identify the nearest prior art, formulate falsifiable hypotheses, and give a stop, revise, or proceed decision.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-discuss", "rb-tdd-scientific-code"],
+    "critical": true,
+    "rationale": "A novelty and falsifiability gate must precede planning."
+  },
+  {
+    "id": "context-research-hypothesis",
+    "family": "context-research-architecture",
+    "prompt": "Evaluate this scientific hypothesis before implementation: map the literature threat, define the research question and falsifiers, and decide whether the idea should stop, be revised, or proceed.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-project-language", "rb-tdd-scientific-code"],
+    "critical": true,
+    "rationale": "The work is a pre-implementation research gate."
+  },
+  {
+    "id": "context-research-prior-art",
+    "family": "context-research-architecture",
+    "prompt": "Do not build this yet. First audit the closest prior art and novelty threats, turn the claim into testable hypotheses, and recommend stop, revise, or proceed.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-implement-with-tests", "rb-discuss"],
+    "critical": true,
+    "rationale": "The explicit phase boundary is research evaluation before product work."
+  },
+  {
+    "id": "context-single-llm-implement",
+    "family": "context-research-architecture",
+    "prompt": "The requirements are agreed: add one LLM summarization call to this endpoint, validate its structured response, and cover success and unavailable-model behaviour with focused product tests.",
+    "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-create-skill-evals", "rb-tdd-scientific-code"],
+    "critical": true,
+    "rationale": "A single ordinary model call with clear requirements is product implementation, not multi-agent architecture."
+  },
+  {
+    "id": "context-single-llm-discuss",
+    "family": "context-research-architecture",
+    "prompt": "Before adding one model classification call, help decide its output contract, confidence semantics, privacy boundary, and failure behaviour. There will be no specialist agents or orchestration.",
+    "expected": {"outcome": "select", "skill": "rb-discuss"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-implement-with-tests", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "The work is unresolved requirements for one model call, not a multi-agent system."
+  },
+  {
+    "id": "context-single-agent-plan",
+    "family": "context-research-architecture",
+    "prompt": "Create the top-level implementation plan for a simple single-assistant support chatbot with retrieval and tool use, including phases, risks, and validation. It will not delegate to other agents.",
+    "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-execute-plan", "rb-research-question-gate"],
+    "critical": true,
+    "rationale": "The user needs a plan for a deliberately single-agent product."
+  },
+  {
+    "id": "context-ambiguous-document",
+    "family": "context-research-architecture",
+    "prompt": "Please document what we know about this project for later.",
+    "expected": {"outcome": "clarify"},
+    "forbidden_skills": ["rb-working-diary", "rb-project-language", "rb-where-are-we", "rb-end-session"],
+    "critical": true,
+    "rationale": "The user may want continuity notes, vocabulary, a status report, or a handoff."
+  }
+]

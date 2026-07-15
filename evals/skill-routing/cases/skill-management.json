@@ -1,0 +1,146 @@
+[
+  {
+    "id": "skillmgmt-write-new",
+    "family": "skill-management",
+    "prompt": "Create a reusable RB-style skill for release-note drafting, with clear automatic triggers, negative cases, a concise procedure, UI metadata, and any useful bundled resources.",
+    "expected": {"outcome": "select", "skill": "rb-write-skill"},
+    "forbidden_skills": ["rb-create-skill-evals", "rb-sync-skills-repo", "rb-install-skills"],
+    "critical": true,
+    "rationale": "The requested work is skill authoring."
+  },
+  {
+    "id": "skillmgmt-write-update",
+    "family": "skill-management",
+    "prompt": "Update this existing agent skill so its description triggers on realistic requests, its instructions are concise, and its openai.yaml metadata stays current.",
+    "expected": {"outcome": "select", "skill": "rb-write-skill"},
+    "forbidden_skills": ["rb-create-skill-evals", "rb-setup-local-agent-skills", "rb-sync-skills-repo"],
+    "critical": true,
+    "rationale": "Changing a skill's contract and metadata is authoring, not installation repair."
+  },
+  {
+    "id": "skillmgmt-write-resource",
+    "family": "skill-management",
+    "prompt": "Build a Codex and Claude Code skill in rb-skills for this workflow, including SKILL.md, discovery metadata, a validator script, and focused reference material.",
+    "expected": {"outcome": "select", "skill": "rb-write-skill"},
+    "forbidden_skills": ["rb-create-skill-evals", "rb-install-skills", "rb-sync-skills-repo"],
+    "critical": true,
+    "rationale": "The user wants a new reusable skill and its resources."
+  },
+  {
+    "id": "skillmgmt-eval-routing",
+    "family": "skill-management",
+    "prompt": "Create behavioural tests showing whether this SKILL.md is selected for positive paraphrases but not for adjacent sibling requests, with repeated isolated trials.",
+    "expected": {"outcome": "select", "skill": "rb-create-skill-evals"},
+    "forbidden_skills": ["rb-write-skill", "rb-implement-with-tests", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "The object under test is an agent skill's routing behaviour."
+  },
+  {
+    "id": "skillmgmt-eval-ablation",
+    "family": "skill-management",
+    "prompt": "Evaluate whether this agent skill improves task outcomes by comparing matched runs with and without the skill, using blinded scoring and preserving raw results.",
+    "expected": {"outcome": "select", "skill": "rb-create-skill-evals"},
+    "forbidden_skills": ["rb-write-skill", "rb-implement-with-tests", "rb-architecture-review"],
+    "critical": true,
+    "rationale": "Matched skill ablation is behavioural skill evaluation."
+  },
+  {
+    "id": "skillmgmt-eval-regression",
+    "family": "skill-management",
+    "prompt": "Add a regression evaluation for the agent skill that recently over-triggered, including known-good and deliberately bad fixtures plus a deterministic scorer.",
+    "expected": {"outcome": "select", "skill": "rb-create-skill-evals"},
+    "forbidden_skills": ["rb-write-skill", "rb-diagnose", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The task is regression coverage for skill behaviour, not product code."
+  },
+  {
+    "id": "skillmgmt-sync-symlink",
+    "family": "skill-management",
+    "prompt": "Synchronize the skills in this Git repository into my Codex skills directory using symlinks, with a dry run first.",
+    "expected": {"outcome": "select", "skill": "rb-sync-skills-repo"},
+    "forbidden_skills": ["rb-install-skills", "rb-setup-local-agent-skills", "rb-write-skill"],
+    "critical": true,
+    "rationale": "The request is specifically repository-to-agent synchronization."
+  },
+  {
+    "id": "skillmgmt-sync-computers",
+    "family": "skill-management",
+    "prompt": "Help me publish this versioned skills repository and clone or update the same skill folders on another computer.",
+    "expected": {"outcome": "select", "skill": "rb-sync-skills-repo"},
+    "forbidden_skills": ["rb-install-skills", "rb-setup-local-agent-skills", "rb-write-skill"],
+    "critical": true,
+    "rationale": "Moving versioned skills across machines is synchronization."
+  },
+  {
+    "id": "skillmgmt-sync-claude",
+    "family": "skill-management",
+    "prompt": "Copy the selected skills from this repo into the Claude Code personal skills directory and verify the installed paths.",
+    "expected": {"outcome": "select", "skill": "rb-sync-skills-repo"},
+    "forbidden_skills": ["rb-install-skills", "rb-setup-local-agent-skills", "rb-create-skill-evals"],
+    "critical": true,
+    "rationale": "This is a bounded copy/sync operation, not full project setup."
+  },
+  {
+    "id": "skillmgmt-setup-repair-discovery",
+    "family": "skill-management",
+    "prompt": "The RB skills were previously installed but Codex cannot discover them. Verify the links, AGENTS.md, CONTEXT.md, and local project resources, then repair only what is stale or missing.",
+    "expected": {"outcome": "select", "skill": "rb-setup-local-agent-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-install-skills", "rb-start-project"],
+    "critical": true,
+    "rationale": "An existing setup is broken and needs diagnosis and repair."
+  },
+  {
+    "id": "skillmgmt-setup-missing-context",
+    "family": "skill-management",
+    "prompt": "Repair this repository's existing agent setup: the global skills are present, but project resource files and discovery checks are incomplete.",
+    "expected": {"outcome": "select", "skill": "rb-setup-local-agent-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-install-skills", "rb-start-project"],
+    "critical": true,
+    "rationale": "This is repair of an incomplete existing setup, not initial full installation."
+  },
+  {
+    "id": "skillmgmt-setup-audit",
+    "family": "skill-management",
+    "prompt": "Audit whether this repo's RB agent resources and globally installed skills point to the right source of truth, and fix any stale discovery configuration.",
+    "expected": {"outcome": "select", "skill": "rb-setup-local-agent-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-install-skills", "rb-create-skill-evals"],
+    "critical": true,
+    "rationale": "Verification and repair of current discovery is the setup-repair workflow."
+  },
+  {
+    "id": "skillmgmt-install-full-new-machine",
+    "family": "skill-management",
+    "prompt": "Set up the full RB workflow on this new machine: install or verify the global skills, prepare AGENTS.md and CONTEXT.md, confirm visibility, and then begin project onboarding.",
+    "expected": {"outcome": "select", "skill": "rb-install-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-setup-local-agent-skills", "rb-start-project"],
+    "critical": true,
+    "rationale": "The user requests the complete installation plus project-resource workflow."
+  },
+  {
+    "id": "skillmgmt-install-full-repo",
+    "family": "skill-management",
+    "prompt": "Prepare this repository for the complete RB agent workflow, including global skill installation, project resources, discovery validation, and the handoff into initial onboarding.",
+    "expected": {"outcome": "select", "skill": "rb-install-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-setup-local-agent-skills", "rb-start-project"],
+    "critical": true,
+    "rationale": "The combined setup scope is broader than sync or repair alone."
+  },
+  {
+    "id": "skillmgmt-install-verify-all",
+    "family": "skill-management",
+    "prompt": "Run the end-to-end RB setup: ensure the reusable skills are installed, ensure this project has the required context and instruction files, verify the agent can see everything, and start onboarding.",
+    "expected": {"outcome": "select", "skill": "rb-install-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-setup-local-agent-skills", "rb-continue-project"],
+    "critical": true,
+    "rationale": "The full end-to-end setup belongs to installation."
+  },
+  {
+    "id": "skillmgmt-ambiguous-fix-skills",
+    "family": "skill-management",
+    "prompt": "Please fix my agent skills.",
+    "expected": {"outcome": "clarify"},
+    "forbidden_skills": ["rb-write-skill", "rb-sync-skills-repo", "rb-setup-local-agent-skills", "rb-install-skills"],
+    "critical": true,
+    "rationale": "The request could mean authoring, synchronization, repair, or full installation."
+  }
+]

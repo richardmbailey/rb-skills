@@ -1,0 +1,55 @@
+{
+  "failed": 0,
+  "failures": [],
+  "outcome_counts": {
+    "clarify": 24,
+    "select": 264
+  },
+  "pass_rate": 1.0,
+  "passed": 288,
+  "runs": [
+    {
+      "condition": "baseline",
+      "trial": 1
+    },
+    {
+      "condition": "baseline",
+      "trial": 2
+    },
+    {
+      "condition": "baseline",
+      "trial": 3
+    }
+  ],
+  "selected_skill_counts": {
+    "rb-architecture-review": 9,
+    "rb-context-tokens": 9,
+    "rb-continue-project": 9,
+    "rb-create-implementation-plan": 12,
+    "rb-create-issues": 9,
+    "rb-create-skill-evals": 9,
+    "rb-diagnose": 9,
+    "rb-discuss": 12,
+    "rb-end-session": 9,
+    "rb-execute-plan": 12,
+    "rb-explain-codebase": 9,
+    "rb-explain-diff": 9,
+    "rb-implement-with-tests": 12,
+    "rb-install-skills": 9,
+    "rb-multi-agent-systems": 9,
+    "rb-new-wiki": 9,
+    "rb-project-language": 9,
+    "rb-research-question-gate": 9,
+    "rb-review-pr-or-diff": 9,
+    "rb-setup-local-agent-skills": 9,
+    "rb-start-project": 9,
+    "rb-sync-skills-repo": 9,
+    "rb-tdd-scientific-code": 9,
+    "rb-where-are-we": 9,
+    "rb-wiki-ingest": 9,
+    "rb-wiki-maintenance": 9,
+    "rb-working-diary": 9,
+    "rb-write-skill": 9
+  },
+  "total": 288
+}

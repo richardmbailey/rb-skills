@@ -1,6 +1,6 @@
 ---
 name: "rb-diagnose"
-description: "Use for disciplined debugging of bugs, regressions, surprising outputs, or failing tests. Separates evidence gathering from fixes and preserves a reproducible check."
+description: "Use when a bug, regression, failing test, or surprising output needs root-cause investigation before choosing a fix. Do not use for general diff review or when the cause and requested fix are already agreed."
 ---
 
 # /rb:diagnose - disciplined debugging

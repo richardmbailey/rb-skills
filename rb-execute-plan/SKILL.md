@@ -1,6 +1,6 @@
 ---
 name: "rb-execute-plan"
-description: "Use when executing, refining, or reviewing an existing implementation plan or phase checklist, especially when turning phases into verified and reviewed [ ] -> [x] -> [v] task work with walking-skeleton and vertical-slice discipline."
+description: "Use when an implementation plan, phase checklist, issue list, or agreed direction already exists and must be executed, refined, reviewed, or tracked through implementation and verification. Do not use to create the initial top-level plan from a rough idea."
 ---
 
 # RB Execute Plan
@@ -17,11 +17,8 @@ Use `$rb-create-implementation-plan` first when the human has a rough idea, feat
 - Avoid silent fallbacks. Prefer fail-fast or fail-closed behavior with clear diagnostics.
 - Only include degraded modes or fallback-like behavior when the human explicitly asks for them or when they are deliberate, visible, and auditable product states.
 - Preserve the repository's existing language, framework, validation, test, and deployment conventions unless there is a clear reason to change them.
-- For greenfield Python projects, or when the repo has no structured-data convention, consider Pydantic for structured data, validation, settings, and API contracts.
-- For greenfield LLM-backed Python workflows, consider PydanticAI for LLM interfaces and typed agent/tool outputs, but verify this against project constraints and current official docs before implementation.
-- For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to define agent boundaries, tools, handoffs, state, observability, evals, retrieval, provider routing, and durability.
-- For local LLM use, prefer the repository's existing provider/runtime. If the work is greenfield and the human has no preference, Ollama is a reasonable local default to propose rather than assume silently.
-- For text-processing work, plan deterministic parsing only for stable structure and syntax; plan an LLM-backed step when success depends on semantic understanding of natural language.
+- For multi-agent architecture, use `$rb-multi-agent-systems` to resolve agent boundaries, tools, handoffs, state, failure containment, observability, evaluation, budgets, and durability.
+- For text-processing work, separate deterministic handling of stable structure from LLM-backed judgment about natural-language meaning.
 
 ## Phase Checklist Convention
 
@@ -51,8 +48,8 @@ When converting an implementation plan into executable phases, or revising phase
 3. Keep horizontal foundation work only as large as the first vertical slice requires.
 4. State exit criteria in terms of user-observable workflow and validation checks.
 5. Include fail-fast diagnostics for missing dependencies, provider failures, validation errors, unsupported states, and policy blocks.
-6. Record the existing stack and project conventions first. For greenfield Python/LLM systems, propose structured/LLM stack choices such as Pydantic, PydanticAI, and Ollama only as defaults to confirm, not as mandatory replacements.
-7. For multi-LLM-agent systems, record the stack choice, agent/tool boundaries, handoffs, state, tracing/evals, retrieval, provider routing, and durability plan from `$rb-multi-agent-systems`.
+6. Record the existing stack and project conventions before proposing dependency or framework changes.
+7. For multi-agent systems, record the decisions produced by `$rb-multi-agent-systems` rather than repeating framework selection in this plan.
 8. For text-heavy features, identify which steps are deterministic structure handling and which require semantic LLM judgment. Do not plan elaborate regexes or keyword heuristics as substitutes for understanding natural-language meaning.
 9. Include tests or verification checks for every task.
 10. For each phase, create or reference a dedicated phase implementation file with:
@@ -75,9 +72,7 @@ When executing a phase:
 5. Add missing tests/checks before marking unverified work verified.
 6. Update verified tasks from `[x]` to `[v]`.
 7. Report any task that cannot be verified, with the diagnostic and next fix.
-8. After every task is `[v]`, run a phase completion review over the implemented diff, tests, docs, and phase notes.
-9. Fix actionable review findings, rerun the relevant checks, and update phase notes with the outcome.
-10. Re-review after fixes when findings were material. Do not close the phase until no blocking findings remain or the human explicitly accepts the residual risk.
+8. After every task is `[v]`, complete the review+fix gate below and record its outcome in the phase notes.
 
 ## Phase Completion Review
 

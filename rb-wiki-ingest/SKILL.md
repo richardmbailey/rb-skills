@@ -1,6 +1,6 @@
 ---
 name: "rb-wiki-ingest"
-description: "Use when Richard asks Codex to process an LLM-wiki inbox, ingest newly dropped files, register raw sources, create reference pages, run quick validation, move processed inbox files, and report review items."
+description: "Use when an existing LLM wiki has new inbox files to ingest, register as raw sources, turn into reference pages, validate, and move through the intake workflow. Do not use for general upkeep or wiki design changes."
 ---
 
 # RB Wiki Ingest

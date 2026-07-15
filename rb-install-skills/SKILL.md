@@ -1,6 +1,6 @@
 ---
 name: "rb-install-skills"
-description: "Use when the user asks for rb-install-skills, install skills, full setup, full project setup, or wants an agent to install or verify RB global skills, project resources, AGENTS.md, CONTEXT.md, visibility checks, and then begin start-project onboarding."
+description: "Use for the full RB setup workflow: install or verify global skills, prepare AGENTS.md and CONTEXT.md, check visibility, and begin onboarding. For sync-only or repair-only work, use the narrower skill."
 ---
 
 # RB Install Skills

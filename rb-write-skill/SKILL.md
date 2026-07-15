@@ -1,6 +1,6 @@
 ---
 name: "rb-write-skill"
-description: "Use to create or update a globally discoverable RB-style Codex or Claude Code skill in the versioned rb-skills repo, with clear trigger conditions, concise procedure, and useful bundled resources where needed."
+description: "Use when creating or updating a reusable RB-style Codex or Claude Code skill in the versioned rb-skills repository, including triggers, instructions, metadata, and resources. For behavioural tests of an existing skill, use $rb-create-skill-evals."
 ---
 
 # RB Write Skill

@@ -1,0 +1,1 @@
+{"case_id":"planning-create-plan-offline-mode","condition":"baseline","trial":1,"outcome":"select","skill":"rb-create-implementation-plan","confidence":"high","explanation":"The request asks for a new implementation plan."}

@@ -1,6 +1,6 @@
 ---
 name: "rb-explain-codebase"
-description: "Use to understand an unfamiliar repository by explaining structure, control flow, data flow, dependencies, and change hotspots before editing."
+description: "Use when the user needs orientation to an unfamiliar repository: its structure, control flow, data flow, dependencies, and change hotspots. Do not use for architectural critique or to explain one specific diff."
 ---
 
 # /rb:explain-codebase - understand the codebase

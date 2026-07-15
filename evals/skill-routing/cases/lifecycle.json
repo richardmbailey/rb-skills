@@ -1,0 +1,128 @@
+[
+  {
+    "id": "lifecycle-start-empty-repo",
+    "family": "project-lifecycle",
+    "prompt": "I have just created an empty repository for a new service. Guide me through initial discovery and setup questions, establish goals and constraints, and route the work before we code.",
+    "expected": {"outcome": "select", "skill": "rb-start-project"},
+    "forbidden_skills": ["rb-continue-project", "rb-where-are-we", "rb-install-skills"],
+    "critical": true,
+    "rationale": "A new project needs first-time onboarding rather than resumption or status reporting."
+  },
+  {
+    "id": "lifecycle-start-inherited-first-look",
+    "family": "project-lifecycle",
+    "prompt": "This is my first time opening an inherited repository and I have no diary or handoff. Please onboard the project, ask the setup questions, and help establish how we should work before editing.",
+    "expected": {"outcome": "select", "skill": "rb-start-project"},
+    "forbidden_skills": ["rb-continue-project", "rb-explain-codebase", "rb-where-are-we"],
+    "critical": true,
+    "rationale": "The request is broad first onboarding, not only a code tour."
+  },
+  {
+    "id": "lifecycle-start-research-project",
+    "family": "project-lifecycle",
+    "prompt": "Help me begin a new modelling project by establishing its goal, constraints, repository context, checks, and the right workflow before implementation.",
+    "expected": {"outcome": "select", "skill": "rb-start-project"},
+    "forbidden_skills": ["rb-continue-project", "rb-create-implementation-plan", "rb-project-language"],
+    "critical": true,
+    "rationale": "The whole new project needs onboarding before narrower planning or vocabulary work."
+  },
+  {
+    "id": "lifecycle-continue-handoff",
+    "family": "project-lifecycle",
+    "prompt": "Resume this mature repository from yesterday's handoff and working diary. Check the Git state, tell me the immediate context, and orient before making the next edit.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-start-project", "rb-where-are-we", "rb-end-session"],
+    "critical": true,
+    "rationale": "Existing continuity artifacts make this a resumption workflow."
+  },
+  {
+    "id": "lifecycle-continue-compaction",
+    "family": "project-lifecycle",
+    "prompt": "Pick up the established project after context compaction. Read its instructions, latest diary entry, handoff, and current worktree before continuing the implementation.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-start-project", "rb-where-are-we", "rb-working-diary"],
+    "critical": true,
+    "rationale": "The project already has durable state that must be used to resume."
+  },
+  {
+    "id": "lifecycle-continue-known-phase",
+    "family": "project-lifecycle",
+    "prompt": "Continue work on this mature repo from the latest handoff. First reconcile the diary and Git status, then summarize what is safe to do next.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-start-project", "rb-execute-plan", "rb-where-are-we"],
+    "critical": true,
+    "rationale": "Orientation from existing continuity context precedes any plan execution."
+  },
+  {
+    "id": "lifecycle-status-html",
+    "family": "project-lifecycle",
+    "prompt": "Create a single-page HTML report explaining where this project stands, from its goals and current phase down to code health, recent changes, risks, and recommended next steps.",
+    "expected": {"outcome": "select", "skill": "rb-where-are-we"},
+    "forbidden_skills": ["rb-continue-project", "rb-end-session", "rb-explain-codebase"],
+    "critical": true,
+    "rationale": "The requested artifact is a deep evidence-backed state-of-play report."
+  },
+  {
+    "id": "lifecycle-status-steering",
+    "family": "project-lifecycle",
+    "prompt": "Before the steering meeting, give me an evidence-backed HTML project-health report covering overall goals, progress against the roadmap, performance, risks, recent work, and what should happen next.",
+    "expected": {"outcome": "select", "skill": "rb-where-are-we"},
+    "forbidden_skills": ["rb-continue-project", "rb-end-session", "rb-architecture-review"],
+    "critical": true,
+    "rationale": "The request is for professional project status, not resumption or architecture-only review."
+  },
+  {
+    "id": "lifecycle-status-progressive-detail",
+    "family": "project-lifecycle",
+    "prompt": "I need a progressively detailed one-page project briefing: high-level destination first, then phase progress, code quality and performance, risks, latest changes, and concrete next actions.",
+    "expected": {"outcome": "select", "skill": "rb-where-are-we"},
+    "forbidden_skills": ["rb-continue-project", "rb-end-session", "rb-working-diary"],
+    "critical": true,
+    "rationale": "The format and content match the project state-of-play report."
+  },
+  {
+    "id": "lifecycle-end-pause",
+    "family": "project-lifecycle",
+    "prompt": "Pause here and prepare durable continuity notes so another agent can resume safely tomorrow.",
+    "expected": {"outcome": "select", "skill": "rb-end-session"},
+    "forbidden_skills": ["rb-where-are-we", "rb-continue-project", "rb-working-diary"],
+    "critical": true,
+    "rationale": "The current session is ending and needs a handoff artifact."
+  },
+  {
+    "id": "lifecycle-end-close-task",
+    "family": "project-lifecycle",
+    "prompt": "We are stopping work now. Close out this session with a concise handoff containing decisions, checks, unfinished work, risks, and exact next steps.",
+    "expected": {"outcome": "select", "skill": "rb-end-session"},
+    "forbidden_skills": ["rb-where-are-we", "rb-continue-project", "rb-execute-plan"],
+    "critical": true,
+    "rationale": "The requested action is session closure, not ongoing execution."
+  },
+  {
+    "id": "lifecycle-end-transfer",
+    "family": "project-lifecycle",
+    "prompt": "Hand this work to a fresh Codex session. Preserve the repository state, completed work, outstanding questions, and a safe continuation sequence.",
+    "expected": {"outcome": "select", "skill": "rb-end-session"},
+    "forbidden_skills": ["rb-where-are-we", "rb-continue-project", "rb-start-project"],
+    "critical": true,
+    "rationale": "The explicit transfer to another session requires a handoff."
+  },
+  {
+    "id": "lifecycle-ambiguous-help-project",
+    "family": "project-lifecycle",
+    "prompt": "Can you help me with this project?",
+    "expected": {"outcome": "clarify"},
+    "forbidden_skills": ["rb-start-project", "rb-continue-project", "rb-where-are-we", "rb-end-session"],
+    "critical": true,
+    "rationale": "The user has not said whether the project is new, resuming, being reported, or ending."
+  },
+  {
+    "id": "lifecycle-ambiguous-status-continue",
+    "family": "project-lifecycle",
+    "prompt": "Tell me where we are and then carry on with the project.",
+    "expected": {"outcome": "clarify"},
+    "forbidden_skills": ["rb-where-are-we", "rb-continue-project"],
+    "critical": true,
+    "rationale": "The request could mean a quick resumption orientation or a durable HTML status artifact followed by mutation."
+  }
+]

@@ -1,6 +1,6 @@
 ---
 name: "rb-where-are-we"
-description: "Use when the user asks where we are in a project, implementation plan, roadmap, or development phase; asks for the current state of play, project health, progress, readiness, recent work, or what should happen next. Produce a progressively detailed, evidence-backed, self-contained HTML status report covering goals, phase progress, code health, risks, recent changes, and recommended next steps."
+description: "Use when the user wants a deep, evidence-backed HTML state-of-play report covering project goals, current phase, progress, code health, risks, recent changes, and next steps. Do not use merely to resume work or create a handoff."
 ---
 
 # RB Where Are We

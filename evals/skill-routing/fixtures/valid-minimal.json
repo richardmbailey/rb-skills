@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "suite": "minimal-routing",
+  "baseline_commit": "9875708",
+  "conditions": ["baseline", "revised"],
+  "default_trials": 1,
+  "cases": [
+    {
+      "id": "minimal-select",
+      "family": "minimal",
+      "prompt": "Create an implementation plan for this rough idea.",
+      "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
+      "forbidden_skills": ["rb-execute-plan"],
+      "critical": true,
+      "rationale": "The user wants a new top-level plan."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 name: rb-multi-agent-systems
-description: Use to design, review, or debug multi-LLM-agent systems, especially when choosing agent frameworks, tool/MCP architecture, structured outputs, tracing/evals, retrieval, provider routing, durability, or production/research stack tradeoffs involving PydanticAI, OpenAI Agents SDK, FastMCP, LiteLLM, LangGraph, Temporal, DBOS, Restate, LlamaIndex, Langfuse, Logfire, Outlines, or DSPy.
+description: Use when designing, reviewing, or debugging a system with multiple LLM agents or orchestration layers, including agent boundaries, tool permissions, handoffs, shared state, routing, failure containment, observability, evaluation, budgets, and durability. Do not use for a single ordinary LLM call.
 ---
 
 # /rb:multi-agent-systems - design multi-LLM-agent systems
@@ -11,7 +11,7 @@ Use this when shaping, reviewing, or diagnosing systems with multiple LLM agents
 
 ## Core stance
 
-Preserve the repository's existing production constraints and framework choices unless there is a clear reason to change them. For new designs, choose one primary agent framework. Prefer PydanticAI as a greenfield provider-independent Python option; treat the OpenAI Agents SDK as an OpenAI-native runtime, not as a second equal framework mixed deeply into the same architecture. When implementation depends on current SDK behavior, verify against official docs before coding.
+Preserve the repository's existing production constraints and framework choices unless evidence supports a change. For new designs, choose one primary agent framework only after defining capability boundaries and operational requirements. Verify version-sensitive implementation details against current official documentation before coding.
 
 ## Workflow
 
@@ -31,21 +31,17 @@ Preserve the repository's existing production constraints and framework choices 
    - Add an orchestration layer only when multiple independent agents need sequencing, routing, arbitration, merging, retries, cancellation, or human checkpoints.
    - Reject a new agent if it mostly proxies every decision back to the parent, needs the parent's full context to work, has no independent success criteria, or adds model-call latency without reducing context noise or failure blast radius.
    - Record the expected effect on cost, latency, reliability, and context size whenever adding tools to an agent or splitting work across agents.
-3. Choose the primary stack:
-   - Existing system: keep the current framework unless it creates concrete reliability, maintainability, observability, or product problems.
-   - Greenfield provider-independent Python research/prototyping: consider `Pydantic + PydanticAI + FastMCP + Logfire/Evals or Langfuse`; add `LiteLLM` only when provider routing is real; add `Outlines` where constrained local/open-model decoding matters.
-   - OpenAI-first production: consider `Pydantic + OpenAI Agents SDK + FastMCP + OpenAI Structured Outputs + tracing/evals`. When implementing concrete OpenAI SDK details, use `$openai-docs` or official docs.
+3. Choose the primary stack only after the preceding decisions. Keep an existing working stack unless it creates a concrete problem. Read `references/framework-selection.md` only when the user needs a greenfield stack recommendation, a framework comparison, or a concrete product choice; verify every version-sensitive recommendation against current official documentation.
 4. Define agent boundaries:
    - Give each agent a clear responsibility, input contract, output contract, state ownership, tool permissions, and failure mode.
    - Do not create an agent when a deterministic function, typed tool call, or normal workflow step is enough.
    - Keep each agent's prompt, retrieved context, and tool list narrow enough that tool choice remains obvious for its responsibility.
    - Make handoffs explicit: who calls whom, what context is passed, what state is persisted, and what is returned.
 5. Define structured outputs:
-   - Use typed models as the default contract surface in languages/frameworks that support them; Pydantic is a strong Python default.
-   - Use OpenAI Structured Outputs in OpenAI-only designs when JSON Schema enforcement is needed.
-   - Use Outlines for local/open/constrained generation when strict decoding is genuinely required.
+   - Use typed, validated contracts where the language and framework support them.
+   - Decide whether validation occurs after generation or through constrained decoding, and test schema failures explicitly.
 6. Define tools and MCP:
-   - Prefer typed tool schemas and FastMCP servers for reusable tool boundaries.
+   - Prefer typed tool schemas and narrow reusable server boundaries.
    - Keep tools idempotent where possible, explicit about side effects, and narrow in permissions.
    - Record which tools require human approval, secrets, filesystem access, network access, or external writes.
 7. Design failure containment before increasing autonomy:
@@ -55,29 +51,20 @@ Preserve the repository's existing production constraints and framework choices 
    - Stop, retry, route to an alternate path, or ask for human confirmation when a sub-agent returns low confidence, schema-invalid output, contradictory evidence, or a failed precondition.
    - Put explicit budgets around autonomous loops: maximum model calls, tool calls, retries, wall-clock time, spend, and destructive or externally visible actions.
 8. Add observability and evals before the system becomes non-trivial:
-   - Pick Pydantic Logfire/Evals, Langfuse, or the repository's existing tracing/eval stack.
+   - Prefer the repository's existing tracing and evaluation stack unless it cannot capture the required events.
    - Trace prompts, model calls, tool calls, handoffs, retrieved context, costs, latency, errors, and final decisions.
    - Favour tools that emit or can export OpenTelemetry-compatible traces, while treating GenAI semantic conventions as evolving.
 9. Add durability only when the workflow needs it:
-   - Use LangGraph when agent control flow is naturally a graph/state machine with persistence, streaming, human-in-the-loop, or resumability.
-   - Use Temporal, DBOS, or Restate when production workflows need retries, durable execution, scheduled jobs, resumability, or must not silently die overnight.
+   - Require durable execution when work must survive process failure, support scheduled or long-running jobs, resume after interruption, or guarantee retry semantics.
+   - Do not add a durability platform to a short request-response path without an operational need.
 10. Add retrieval/document infrastructure when agents work over papers, reports, notes, PDFs, codebases, or lab documentation:
-   - Use LlamaIndex for retrieval and data plumbing when it saves work.
-   - Otherwise use a simple custom layer with Postgres/pgvector or Qdrant plus typed models.
    - Do not adopt a whole agent framework just to get retrieval.
+   - Define source provenance, chunking, access control, freshness, and answer-grounding checks before choosing the retrieval product.
 11. Add provider routing and cost control only when needed:
-   - Use LiteLLM when switching across OpenAI, Anthropic, Gemini, local models, Azure, Bedrock, Groq, or similar providers is a real requirement.
-   - Use the gateway as the place for routing, keys, logging, budget controls, fallback policy, and reproducibility across providers.
+   - Centralize routing policy, keys, logging, budgets, fallback behaviour, and reproducibility when multiple providers are a real requirement.
 12. Add prompt/program optimisation only when there are examples and metrics:
-   - Use DSPy for repeatable subtasks such as extraction, classification, routing, scoring, or RAG answer synthesis.
-   - Do not use DSPy as the base agent runtime by default.
+   - Optimize only bounded repeatable subtasks with representative examples, measurable outcomes, and held-out evaluation.
 13. Update `$rb-working-diary` with durable architecture decisions, rejected alternatives, observability/eval commitments, and open risks when the work is substantial.
-
-## Recommended default
-
-For greenfield provider-independent Python agent systems, start by considering `PydanticAI + FastMCP + Logfire/Evals`. Do not override an existing working stack without evidence.
-
-Add Outlines only where constrained decoding matters. Add LiteLLM when provider switching becomes real. Add LangGraph or Temporal/DBOS/Restate when control flow becomes long-running, stateful, resumable, or production-critical. Keep the OpenAI Agents SDK in the toolbox for explicitly OpenAI-native apps.
 
 ## Review checklist
 

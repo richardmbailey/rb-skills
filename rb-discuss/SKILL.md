@@ -1,27 +1,28 @@
 ---
 name: "rb-discuss"
-description: "Use before implementing non-trivial features or changes to discuss requirements, read relevant docs, identify ambiguity, and produce an implementation plan."
+description: "Use when a non-trivial change still has unresolved material requirements, behaviour, interfaces, edge cases, or acceptance criteria that must be discussed before implementation. Do not use once the change is sufficiently agreed for planning or implementation."
 ---
 
 # /rb:discuss - discuss before coding
 
 ## Purpose
 
-Use this before implementing non-trivial features or changes.
+Use this when a non-trivial feature or change cannot yet be planned or implemented safely because material requirements remain unresolved.
+
+Do not use it merely because a change is substantial. Once the intended behaviour and acceptance criteria are sufficiently agreed, use `$rb-create-implementation-plan` for a new top-level plan or the appropriate implementation skill for agreed work.
 
 ## Procedure
 
-1. Restate the requested change in plain language.
-2. Read `CONTEXT.md` if present, plus relevant ADRs, README files, docs, and tests. If `CONTEXT.md` is missing, note that and continue.
-3. Identify ambiguous points.
-4. Ask targeted questions one at a time.
-5. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to clarify stack, tools, state, observability, evals, retrieval, and provider routing.
-6. For text-processing requests, clarify whether each text step is syntax-bound or semantic:
+1. Read `CONTEXT.md` if present, plus relevant ADRs, README files, docs, and tests. If `CONTEXT.md` is missing, note that and continue.
+2. Separate what is already agreed from decisions that materially affect behaviour, interfaces, data, compatibility, failure handling, tests, scientific assumptions, or acceptance.
+3. Ask one targeted question at a time only when the answer cannot be recovered safely from the repository and would materially change the result.
+4. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to clarify stack, tools, state, observability, evals, retrieval, and provider routing.
+5. For text-processing requests, clarify whether each text step is syntax-bound or semantic:
    - Syntax-bound means stable structure, exact markers, structured formats, IDs, URLs, logs, or protocol fields, and can usually be deterministic.
    - Semantic means meaning, intent, relevance, classification, summarisation, ambiguity resolution, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence, and should usually use an LLM-backed path.
-7. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.
-8. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.
-9. Produce a short implementation plan.
+6. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.
+7. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.
+8. Record the agreed requirements, accepted risks, remaining questions, and recommended next workflow. Create a top-level plan only when the human asks for one, using `$rb-create-implementation-plan`.
 
 ## Stop condition
 
