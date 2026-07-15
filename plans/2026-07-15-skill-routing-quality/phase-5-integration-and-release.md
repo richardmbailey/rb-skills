@@ -41,8 +41,8 @@ Integrate the validated skill changes into the repository catalogue and installe
 - [v] Confirm every installed path points back to this repository.
 - [v] Perform a final findings-first review over the complete diff.
 - [v] Fix actionable findings and rerun affected checks.
-- [ ] Create the final local commit only after the worktree scope is confirmed.
-- [ ] Report the commit hash, checks run, remaining limitations, and whether the branch is ahead of its upstream.
+- [v] Create the final local commit only after the worktree scope is confirmed.
+- [v] Report the commit hash, checks run, remaining limitations, and whether the branch is ahead of its upstream.
 
 ## Verification Commands
 
@@ -64,7 +64,7 @@ Run the repository's structured metadata validation and each custom skill valida
 - [v] No untracked generated output or cache files remain.
 - [v] `rb-wiki` remains unchanged by path and hash.
 - [v] Final review has no blocking findings.
-- [ ] The commit contains only the intended skill-quality work.
+- [v] The commit contains only the intended skill-quality work.
 
 ## Execution Record
 
@@ -81,6 +81,9 @@ Run the repository's structured metadata validation and each custom skill valida
   symlinks. All 25 changed installed paths now resolve to this repository.
 - No safe comparable Claude Code harness was available. Restart Codex after the
   commit so skill discovery reloads the updated metadata.
+- Implementation commit: `91c1cd3` (`Improve skill routing and add
+  evaluations`). The follow-up closeout commit records these final verified
+  statuses; both hashes and upstream-ahead status are reported in the handoff.
 
 ## Phase Exit Criteria
 
