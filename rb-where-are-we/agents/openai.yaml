@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Where Are We"
+  short_description: "Create evidence-backed project status reports"
+  default_prompt: "Use $rb-where-are-we to create a current, evidence-backed HTML state-of-play report for this project."

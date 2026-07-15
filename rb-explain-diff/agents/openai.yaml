@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Explain Diff"
+  short_description: "Build interactive HTML code-change explainers"
+  default_prompt: "Use $rb-explain-diff to create an interactive HTML explanation of this code change."

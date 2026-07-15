@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "skill": "rb-create-skill-evals",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "create-evals-direct",
+      "kind": "outcome",
+      "prompt": "Create behavioural tests for the sample-release-notes skill and compare its results with and without the skill.",
+      "should_trigger": true,
+      "fixture": "fixtures/sample-skill",
+      "success": [
+        {
+          "name": "generated suite contract",
+          "evaluator": "deterministic",
+          "command": "python3 validators/check_generated_suite.py {workspace}/sample-release-notes/evals/eval-plan.json"
+        },
+        {
+          "name": "cases measure real behaviour",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the generated cases test release-note accuracy, user-visible scope, trigger boundaries, and skill lift rather than merely checking that files exist."
+        }
+      ]
+    },
+    {
+      "id": "trigger-tests-only",
+      "kind": "trigger",
+      "prompt": "Write positive and negative routing tests for this SKILL.md because it is loading on unrelated requests.",
+      "should_trigger": true,
+      "fixture": "fixtures/sample-skill",
+      "success": [
+        {
+          "name": "routing boundary coverage",
+          "evaluator": "semantic",
+          "rubric": "Pass if the suite contains realistic should-trigger and should-not-trigger paraphrases and makes false positives and false negatives observable."
+        }
+      ]
+    },
+    {
+      "id": "retirement-ablation",
+      "kind": "retirement",
+      "prompt": "Can we retire this skill? Build an evaluation that proves whether the current model still benefits from it.",
+      "should_trigger": true,
+      "fixture": "fixtures/sample-skill",
+      "success": [
+        {
+          "name": "matched ablation design",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the plan runs matched with-skill and without-skill conditions over repeated trials and does not infer retirement from one successful baseline run."
+        }
+      ]
+    },
+    {
+      "id": "regression-after-edit",
+      "kind": "regression",
+      "prompt": "This skill description has changed. Add regression coverage before we merge it.",
+      "should_trigger": true,
+      "fixture": "fixtures/sample-skill",
+      "success": [
+        {
+          "name": "regression suite preserves known behaviour",
+          "evaluator": "semantic",
+          "rubric": "Pass if existing successful behaviours remain covered and new cases directly exercise the changed trigger contract."
+        }
+      ]
+    },
+    {
+      "id": "paraphrased-request",
+      "kind": "trigger",
+      "prompt": "How do we know this instruction pack actually makes the agent better instead of merely adding tokens? Please make that measurable.",
+      "should_trigger": true,
+      "fixture": "fixtures/sample-skill",
+      "success": [
+        {
+          "name": "implicit eval request recognized",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response builds a skill evaluation with outcome checks, cost evidence when available, and an unloaded baseline."
+        }
+      ]
+    },
+    {
+      "id": "ordinary-product-tests",
+      "kind": "trigger",
+      "prompt": "Add unit tests for the date parser in src/dates.py and fix the failing leap-year case.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not hijack ordinary testing",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-create-skill-evals is not used and no agent-skill eval manifest is created."
+        }
+      ]
+    },
+    {
+      "id": "write-new-skill",
+      "kind": "trigger",
+      "prompt": "Create a new reusable skill for generating release notes.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "routes to skill authoring",
+          "evaluator": "semantic",
+          "rubric": "Pass if the request is handled as skill creation rather than evaluation; tests may be recommended but are not substituted for the requested skill."
+        }
+      ]
+    },
+    {
+      "id": "review-code-diff",
+      "kind": "trigger",
+      "prompt": "Review this pull request for bugs, missing tests, and regressions.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "routes to code review",
+          "evaluator": "semantic",
+          "rubric": "Pass if the agent reviews the code change and does not treat the pull request itself as an agent skill."
+        }
+      ]
+    },
+    {
+      "id": "existing-suite-repair",
+      "kind": "outcome",
+      "prompt": "These skill evals always pass, even for obviously bad output. Diagnose and strengthen them without changing the skill itself.",
+      "should_trigger": true,
+      "fixture": "fixtures/sample-skill",
+      "success": [
+        {
+          "name": "evaluator discrimination",
+          "evaluator": "semantic",
+          "rubric": "Pass if the weak evaluators are tested against known-good and deliberately bad artifacts and then strengthened to distinguish them."
+        }
+      ]
+    },
+    {
+      "id": "missing-target",
+      "kind": "outcome",
+      "prompt": "Build evals for the skill I mentioned earlier.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "ambiguity handled safely",
+          "evaluator": "semantic",
+          "rubric": "Pass if the agent identifies that no target skill is available, asks for its directory or name, and does not test a guessed skill."
+        }
+      ]
+    }
+  ]
+}

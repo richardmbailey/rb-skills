@@ -154,6 +154,8 @@ This pack currently contains these skills:
 
 | Skill | Invoke when |
 | --- | --- |
+| `$rb-explain-diff` | You want a rich, interactive HTML explanation of a code change, diff, branch, commit, or pull request, including background, intuition, diagrams, a code walkthrough, and a quiz. |
+| `$rb-create-skill-evals` | You want to create behavioural tests for an agent skill, check trigger boundaries and outcomes, compare runs with and without the skill, or decide whether the skill can be retired. |
 | `$rb-architecture-review` | You want to inspect a codebase for architecture problems, unclear boundaries, duplication, hidden assumptions, or refactoring opportunities. |
 | `$rb-context-tokens` | You ask about current context size, token usage, the latest call, or `/tokens`. |
 | `$rb-continue-project` | You are resuming a mature project and want the agent to orient from diary notes, handoffs, git state, and existing project instructions before editing. |
@@ -161,7 +163,7 @@ This pack currently contains these skills:
 | `$rb-install-skills` | You want the agent to install or verify RB global skills, project resources, visibility checks, and then start-project onboarding. |
 | `$rb-discuss` | You are considering a non-trivial feature or change and need to discuss requirements, docs, ambiguity, edge cases, and an implementation plan before coding. |
 | `$rb-execute-plan` | You have an implementation plan, phase checklist, issue list, or agreed direction and want it turned into executable tasks, progress tracking, verification gates, or a plan review. |
-| `$rb-implement-with-tests` | Requirements are clear and you want ordinary software/product changes implemented with focused tests and executable checks. |
+| `$rb-implement-with-tests` | Requirements are clear and you want ordinary software/product changes implemented with focused tests, executable checks, and a final review+fix loop. |
 | `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multi-LLM-agent systems, agent frameworks, tool/MCP architecture, routing, tracing, evals, retrieval, or durability. |
 | `$rb-project-language` | You need to capture or update project vocabulary, domain terms, invariants, assumptions, or `CONTEXT.md`, especially in scientific or domain-heavy repositories. |
 | `$rb-research-question-gate` | You are evaluating a research idea, scientific hypothesis, algorithm proposal, or technical novelty claim before investing in PRD/planning/coding. |
@@ -170,9 +172,10 @@ This pack currently contains these skills:
 | `$rb-setup-local-agent-skills` | You need to verify or repair RB global skill installation, project resources, `AGENTS.md`, `CONTEXT.md`, or agent skill discovery. |
 | `$rb-start-project` | You are starting a project, onboarding a repository, or want guided setup questions before coding. |
 | `$rb-sync-skills-repo` | You want to install, sync, copy, symlink, update, clone, publish, or share skills from this Git repo across computers. |
-| `$rb-tdd-scientific-code` | You are changing scientific, numerical, modelling, simulation, stochastic, or domain-sensitive code where units, invariants, tolerances, and reproducibility matter. |
+| `$rb-tdd-scientific-code` | You are changing scientific, numerical, modelling, simulation, stochastic, or domain-sensitive code where units, invariants, tolerances, reproducibility, and review+fix matter. |
 | `$rb-create-issues` | You want to create ordered issues from a PRD or implementation plan, with scope, acceptance criteria, tests, risks, and dependencies. |
 | `$rb-create-implementation-plan` | You want to turn an idea or rough feature request into a practical implementation plan with goals, constraints, phased work, risks, success criteria, and validation approach. |
+| `$rb-where-are-we` | You want an evidence-backed HTML state-of-play report covering project goals, current phase, code health, risks, recent changes, and recommended next steps. |
 | `$rb-working-diary` | Work is long-running or context-heavy and needs durable notes, assumptions, decisions, status, or next actions across sessions. |
 | `$rb-write-skill` | You want the agent to create or update a reusable RB-style skill with clear triggers, procedure, metadata, and supporting resources. |
 | `$rb-explain-codebase` | You want to understand an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots before editing. |
@@ -187,9 +190,9 @@ For a new feature:
 $rb-start-project
 ```
 
-Then let the agent route to `$rb-discuss`. After requirements and docs are clear, it should produce an implementation plan and ask before continuing into `$rb-implement-with-tests`.
+Then let the agent route through `$rb-discuss`, `$rb-create-implementation-plan`, `$rb-execute-plan` when phase work is needed, the appropriate implementation skill, and the final review+fix loop.
 
-In Claude Code, direct invocations use slash commands, for example `/rb-start-project`, `/rb-discuss`, and `/rb-implement-with-tests`.
+In Claude Code, direct invocations use slash commands, for example `/rb-start-project`, `/rb-discuss`, `/rb-execute-plan`, and `/rb-implement-with-tests`.
 
 For a bug:
 
@@ -205,7 +208,7 @@ For scientific or modelling code:
 Use $rb-tdd-scientific-code for this change.
 ```
 
-The agent should work test-first around units, invariants, tolerances, reproducibility, fixtures, stochastic behaviour, and domain assumptions.
+The agent should work test-first around units, invariants, tolerances, reproducibility, fixtures, stochastic behaviour, domain assumptions, and final review+fix.
 
 For an unfamiliar repository:
 

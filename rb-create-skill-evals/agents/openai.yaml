@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Create Skill Evals"
+  short_description: "Design and build behavioural tests for skills"
+  default_prompt: "Use $rb-create-skill-evals to build a behavioural evaluation suite for this agent skill."
