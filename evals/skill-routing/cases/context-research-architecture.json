@@ -27,6 +27,24 @@
     "rationale": "The task needs an ongoing durable evidence and decision trail."
   },
   {
+    "id": "context-diary-cumulative-small-turns",
+    "family": "context-research-architecture",
+    "prompt": "We have spent the last week making many individually small changes to this repository across several commits and review rounds. The immediate request is only to adjust one README sentence, but preserve the accumulated decisions, verification state, unresolved review points, and next actions for later sessions.",
+    "expected": {"outcome": "select", "skill": "rb-working-diary"},
+    "forbidden_skills": ["rb-end-session", "rb-where-are-we", "rb-continue-project", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "Cumulative project state needs durable continuity even though the immediate edit is small."
+  },
+  {
+    "id": "context-diary-isolated-readme-edit",
+    "family": "context-research-architecture",
+    "prompt": "In this otherwise untouched repository, change one sentence in README.md and run the focused documentation test. There is no continuing investigation, plan, or handoff state to preserve.",
+    "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
+    "forbidden_skills": ["rb-working-diary", "rb-end-session", "rb-where-are-we", "rb-continue-project"],
+    "critical": true,
+    "rationale": "An isolated tested edit should not create diary work when no cumulative state exists."
+  },
+  {
     "id": "context-language-glossary",
     "family": "context-research-architecture",
     "prompt": "Build a shared project glossary and update CONTEXT.md with our domain terms, acronyms, units, invariants, and assumptions so future agents interpret the model consistently.",

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import sys
 from pathlib import Path
 from typing import Any
@@ -68,6 +69,7 @@ def validate(path: Path, repo: Path) -> list[str]:
         return errors
 
     seen: set[str] = set()
+    positive_counts: Counter[str] = Counter()
     for index, case in enumerate(cases):
         label = f"cases[{index}]"
         if not isinstance(case, dict):
@@ -99,6 +101,8 @@ def validate(path: Path, repo: Path) -> list[str]:
         if outcome == "select":
             if skill not in known_skills:
                 errors.append(f"{label}.expected.skill is not a discovered skill: {skill}")
+            else:
+                positive_counts[skill] += 1
         elif skill is not None:
             errors.append(f"{label}.expected.skill must be omitted for {outcome} outcomes")
 
@@ -113,6 +117,12 @@ def validate(path: Path, repo: Path) -> list[str]:
             errors.append(f"{label}.forbidden_skills contains unknown skills: {', '.join(unknown)}")
         if skill in forbidden:
             errors.append(f"{label}.expected.skill must not also be forbidden")
+
+    undercovered = sorted(
+        skill for skill in known_skills if positive_counts[skill] < 3
+    )
+    if undercovered:
+        errors.append("skills with fewer than three positive cases: " + ", ".join(undercovered))
 
     return errors
 

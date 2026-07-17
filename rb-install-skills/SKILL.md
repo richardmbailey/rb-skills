@@ -1,6 +1,6 @@
 ---
 name: "rb-install-skills"
-description: "Use for the full RB setup workflow: install or verify global skills, prepare AGENTS.md and CONTEXT.md, check visibility, and begin onboarding. For sync-only or repair-only work, use the narrower skill."
+description: "Use for the full RB setup workflow: install or verify global skills, prepare AGENTS.md and CONTEXT.md, check visibility, and begin onboarding. For synchronization use $rb-sync-skills-repo; for setup repair use $rb-setup-local-agent-skills."
 ---
 
 # RB Install Skills

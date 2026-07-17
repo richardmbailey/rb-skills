@@ -1,11 +1,19 @@
 ---
 name: "rb-wiki"
-description: "Use to build, run, query, ingest into, lint, and maintain Richard's LLM-agent-based Markdown wiki systems: local-first OKF-compatible knowledge bundles with immutable raw sources, cited synthesis pages, deterministic validation/search/graph tooling, automatic inbox processing, and periodic wiki health upkeep."
+description: "Use for design or extension of LLM-agent Markdown wikis, including schema or tool changes, synthesis, cross-page queries, and automation design. For template creation, inbox ingestion, or routine maintenance, use the narrower wiki skill."
 ---
 
 # RB Wiki
 
-Use this skill to create or operate an LLM-wiki: a git-backed Markdown knowledge system where raw evidence is preserved, wiki pages are curated synthesis, deterministic tools enforce structure, and an LLM agent performs judgement-heavy editorial work.
+Use this skill for work that changes or uses the wider LLM-wiki system: a git-backed
+Markdown knowledge system where raw evidence is preserved, wiki pages are curated
+synthesis, deterministic tools enforce structure, and an LLM agent performs
+judgement-heavy editorial work.
+
+For routine operations, use `$rb-new-wiki` to create from `wiki-template`,
+`$rb-wiki-ingest` to process new inbox sources, and `$rb-wiki-maintenance` for
+linting and scheduled upkeep. Return here when work spans those boundaries or changes
+the wiki's design, schema, tools, synthesis, query behaviour, or automations.
 
 ## Core Reference
 

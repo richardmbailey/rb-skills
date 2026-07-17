@@ -36,7 +36,7 @@ Dir.glob(File.join(repo, "rb-*", "SKILL.md")).sort.each do |skill_file|
     next
   end
   errors << "#{skill_file}: description exceeds 1024 characters" if description.length > 1024
-  word_counts[skill_dir] = description.split.length unless skill_dir == "rb-wiki"
+  word_counts[skill_dir] = description.split.length
 
   agent_file = File.join(File.dirname(skill_file), "agents", "openai.yaml")
   unless File.file?(agent_file)
@@ -76,7 +76,7 @@ end
 
 total_words = word_counts.values.sum
 over_40 = word_counts.select { |_name, count| count > 40 }
-errors << "in-scope description words #{total_words} exceed the 975-word budget" if total_words > 975
+errors << "description words #{total_words} exceed the 1010-word budget" if total_words > 1010
 errors << "#{over_40.length} descriptions exceed 40 words; expected fewer than 8" if over_40.length >= 8
 
 if errors.empty?

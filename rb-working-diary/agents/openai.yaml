@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Working Diary"
-  short_description: "Preserve durable task notes across sessions"
+  short_description: "Preserve cumulative project state across sessions"
   default_prompt: "Use $rb-working-diary to update durable notes for the current project."

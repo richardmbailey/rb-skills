@@ -1,6 +1,6 @@
 ---
 name: "rb-working-diary"
-description: "Use when long-running or context-heavy work needs durable notes across compaction, sessions, or handoffs, including decisions, evidence, status, and next actions. Do not use for ordinary one-turn tasks whose state is already visible in the conversation."
+description: "Use when long-running or context-heavy work, including accumulated small turns, needs durable decisions, evidence, status, and next actions preserved across compaction, sessions, or handoffs. Do not use for an isolated one-turn task with no accumulated project state."
 ---
 
 # RB Working Diary
@@ -35,10 +35,14 @@ Use the diary when any of these are true:
 
 - the task is long-running, investigative, or likely to span compaction;
 - you read many files, run meaningful experiments, or form conclusions future-you should not rediscover;
+- a sequence of individually small turns has collectively accumulated substantial
+  decisions, evidence, implementation state, verification results, or unresolved work;
 - the user explicitly asks for durable continuity or cross-session notes;
 - the repository has an existing diary entry whose state is needed for the current multi-step work.
 
-For ordinary one-turn tasks, skip diary reads and writes unless the user explicitly asks for them.
+For isolated one-turn tasks, skip diary reads and writes unless the user explicitly asks
+for them. Do not treat the immediate request as isolated when the surrounding project or
+conversation has already accumulated state that future work should not reconstruct.
 
 ## Start Of Work
 
@@ -83,6 +87,8 @@ Update the diary:
 - before switching tasks or ending a session;
 - before a likely compaction point when useful context is only in chat;
 - after verification, especially if tests fail or are not run.
+- Update the matching `Last touched` date in `diary.md` whenever a project diary
+  is changed.
 
 Prefer one compact update at each natural checkpoint over constant logging.
 

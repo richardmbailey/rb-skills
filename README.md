@@ -176,9 +176,10 @@ This pack currently contains these skills:
 | `$rb-create-issues` | You want to decompose an existing PRD or implementation plan into ordered, reviewable issue drafts; external issue-tracker changes require a separate request. |
 | `$rb-create-implementation-plan` | An idea, rough feature request, or product goal needs a new top-level implementation plan; use `$rb-execute-plan` when a plan already exists. |
 | `$rb-where-are-we` | You want a deep, evidence-backed HTML state-of-play report covering goals, phase, progress, code health, risks, recent changes, and next steps. |
-| `$rb-working-diary` | Long-running or context-heavy work needs durable decisions, evidence, status, and next actions across compaction, sessions, or handoffs. |
+| `$rb-working-diary` | Long-running, context-heavy, or cumulatively substantial multi-turn work needs durable decisions, evidence, status, and next actions across compaction, sessions, or handoffs. |
 | `$rb-write-skill` | You want to create or update a reusable RB-style skill; use `$rb-create-skill-evals` when the work is behavioural evaluation rather than authoring. |
 | `$rb-explain-codebase` | You want neutral orientation to an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots. |
+| `$rb-wiki` | You want broader LLM-wiki design, schema or tool changes, substantial synthesis, cross-page queries, automation design, or work spanning several wiki workflows. |
 | `$rb-new-wiki` | You want to create and configure a new LLM wiki from `wiki-template`, rather than operate an existing wiki. |
 | `$rb-wiki-ingest` | An existing LLM wiki has new inbox files to register, ingest, validate, and move through intake. |
 | `$rb-wiki-maintenance` | An existing LLM wiki needs operational upkeep such as linting, index rebuilding, registry checks, or health review. |

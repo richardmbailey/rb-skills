@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Discuss"
   short_description: "Discuss requirements before implementation"
-  default_prompt: "Use $rb-discuss to discuss the change, read relevant docs, and produce an implementation plan."
+  default_prompt: "Use $rb-discuss to clarify unresolved requirements and record the agreed decisions before implementation."

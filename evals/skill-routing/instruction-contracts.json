@@ -77,7 +77,14 @@
     },
     {
       "path": "rb-working-diary/SKILL.md",
-      "required": ["For ordinary one-turn tasks, skip diary reads and writes", "Do not store secrets", "facts and useful synthesis, not a transcript"],
+      "required": ["For isolated one-turn tasks, skip diary reads and writes", "sequence of individually small turns", "Update the matching `Last touched` date", "Do not store secrets", "facts and useful synthesis, not a transcript"],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-wiki/SKILL.md",
+      "required": ["For routine operations", "$rb-new-wiki", "$rb-wiki-ingest", "$rb-wiki-maintenance", "work spans those boundaries"],
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500
