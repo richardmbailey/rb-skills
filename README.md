@@ -203,6 +203,25 @@ Then let the agent route through `$rb-discuss` and `$rb-create-implementation-pl
 
 When a new implementation plan is created, the agent also reminds you about an optional higher-assurance route. Choose `standard` for the existing workflow, `constrained` to run one phase at a time through `$rb-create-low-level-plan`, `$rb-assess-plan-safety`, and `$rb-safe-operation`, or `undecided` to defer the choice. The constrained route is Codex-only in this release and is a semi-formal control layer rather than a sandbox: assessor and verifier restrictions are **instruction-only**, and **child traces are incomplete**. Dependencies are provisioned only through the explicit setup procedure documented by `$rb-safe-operation`; normal operation never installs them.
 
+### What `safe` Means In This Workflow
+
+Here, `safe: true` means that one exact low-level plan, with its declared scope, permissions, side effects, evidence, policy, capabilities, approvals, and repository snapshot, passed both deterministic checks and semantic assessment. It is permission to attempt that unchanged plan through `$rb-safe-operation`; it is not a general claim that the task, agent, or computer is safe. Any relevant change invalidates the handoff and stops execution for review or reassessment.
+
+```mermaid
+flowchart TD
+    A["Implementation plan<br/>route: constrained"] --> B["Compile one phase<br/>$rb-create-low-level-plan"]
+    B --> C["Assess the exact plan and effects<br/>$rb-assess-plan-safety"]
+    C --> D{"Assessment result"}
+    D -- "false or uncertain" --> E["Stop for human decision<br/>revise, leave the route, or abandon"]
+    D -- "safe: true" --> F["Revalidate the unchanged bundle<br/>$rb-safe-operation"]
+    F --> G["Execute inside the approved envelope"]
+    G --> H["Requested fresh verification<br/>plus coordinator-observed product state"]
+    H --> I{"All criteria met?"}
+    I -- "yes" --> J["Phase verified<br/>stop before the next phase"]
+    I -- "repair remains in scope" --> G
+    I -- "new scope, risk, or uncertainty" --> E
+```
+
 - **Instruction-only restrictions:** the assessor and verifier are told to inspect evidence and report findings without changing the project. Codex does not currently enforce this by placing them in separate read-only sandboxes or removing every write-capable tool. The coordinator checks their structured responses and compares project state before and after their work, but these checks detect changes rather than prevent them.
 - **Incomplete child traces:** the coordinator receives a child agent's final response, but Codex does not provide it with a guaranteed complete record of every action the child took. A comparison can reveal a lasting file change, but it cannot prove that the child did not briefly read a secret, make an external request, or perform another action that left no visible project change.
 
