@@ -1,0 +1,9 @@
+I stopped before taking any action. The saved `safe: true` decision applies only to the exact phase content that was assessed; because the authoritative phase file has changed, that assessment is now stale and cannot authorise the changed bundle.
+
+The privacy-sensitive operation also lacks a valid approval. A chat confirmation is not a substitute for the required typed, exact-scope approval, and the expired one-use approval cannot be extended or reused informally.
+
+No mutation lease was acquired, no operation was dispatched, and no product state was changed. I have preserved the prior assessment as historical evidence rather than editing or replacing it.
+
+To continue, the changed authoritative phase must first be compiled into a new canonical low-level plan and reassessed against the current policy, repository snapshot, capabilities, and instructions. If that assessment returns `safe: true`, the privacy-sensitive effect then needs a new unexpired one-use approval bound to the new plan, operation, effect class, target, and relevant idempotency evidence. Execution can begin only after all of those identities revalidate and the mutation lease is acquired.
+
+Independent verification has not started and I make no verification claim. It is available only after an authorised execution stops normally, using a fresh read-only verifier context and evidence from the exact approved bundle.

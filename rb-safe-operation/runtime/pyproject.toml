@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rb-safe-operation-runtime"
+version = "0.1.0"
+description = "Typed runtime for assessed low-level plan execution"
+requires-python = ">=3.9"
+dependencies = ["pydantic>=2.12,<3"]
+
+[project.scripts]
+rb-safe-operation = "rb_safe_operation.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+rb_safe_operation = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

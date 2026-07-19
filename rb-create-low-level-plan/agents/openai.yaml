@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Create Low-Level Plan"
+  short_description: "Compile one phase into a constrained plan"
+  default_prompt: "Use $rb-create-low-level-plan to compile the next approved implementation phase into a typed operational contract."

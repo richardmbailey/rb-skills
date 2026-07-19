@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "suite": "constrained-execution-routing",
+  "baseline_commit": "9875708",
+  "conditions": ["baseline", "revised"],
+  "default_trials": 3,
+  "case_files": ["../../../../evals/skill-routing/cases/constrained-execution.json"],
+  "cases": []
+}

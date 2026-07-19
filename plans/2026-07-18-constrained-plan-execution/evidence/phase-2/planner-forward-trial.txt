@@ -1,0 +1,27 @@
+This fragment must fail closed. I would emit:
+
+`blocking_planning_diagnostic: incomplete_phase_2_operation_contract`
+
+Reasons:
+
+- The regression test has no approved executable identity, executable hash, literal argument vector, environment, expected exit code, or child-process declaration.
+- Cache and generated-output paths are unknown, so the test’s transitive create/modify effects cannot be bounded.
+- `tests/fixtures/input.json` has no established data classification, so its read effect, handling policy, and approval requirements cannot be declared.
+- The fragment also lacks the absolute source-plan path and selected-text hash required to bind Phase 2. Runtime-manifest and snapshot identities would still need collection.
+
+I would not invent a test command, assume caches are absent, or hide the uncertainty inside `choose_approved_test_form`; that adaptation is valid only when approved forms already exist.
+
+Once those facts are supplied, the intended operation forms are:
+
+1. An exact `read_file` for `/project/tests/fixtures/input.json`, with snapshot hash, byte bounds, classification, and read-only effects.
+2. A `bounded_agent_task` for the semantic parser change:
+   - goal: preserve the agreed public API while updating `/project/src/parser.py`;
+   - modify root: only `/project/src/parser.py`;
+   - no Phase 3 rollout or Phase 4 documentation;
+   - closed adaptation: `revise_local_code`;
+   - no network, delegation, deletion, or undeclared subprocesses.
+3. An exact `check` for the parser regression test once its executable, hash, literal `argv`, inputs, environment, children, generated paths, limits, and expected exit status are known.
+
+Every path contract would use `/project` as the working directory and declare `/project/.rb-safe-operation` as protected. Phase continuity remains `Phase 3 rollout`, then `Phase 4 documentation`.
+
+Because the diagnostic blocks compilation, I would produce no accepted canonical low-level-plan JSON, typed hash, or rendered human review view. I stop at procedure step 8—before validation, canonicalisation, rendering, assessment, execution, or compilation of later phases. The next action is to resolve the missing evidence and re-run Phase 2 compilation, not invoke `$rb-assess-plan-safety`.

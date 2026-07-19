@@ -1,19 +1,19 @@
 ---
 name: "rb-implement-with-tests"
-description: "Use to implement ordinary software/product changes with focused tests, executable checks, and a final review+fix loop after requirements are clear. Use for non-scientific feature work, refactors, bug fixes with an agreed fix, and implementation plans that need small verified increments."
+description: "Use for one bounded ordinary software or product change after requirements are clear, with focused tests, executable checks, and a final review+fix loop. Do not own multi-phase planning or plan-status tracking; use $rb-execute-plan for that."
 ---
 
 # /rb:implement - implement with tests
 
 ## Purpose
 
-Implement agreed changes in small verified increments.
+Implement one agreed ordinary change in small verified increments. This skill owns the detailed code, test, and task-level review loop; it does not sequence multi-phase work or maintain plan-wide status.
 
-Use `$rb-discuss` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-tdd-scientific-code` instead when the change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
+Use `$rb-discuss` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-execute-plan` when the user asks to refine, sequence, continue, or track an existing implementation plan or phase. When `$rb-execute-plan` selects one ordinary task, use this skill to implement that task and return evidence; the plan owner updates `[ ]`, `[x]`, and `[v]` status. Use `$rb-tdd-scientific-code` instead when the selected change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
 
 ## Procedure
 
-1. Confirm the agreed requirement, plan, or issue.
+1. Confirm the one agreed requirement, selected plan task, or issue. If the request contains several tasks that need sequencing or requires plan-state tracking, route to `$rb-execute-plan` before editing.
 2. Read `AGENTS.md`, `CONTEXT.md`, relevant docs, surrounding code, and existing tests that define local conventions.
 3. Check current worktree state. Preserve user changes and avoid touching unrelated files.
 4. Identify the smallest useful behaviour to change.
@@ -29,7 +29,7 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 9. Run the focused check again.
 10. Run broader relevant checks when the change touches shared behavior, public interfaces, migrations, build configuration, or user-facing workflows.
 11. Refactor only while keeping checks green and only within the requested scope.
-12. Update `$rb-working-diary` at meaningful checkpoints with decisions, checks run, failures, and next steps.
+12. Update `$rb-working-diary` only when the implementation is long-running, context-heavy, or part of accumulated project work that needs cross-session continuity.
 13. Repeat in small increments until the requested change is complete.
 14. Run a final review over the diff, tests, docs, and behavior. Use `$rb-review-pr-or-diff` for substantial, risky, or cross-cutting changes; for small changes, perform the same review discipline inline.
 15. Fix actionable review findings, rerun the relevant focused and broader checks, and re-review when findings were material.
@@ -38,6 +38,7 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 ## Required Behaviour
 
 - Do not skip clarification when behaviour is still ambiguous.
+- Do not create, resequence, or mark a multi-phase plan complete. Return implementation and verification evidence to `$rb-execute-plan` when it owns the surrounding plan.
 - Do not claim success without running or explicitly naming the check that could not be run.
 - Keep edits scoped to the requested behaviour unless a wider change is necessary and explained.
 - Do not introduce dependencies, migrations, destructive operations, secret handling changes, or broad architecture changes without explicit approval.
@@ -49,7 +50,7 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 
 ## Output
 
-- what changed
+- the selected task or requirement completed and what changed
 - checks run and exact outcome
 - review+fix findings, fixes applied, and checks rerun
 - checks not run and why

@@ -1,0 +1,5 @@
+# Shared Runtime Invocation
+
+The runtime is owned by `rb-safe-operation`; do not import sibling source or install dependencies.
+
+Use only the canonical `${CODEX_HOME:-~/.codex}/rb-safe-operation/current.json` control manifest. Ignore `RB_SAFE_OPERATION_MANIFEST` and `RB_SAFE_OPERATION_CONTROL_ROOT`; they are not trust inputs. Read only enough to obtain `launcher_bootstrap_interpreter_path`, then invoke that absolute interpreter as `<launcher_bootstrap_interpreter_path> -I -S -B ${CODEX_HOME:-~/.codex}/skills/rb-safe-operation/scripts/run_runtime.py <CLI command>`. The launcher has no control-root override; disposable tests select an isolated canonical root through `CODEX_HOME` before explicit setup. The launcher validates its bootstrap identity and flags, its own recorded path and hash, and the manifest-pinned source, lock, environment, interpreter, and installed package before dispatch. Never invoke `interpreter_path` or `cli_module` directly. Require runtime version `0.1.0` and schema `1.0`. A missing or stale manifest stops with the named packaging diagnostic.

@@ -70,7 +70,8 @@ Use them to:
 - implement changes with focused tests and checks;
 - handle scientific, modelling, numerical, or domain-sensitive code carefully;
 - review diffs and pull requests;
-- turn ideas into implementation plans and ordered issues;
+- turn ideas into implementation plans and execute them in verified phases;
+- optionally compile, assess, execute, and verify one higher-assurance phase at a time using requested fresh contexts, with the actual instruction-only or host-enforced assurance level disclosed;
 - preserve continuity across long sessions;
 - sync this skills pack across computers.
 
@@ -162,8 +163,8 @@ This pack currently contains these skills:
 | `$rb-diagnose` | A bug, regression, failing test, or surprising output needs root-cause investigation before choosing a fix. |
 | `$rb-install-skills` | You want the full RB setup workflow: global skills, project resources, visibility checks, and initial onboarding—not sync-only or repair-only work. |
 | `$rb-discuss` | A non-trivial change still has unresolved material requirements, behaviour, interfaces, edge cases, or acceptance criteria that must be discussed before planning or coding. |
-| `$rb-execute-plan` | An implementation plan, phase checklist, issue list, or agreed direction already exists and needs execution, refinement, review, progress tracking, or verification gates. |
-| `$rb-implement-with-tests` | Requirements are clear and you want ordinary software/product changes implemented with focused tests, executable checks, and a final review+fix loop. |
+| `$rb-execute-plan` | An existing multi-step implementation plan or phase checklist needs sequencing, progress tracking, status updates, or phase-level verification; it selects the appropriate implementation workflow for each task. |
+| `$rb-implement-with-tests` | One bounded ordinary software/product change is ready to implement with focused tests and a final review+fix loop; it does not own multi-phase plan state. |
 | `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multiple LLM agents or orchestration layers, including boundaries, tools, handoffs, state, routing, failures, observability, evaluation, budgets, and durability. |
 | `$rb-project-language` | You need shared vocabulary or `CONTEXT.md` updated with domain terms, acronyms, units, invariants, assumptions, or modelling concepts. |
 | `$rb-research-question-gate` | You are evaluating a research idea, scientific hypothesis, algorithm proposal, or technical novelty claim before investing in PRD/planning/coding. |
@@ -173,8 +174,10 @@ This pack currently contains these skills:
 | `$rb-start-project` | You are first onboarding a new or poorly understood project and need discovery, setup questions, goals, constraints, and workflow routing before coding. |
 | `$rb-sync-skills-repo` | You want to copy, symlink, clone, update, publish, or otherwise synchronize skill folders between a Git repository and agent skill directories. |
 | `$rb-tdd-scientific-code` | You are changing scientific, numerical, modelling, simulation, stochastic, or domain-sensitive code where units, invariants, tolerances, reproducibility, and review+fix matter. |
-| `$rb-create-issues` | You want to decompose an existing PRD or implementation plan into ordered, reviewable issue drafts; external issue-tracker changes require a separate request. |
 | `$rb-create-implementation-plan` | An idea, rough feature request, or product goal needs a new top-level implementation plan; use `$rb-execute-plan` when a plan already exists. |
+| `$rb-create-low-level-plan` | **Codex-only in the first release.** An approved plan selected the optional constrained route and its next single phase must become a typed operational contract; it does not assess or execute. |
+| `$rb-assess-plan-safety` | **Codex-only in the first release.** A canonical low-level plan needs deterministic policy checks and fresh-context semantic safety assessment; any violation or uncertainty returns immutable `safe: false`. |
+| `$rb-safe-operation` | **Codex-only in the first release.** An exact low-level plan has `safe: true` and must be revalidated, executed inside its envelope, audited, repaired only in scope, and verified in a fresh context with the host's actual separation level disclosed. |
 | `$rb-where-are-we` | You want a deep, evidence-backed HTML state-of-play report covering goals, phase, progress, code health, risks, recent changes, and next steps. |
 | `$rb-working-diary` | Long-running, context-heavy, or cumulatively substantial multi-turn work needs durable decisions, evidence, status, and next actions across compaction, sessions, or handoffs. |
 | `$rb-write-skill` | You want to create or update a reusable RB-style skill; use `$rb-create-skill-evals` when the work is behavioural evaluation rather than authoring. |
@@ -184,7 +187,9 @@ This pack currently contains these skills:
 | `$rb-wiki-ingest` | An existing LLM wiki has new inbox files to register, ingest, validate, and move through intake. |
 | `$rb-wiki-maintenance` | An existing LLM wiki needs operational upkeep such as linting, index rebuilding, registry checks, or health review. |
 
-Codex or Claude Code should automatically invoke these when the request clearly matches the `Invoke when` guidance. The table is mainly for orientation and for cases where you want to steer the agent explicitly.
+Codex or Claude Code should automatically invoke matching skills except where a table entry is explicitly marked Codex-only. The table is mainly for orientation and for cases where you want to steer the agent explicitly.
+
+Retired skills are preserved in [`retired-skills/`](retired-skills/README.md) for historical reference. They are not part of the active skill pack and are not installed by the normal repository sync.
 
 ## Recommended Session Patterns
 
@@ -194,7 +199,38 @@ For a new feature:
 $rb-start-project
 ```
 
-Then let the agent route through `$rb-discuss`, `$rb-create-implementation-plan`, `$rb-execute-plan` when phase work is needed, the appropriate implementation skill, and the final review+fix loop.
+Then let the agent route through `$rb-discuss` and `$rb-create-implementation-plan`. For substantial planned work, `$rb-execute-plan` owns phase sequencing and status while applying `$rb-implement-with-tests` or `$rb-tdd-scientific-code` to each selected task.
+
+When a new implementation plan is created, the agent also reminds you about an optional higher-assurance route. Choose `standard` for the existing workflow, `constrained` to run one phase at a time through `$rb-create-low-level-plan`, `$rb-assess-plan-safety`, and `$rb-safe-operation`, or `undecided` to defer the choice. The constrained route is Codex-only in this release and is a semi-formal control layer rather than a sandbox: assessor and verifier restrictions are **instruction-only**, and **child traces are incomplete**. Dependencies are provisioned only through the explicit setup procedure documented by `$rb-safe-operation`; normal operation never installs them.
+
+- **Instruction-only restrictions:** the assessor and verifier are told to inspect evidence and report findings without changing the project. Codex does not currently enforce this by placing them in separate read-only sandboxes or removing every write-capable tool. The coordinator checks their structured responses and compares project state before and after their work, but these checks detect changes rather than prevent them.
+- **Incomplete child traces:** the coordinator receives a child agent's final response, but Codex does not provide it with a guaranteed complete record of every action the child took. A comparison can reveal a lasting file change, but it cannot prove that the child did not briefly read a secret, make an external request, or perform another action that left no visible project change.
+
+A project that requires technically enforced read-only roles or proof that no unrecorded action occurred should not treat this first-release constrained route as providing those guarantees.
+
+For a detailed plain-language walkthrough with flow diagrams, artifact maps, worked examples, assurance limits, and the planned policy extension, read [How the RB Safe-Operation Process Works](docs/safe-operation-process.html).
+
+### Planned Project-Specific Safe-Operation Policy
+
+The next planned extension adds a canonical `.rb-safe-operation-policy.json` at the project root and a new `$rb-create-safe-operation-policy` skill. The skill will translate natural-language restrictions into typed policy, show the user a deterministic preview, and write the JSON only after confirmation. Users will not need to author the policy file themselves.
+
+This extension is **planned but not implemented yet**. The current runtime can validate and monotonically merge an explicitly supplied schema-`1.0` `ProjectPolicy`, but the constrained skills do not automatically discover or enforce `.rb-safe-operation-policy.json`. There is no natural-language policy-authoring workflow yet, and `$rb-create-safe-operation-policy` must not be listed or invoked as an active skill until its implementation, tests, installation, and routing checks pass.
+
+The planned extension will:
+
+- support exact-file and directory-subtree denials for `read`, `create`, `modify`, and `delete`;
+- treat user-facing “write” as `create + modify + delete` and explain that interpretation before saving;
+- apply the policy only to the optional `constrained` execution route, while leaving `standard` execution unchanged;
+- bind the installed global policy, exact project-policy source, effective merged policy, and complete low-level plan to hashes that are independently revalidated before assessment and use;
+- make `$rb-assess-plan-safety` return `safe: false` with structured findings for policy violations, uncontrolled detrimental side effects, missing evidence, or material uncertainty;
+- prevent owned runtime paths from reading denied contents, including during snapshot and verification work, while clearly disclosing prior-context, denied-directory observability, and whole-host limitations;
+- use Pydantic for typed artifacts and deterministic validation, with Pydantic AI considered for role-specific tool allocation only after dependency, provider, packaging, and capability tests pass;
+- report framework-enforced tool allocation independently from instruction-only and host-enforced controls rather than treating them as one assurance ladder; and
+- record proposals, confirmations, policy hashes, denials, drift stops, framework-mediated tool calls, and final outcomes without storing protected contents or private model reasoning.
+
+Once implemented, `$rb-create-implementation-plan` will remind the user that policy authoring is an optional step before execution-route selection and that the policy is enforced only on the constrained route. Policy creation will use a proposal-and-confirm flow, an exclusive project lease, compare-and-swap persistence, and an auditable intent/commit sequence. A policy change will invalidate earlier plans and assessments without rewriting their historical records.
+
+The reviewed implementation plan is [`plans/2026-07-19-safe-operation-project-policy/IMPLEMENTATION_PLAN.md`](plans/2026-07-19-safe-operation-project-policy/IMPLEMENTATION_PLAN.md). Its execution route is currently `undecided`, and no implementation work has begun.
 
 In Claude Code, direct invocations use slash commands, for example `/rb-start-project`, `/rb-discuss`, `/rb-execute-plan`, and `/rb-implement-with-tests`.
 

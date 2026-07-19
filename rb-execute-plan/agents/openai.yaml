@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Execute Plan"
-  short_description: "Execute and verify implementation plans"
-  default_prompt: "Use $rb-execute-plan to execute or review a verified implementation phase plan."
+  short_description: "Coordinate and verify implementation phases"
+  default_prompt: "Use $rb-execute-plan to coordinate and track this existing implementation phase through verified completion."

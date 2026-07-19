@@ -48,7 +48,8 @@ Use this when the human wants continuity from durable project context rather tha
 
 ## Routing
 
-- If the next step is ordinary feature or product work, recommend `$rb-discuss` before `$rb-implement-with-tests`.
+- If an existing multi-step implementation plan or phase checklist must be continued, refined, or tracked, recommend `$rb-execute-plan`.
+- If the next step is one bounded ordinary feature or product change without plan-state ownership, recommend `$rb-discuss` before `$rb-implement-with-tests`.
 - If the next step is scientific, numerical, modelling, simulation, or domain-sensitive work, recommend `$rb-discuss` before `$rb-tdd-scientific-code`.
 - If the next step is a bug, regression, failing test, or surprising output, recommend `$rb-diagnose`.
 - If the next step is understanding an unfamiliar area, recommend `$rb-explain-codebase`.

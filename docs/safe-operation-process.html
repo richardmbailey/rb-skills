@@ -1,0 +1,2184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>How the RB Safe-Operation Process Works</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;max-width:736px;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="How the RB Safe-Operation Process Works" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;How the RB Safe-Operation Process Works&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(--background) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: light-dark(rgb(255 255 255), rgb(24 24 24));
+  --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
+  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --card-foreground: var(--foreground);
+  --popover: light-dark(rgb(255 255 255), rgb(45 45 45));
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
+  --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
+  --secondary: light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%));
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: light-dark(
+    rgb(26 28 31 / 49.4%),
+    rgb(255 255 255 / 49.8%)
+  );
+  --accent: light-dark(rgb(229 242 255), rgb(13 39 63));
+  --accent-foreground: var(--primary);
+  --destructive: light-dark(rgb(226 85 7), rgb(255 133 73));
+  --border: light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%));
+  --input: light-dark(
+    rgb(26 28 31 / 11.8%),
+    color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+  );
+  --ring: light-dark(rgb(51 156 255), rgb(131 195 255 / 76%));
+  --font-size-base: 14px;
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: 12.5px;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+  --color-background-primary: var(--background);
+  --color-text-primary: var(--foreground);
+  --color-border-secondary: var(--border);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--viz-font-weight-medium);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+    [aria-pressed=&quot;true&quot;],
+    [aria-selected=&quot;true&quot;],
+    .is-selected
+  ) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;safe-process-guide&quot;&gt;
+  &lt;style&gt;
+    #safe-process-guide {
+      --safe: var(--viz-series-3);
+      --caution: var(--viz-series-2);
+      --planned: var(--viz-series-5);
+      --control: var(--viz-series-1);
+      --agent: var(--viz-series-6);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      width: 100%;
+      color: var(--foreground);
+    }
+
+    #safe-process-guide .hero {
+      display: grid;
+      gap: 14px;
+      padding-block: 18px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #safe-process-guide .eyebrow,
+    #safe-process-guide .kicker {
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #safe-process-guide .hero p {
+      max-width: 68ch;
+      color: var(--muted-foreground);
+    }
+
+    #safe-process-guide .status-row,
+    #safe-process-guide .legend,
+    #safe-process-guide .inline-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      align-items: center;
+    }
+
+    #safe-process-guide .status {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      padding: 3px 9px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: var(--font-size-small);
+    }
+
+    #safe-process-guide .dot,
+    #safe-process-guide .legend-mark {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--control);
+    }
+
+    #safe-process-guide .dot.safe,
+    #safe-process-guide .legend-mark.safe { background: var(--safe); }
+    #safe-process-guide .dot.caution,
+    #safe-process-guide .legend-mark.caution { background: var(--caution); }
+    #safe-process-guide .dot.planned,
+    #safe-process-guide .legend-mark.planned { background: var(--planned); }
+    #safe-process-guide .legend-mark.agent { background: var(--agent); }
+
+    #safe-process-guide .toc {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 18px;
+      padding-block: 4px;
+    }
+
+    #safe-process-guide .toc a {
+      padding-block: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #safe-process-guide section {
+      display: grid;
+      gap: 14px;
+      scroll-margin-top: 16px;
+    }
+
+    #safe-process-guide section + section {
+      padding-top: 26px;
+      border-top: 1px solid var(--border);
+    }
+
+    #safe-process-guide .lead {
+      max-width: 72ch;
+      color: var(--muted-foreground);
+    }
+
+    #safe-process-guide .callout {
+      border-left: 4px solid var(--control);
+    }
+
+    #safe-process-guide .callout.safe { border-left-color: var(--safe); }
+    #safe-process-guide .callout.caution { border-left-color: var(--caution); }
+    #safe-process-guide .callout.planned { border-left-color: var(--planned); }
+
+    #safe-process-guide .callout p + p,
+    #safe-process-guide .prose p + p {
+      margin-top: 9px;
+    }
+
+    #safe-process-guide .diagram-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    #safe-process-guide .diagram {
+      display: block;
+      width: 100%;
+      height: auto;
+      color: var(--foreground);
+      overflow: visible;
+    }
+
+    #safe-process-guide .diagram .node {
+      fill: var(--card);
+      stroke: var(--border);
+      stroke-width: 1.5;
+    }
+
+    #safe-process-guide .diagram .node-control {
+      fill: color-mix(in srgb, var(--control) 15%, transparent);
+      stroke: var(--control);
+    }
+
+    #safe-process-guide .diagram .node-safe {
+      fill: color-mix(in srgb, var(--safe) 15%, transparent);
+      stroke: var(--safe);
+    }
+
+    #safe-process-guide .diagram .node-caution {
+      fill: color-mix(in srgb, var(--caution) 15%, transparent);
+      stroke: var(--caution);
+    }
+
+    #safe-process-guide .diagram .node-planned {
+      fill: color-mix(in srgb, var(--planned) 15%, transparent);
+      stroke: var(--planned);
+    }
+
+    #safe-process-guide .diagram .node-agent {
+      fill: color-mix(in srgb, var(--agent) 15%, transparent);
+      stroke: var(--agent);
+    }
+
+    #safe-process-guide .diagram .edge {
+      fill: none;
+      stroke: var(--muted-foreground);
+      stroke-width: 1.6;
+    }
+
+    #safe-process-guide .diagram .edge-safe { stroke: var(--safe); }
+    #safe-process-guide .diagram .edge-caution { stroke: var(--caution); }
+    #safe-process-guide .diagram .edge-planned { stroke: var(--planned); }
+    #safe-process-guide .diagram text {
+      fill: var(--foreground);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 400;
+      text-anchor: middle;
+    }
+
+    #safe-process-guide .diagram .small {
+      fill: var(--muted-foreground);
+      font-size: 10.5px;
+    }
+
+    #safe-process-guide .diagram .label {
+      font-weight: 500;
+    }
+
+    #safe-process-guide .caption {
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+    }
+
+    #safe-process-guide .steps {
+      display: grid;
+      gap: 0;
+      counter-reset: safe-step;
+    }
+
+    #safe-process-guide .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      padding-bottom: 18px;
+      counter-increment: safe-step;
+    }
+
+    #safe-process-guide .step::before {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 1px solid var(--control);
+      border-radius: 50%;
+      color: var(--foreground);
+      background: color-mix(in srgb, var(--control) 12%, var(--background));
+      content: counter(safe-step);
+      font-weight: 500;
+      z-index: 1;
+    }
+
+    #safe-process-guide .step::after {
+      position: absolute;
+      top: 32px;
+      bottom: 0;
+      left: 16px;
+      width: 1px;
+      background: var(--border);
+      content: &quot;&quot;;
+    }
+
+    #safe-process-guide .step:last-child::after { display: none; }
+    #safe-process-guide .step h3 { margin-bottom: 5px; }
+    #safe-process-guide .step p { color: var(--muted-foreground); }
+
+    #safe-process-guide .two-col,
+    #safe-process-guide .three-col {
+      display: grid;
+      gap: 12px;
+    }
+
+    #safe-process-guide .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #safe-process-guide .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    #safe-process-guide .mini-card {
+      min-width: 0;
+    }
+
+    #safe-process-guide .mini-card h3,
+    #safe-process-guide .mini-card h4 {
+      margin-bottom: 6px;
+    }
+
+    #safe-process-guide .mini-card p,
+    #safe-process-guide .mini-card li {
+      color: var(--muted-foreground);
+    }
+
+    #safe-process-guide ul,
+    #safe-process-guide ol {
+      margin: 0;
+      padding-inline-start: 20px;
+    }
+
+    #safe-process-guide li + li { margin-top: 5px; }
+
+    #safe-process-guide .plain-list {
+      display: grid;
+      gap: 7px;
+      padding: 0;
+      list-style: none;
+    }
+
+    #safe-process-guide .plain-list li {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+    }
+
+    #safe-process-guide .check {
+      color: var(--safe);
+      font-weight: 500;
+    }
+
+    #safe-process-guide .stop {
+      color: var(--caution);
+      font-weight: 500;
+    }
+
+    #safe-process-guide .planned-text {
+      color: var(--planned);
+      font-weight: 500;
+    }
+
+    #safe-process-guide .code-block {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+      color: var(--foreground);
+      background: var(--muted);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-small);
+      white-space: pre-wrap;
+    }
+
+    #safe-process-guide details {
+      padding-block: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #safe-process-guide summary {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    #safe-process-guide details &gt; div {
+      padding-top: 9px;
+      color: var(--muted-foreground);
+    }
+
+    #safe-process-guide .table td:first-child,
+    #safe-process-guide .table th:first-child {
+      width: 27%;
+    }
+
+    #safe-process-guide .table .current-cell {
+      border-left: 3px solid var(--safe);
+      padding-left: 10px;
+    }
+
+    #safe-process-guide .table .planned-cell {
+      border-left: 3px solid var(--planned);
+      padding-left: 10px;
+    }
+
+    #safe-process-guide .footer {
+      display: grid;
+      gap: 8px;
+      padding-block: 18px;
+      border-top: 1px solid var(--border);
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+    }
+
+    @media (max-width: 620px) {
+      #safe-process-guide .toc,
+      #safe-process-guide .two-col,
+      #safe-process-guide .three-col {
+        grid-template-columns: 1fr;
+      }
+
+      #safe-process-guide .table td:first-child,
+      #safe-process-guide .table th:first-child {
+        width: auto;
+      }
+    }
+
+    @media print {
+      #safe-process-guide {
+        gap: 18px;
+      }
+
+      #safe-process-guide section + section {
+        break-before: auto;
+      }
+
+      #safe-process-guide details &gt; div {
+        display: block;
+      }
+    }
+  &lt;/style&gt;
+
+  &lt;header class=&quot;hero&quot;&gt;
+    &lt;div class=&quot;eyebrow&quot;&gt;RB agent skills · safe-operation guide&lt;/div&gt;
+    &lt;h1&gt;How the RB safe-operation process works&lt;/h1&gt;
+    &lt;p&gt;This guide explains the optional constrained route that turns one implementation phase into a typed contract, assesses it, executes only an unchanged approved bundle, and verifies the result. It also explains the planned project-policy extension without pretending that extension is already available.&lt;/p&gt;
+    &lt;div class=&quot;status-row&quot; aria-label=&quot;Availability summary&quot;&gt;
+      &lt;span class=&quot;status&quot;&gt;&lt;span class=&quot;dot safe&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Current: three constrained skills and runtime&lt;/span&gt;
+      &lt;span class=&quot;status&quot;&gt;&lt;span class=&quot;dot caution&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Current assurance: semi-formal, not a sandbox&lt;/span&gt;
+      &lt;span class=&quot;status&quot;&gt;&lt;span class=&quot;dot planned&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Planned: natural-language project policy&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;p class=&quot;caption&quot;&gt;Evidence snapshot reviewed 19 July 2026 · runtime 0.1.0 · artifact schema 1.0&lt;/p&gt;
+  &lt;/header&gt;
+
+  &lt;nav aria-label=&quot;Guide contents&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;Contents&lt;/div&gt;
+    &lt;div class=&quot;toc&quot;&gt;
+      &lt;a href=&quot;#purpose&quot;&gt;1. Why the process exists&lt;/a&gt;
+      &lt;a href=&quot;#routes&quot;&gt;2. Standard or constrained&lt;/a&gt;
+      &lt;a href=&quot;#current-flow&quot;&gt;3. The current flow&lt;/a&gt;
+      &lt;a href=&quot;#skills&quot;&gt;4. What each skill does&lt;/a&gt;
+      &lt;a href=&quot;#contract&quot;&gt;5. The low-level contract&lt;/a&gt;
+      &lt;a href=&quot;#assessment&quot;&gt;6. How safety is assessed&lt;/a&gt;
+      &lt;a href=&quot;#identity&quot;&gt;7. Hashes and unchanged-plan checks&lt;/a&gt;
+      &lt;a href=&quot;#execution&quot;&gt;8. Execution and audit&lt;/a&gt;
+      &lt;a href=&quot;#repair&quot;&gt;9. Repair, pause, and resume&lt;/a&gt;
+      &lt;a href=&quot;#verification&quot;&gt;10. Verification&lt;/a&gt;
+      &lt;a href=&quot;#assurance&quot;&gt;11. What the guarantees mean&lt;/a&gt;
+      &lt;a href=&quot;#policy-today&quot;&gt;12. Policy today&lt;/a&gt;
+      &lt;a href=&quot;#planned-policy&quot;&gt;13. Planned policy authoring&lt;/a&gt;
+      &lt;a href=&quot;#examples&quot;&gt;14. Worked examples&lt;/a&gt;
+      &lt;a href=&quot;#usage&quot;&gt;15. How to use the tools&lt;/a&gt;
+      &lt;a href=&quot;#glossary&quot;&gt;16. Glossary and evidence&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/nav&gt;
+
+  &lt;section id=&quot;purpose&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;1 · Purpose&lt;/div&gt;
+    &lt;h2&gt;Why add a “safe” route at all?&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;An ordinary coding agent is good at adapting as it works. That flexibility is useful, but it also makes it harder to know exactly what was approved, what changed, and whether a later retry quietly widened the job. The constrained route adds explicit checkpoints around that flexibility.&lt;/p&gt;
+
+    &lt;div class=&quot;two-col&quot;&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;The problem it reduces&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Accidental expansion beyond the selected phase.&lt;/li&gt;
+          &lt;li&gt;Important side effects being missed.&lt;/li&gt;
+          &lt;li&gt;Execution using a plan or repository state that changed after review.&lt;/li&gt;
+          &lt;li&gt;A model treating source text, logs, or comments as instructions.&lt;/li&gt;
+          &lt;li&gt;“Done” being declared without evidence from the actual result.&lt;/li&gt;
+          &lt;li&gt;Failures and retries disappearing from the record.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;What it deliberately does not promise&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;It is not an operating-system sandbox.&lt;/li&gt;
+          &lt;li&gt;It does not defend against a malicious actor with equivalent filesystem authority.&lt;/li&gt;
+          &lt;li&gt;It cannot provide a complete trace of every child-agent action on the current host.&lt;/li&gt;
+          &lt;li&gt;It cannot turn a local hash into proof of identity, authorization, or tamper resistance.&lt;/li&gt;
+          &lt;li&gt;It does not make unsupported shell commands or test runners safe by describing them in prose.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout safe&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;The central idea:&lt;/strong&gt; preserve the model’s ability to solve a bounded coding problem, but put deterministic gates around the scope, permissions, evidence, state, and durable records.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;routes&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;2 · Route choice&lt;/div&gt;
+    &lt;h2&gt;The user chooses standard, constrained, or undecided&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;Creating an implementation plan does not automatically place the work in the constrained pipeline. The route is a user decision, recorded in the plan.&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 270&quot; role=&quot;img&quot; aria-labelledby=&quot;route-title route-desc&quot;&gt;
+        &lt;title id=&quot;route-title&quot;&gt;Route choice after an implementation plan&lt;/title&gt;
+        &lt;desc id=&quot;route-desc&quot;&gt;The implementation plan branches to standard execution, constrained execution one phase at a time, or an undecided stop.&lt;/desc&gt;
+        &lt;defs&gt;
+          &lt;marker id=&quot;route-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;8&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;currentColor&quot;&gt;&lt;/path&gt;&lt;/marker&gt;
+        &lt;/defs&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;235&quot; y=&quot;12&quot; width=&quot;230&quot; height=&quot;58&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;36&quot;&gt;Implementation plan created&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;54&quot;&gt;Route field must be explicit&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M350 70 V106 M350 106 H119 V128 M350 106 V128 M350 106 H581 V128&quot; marker-end=&quot;url(#route-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;20&quot; y=&quot;130&quot; width=&quot;198&quot; height=&quot;88&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;119&quot; y=&quot;154&quot;&gt;standard&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;119&quot; y=&quot;174&quot;&gt;rb-execute-plan coordinates&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;119&quot; y=&quot;191&quot;&gt;ordinary implementation skills&lt;/text&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;251&quot; y=&quot;130&quot; width=&quot;198&quot; height=&quot;88&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;154&quot;&gt;constrained&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;174&quot;&gt;compile → assess → execute&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;191&quot;&gt;one phase at a time&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;482&quot; y=&quot;130&quot; width=&quot;198&quot; height=&quot;88&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;581&quot; y=&quot;154&quot;&gt;undecided&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;581&quot; y=&quot;174&quot;&gt;do not enter constrained&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;581&quot; y=&quot;191&quot;&gt;pipeline yet&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;249&quot;&gt;Security-related subject matter alone never selects the constrained route.&lt;/text&gt;
+      &lt;/svg&gt;
+      &lt;p class=&quot;caption&quot;&gt;The constrained route is optional. It is a different way of carrying out an existing plan, not a replacement for planning.&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Choose&lt;/th&gt;&lt;th&gt;When it fits&lt;/th&gt;&lt;th&gt;Important trade-off&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;standard&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Normal development where the usual tests, review, and human oversight are enough.&lt;/td&gt;&lt;td&gt;More flexible and usually faster; it does not use the assessed low-level-plan envelope.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;constrained&lt;/code&gt;&lt;/td&gt;&lt;td&gt;A phase needs stronger scope control, explicit side-effect review, immutable handoffs, and durable evidence.&lt;/td&gt;&lt;td&gt;More ceremony; current supported operations are intentionally narrow.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;undecided&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The user wants the plan but is not ready to choose the execution route.&lt;/td&gt;&lt;td&gt;Execution waits; the system must not infer a route.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;current-flow&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;3 · Current system&lt;/div&gt;
+    &lt;h2&gt;The complete constrained flow&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;Only one current phase is compiled. Later phases remain visible in the original plan and in the working-diary handoff, but they are not compiled early against stale state.&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 535&quot; role=&quot;img&quot; aria-labelledby=&quot;flow-title flow-desc&quot;&gt;
+        &lt;title id=&quot;flow-title&quot;&gt;Current constrained process from phase selection to verification&lt;/title&gt;
+        &lt;desc id=&quot;flow-desc&quot;&gt;The coordinator selects one phase, creates a low-level plan, assesses it, stops on false, executes safe true, verifies, repairs if in scope, and records the handoff.&lt;/desc&gt;
+        &lt;defs&gt;
+          &lt;marker id=&quot;flow-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;8&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;currentColor&quot;&gt;&lt;/path&gt;&lt;/marker&gt;
+        &lt;/defs&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;210&quot; y=&quot;10&quot; width=&quot;280&quot; height=&quot;52&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;32&quot;&gt;rb-execute-plan selects one phase&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;49&quot;&gt;Original plan stays authoritative&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M350 62 V88&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;210&quot; y=&quot;90&quot; width=&quot;280&quot; height=&quot;66&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;114&quot;&gt;rb-create-low-level-plan&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;133&quot;&gt;Snapshot + typed operations + effects&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;147&quot;&gt;Canonical JSON and plan hash&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M350 156 V182&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node node-control&quot; x=&quot;210&quot; y=&quot;184&quot; width=&quot;280&quot; height=&quot;66&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;208&quot;&gt;rb-assess-plan-safety&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;227&quot;&gt;Deterministic gate, then fresh semantic review&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;241&quot;&gt;Machine verdict: safe true or false&lt;/text&gt;
+
+        &lt;path class=&quot;edge edge-caution&quot; d=&quot;M210 217 H112 V282&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M490 217 H588 V282&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;133&quot; y=&quot;207&quot;&gt;FALSE&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;567&quot; y=&quot;207&quot;&gt;TRUE&lt;/text&gt;
+
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;18&quot; y=&quot;284&quot; width=&quot;188&quot; height=&quot;84&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;112&quot; y=&quot;309&quot;&gt;Stop for a human&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;112&quot; y=&quot;328&quot;&gt;Revise and reassess, leave&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;112&quot; y=&quot;342&quot;&gt;the pipeline, or abandon&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;112&quot; y=&quot;356&quot;&gt;False stays false&lt;/text&gt;
+
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;494&quot; y=&quot;284&quot; width=&quot;188&quot; height=&quot;84&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;588&quot; y=&quot;309&quot;&gt;rb-safe-operation&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;588&quot; y=&quot;328&quot;&gt;Re-hash, revalidate, lease,&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;588&quot; y=&quot;342&quot;&gt;execute exact envelope&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;588&quot; y=&quot;356&quot;&gt;and append audit events&lt;/text&gt;
+
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M588 368 V396 H448&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;258&quot; y=&quot;382&quot; width=&quot;190&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;353&quot; y=&quot;407&quot;&gt;Separated verification&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;353&quot; y=&quot;426&quot;&gt;Verifier report + coordinator&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;353&quot; y=&quot;440&quot;&gt;product-state evidence&lt;/text&gt;
+
+        &lt;path class=&quot;edge&quot; d=&quot;M258 418 H201 V470 H275&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;218&quot; y=&quot;407&quot;&gt;in-envelope finding&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;275&quot; y=&quot;468&quot; width=&quot;156&quot; height=&quot;42&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;353&quot; y=&quot;493&quot;&gt;Repair, then verify again&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M431 489 H518 V418 H448&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M448 418 H590 V466&quot; marker-end=&quot;url(#flow-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;548&quot; y=&quot;407&quot;&gt;criteria met&lt;/text&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;535&quot; y=&quot;468&quot; width=&quot;110&quot; height=&quot;42&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;590&quot; y=&quot;493&quot;&gt;verified&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;steps&quot;&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Select one phase&lt;/h3&gt;&lt;p&gt;&lt;code&gt;$rb-execute-plan&lt;/code&gt; checks that the plan says &lt;code&gt;constrained&lt;/code&gt;, chooses the one current phase, preserves later phase IDs, and delegates compilation.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Compile the phase&lt;/h3&gt;&lt;p&gt;&lt;code&gt;$rb-create-low-level-plan&lt;/code&gt; converts prose into strict operations, path permissions, effects, evidence requirements, stop conditions, resource declarations, and verifier checks.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Assess the exact artifact&lt;/h3&gt;&lt;p&gt;&lt;code&gt;$rb-assess-plan-safety&lt;/code&gt; first runs deterministic checks. Only a passing preflight reaches the fresh semantic assessor.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Stop on false; execute only true&lt;/h3&gt;&lt;p&gt;A rejected bundle is immutable. A passing bundle authorizes only its exact plan, policy, snapshot, capability, and approval identities.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Revalidate immediately before use&lt;/h3&gt;&lt;p&gt;&lt;code&gt;$rb-safe-operation&lt;/code&gt; recomputes the plan hash and checks policy, assessment, runtime, instructions, paths, approvals, lease, and repository state before any operation.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Execute, observe, and record&lt;/h3&gt;&lt;p&gt;The coordinator holds the project lease, dispatches only approved adapters, compares agent reports with observed product state, and writes the control-plane event chain.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Verify in a separated context&lt;/h3&gt;&lt;p&gt;The verifier receives the contract and current evidence without executor private reasoning. Both verifier evidence and coordinator-observed state are required for &lt;code&gt;verified&lt;/code&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;step&quot;&gt;&lt;div&gt;&lt;h3&gt;Checkpoint and stop&lt;/h3&gt;&lt;p&gt;The run records its terminal state and exact next action in the external working diary. It does not silently begin the next phase.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;skills&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;4 · Skill responsibilities&lt;/div&gt;
+    &lt;h2&gt;What each tool does—and does not do&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The skills form a chain of narrow responsibilities. Keeping those jobs separate is part of the safety design.&lt;/p&gt;
+
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Skill&lt;/th&gt;&lt;th&gt;Its job&lt;/th&gt;&lt;th&gt;What it must not do&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-create-implementation-plan&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Creates the top-level phased plan and presents the route choice.&lt;/td&gt;&lt;td&gt;Does not silently select the constrained route or execute the work.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-execute-plan&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Coordinates the overall plan, chooses one current phase, and routes each phase to the right execution process.&lt;/td&gt;&lt;td&gt;Does not replace the low-level compiler, safety assessor, or operation coordinator.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-create-low-level-plan&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Compiles exactly one phase into a canonical typed proposal and fixed handoff.&lt;/td&gt;&lt;td&gt;Does not assess, execute, or compile later phases in advance.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-assess-plan-safety&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Runs deterministic and semantic assessment, producing immutable &lt;code&gt;safe: true&lt;/code&gt; or &lt;code&gt;safe: false&lt;/code&gt;.&lt;/td&gt;&lt;td&gt;Does not modify the product, trust planner reasoning, or turn uncertainty into approval.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-safe-operation&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Revalidates, leases, executes, audits, repairs within scope, verifies, and emits the durable handoff.&lt;/td&gt;&lt;td&gt;Does not widen the envelope, downgrade assurance, install dependencies during normal operation, or start the next phase.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-working-diary&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Preserves the current phase, remaining phases, hashes, state, limitations, and exact next action across sessions.&lt;/td&gt;&lt;td&gt;Does not authorize execution; every resume must revalidate the real bundle and repository state.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;$rb-implement-with-tests&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Implements one ordinary task under the standard route when normal command/test execution is available.&lt;/td&gt;&lt;td&gt;It is not the constrained operation executor and does not own multi-phase plan state.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout caution&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;Important current limitation:&lt;/strong&gt; the constrained first release activates only &lt;code&gt;read_file&lt;/code&gt;, &lt;code&gt;apply_patch&lt;/code&gt;, and bounded agent tasks limited to reading and patching. Typed &lt;code&gt;exec_argv&lt;/code&gt; and &lt;code&gt;check&lt;/code&gt; forms exist, but policy disables them until stronger containment has been reviewed. A bounded task cannot smuggle in a shell, test runner, subprocess, network call, or delegation.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;contract&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;5 · Typed contract&lt;/div&gt;
+    &lt;h2&gt;What a low-level plan actually contains&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The low-level plan is not a long prompt saying “be careful.” It is a closed, versioned data structure. Unknown fields are rejected.&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 380&quot; role=&quot;img&quot; aria-labelledby=&quot;envelope-title envelope-desc&quot;&gt;
+        &lt;title id=&quot;envelope-title&quot;&gt;Contents of the low-level operation envelope&lt;/title&gt;
+        &lt;desc id=&quot;envelope-desc&quot;&gt;An approved operation is surrounded by scope, path, capability, effect, evidence, approval, resource, and verification boundaries.&lt;/desc&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;215&quot; y=&quot;140&quot; width=&quot;270&quot; height=&quot;100&quot; rx=&quot;16&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;169&quot;&gt;One operation&lt;/text&gt;
+        &lt;text x=&quot;350&quot; y=&quot;190&quot;&gt;exact action&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;207&quot;&gt;or bounded agent task&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;224&quot;&gt;stable ID + dependencies&lt;/text&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;28&quot; y=&quot;18&quot; width=&quot;190&quot; height=&quot;68&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;123&quot; y=&quot;43&quot;&gt;Goal and non-goals&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;123&quot; y=&quot;62&quot;&gt;What success means&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M180 86 L265 140&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;255&quot; y=&quot;18&quot; width=&quot;190&quot; height=&quot;68&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;43&quot;&gt;Path contract&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;62&quot;&gt;Read/create/modify/delete&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M350 86 V140&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;482&quot; y=&quot;18&quot; width=&quot;190&quot; height=&quot;68&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;577&quot; y=&quot;43&quot;&gt;Allowed capabilities&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;577&quot; y=&quot;62&quot;&gt;Tools, environment, network&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M520 86 L435 140&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;28&quot; y=&quot;294&quot; width=&quot;190&quot; height=&quot;68&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;123&quot; y=&quot;319&quot;&gt;Effects and recovery&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;123&quot; y=&quot;338&quot;&gt;Direct, indirect, cumulative&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M180 294 L265 240&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;255&quot; y=&quot;294&quot; width=&quot;190&quot; height=&quot;68&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;319&quot;&gt;Evidence and approvals&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;338&quot;&gt;Provenance + exact gates&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M350 294 V240&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;482&quot; y=&quot;294&quot; width=&quot;190&quot; height=&quot;68&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;577&quot; y=&quot;319&quot;&gt;Limits and verification&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;577&quot; y=&quot;338&quot;&gt;Stops, checks, ceilings&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M520 294 L435 240&quot;&gt;&lt;/path&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;three-col&quot;&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;&lt;h3&gt;Exact action&lt;/h3&gt;&lt;p&gt;A known adapter with exact targets and inputs. Today the active examples are bounded file reading and patch application.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;&lt;h3&gt;Bounded agent task&lt;/h3&gt;&lt;p&gt;A semantic coding task with a goal and limited room to adapt, but no authority to add a path, tool, permission, objective, effect class, or external target.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;&lt;h3&gt;Blocking diagnostic&lt;/h3&gt;&lt;p&gt;If the prose is ambiguous, the effect cannot be bounded, or the required operation is unsupported, compilation stops instead of inventing a workaround.&lt;/p&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Every material effect is described&lt;/h3&gt;
+    &lt;p class=&quot;lead&quot;&gt;Effects include more than the intended file change. The contract records affected parties, data sensitivity, security relevance, severity, likelihood, exposure, reversibility, detectability, mitigation, recovery, cost, availability, targets, observation sources, and evidence.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;assessment&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;6 · Assessment&lt;/div&gt;
+    &lt;h2&gt;Safety is both deterministic and semantic&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;Some questions have exact answers; others require judgment. The process uses each kind of reasoning where it belongs.&lt;/p&gt;
+
+    &lt;div class=&quot;two-col&quot;&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;Deterministic gate&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Strict schema and version validation.&lt;/li&gt;
+          &lt;li&gt;Canonical bytes and typed hashes.&lt;/li&gt;
+          &lt;li&gt;Plan, source phase, policy, and snapshot identity.&lt;/li&gt;
+          &lt;li&gt;Path containment and protected roots.&lt;/li&gt;
+          &lt;li&gt;Operation dependency graph.&lt;/li&gt;
+          &lt;li&gt;Allowed tools, transitive capabilities, environment, and network.&lt;/li&gt;
+          &lt;li&gt;Required approvals and host capabilities.&lt;/li&gt;
+          &lt;li&gt;Evidence coverage and verifier checks.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;Fresh semantic assessment&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Does the contract faithfully implement the phase?&lt;/li&gt;
+          &lt;li&gt;Is hidden or accidental scope missing?&lt;/li&gt;
+          &lt;li&gt;Could tools or dependencies cause undeclared behavior?&lt;/li&gt;
+          &lt;li&gt;Are there detrimental side effects—direct, indirect, cumulative, or caused by verification?&lt;/li&gt;
+          &lt;li&gt;Is recovery realistic?&lt;/li&gt;
+          &lt;li&gt;Does evidence contain prompt injection?&lt;/li&gt;
+          &lt;li&gt;Is any material uncertainty still unresolved?&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 240&quot; role=&quot;img&quot; aria-labelledby=&quot;assessment-title assessment-desc&quot;&gt;
+        &lt;title id=&quot;assessment-title&quot;&gt;Safety verdict logic&lt;/title&gt;
+        &lt;desc id=&quot;assessment-desc&quot;&gt;A deterministic failure becomes safe false without a semantic call. A deterministic pass goes to semantic assessment, which must also pass for safe true.&lt;/desc&gt;
+        &lt;defs&gt;&lt;marker id=&quot;assessment-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;8&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;currentColor&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;18&quot; y=&quot;76&quot; width=&quot;180&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;108&quot; y=&quot;101&quot;&gt;Deterministic preflight&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;108&quot; y=&quot;121&quot;&gt;Exact checks first&lt;/text&gt;
+        &lt;path class=&quot;edge edge-caution&quot; d=&quot;M108 148 V192 H250&quot; marker-end=&quot;url(#assessment-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;150&quot; y=&quot;183&quot;&gt;any failure&lt;/text&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M198 112 H270&quot; marker-end=&quot;url(#assessment-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;234&quot; y=&quot;101&quot;&gt;pass&lt;/text&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;272&quot; y=&quot;76&quot; width=&quot;180&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;362&quot; y=&quot;101&quot;&gt;Semantic assessor&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;362&quot; y=&quot;121&quot;&gt;Fresh bounded context&lt;/text&gt;
+        &lt;path class=&quot;edge edge-caution&quot; d=&quot;M362 148 V192 H250&quot; marker-end=&quot;url(#assessment-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M452 112 H520&quot; marker-end=&quot;url(#assessment-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;486&quot; y=&quot;101&quot;&gt;pass&lt;/text&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;522&quot; y=&quot;76&quot; width=&quot;160&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;602&quot; y=&quot;101&quot;&gt;safe: true&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;602&quot; y=&quot;121&quot;&gt;Exact bundle only&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;170&quot; y=&quot;190&quot; width=&quot;160&quot; height=&quot;42&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;250&quot; y=&quot;215&quot;&gt;safe: false&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout caution&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;FALSE triggers human intervention.&lt;/strong&gt; Findings name the violated invariant, affected operations/effects, evidence, severity, and required remediation or decision. A human can revise and reassess, leave the constrained pipeline, approve an already declared exact gate through the bounded procedure, or abandon. None of those choices changes the old false artifact into true.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;identity&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;7 · Identity&lt;/div&gt;
+    &lt;h2&gt;Hashes answer “is this the same artifact?”&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The system repeatedly checks that the thing being used is the thing that was assessed. This includes the complete low-level plan at the moment of execution—not just the policy.&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 345&quot; role=&quot;img&quot; aria-labelledby=&quot;hash-title hash-desc&quot;&gt;
+        &lt;title id=&quot;hash-title&quot;&gt;Artifact and hash lineage&lt;/title&gt;
+        &lt;desc id=&quot;hash-desc&quot;&gt;The source phase and snapshot contribute to the low-level plan hash. Policy and capabilities join at assessment. Execution recomputes all identities before acting.&lt;/desc&gt;
+        &lt;defs&gt;&lt;marker id=&quot;hash-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;8&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;currentColor&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;16&quot; y=&quot;20&quot; width=&quot;150&quot; height=&quot;56&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;91&quot; y=&quot;44&quot;&gt;Source phase&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;91&quot; y=&quot;62&quot;&gt;text + hash&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;16&quot; y=&quot;106&quot; width=&quot;150&quot; height=&quot;56&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;91&quot; y=&quot;130&quot;&gt;Repository snapshot&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;91&quot; y=&quot;148&quot;&gt;state + instructions&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M166 48 H194 V84 H222&quot; marker-end=&quot;url(#hash-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M166 134 H194 V116 H222&quot; marker-end=&quot;url(#hash-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;224&quot; y=&quot;54&quot; width=&quot;190&quot; height=&quot;92&quot; rx=&quot;14&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;319&quot; y=&quot;80&quot;&gt;Canonical low-level plan&lt;/text&gt;&lt;text x=&quot;319&quot; y=&quot;102&quot;&gt;plan_hash&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;319&quot; y=&quot;121&quot;&gt;complete typed payload&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M414 100 H470&quot; marker-end=&quot;url(#hash-arrow)&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node&quot; x=&quot;16&quot; y=&quot;214&quot; width=&quot;182&quot; height=&quot;58&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;107&quot; y=&quot;238&quot;&gt;Global/project policy&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;107&quot; y=&quot;257&quot;&gt;monotonic merge + hash&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;224&quot; y=&quot;214&quot; width=&quot;190&quot; height=&quot;58&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;319&quot; y=&quot;238&quot;&gt;Host capabilities&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;319&quot; y=&quot;257&quot;&gt;observed profile + hash&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M198 243 H438 V142 H470&quot; marker-end=&quot;url(#hash-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M414 243 H452 V154 H470&quot; marker-end=&quot;url(#hash-arrow)&quot;&gt;&lt;/path&gt;
+
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;472&quot; y=&quot;66&quot; width=&quot;210&quot; height=&quot;92&quot; rx=&quot;14&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;577&quot; y=&quot;92&quot;&gt;Assessment bundle&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;577&quot; y=&quot;114&quot;&gt;plan + policy + snapshot&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;577&quot; y=&quot;133&quot;&gt;+ capability hashes&lt;/text&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M577 158 V218&quot; marker-end=&quot;url(#hash-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;452&quot; y=&quot;220&quot; width=&quot;250&quot; height=&quot;66&quot; rx=&quot;14&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;577&quot; y=&quot;245&quot;&gt;Execution preflight&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;577&quot; y=&quot;265&quot;&gt;re-read, recompute, compare&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;326&quot;&gt;Any mismatch stops before the next action.&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;A hash is an identity check, not a safety certificate.&lt;/strong&gt; It can show that bytes match an expected value when the expected value and hashing process are trusted. It does not itself grant permission, prove who acted, prevent an operation, or make local files tamper-proof.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;execution&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;8 · Execution and audit&lt;/div&gt;
+    &lt;h2&gt;The coordinator is the control-plane owner&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;Agents propose. The deterministic coordinator decides whether a proposal is valid and owns durable run state. Under the workflow contract, the current leased executor is the only role permitted to make approved product changes; the current host does not turn that role rule into a separate operating-system identity.&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 390&quot; role=&quot;img&quot; aria-labelledby=&quot;planes-title planes-desc&quot;&gt;
+        &lt;title id=&quot;planes-title&quot;&gt;Product plane and control plane&lt;/title&gt;
+        &lt;desc id=&quot;planes-desc&quot;&gt;The coordinator owns canonical plans, assessments, lease, lifecycle, audit, and verification. The executor alone performs approved product changes. Planner, assessor, and verifier submit proposals.&lt;/desc&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;20&quot; y=&quot;28&quot; width=&quot;660&quot; height=&quot;152&quot; rx=&quot;16&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;51&quot;&gt;Control plane · coordinator is the sole durable writer&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;44&quot; y=&quot;70&quot; width=&quot;132&quot; height=&quot;72&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;110&quot; y=&quot;95&quot;&gt;Plan + policy&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;110&quot; y=&quot;115&quot;&gt;canonical artifacts&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;204&quot; y=&quot;70&quot; width=&quot;132&quot; height=&quot;72&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;270&quot; y=&quot;95&quot;&gt;Assessment&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;270&quot; y=&quot;115&quot;&gt;true/false + findings&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;364&quot; y=&quot;70&quot; width=&quot;132&quot; height=&quot;72&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;430&quot; y=&quot;95&quot;&gt;Lease + lifecycle&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;430&quot; y=&quot;115&quot;&gt;one run mutates&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;524&quot; y=&quot;70&quot; width=&quot;132&quot; height=&quot;72&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;590&quot; y=&quot;95&quot;&gt;Audit + verify&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;590&quot; y=&quot;115&quot;&gt;event chain&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M350 180 V220&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;20&quot; y=&quot;222&quot; width=&quot;660&quot; height=&quot;142&quot; rx=&quot;16&quot;&gt;&lt;/rect&gt;
+        &lt;text class=&quot;label&quot; x=&quot;350&quot; y=&quot;247&quot;&gt;Product plane · target repository and declared effects&lt;/text&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;72&quot; y=&quot;270&quot; width=&quot;164&quot; height=&quot;64&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;154&quot; y=&quot;295&quot;&gt;Leased executor&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;154&quot; y=&quot;315&quot;&gt;approved workflow envelope&lt;/text&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M236 302 H294&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;296&quot; y=&quot;270&quot; width=&quot;164&quot; height=&quot;64&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;378&quot; y=&quot;295&quot;&gt;Product files&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;378&quot; y=&quot;315&quot;&gt;declared paths/effects&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M460 302 H516&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;518&quot; y=&quot;270&quot; width=&quot;110&quot; height=&quot;64&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;573&quot; y=&quot;295&quot;&gt;Verifier&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;573&quot; y=&quot;315&quot;&gt;reports only&lt;/text&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;382&quot;&gt;Planner, assessor, executor, and verifier responses are evidence proposals—not durable authority.&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Preflight immediately before mutation&lt;/h3&gt;
+    &lt;ul class=&quot;plain-list&quot;&gt;
+      &lt;li&gt;&lt;span class=&quot;check&quot;&gt;✓&lt;/span&gt;&lt;span&gt;Revalidate runtime, schema, source tree, lockfile, installed package, launcher, and manifest identities.&lt;/span&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;span class=&quot;check&quot;&gt;✓&lt;/span&gt;&lt;span&gt;Recompute plan, assessment, policy, snapshot, approval, and instruction identities.&lt;/span&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;span class=&quot;check&quot;&gt;✓&lt;/span&gt;&lt;span&gt;Acquire the one project mutation lease at &lt;code&gt;.rb-safe-operation/execution.lease&lt;/code&gt;; never steal a live, stale, or uncertain lease.&lt;/span&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;span class=&quot;check&quot;&gt;✓&lt;/span&gt;&lt;span&gt;Repeat path containment, symlink/inode/device, preimage, approval, and concurrent-change checks immediately before every mutation.&lt;/span&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;span class=&quot;check&quot;&gt;✓&lt;/span&gt;&lt;span&gt;Stop rather than overwrite unexpected user work or accept new scope.&lt;/span&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;h3&gt;Durable records&lt;/h3&gt;
+    &lt;p class=&quot;lead&quot;&gt;Each run stores its control state under &lt;code&gt;.rb-safe-operation/runs/&amp;lt;run-id&amp;gt;/&lt;/code&gt;. Events are canonical, typed, redacted, numbered, and hash-chained. This makes accidental corruption and broken continuity visible. “Append-only” describes the workflow contract; project-local storage is not malicious-tamper-proof.&lt;/p&gt;
+
+    &lt;div class=&quot;inline-list&quot; aria-label=&quot;Audit event chain&quot;&gt;
+      &lt;code&gt;event 000&lt;/code&gt;&lt;span aria-hidden=&quot;true&quot;&gt;→&lt;/span&gt;&lt;code&gt;event 001&lt;/code&gt;&lt;span aria-hidden=&quot;true&quot;&gt;→&lt;/span&gt;&lt;code&gt;event 002&lt;/code&gt;&lt;span aria-hidden=&quot;true&quot;&gt;→&lt;/span&gt;&lt;code&gt;event head hash&lt;/code&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;repair&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;9 · Repair and durability&lt;/div&gt;
+    &lt;h2&gt;Repair can adapt, but only inside the approved envelope&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The system avoids an unnecessarily small numeric retry cap for reversible local debugging. “Unbounded” does not mean uncontrolled.&lt;/p&gt;
+
+    &lt;div class=&quot;two-col&quot;&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;&lt;code&gt;attempt_limit: &quot;unbounded&quot;&lt;/code&gt; means&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;No workflow-level numeric ceiling on eligible reversible local repair attempts.&lt;/li&gt;
+          &lt;li&gt;Each attempt remains inside the same goal, paths, tools, permissions, and effect ceiling.&lt;/li&gt;
+          &lt;li&gt;Repeated wording alone does not trigger a fixed stop.&lt;/li&gt;
+          &lt;li&gt;The record captures the hypothesis, observed result, reconsidered assumption, and next strategy.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;It does not mean&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Infinite time, cost, context, bytes, or host resources.&lt;/li&gt;
+          &lt;li&gt;Permission to replay destructive or external actions freely.&lt;/li&gt;
+          &lt;li&gt;Permission to add a new tool, root, target, objective, or effect.&lt;/li&gt;
+          &lt;li&gt;Permission to ignore a host pause, new uncertainty, or changed repository state.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 360&quot; role=&quot;img&quot; aria-labelledby=&quot;state-title state-desc&quot;&gt;
+        &lt;title id=&quot;state-title&quot;&gt;Simplified safe-operation state machine&lt;/title&gt;
+        &lt;desc id=&quot;state-desc&quot;&gt;A run moves from drafting and validating to rejected or approved. Approved executes, verifies, may repair, may pause, and succeeds only at verified. Human required and other terminal states do not resume in place.&lt;/desc&gt;
+        &lt;defs&gt;&lt;marker id=&quot;state-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;8&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;currentColor&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;18&quot; y=&quot;34&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;74&quot; y=&quot;61&quot;&gt;drafting&lt;/text&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;166&quot; y=&quot;34&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;222&quot; y=&quot;61&quot;&gt;validating&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;314&quot; y=&quot;6&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;370&quot; y=&quot;33&quot;&gt;rejected&lt;/text&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;314&quot; y=&quot;82&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;370&quot; y=&quot;109&quot;&gt;approved&lt;/text&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;462&quot; y=&quot;82&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;518&quot; y=&quot;109&quot;&gt;executing&lt;/text&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;462&quot; y=&quot;178&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;518&quot; y=&quot;205&quot;&gt;verifying&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;314&quot; y=&quot;178&quot; width=&quot;112&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;370&quot; y=&quot;205&quot;&gt;repairing&lt;/text&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;610&quot; y=&quot;178&quot; width=&quot;76&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;648&quot; y=&quot;205&quot;&gt;verified&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;72&quot; y=&quot;284&quot; width=&quot;136&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;140&quot; y=&quot;311&quot;&gt;paused_resource&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;272&quot; y=&quot;284&quot; width=&quot;136&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;340&quot; y=&quot;311&quot;&gt;human_required&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;472&quot; y=&quot;284&quot; width=&quot;92&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;518&quot; y=&quot;311&quot;&gt;failed&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;594&quot; y=&quot;284&quot; width=&quot;92&quot; height=&quot;44&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;640&quot; y=&quot;311&quot;&gt;abandoned&lt;/text&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M130 56 H166&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-caution&quot; d=&quot;M278 48 H314&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M278 65 L314 94&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M426 104 H462&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M518 126 V178&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M462 200 H426&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge&quot; d=&quot;M370 178 V150 H490 V126&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-safe&quot; d=&quot;M574 200 H610&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-caution&quot; d=&quot;M250 222 V270 H140 V284&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;path class=&quot;edge edge-caution&quot; d=&quot;M340 222 V284&quot; marker-end=&quot;url(#state-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;text class=&quot;small&quot; x=&quot;350&quot; y=&quot;350&quot;&gt;Only paused_resource resumes in place; every resume revalidates the complete bundle and repository state.&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;verification&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;10 · Verification&lt;/div&gt;
+    &lt;h2&gt;“The executor says it worked” is not enough&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;A successful terminal state requires two distinct kinds of evidence: what the coordinator can observe in the product state, and what the separated verifier reports against the contract.&lt;/p&gt;
+
+    &lt;div class=&quot;three-col&quot;&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;&lt;h3&gt;Coordinator evidence&lt;/h3&gt;&lt;p&gt;Snapshot and diff observations tied to the exact repository and run. This is &lt;code&gt;coordinator_observed&lt;/code&gt;, not a complete host trace.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;&lt;h3&gt;Verifier evidence&lt;/h3&gt;&lt;p&gt;A typed proposal from a fresh requested context covering every success criterion, verifier check, observed effect, and finding.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;&lt;h3&gt;Final rule&lt;/h3&gt;&lt;p&gt;&lt;code&gt;verified&lt;/code&gt; requires both sources, no blocking finding, no undeclared material effect, and matching plan/assessment/snapshot identities.&lt;/p&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout caution&quot;&gt;
+      &lt;p&gt;The current host does not prove that the verifier has a separate operating-system identity or a complete absence of write tools. Freshness and read-only behavior are requested and recorded as &lt;code&gt;instruction_only&lt;/code&gt;; therefore &lt;code&gt;independent_context&lt;/code&gt; remains false unless a future host can attest stronger separation.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;assurance&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;11 · Assurance language&lt;/div&gt;
+    &lt;h2&gt;The labels describe different properties&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The process avoids collapsing identity, permission, prevention, observation, and tamper resistance into a vague word such as “secure.”&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 300&quot; role=&quot;img&quot; aria-labelledby=&quot;assurance-title assurance-desc&quot;&gt;
+        &lt;title id=&quot;assurance-title&quot;&gt;Assurance properties and current evidence levels&lt;/title&gt;
+        &lt;desc id=&quot;assurance-desc&quot;&gt;Identity uses canonical hashes. Authorization uses policy and approvals. Role isolation is instruction-only. Product observation is coordinator observed. Complete host trace and malicious tamper resistance are not provided.&lt;/desc&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;24&quot; y=&quot;20&quot; width=&quot;652&quot; height=&quot;42&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;138&quot; y=&quot;46&quot;&gt;Identity&lt;/text&gt;&lt;text x=&quot;428&quot; y=&quot;46&quot;&gt;canonical bytes + typed hashes&lt;/text&gt;
+        &lt;rect class=&quot;node node-safe&quot; x=&quot;24&quot; y=&quot;76&quot; width=&quot;652&quot; height=&quot;42&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;138&quot; y=&quot;102&quot;&gt;Authorization&lt;/text&gt;&lt;text x=&quot;428&quot; y=&quot;102&quot;&gt;global/project policy + exact gates&lt;/text&gt;
+        &lt;rect class=&quot;node node-caution&quot; x=&quot;24&quot; y=&quot;132&quot; width=&quot;652&quot; height=&quot;42&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;138&quot; y=&quot;158&quot;&gt;Role isolation&lt;/text&gt;&lt;text x=&quot;428&quot; y=&quot;158&quot;&gt;instruction-only on current host&lt;/text&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;24&quot; y=&quot;188&quot; width=&quot;652&quot; height=&quot;42&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;138&quot; y=&quot;214&quot;&gt;Product observation&lt;/text&gt;&lt;text x=&quot;428&quot; y=&quot;214&quot;&gt;coordinator-observed state&lt;/text&gt;
+        &lt;rect class=&quot;node&quot; x=&quot;24&quot; y=&quot;244&quot; width=&quot;652&quot; height=&quot;42&quot; rx=&quot;10&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;138&quot; y=&quot;270&quot;&gt;Not claimed&lt;/text&gt;&lt;text x=&quot;428&quot; y=&quot;270&quot;&gt;complete host trace or malicious-tamper proof&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Label&lt;/th&gt;&lt;th&gt;Plain-language meaning&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;instruction_only&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The role is told to follow a restriction, but the current host does not technically remove every conflicting capability.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;agent_reported&lt;/code&gt;&lt;/td&gt;&lt;td&gt;An agent says something happened. The claim is evidence, not a complete trace.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;coordinator_observed&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The deterministic coordinator measured a state or comparison it owns.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;host_observed&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The host independently observed an event. First-release low-level plans may not invent this provenance.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;host_enforced&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The host technically prevents a capability or action. The current semi-formal profile does not claim this for assessor/verifier role isolation.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;unknown&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The property has not been established. Required unknowns fail closed.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Why child traces are called incomplete&lt;/h3&gt;
+    &lt;p class=&quot;lead&quot;&gt;The coordinator receives a child agent’s final response, but the current Codex host does not guarantee a complete parent-visible record of every child action. A product comparison may detect a lasting file change. It cannot prove that a child never briefly read a secret, made an external request, or caused a transient effect that left no visible repository change.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;policy-today&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;12 · Policy today&lt;/div&gt;
+    &lt;h2&gt;The current runtime already has a typed narrowing policy&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The installed global policy is the immutable upper bound for a run. A current schema-1.0 &lt;code&gt;ProjectPolicy&lt;/code&gt; can narrow that baseline through a closed merge algebra when an integrator explicitly supplies it to the runtime. The user-friendly, automatically discovered repository-root policy file and natural-language authoring skill are not implemented yet.&lt;/p&gt;
+
+    &lt;div class=&quot;two-col&quot;&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;Current global policy allows&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;code&gt;exact_action&lt;/code&gt; and &lt;code&gt;bounded_agent_task&lt;/code&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;code&gt;read_file&lt;/code&gt; and &lt;code&gt;apply_patch&lt;/code&gt;.&lt;/li&gt;
+          &lt;li&gt;Bounded agent tools &lt;code&gt;read&lt;/code&gt; and &lt;code&gt;apply_patch&lt;/code&gt;.&lt;/li&gt;
+          &lt;li&gt;Repository-local reads, creates, modifications, deletes, and local resource effects when fully declared and otherwise permitted.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card mini-card&quot;&gt;
+        &lt;h3&gt;Current global policy denies or gates&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;External writes, credential access, and irreversible effect classes.&lt;/li&gt;
+          &lt;li&gt;Shells, inline interpreters, task runners, plugins, dynamic imports, and undeclared child-process potential.&lt;/li&gt;
+          &lt;li&gt;Ambient environment, network grants, or executable permissions that were not explicitly provided.&lt;/li&gt;
+          &lt;li&gt;Destructive, privacy-sensitive, security-sensitive, costly, external, or irreversible effects without their declared approval gates.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout&quot;&gt;
+      &lt;p&gt;A project policy can only narrow the global baseline. It cannot activate a disabled adapter, add a network grant that the global policy lacks, increase a resource maximum, remove a required approval, or lower an enforcement requirement.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;planned-policy&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;13 · Planned extension&lt;/div&gt;
+    &lt;h2&gt;Natural-language project policy and stronger tool allocation&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;&lt;span class=&quot;planned-text&quot;&gt;This section is a reviewed implementation plan, not current behavior.&lt;/span&gt; The planned extension will make project-specific restrictions easy to author while preserving deterministic authority.&lt;/p&gt;
+
+    &lt;div class=&quot;diagram-wrap&quot;&gt;
+      &lt;svg class=&quot;diagram&quot; viewBox=&quot;0 0 700 340&quot; role=&quot;img&quot; aria-labelledby=&quot;policy-title policy-desc&quot;&gt;
+        &lt;title id=&quot;policy-title&quot;&gt;Planned natural-language policy authoring flow&lt;/title&gt;
+        &lt;desc id=&quot;policy-desc&quot;&gt;The user states a rule. A bounded semantic translator proposes typed rules. A deterministic coordinator validates and previews. The user confirms the exact proposal. The coordinator leases, compare-and-swaps, audits, and writes the canonical root policy.&lt;/desc&gt;
+        &lt;defs&gt;&lt;marker id=&quot;policy-arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;8&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;currentColor&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
+        &lt;rect class=&quot;node node-planned&quot; x=&quot;18&quot; y=&quot;20&quot; width=&quot;180&quot; height=&quot;64&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;108&quot; y=&quot;44&quot;&gt;User states a rule&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;108&quot; y=&quot;64&quot;&gt;“Do not read or write x.txt”&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M198 52 H260&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-agent&quot; x=&quot;262&quot; y=&quot;20&quot; width=&quot;180&quot; height=&quot;64&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;352&quot; y=&quot;44&quot;&gt;Semantic translator&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;352&quot; y=&quot;64&quot;&gt;typed proposal only&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M442 52 H504&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;506&quot; y=&quot;20&quot; width=&quot;176&quot; height=&quot;64&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;594&quot; y=&quot;44&quot;&gt;Deterministic validator&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;594&quot; y=&quot;64&quot;&gt;paths + merge + schema&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M594 84 V124&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;478&quot; y=&quot;126&quot; width=&quot;232&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;594&quot; y=&quot;150&quot;&gt;Preview + proposal hash&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;594&quot; y=&quot;169&quot;&gt;scope, denials, impact, limits&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;594&quot; y=&quot;185&quot;&gt;no JSON authoring required&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M478 162 H414&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-planned&quot; x=&quot;234&quot; y=&quot;126&quot; width=&quot;180&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;324&quot; y=&quot;150&quot;&gt;Human confirms&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;324&quot; y=&quot;169&quot;&gt;exact proposal + prior hash&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;324&quot; y=&quot;185&quot;&gt;relaxation warning if needed&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M234 162 H170&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;18&quot; y=&quot;126&quot; width=&quot;152&quot; height=&quot;72&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;94&quot; y=&quot;150&quot;&gt;Policy coordinator&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;94&quot; y=&quot;169&quot;&gt;exclusive lease&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;94&quot; y=&quot;185&quot;&gt;revalidate identities&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M94 198 V238&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-planned&quot; x=&quot;18&quot; y=&quot;240&quot; width=&quot;300&quot; height=&quot;78&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;168&quot; y=&quot;266&quot;&gt;.rb-safe-operation-policy.json&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;168&quot; y=&quot;286&quot;&gt;atomic compare-and-swap write&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;168&quot; y=&quot;302&quot;&gt;exact source hash&lt;/text&gt;
+        &lt;path class=&quot;edge edge-planned&quot; d=&quot;M318 279 H382&quot; marker-end=&quot;url(#policy-arrow)&quot;&gt;&lt;/path&gt;
+        &lt;rect class=&quot;node node-control&quot; x=&quot;384&quot; y=&quot;240&quot; width=&quot;298&quot; height=&quot;78&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;label&quot; x=&quot;533&quot; y=&quot;266&quot;&gt;Intent + committed audit events&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;533&quot; y=&quot;286&quot;&gt;global/source/effective identities&lt;/text&gt;&lt;text class=&quot;small&quot; x=&quot;533&quot; y=&quot;302&quot;&gt;old artifacts remain immutable&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Planned path vocabulary&lt;/h3&gt;
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Rule part&lt;/th&gt;&lt;th&gt;Meaning&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;path&lt;/code&gt;&lt;/td&gt;&lt;td&gt;A canonical project-relative path. Absolute paths, &lt;code&gt;..&lt;/code&gt;, aliases, and uncertain identities fail closed.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;scope: exact&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Only the named file or directory.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;scope: subtree&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The directory and every descendant, matched by path components rather than string prefixes.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;deny: read&lt;/code&gt;&lt;/td&gt;&lt;td&gt;No content read; for a denied subtree, no descendant-name enumeration. Minimal hidden metadata may be used only for containment.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;deny: create&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The path cannot be created, including a future path that does not exist yet.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;deny: modify&lt;/code&gt;&lt;/td&gt;&lt;td&gt;No content, permission, ownership, extended-attribute, or link-target change.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;deny: delete&lt;/code&gt;&lt;/td&gt;&lt;td&gt;No removal or move-away. Parent operations are checked so deleting a directory cannot bypass a child denial.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Current versus planned&lt;/h3&gt;
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Area&lt;/th&gt;&lt;th&gt;Current release&lt;/th&gt;&lt;th&gt;Planned extension&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;Project policy input&lt;/td&gt;&lt;td class=&quot;current-cell&quot;&gt;An integrator may explicitly supply a typed schema-1.0 narrowing policy to current runtime commands; there is no automatic root-file discovery.&lt;/td&gt;&lt;td class=&quot;planned-cell&quot;&gt;One automatically discovered root file with an explicit absence identity.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Authoring&lt;/td&gt;&lt;td class=&quot;current-cell&quot;&gt;The user/integrator must supply structured policy; there is no natural-language authoring skill.&lt;/td&gt;&lt;td class=&quot;planned-cell&quot;&gt;&lt;code&gt;$rb-create-safe-operation-policy&lt;/code&gt; converts natural language into a typed proposal, preview, and confirmed write.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Path rules&lt;/td&gt;&lt;td class=&quot;current-cell&quot;&gt;Root intersections and existing closed narrowing fields.&lt;/td&gt;&lt;td class=&quot;planned-cell&quot;&gt;Exact/subtree denials for read, create, modify, and delete, including adapter prerequisite and ancestor-effect checks.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Policy identity&lt;/td&gt;&lt;td class=&quot;current-cell&quot;&gt;Global and merged active-policy identities are bound.&lt;/td&gt;&lt;td class=&quot;planned-cell&quot;&gt;Retain global identity; add exact source-file identity and explicit effective merged identity throughout the artifact graph.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Agent tools&lt;/td&gt;&lt;td class=&quot;current-cell&quot;&gt;Role restrictions are instruction-only on the current Codex host.&lt;/td&gt;&lt;td class=&quot;planned-cell&quot;&gt;Pydantic AI may allocate role-specific toolsets after feasibility, provider, offline packaging, and adversarial capability tests pass.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Assurance wording&lt;/td&gt;&lt;td class=&quot;current-cell&quot;&gt;&lt;code&gt;instruction_only&lt;/code&gt;, &lt;code&gt;coordinator_observed&lt;/code&gt;, and host levels are reported honestly.&lt;/td&gt;&lt;td class=&quot;planned-cell&quot;&gt;Framework tool allocation is an orthogonal capability; it never satisfies an unrelated host-enforcement requirement.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card callout planned&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;Pydantic versus Pydantic AI:&lt;/strong&gt; Pydantic remains the schema, parsing, and deterministic validation layer. Pydantic AI is only a candidate role runner for semantic work and framework-level tool allocation. Tool filtering would constrain calls made through that reviewed framework boundary; it would not become an operating-system sandbox or a complete effect trace.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;examples&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;14 · Worked examples&lt;/div&gt;
+    &lt;h2&gt;What the process looks like in practice&lt;/h2&gt;
+
+    &lt;details open&gt;
+      &lt;summary&gt;Example A: a supported documentation patch&lt;/summary&gt;
+      &lt;div&gt;
+        &lt;ol&gt;
+          &lt;li&gt;The selected phase says to update one documented workflow in &lt;code&gt;README.md&lt;/code&gt;.&lt;/li&gt;
+          &lt;li&gt;The low-level plan declares the exact file, expected preimage, patch identity, intended modification, no network/subprocess use, and verifier checks.&lt;/li&gt;
+          &lt;li&gt;Deterministic assessment confirms that &lt;code&gt;apply_patch&lt;/code&gt; is allowed, the path is contained, evidence exists, and no wider effect is declared.&lt;/li&gt;
+          &lt;li&gt;The semantic assessor checks that the patch faithfully represents the phase and does not hide a policy or instruction change.&lt;/li&gt;
+          &lt;li&gt;On &lt;code&gt;safe: true&lt;/code&gt;, execution re-hashes the complete plan and snapshot, acquires the lease, checks the preimage again, and applies only the approved patch.&lt;/li&gt;
+          &lt;li&gt;The verifier compares the actual README state with the exact success criteria. The coordinator requires both observed state and verifier evidence before &lt;code&gt;verified&lt;/code&gt;.&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+
+    &lt;details open&gt;
+      &lt;summary&gt;Example B: a phase asks to run a test command&lt;/summary&gt;
+      &lt;div&gt;
+        &lt;p&gt;The current schema can represent &lt;code&gt;check&lt;/code&gt; and &lt;code&gt;exec_argv&lt;/code&gt;, but the immutable first-release policy disables them. The planner must emit an unsupported-operation diagnostic or the assessor must return &lt;code&gt;safe: false&lt;/code&gt;. It must not hide the command inside a “bounded coding task.” The user can use the standard route, revise the phase to supported work, or wait for a reviewed contained-command release.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+
+    &lt;details open&gt;
+      &lt;summary&gt;Example C: the repository changes after assessment&lt;/summary&gt;
+      &lt;div&gt;
+        &lt;p&gt;The plan may still look sensible, but the snapshot or preimage no longer matches. &lt;code&gt;$rb-safe-operation&lt;/code&gt; stops before mutation. It does not overwrite the user’s change or silently update the approved hash. Material drift requires human review and usually a new plan/run identity with full reassessment.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+
+    &lt;details open&gt;
+      &lt;summary&gt;Example D: planned “do not read or write x.txt” policy&lt;/summary&gt;
+      &lt;div&gt;
+        &lt;p&gt;The future authoring skill will interpret “write” as create, modify, and delete, making all four denials explicit. It will show the exact path and scope, explain the effect on current work, and ask the user to confirm the proposal hash. Once committed, planning, assessment, execution, repair, snapshotting, and verification must all respect the rule. If required evidence cannot be obtained without reading the file, the system stops; it does not weaken the policy.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;usage&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;15 · Practical use&lt;/div&gt;
+    &lt;h2&gt;How a user invokes the process&lt;/h2&gt;
+    &lt;p class=&quot;lead&quot;&gt;The user normally works through skills, not by manually constructing JSON or calling private dispatcher functions.&lt;/p&gt;
+
+    &lt;pre class=&quot;code-block&quot;&gt;&lt;code&gt;1. Use $rb-create-implementation-plan for this work.
+2. Choose Execution Route: constrained.
+3. Use $rb-execute-plan to begin the next phase.
+
+The coordinator then routes the phase through:
+$rb-create-low-level-plan
+→ $rb-assess-plan-safety
+→ $rb-safe-operation (only for safe: true)&lt;/code&gt;&lt;/pre&gt;
+
+    &lt;h3&gt;What the user sees at each boundary&lt;/h3&gt;
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Boundary&lt;/th&gt;&lt;th&gt;Visible result&lt;/th&gt;&lt;th&gt;Next action&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;Plan created&lt;/td&gt;&lt;td&gt;Phases, success criteria, and explicit route field.&lt;/td&gt;&lt;td&gt;Choose standard, constrained, or undecided.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Phase compiled&lt;/td&gt;&lt;td&gt;Human rendering of the canonical low-level plan and its hash.&lt;/td&gt;&lt;td&gt;Start fresh safety assessment.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Assessment false&lt;/td&gt;&lt;td&gt;FALSE, typed findings, invariant IDs, evidence, and remediation/human decision.&lt;/td&gt;&lt;td&gt;Revise/reassess, leave pipeline, or abandon.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Assessment true&lt;/td&gt;&lt;td&gt;TRUE for the exact fixed plan/assessment bundle paths and hashes.&lt;/td&gt;&lt;td&gt;Hand the unchanged bundle to safe operation.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Execution stop/pause&lt;/td&gt;&lt;td&gt;State, evidence, event head, limitations, and exact human/resume requirement.&lt;/td&gt;&lt;td&gt;Follow only the stated reviewed path.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Verified phase&lt;/td&gt;&lt;td&gt;Final verification report plus current and remaining phase handoff.&lt;/td&gt;&lt;td&gt;Stop; separately compile the next phase later.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Runtime setup boundary&lt;/h3&gt;
+    &lt;p class=&quot;lead&quot;&gt;All three constrained skills use one runtime owned by &lt;code&gt;$rb-safe-operation&lt;/code&gt;. Setup is an explicit human-approved action using a reviewed offline wheelhouse and an absolute bootstrap Python. Normal operation never downloads, installs, searches ambient environments, or silently falls back. The manifest-pinned launcher runs with isolated Python flags and verifies source, lock, interpreter, launcher, and installed-package identities.&lt;/p&gt;
+
+    &lt;h3&gt;How the shared CLI is divided&lt;/h3&gt;
+    &lt;p class=&quot;lead&quot;&gt;The skills call these commands through the verified launcher. They are grouped by responsibility so that no single caller-supplied artifact can jump directly from prose to mutation.&lt;/p&gt;
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Command group&lt;/th&gt;&lt;th&gt;Commands&lt;/th&gt;&lt;th&gt;Use&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;Runtime identity&lt;/td&gt;&lt;td&gt;&lt;code&gt;runtime-info&lt;/code&gt;, &lt;code&gt;host-capabilities&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Prove which package and actual host profile are being used. Capability files are observed, not written from memory.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Strict artifacts&lt;/td&gt;&lt;td&gt;&lt;code&gt;validate&lt;/code&gt;, &lt;code&gt;canonicalize&lt;/code&gt;, &lt;code&gt;hash&lt;/code&gt;, &lt;code&gt;render&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Parse closed schemas, create deterministic bytes and identities, and derive human views from canonical JSON.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Planning evidence&lt;/td&gt;&lt;td&gt;&lt;code&gt;snapshot&lt;/code&gt;, &lt;code&gt;select-phase&lt;/code&gt;, &lt;code&gt;discover-instructions&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Bind the project state, one exact phase, and applicable repository instructions before compilation.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Policy&lt;/td&gt;&lt;td&gt;&lt;code&gt;merge-policy&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Apply the closed monotonic narrowing algebra; project input cannot widen the installed global baseline.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Assessment&lt;/td&gt;&lt;td&gt;&lt;code&gt;assess-preflight&lt;/code&gt;, &lt;code&gt;assess&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Run deterministic checks first, then recompute them while validating the semantic proposal and creating the fixed sanitized assessment bundle.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Fixed handoff&lt;/td&gt;&lt;td&gt;&lt;code&gt;persist-artifact&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Public persistence is deliberately limited to the fixed create-only low-level-plan handoff. There is no general “write any approved artifact” command.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Execution&lt;/td&gt;&lt;td&gt;&lt;code&gt;coordinate&lt;/code&gt;, &lt;code&gt;coordinate-resume&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Drive a new approved run or reload only a durably paused run while holding the lease and revalidating the full state.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Schemas&lt;/td&gt;&lt;td&gt;&lt;code&gt;export-schemas&lt;/code&gt;, &lt;code&gt;check-schema-drift&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Generate inspectable JSON Schemas and prove checked-in schema references still match the runtime models.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;p class=&quot;lead&quot;&gt;There are deliberately no public artifact-only &lt;code&gt;execute&lt;/code&gt; or caller-asserted &lt;code&gt;verify&lt;/code&gt; commands. Mutation and final verification stay inside the coordinator that owns the lease, event chain, state observations, and exact context bindings.&lt;/p&gt;
+
+    &lt;div class=&quot;card callout caution&quot;&gt;
+      &lt;p&gt;Do not invoke the planned &lt;code&gt;$rb-create-safe-operation-policy&lt;/code&gt; yet. The reviewed plan exists, but implementation has not begun and its execution route is still &lt;code&gt;undecided&lt;/code&gt;.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;glossary&quot;&gt;
+    &lt;div class=&quot;kicker&quot;&gt;16 · Glossary and evidence&lt;/div&gt;
+    &lt;h2&gt;Short definitions&lt;/h2&gt;
+
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;Canonical artifact&lt;/td&gt;&lt;td&gt;A strictly validated object serialized in one deterministic form so its identity can be compared reliably.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Envelope&lt;/td&gt;&lt;td&gt;The closed set of goals, paths, tools, permissions, effects, limits, approvals, and verification conditions around an operation.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Project policy&lt;/td&gt;&lt;td&gt;A typed set of restrictions that may narrow—but never widen—the immutable global policy.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Snapshot&lt;/td&gt;&lt;td&gt;A typed observation of repository identity and state used to detect drift.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Preimage&lt;/td&gt;&lt;td&gt;The expected state of a target immediately before it is changed.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Lease&lt;/td&gt;&lt;td&gt;The one project-wide record that prevents two constrained runs from knowingly mutating the same project concurrently.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Control plane&lt;/td&gt;&lt;td&gt;Plans, policies, assessments, lifecycle state, audit events, verification, and continuity records.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Product plane&lt;/td&gt;&lt;td&gt;The repository or external target being changed to implement the phase.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Fail closed&lt;/td&gt;&lt;td&gt;Stop when required identity, evidence, permission, capability, or state cannot be established.&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;Semi-formal&lt;/td&gt;&lt;td&gt;Typed and deterministic controls are real, but some role restrictions and observations remain instruction-only or incomplete on the current host.&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Authoritative project evidence used for this guide&lt;/h3&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code&gt;rb-create-low-level-plan/SKILL.md&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code&gt;rb-assess-plan-safety/SKILL.md&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code&gt;rb-safe-operation/SKILL.md&lt;/code&gt; and &lt;code&gt;references/runtime-contract.md&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code&gt;plans/2026-07-18-constrained-plan-execution/IMPLEMENTATION_PLAN.md&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code&gt;plans/2026-07-18-constrained-plan-execution/references/&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code&gt;plans/2026-07-18-constrained-plan-execution/evidence/phase-5/install-and-validation-report.md&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code&gt;plans/2026-07-19-safe-operation-project-policy/IMPLEMENTATION_PLAN.md&lt;/code&gt; for the clearly marked planned extension&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;div class=&quot;card callout safe&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;Release evidence at the reviewed snapshot:&lt;/strong&gt; runtime 0.1.0, schema 1.0, Pydantic 2.13.4, 113/113 source tests passing, 36/36 retained routing trials passing, generated schema drift clear, and disposable symlink/copy installs verified. These numbers describe the 19 July 2026 evidence snapshot; future releases should update this guide rather than treating the numbers as permanent.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;footer class=&quot;footer&quot;&gt;
+    &lt;p&gt;Use this document as an explanation, not as an authorization artifact. Actual execution depends on the canonical plan, assessment, policy, capability, approval, snapshot, lease, runtime, and audit identities for the current run.&lt;/p&gt;
+    &lt;p&gt;Prepared from the local RB skills source and release evidence. Current constrained workflow is implemented; project-root natural-language policy authoring is planned.&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handleLeave = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>

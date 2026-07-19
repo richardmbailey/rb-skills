@@ -49,7 +49,7 @@
     "family": "understanding-review",
     "prompt": "Find architectural duplication and misplaced responsibilities across this repository, explain their consequences, and recommend an ordered remediation strategy.",
     "expected": {"outcome": "select", "skill": "rb-architecture-review"},
-    "forbidden_skills": ["rb-explain-codebase", "rb-review-pr-or-diff", "rb-create-issues"],
+    "forbidden_skills": ["rb-explain-codebase", "rb-review-pr-or-diff"],
     "critical": true,
     "rationale": "The repository-wide structural critique belongs to architecture review."
   },

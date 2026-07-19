@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Assess Plan Safety"
+  short_description: "Assess a constrained plan for safety"
+  default_prompt: "Use $rb-assess-plan-safety to validate and assess this low-level plan in a context-separated pass with the actual assurance level disclosed."

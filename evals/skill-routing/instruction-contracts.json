@@ -21,11 +21,28 @@
         "`[x]` implemented",
         "`[v]` verified",
         "Prefer a walking-skeleton approach",
-        "complete the review+fix gate",
-        "use `$rb-multi-agent-systems`"
+        "complete the phase-level review+fix gate",
+        "use `$rb-multi-agent-systems`",
+        "orchestration layer",
+        "use `$rb-implement-with-tests` for one bounded ordinary software or product change",
+        "## Optional Constrained Route",
+        "never select `constrained` implicitly",
+        "accept phase completion only when `$rb-safe-operation` reaches `verified`"
       ],
       "forbidden": ["PydanticAI", "Ollama", "For greenfield Python projects"],
       "max_occurrences": {"## Phase Completion Review": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-implement-with-tests/SKILL.md",
+      "required": [
+        "Implement one agreed ordinary change",
+        "Use `$rb-execute-plan` when the user asks",
+        "Do not create, resequence, or mark a multi-phase plan complete",
+        "final review+fix loop"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
       "max_lines": 500
     },
     {
@@ -77,7 +94,7 @@
     },
     {
       "path": "rb-working-diary/SKILL.md",
-      "required": ["For isolated one-turn tasks, skip diary reads and writes", "sequence of individually small turns", "Update the matching `Last touched` date", "Do not store secrets", "facts and useful synthesis, not a transcript"],
+      "required": ["For isolated one-turn tasks, skip diary reads and writes", "sequence of individually small turns", "Update the matching `Last touched` date", "Do not store secrets", "facts and useful synthesis, not a transcript", "For an implementation plan using the optional constrained route", "A resume pointer does not authorise execution"],
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500
@@ -98,9 +115,30 @@
     },
     {
       "path": "rb-create-implementation-plan/SKILL.md",
-      "required": ["Produce the durable top-level plan", "assets/IMPLEMENTATION_PLAN.md", "Route an approved plan to `$rb-execute-plan`"],
+      "required": ["Produce the durable top-level plan", "assets/IMPLEMENTATION_PLAN.md", "Route an approved plan to `$rb-execute-plan`", "Present exactly these plan-wide choices", "never infer `constrained`"],
       "forbidden": ["Restate the idea.", "Ask clarifying questions if needed."],
       "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-create-low-level-plan/SKILL.md",
+      "required": ["Compile exactly one approved implementation phase", "Do not execute it, assess it, or compile later phases in advance", "attempt_limit: \"unbounded\"", "Never include private planner reasoning"],
+      "forbidden": ["automatically select", "install dependencies"],
+      "max_occurrences": {"## Procedure": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-assess-plan-safety/SKILL.md",
+      "required": ["Machine output is `safe: true|false`", "## Deterministic Gate", "## Fresh Semantic Assessment", "A human may `revise_and_reassess`", "None relabels the rejected artifact"],
+      "forbidden": ["confidence makes", "execute the plan"],
+      "max_occurrences": {"## Fresh Semantic Assessment": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-safe-operation/SKILL.md",
+      "required": ["Execute only an unchanged approved bundle", "Normal operation never installs", "attempt_limit: \"unbounded\"", "A repairable in-envelope finding", "Reach `verified` only"],
+      "forbidden": ["automatically installs", "skip independent verification"],
+      "max_occurrences": {"## Separated Verification": 1},
       "max_lines": 500
     }
   ]

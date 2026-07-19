@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Safe Operation"
+  short_description: "Execute an approved constrained plan safely"
+  default_prompt: "Use $rb-safe-operation to execute this unchanged approved plan, verify it in a context-separated pass with the actual assurance level disclosed, and preserve its audit trail."

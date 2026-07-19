@@ -1,0 +1,13 @@
+I stopped before executing the bundle. The authoritative phase has changed since the saved assessment, so that assessment no longer authorises the current plan. The only privacy-sensitive approval is also expired and cannot be renewed by an informal confirmation in chat.
+
+No product operation was dispatched, no mutation lease was acquired, and no product state was changed. I have not started or claimed independent verification because there is no valid completed execution to verify.
+
+The existing assessment should be preserved unchanged as a historical record, associated with the earlier phase hash and approval state. It must not be rewritten to cover the changed phase. The constrained workflow should now enter `human_required` and record:
+
+- the saved plan and assessment identifiers and hashes;
+- the current authoritative phase hash and the detected source drift;
+- the expired approval identifier, class, exact target, expiry time, and unconsumed/consumed status if known;
+- the fact that the chat confirmation was rejected as an exact typed approval;
+- the stop-before-action outcome and absence of a mutation lease or verification result.
+
+To continue, first compile a new low-level plan from the current authoritative phase and current repository snapshot. Run a fresh safety assessment against that exact plan, active policy, capabilities, instructions, and snapshot. If the assessment returns `safe: true`, obtain a new typed, one-use privacy-sensitive approval bound to the new plan hash, exact operation and effect, target, policy, and expiry. Only after all identities and current state revalidate may a fresh operator context acquire the project mutation lease and execute. Independent verification must then use a separate fresh verifier context and the exact newly approved bundle.

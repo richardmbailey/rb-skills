@@ -1,0 +1,110 @@
+[
+  {
+    "id": "constrained-compile-current-phase",
+    "family": "constrained-execution",
+    "prompt": "This approved implementation plan records Execution Route: constrained. Compile only Phase 2 into the typed operational contract, preserve Phases 3 through 5, and stop before safety assessment.",
+    "expected": {"outcome": "select", "skill": "rb-create-low-level-plan"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-assess-plan-safety", "rb-safe-operation", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "A selected constrained phase needs compilation without assessment or execution."
+  },
+  {
+    "id": "constrained-compile-bounded-task",
+    "family": "constrained-execution",
+    "prompt": "Turn the next constrained phase into exact read and check actions plus one semantically bounded coding task. Include paths, effects, stop conditions, evidence, and later-phase continuity, but do not run it.",
+    "expected": {"outcome": "select", "skill": "rb-create-low-level-plan"},
+    "forbidden_skills": ["rb-assess-plan-safety", "rb-safe-operation", "rb-execute-plan"],
+    "critical": true,
+    "rationale": "The requested deliverable is the low-level plan proposal."
+  },
+  {
+    "id": "constrained-compile-ambiguity",
+    "family": "constrained-execution",
+    "prompt": "Use the constrained route to compile the current phase. If an operation or side effect cannot be bounded, return a planning diagnostic instead of inventing an action.",
+    "expected": {"outcome": "select", "skill": "rb-create-low-level-plan"},
+    "forbidden_skills": ["rb-assess-plan-safety", "rb-safe-operation", "rb-discuss"],
+    "critical": true,
+    "rationale": "Compilation owns unsupported or ambiguous operation diagnostics."
+  },
+  {
+    "id": "constrained-assess-canonical-plan",
+    "family": "constrained-execution",
+    "prompt": "Assess this canonical low-level plan against the immutable global policy and narrowed project policy. Run deterministic checks, use a fresh semantic assessor, and return TRUE or FALSE with typed findings. Do not execute.",
+    "expected": {"outcome": "select", "skill": "rb-assess-plan-safety"},
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-safe-operation", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "The plan already exists and needs the hybrid safety verdict."
+  },
+  {
+    "id": "constrained-assess-detrimental-effects",
+    "family": "constrained-execution",
+    "prompt": "Check whether this typed phase plan hides scope expansion or detrimental direct, cumulative, and verification-induced side effects. Return immutable safe false for any violation or missing evidence.",
+    "expected": {"outcome": "select", "skill": "rb-assess-plan-safety"},
+    "forbidden_skills": ["rb-architecture-review", "rb-safe-operation", "rb-diagnose"],
+    "critical": true,
+    "rationale": "Safety assessment owns policy, evidence, and side-effect judgment."
+  },
+  {
+    "id": "constrained-reassess-revision",
+    "family": "constrained-execution",
+    "prompt": "The prior constrained assessment was FALSE and the human revised the plan. Create a new full assessment bound to the revised hashes while preserving the old rejection.",
+    "expected": {"outcome": "select", "skill": "rb-assess-plan-safety"},
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-safe-operation", "rb-execute-plan"],
+    "critical": true,
+    "rationale": "Revision requires reassessment and cannot relabel the old result."
+  },
+  {
+    "id": "constrained-execute-approved-bundle",
+    "family": "constrained-execution",
+    "prompt": "This exact constrained bundle has safe true. Revalidate its hashes, policy, snapshot, approvals, and lease, execute inside the envelope, and require fresh context-separated verification before verified without claiming host-proven independence.",
+    "expected": {"outcome": "select", "skill": "rb-safe-operation"},
+    "forbidden_skills": ["rb-assess-plan-safety", "rb-implement-with-tests", "rb-execute-plan"],
+    "critical": true,
+    "rationale": "Only the approved execution skill owns the assessed bundle."
+  },
+  {
+    "id": "constrained-repair-approved-envelope",
+    "family": "constrained-execution",
+    "prompt": "Continue this safe approved operation after a verifier finding. Diagnose and repair reversibly inside the unchanged envelope, preserve each attempt, then run a fresh verifier again.",
+    "expected": {"outcome": "select", "skill": "rb-safe-operation"},
+    "forbidden_skills": ["rb-diagnose", "rb-implement-with-tests", "rb-assess-plan-safety"],
+    "critical": true,
+    "rationale": "In-envelope repair and reverification belong to the safe-operation lifecycle."
+  },
+  {
+    "id": "constrained-resume-paused-run",
+    "family": "constrained-execution",
+    "prompt": "Resume the paused constrained run from its audit bundle. Validate the event chain and reacquire the lease, then revalidate every artifact, approval, capability, instruction, and repository snapshot before continuing.",
+    "expected": {"outcome": "select", "skill": "rb-safe-operation"},
+    "forbidden_skills": ["rb-continue-project", "rb-execute-plan", "rb-assess-plan-safety"],
+    "critical": true,
+    "rationale": "This is lifecycle resume for an already approved constrained run."
+  },
+  {
+    "id": "constrained-negative-new-top-plan",
+    "family": "constrained-execution",
+    "prompt": "Create the overall implementation plan for this feature and remind me about the optional higher-assurance route, but leave the route undecided.",
+    "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation"],
+    "critical": true,
+    "rationale": "Initial planning and the optional reminder do not trigger constrained compilation."
+  },
+  {
+    "id": "constrained-negative-standard-execution",
+    "family": "constrained-execution",
+    "prompt": "The plan records Execution Route: standard. Continue the next unchecked phase with the normal verified implementation workflow.",
+    "expected": {"outcome": "select", "skill": "rb-execute-plan"},
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation"],
+    "critical": true,
+    "rationale": "The standard route remains ordinary plan execution."
+  },
+  {
+    "id": "constrained-negative-bounded-code-change",
+    "family": "constrained-execution",
+    "prompt": "Implement this already agreed one-file parser fix with focused tests and review the final diff. There is no multi-phase plan or constrained assessment.",
+    "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation", "rb-execute-plan"],
+    "critical": true,
+    "rationale": "A normal bounded implementation does not enter the optional pipeline."
+  }
+]

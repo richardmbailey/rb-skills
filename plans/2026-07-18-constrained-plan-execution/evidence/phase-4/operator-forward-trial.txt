@@ -1,0 +1,23 @@
+Stop the packet before any mutation. The correct lifecycle transition is:
+
+`approved → human_required`, with `suspended_from: approved`.
+
+The earlier `safe: true` decision is no longer current. The assessed source drift invalidates the approved snapshot/assessment envelope, and the expired one-use approval cannot authorize the external write. The executor’s “probably harmless” view is only an agent report; it cannot override coordinator-observed drift or replace exact approval.
+
+What must not happen:
+
+- Do not acquire the mutation lease after these preflight blockers are found.
+- Do not dispatch any operation, mutate product state, consume the expired approval, enter verification, or silently downgrade assurance.
+- Do not overwrite or revert the changed source.
+- Do not treat the valid audit chain as evidence that execution remains authorized.
+
+Record:
+
+- Coordinator-observed evidence for the expected and current source identities, approval expiry versus observation time, absence of a lease, and unchanged product state.
+- The executor’s request separately as `agent_reported`.
+- A hash-linked audit event recording the preflight stop and `approved → human_required` transition, with evidence IDs.
+- An updated manifest with `state: human_required`, `suspended_from: approved`, and the new event head.
+- A human-intervention requirement, preserving the original plan, policy, assessment, approval, snapshot, manifest, and audit chain.
+- The working-diary handoff: current phase, artifacts, event head, exact next action, enforcement limitations, and required human decision.
+
+Before future execution, a human must review the drift and choose `revise_and_reassess` or abandon. Continuing requires a refreshed source/snapshot identity, a new or revised canonical bundle as necessary, fresh assessment under current policy, and a new exact, unexpired, one-use approval for the external-write effect. Then validate the complete event chain and all runtime, policy, plan, assessment, capability, instruction, path, repository, and snapshot identities. Only after those checks pass may a fresh mutation lease be acquired and execution begin. The old changed/expired envelope cannot be resumed as-is.

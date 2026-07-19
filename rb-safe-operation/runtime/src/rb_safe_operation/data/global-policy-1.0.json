@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "policy_version": "1.0.0",
+  "allowed_operation_kinds": ["exact_action", "bounded_agent_task"],
+  "allowed_adapters": ["read_file", "apply_patch"],
+  "allowed_tools": ["read", "apply_patch"],
+  "allowed_effect_classes": ["repository_read", "repository_create", "repository_modify", "repository_delete", "local_process", "local_resource"],
+  "allowed_path_roots": ["${PROJECT_ROOT}"],
+  "allowed_executable_hashes": [],
+  "allowed_environment_names": [],
+  "network_grants": [],
+  "limits": {"max_seconds": 3600, "max_processes": 16, "max_bytes": 100000000, "max_calls": 1000, "max_cost_decimal": "0"},
+  "required_approvals": ["destructive", "external_write", "privacy_sensitive", "security_sensitive", "material_cost", "irreversible"],
+  "required_enforcement": {"assessor_read_only": "instruction_only", "verifier_read_only": "instruction_only", "bounded_resources": "instruction_only", "fresh_context": "instruction_only"},
+  "required_observation": {"product_state": "coordinator_observed"},
+  "required_evidence_sources": ["snapshot", "operation_contract", "effect_inventory", "verifier_checks"],
+  "required_verification": ["success_criteria", "product_diff", "undeclared_effects"],
+  "denied_operations": [],
+  "denied_adapters": [],
+  "denied_effect_classes": ["external_write", "credential_access", "irreversible"],
+  "denied_command_forms": ["shell", "inline_interpreter", "dynamic_module", "task_runner_or_package_script", "plugin_or_dynamic_import", "undeclared_child_process_potential"]
+}

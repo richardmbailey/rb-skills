@@ -1,0 +1,54 @@
+BLOCKED — no low-level plan was produced.
+
+Current scope
+
+- Execution route: `constrained`.
+- Selected phase: Phase 2 only.
+- Preserved later phase: Phase 3 — deployment. Phase 3 was not compiled, reordered, or otherwise changed.
+
+Blocking planning diagnostics
+
+1. `PLANNING_SOURCE_NOT_BOUND`
+   The request does not identify the authoritative implementation-plan file by absolute path or provide the exact Phase 2 heading and selected text. I therefore cannot bind the proposal to a source-phase hash or confirm the top-level success criteria and later-phase identities from the authoritative plan.
+
+2. `PLANNING_OBJECTIVE_AMBIGUOUS`
+   “Fix the intermittent cache bug” does not identify the observed failure, reproduction evidence, expected behaviour, relevant component, or completion evidence. Creating concrete repair instructions from that description would invent unsupported objectives and targets.
+
+3. `PLANNING_TARGETS_AND_BOUNDARIES_MISSING`
+   No read, create, modify, delete, or protected roots are supplied. “Update whatever files are necessary” is an open adaptation dimension, so neither an exact action nor a bounded agent task can constrain the files it may affect.
+
+4. `PLANNING_EXECUTABLE_IDENTITY_MISSING`
+   “Run the normal test suite” does not provide the executable identity, argument vector, working directory, environment, subprocess behaviour, or network behaviour. An `exec_argv` operation cannot be declared safely from this evidence.
+
+5. `PLANNING_EFFECTS_UNBOUNDED`
+   The expected direct, indirect, cumulative, and verification effects are unspecified. Potential detrimental side effects—including cache deletion, generated-file changes, broad repository modifications, subprocesses, network access, or resource consumption—cannot be classified or bounded.
+
+6. `PLANNING_POLICY_AND_STATE_EVIDENCE_MISSING`
+   The applicable repository instructions and policy identities, current repository snapshot, and latest working-diary checkpoint have not been supplied or bound. Preconditions, approvals, resource ceilings, and drift checks therefore cannot be stated truthfully.
+
+Why no fallback operation was invented
+
+- An `exact_action` is unsupported because its executable, arguments, paths, environment, child behaviour, and effects are not fully declared.
+- A `bounded_agent_task` is also unsupported because its goal evidence, allowed roots and tools, forbidden actions, closed adaptation dimensions, resource ceilings, completion evidence, and escalation conditions cannot be bounded from the request.
+
+Artifacts
+
+- Canonical low-level-plan JSON: not created.
+- Typed artifact hash: not created.
+- Human review view: not created.
+- Repository snapshot: not captured or claimed.
+- Product execution or mutation: none.
+
+Required evidence before retrying Phase 2
+
+- the authoritative implementation-plan path, exact Phase 2 text, top-level success criteria, and confirmed Phase 3 identity;
+- bug evidence: reproduction steps or failing observation, expected behaviour, and relevant component or candidate scope;
+- explicit read/write/protected roots and permitted file classes;
+- the repository-owned test command or a named source from which its exact executable and arguments may be resolved;
+- working directory, environment, network, subprocess/delegation, approval, and finite resource constraints;
+- expected and prohibited direct, indirect, cumulative, verification, and potentially detrimental side effects;
+- applicable policy and repository-instruction identities plus a current repository snapshot and working-diary checkpoint.
+
+Exact next action
+
+Revise or supplement Phase 2 with the missing evidence above, while leaving Phase 3 as the later deployment phase, then invoke `$rb-create-low-level-plan` again for Phase 2 only. Do not invoke `$rb-assess-plan-safety` until a canonical low-level plan has been successfully validated and hashed.

@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-07-18",
+  "scope_note": "These repository paths were already dirty before Phase 0 execution. The constrained-plan directory is excluded because it is the authorised Phase 0 scope.",
+  "entries": [
+    {"status": " M", "path": "README.md"},
+    {"status": " M", "path": "evals/skill-routing/cases/understanding-review.json"},
+    {"status": " M", "path": "evals/skill-routing/eval-plan.json"},
+    {"status": " M", "path": "evals/skill-routing/instruction-contracts.json"},
+    {"status": " M", "path": "rb-continue-project/SKILL.md"},
+    {"status": " D", "path": "rb-create-issues/SKILL.md"},
+    {"status": " D", "path": "rb-create-issues/agents/openai.yaml"},
+    {"status": " M", "path": "rb-execute-plan/SKILL.md"},
+    {"status": " M", "path": "rb-execute-plan/agents/openai.yaml"},
+    {"status": " M", "path": "rb-implement-with-tests/SKILL.md"},
+    {"status": " M", "path": "rb-implement-with-tests/agents/openai.yaml"},
+    {"status": " M", "path": "rb-start-project/SKILL.md"},
+    {"status": "??", "path": "retired-skills/"}
+  ]
+}

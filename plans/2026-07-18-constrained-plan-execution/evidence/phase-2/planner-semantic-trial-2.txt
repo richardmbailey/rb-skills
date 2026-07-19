@@ -1,0 +1,43 @@
+PLANNING STATUS: BLOCKED
+
+I cannot compile Phase 2 into an accepted low-level plan from the supplied evidence. The constrained route is explicit, and Phase 2 is the only phase in scope, but the requested actions are not specific enough to declare safe executable boundaries. I will not invent them.
+
+Current phase
+
+- Phase 2: fix the intermittent cache bug, run the normal test suite, and update whatever files are necessary.
+
+Blocking planning diagnostics
+
+1. `fix the intermittent cache bug` does not identify the observed failure, reproduction evidence, cache component, affected behavior, or completion criteria. A complex diagnosis and repair could be represented as a `bounded_agent_task`, but its goal, evidence references, allowed roots, non-goals, adaptation dimensions, stop conditions, and completion evidence cannot be bounded from this request.
+2. `run the normal test suite` does not name an executable identity, exact argument vector, working directory, environment, subprocess behavior, resource ceiling, or the result that constitutes success. I cannot create an `exec_argv` or `check` operation without those facts.
+3. `update whatever files are necessary` leaves the read, create, modify, delete, and protected roots open-ended. No target files or allowed repository roots are supplied, so neither an exact patch action nor a bounded repair task can be authorised.
+4. Expected direct, indirect, cumulative, and verification effects are unspecified. In particular, the request does not say whether tests may create caches, build artefacts, snapshots, lockfiles, generated files, network traffic, child processes, or external changes. Potential detrimental side effects therefore cannot be bounded.
+5. No applicable instruction identities, active policy identities, current repository snapshot, authoritative absolute plan path, exact Phase 2 selected text, or source-phase hash were supplied. These are required provenance and freshness inputs for a canonical proposal.
+6. Approval requirements, network allowance, delegation allowance, and finite process, byte, call, time, and cost ceilings are not specified.
+
+Artifacts
+
+- Canonical low-level-plan JSON: not produced.
+- Typed artifact hash: not produced.
+- Generated human review view: not produced.
+- Repository snapshot: not captured from the supplied evidence.
+- Safety assessment: not invoked, because there is no accepted proposal to assess.
+
+Later-phase continuity
+
+- Phase 3: deployment.
+- Phase 3 remains later, unchanged, and uncompiled. No deployment action is included in the current scope.
+
+Evidence required to continue
+
+- the authoritative implementation-plan path and exact Phase 2 identifier, heading, and text;
+- repository instructions, active policy references, current snapshot, and latest working-diary checkpoint;
+- concrete bug evidence or a bounded diagnostic objective with affected component and observable success criteria;
+- allowed and protected roots, including whether creation, modification, and deletion are permitted;
+- the exact test runner executable, argument vector, working directory, environment, and success criteria;
+- declared test/build/cache side effects and whether network, subprocesses, or delegation are allowed;
+- approval classes and finite resource ceilings.
+
+Exact next action
+
+Supply or resolve the missing evidence above, then rerun `$rb-create-low-level-plan` for Phase 2 only. Invoke `$rb-assess-plan-safety` only after the shared runtime validates and canonicalises a complete Phase 2 proposal.

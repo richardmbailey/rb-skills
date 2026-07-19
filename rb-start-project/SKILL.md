@@ -69,8 +69,8 @@ Route to the narrowest next workflow supported by the first task:
 | --- | --- |
 | Material behaviour, interface, edge cases, or acceptance criteria are unresolved | `$rb-discuss` |
 | A sufficiently understood idea needs its first top-level plan | `$rb-create-implementation-plan` |
-| A plan, phase checklist, or issue list already exists and needs execution or verification | `$rb-execute-plan` |
-| Ordinary product work is agreed and ready to implement | `$rb-implement-with-tests` |
+| An existing multi-step plan or phase checklist needs sequencing, status tracking, or phase-level verification | `$rb-execute-plan` |
+| One bounded ordinary product change is agreed and ready to implement without plan-state ownership | `$rb-implement-with-tests` |
 | Scientific, numerical, modelling, simulation, or domain-sensitive work is agreed | `$rb-tdd-scientific-code` |
 | A bug, regression, failing test, or surprising output has an unknown cause | `$rb-diagnose` |
 | The user wants neutral orientation to an unfamiliar codebase | `$rb-explain-codebase` |
