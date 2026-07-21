@@ -10,11 +10,16 @@ Every named product and SDK is version-sensitive. Check current official documen
 
 - Preserve an existing working runtime unless evidence shows a reliability,
   maintainability, observability, or product problem.
-- For provider-independent Python research or prototypes, compare PydanticAI
-  with the repository's existing conventions.
+- For owned Python agents, prefer PydanticAI as the primary runtime when it fits
+  the repository's requirements and conventions.
 - For explicitly OpenAI-native production applications, compare the OpenAI Agents SDK and use current official OpenAI documentation for implementation details.
 - Choose one primary agent runtime. Do not combine two full agent frameworks as
   equal orchestration layers without a specific interoperability reason.
+- Do not treat A2A as an alternative agent runtime. Use it as a protocol adapter
+  when an independently deployed or opaque agent boundary requires interoperability.
+- Prefer direct PydanticAI calls or programmatic hand-offs for agents owned by
+  the same Python application; add A2A only at a real process, framework, team,
+  language, or organisational boundary.
 
 ## Typed Contracts And Tools
 
@@ -37,8 +42,7 @@ failure model.
 
 ## Durable Orchestration
 
-- LangGraph may fit agent control flow naturally expressed as a persisted graph
-  or state machine with streaming, resumability, or human checkpoints.
+- Prefer an explicit runner and state model in the primary application stack for ordinary state-machine orchestration.
 - Temporal, DBOS, and Restate are candidates when production workflows need
   durable execution, schedules, retries, resumability, or crash survival.
 
