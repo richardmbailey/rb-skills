@@ -13,6 +13,44 @@ Use this when shaping, reviewing, or diagnosing systems with multiple LLM agents
 
 Preserve the repository's existing production constraints and framework choices unless evidence supports a change. For new designs, choose one primary agent framework only after defining capability boundaries and operational requirements. Verify version-sensitive implementation details against current official documentation before coding.
 
+## Default orchestration architecture
+
+For non-trivial multi-agent systems, prefer a deterministic state-machine runner unless the workflow is more naturally represented as a simple pipeline or dependency graph.
+
+The runner is the control plane. It owns:
+
+- current workflow state, legal transitions, and terminal conditions
+- agent dispatch, handoff execution, and message routing
+- authentication and caller identity
+- authorization and policy enforcement
+- just-in-time tool and capability allocation
+- structured input and output validation
+- retry, timeout, budget, cancellation, and termination rules
+- quality gates and human approval checkpoints
+- checkpointing, append-only event logging, tracing, replay, and recovery
+
+Agents perform bounded cognitive work. They may analyse information, generate candidate actions, recommend transitions, or return structured evidence, but they must not directly mutate authoritative workflow state or bypass runner policy.
+
+Treat each agent-returned action, tool call, handoff, or transition as a proposal. Before execution, the runner must check that:
+
+- the transition is legal from the current state
+- the calling identity is authenticated where a real trust boundary exists
+- the caller is authorized for the requested action
+- required preconditions and quality gates have passed
+- the requested tools are permitted for the current state, role, and task
+- schema, confidence, provenance, and acceptance requirements are satisfied
+- retry, cost, time, and side-effect budgets permit continuation
+
+Keep these concerns separate:
+
+- authentication: who is calling
+- authorization: what that identity may do
+- capability allocation: which tools and actions are exposed for this state and task
+
+For trusted agents inside one process, cryptographic authentication may be omitted. Still preserve explicit caller identity, authorization rules, capability allocation, validation, and audit logging in the runner.
+
+Maintain both a current-state record and an append-only event log. The current state supports execution; the event log supports audit, replay, debugging, evaluation, and recovery. For in-process systems, an in-memory transport may implement the same typed message and task contracts as a future HTTP, JSON-RPC, gRPC, or A2A boundary.
+
 ## Workflow
 
 1. Classify the system:
@@ -29,6 +67,7 @@ Preserve the repository's existing production constraints and framework choices 
    - Embed a capability inside an existing agent when it is tightly coupled to that agent's local context, state, or tool sequence, and splitting it would require passing most of the parent context anyway.
    - Split a capability into a new agent when it is reusable across workflows, can accept a small typed input, can produce a typed output, owns a distinct tool/state/eval surface, or would otherwise add noisy tools and context to a monolithic agent.
    - Add an orchestration layer only when multiple independent agents need sequencing, routing, arbitration, merging, retries, cancellation, or human checkpoints.
+   - When orchestration is needed, default to a deterministic state-machine runner and justify any less explicit control model.
    - Reject a new agent if it mostly proxies every decision back to the parent, needs the parent's full context to work, has no independent success criteria, or adds model-call latency without reducing context noise or failure blast radius.
    - Record the expected effect on cost, latency, reliability, and context size whenever adding tools to an agent or splitting work across agents.
 3. Choose the primary stack only after the preceding decisions. Keep an existing working stack unless it creates a concrete problem. Read `references/framework-selection.md` only when the user needs a greenfield stack recommendation, a framework comparison, or a concrete product choice; verify every version-sensitive recommendation against current official documentation.
@@ -37,25 +76,31 @@ Preserve the repository's existing production constraints and framework choices 
    - Do not create an agent when a deterministic function, typed tool call, or normal workflow step is enough.
    - Keep each agent's prompt, retrieved context, and tool list narrow enough that tool choice remains obvious for its responsibility.
    - Make handoffs explicit: who calls whom, what context is passed, what state is persisted, and what is returned.
+   - Prefer agents returning typed results, evidence, and proposed next actions rather than directly controlling workflow transitions.
 5. Define structured outputs:
    - Use typed, validated contracts where the language and framework support them.
    - Decide whether validation occurs after generation or through constrained decoding, and test schema failures explicitly.
+   - Represent proposed transitions, requested tools, confidence, provenance, and retryability explicitly when they affect orchestration.
 6. Define tools and MCP:
    - Prefer typed tool schemas and narrow reusable server boundaries.
    - Keep tools idempotent where possible, explicit about side effects, and narrow in permissions.
    - Record which tools require human approval, secrets, filesystem access, network access, or external writes.
+   - Allocate tools just in time according to workflow state, agent role, caller identity, and task policy rather than exposing the full catalogue by default.
 7. Design failure containment before increasing autonomy:
    - Identify assumptions that could poison the whole run if wrong, such as user intent, target files, retrieved evidence, permissions, external state, or irreversible side effects.
    - Validate high-risk assumptions with cheap checks before handing them to downstream agents or tools; use deterministic checks where possible.
    - Treat sub-agent output as evidence with provenance and confidence, not as automatically trusted state. Preserve enough trace data to see which agent produced which claim, tool result, or decision.
+   - Validate every proposed transition against the current state, transition policy, preconditions, permissions, quality gates, and budgets before committing it.
    - Stop, retry, route to an alternate path, or ask for human confirmation when a sub-agent returns low confidence, schema-invalid output, contradictory evidence, or a failed precondition.
    - Put explicit budgets around autonomous loops: maximum model calls, tool calls, retries, wall-clock time, spend, and destructive or externally visible actions.
 8. Add observability and evals before the system becomes non-trivial:
    - Prefer the repository's existing tracing and evaluation stack unless it cannot capture the required events.
    - Trace prompts, model calls, tool calls, handoffs, retrieved context, costs, latency, errors, and final decisions.
+   - Maintain an append-only workflow event log distinct from the mutable current-state snapshot.
    - Favour tools that emit or can export OpenTelemetry-compatible traces, while treating GenAI semantic conventions as evolving.
 9. Add durability only when the workflow needs it:
    - Require durable execution when work must survive process failure, support scheduled or long-running jobs, resume after interruption, or guarantee retry semantics.
+   - Checkpoint enough information to resume safely: workflow state, validated inputs, tool results, pending approvals, retry counters, budgets, and idempotency keys for side effects.
    - Do not add a durability platform to a short request-response path without an operational need.
 10. Add retrieval/document infrastructure when agents work over papers, reports, notes, PDFs, codebases, or lab documentation:
    - Do not adopt a whole agent framework just to get retrieval.
@@ -71,13 +116,21 @@ Preserve the repository's existing production constraints and framework choices 
 - Is there one primary agent framework?
 - Has each new capability been classified as deterministic code/tool, embedded capability, split agent, or orchestration concern?
 - For text-heavy capabilities, is semantic understanding handled by an LLM-backed path rather than brittle regex/string heuristics?
+- Is control flow owned by deterministic runner code rather than an LLM?
+- Are workflow states, legal transitions, terminal states, and invalid-transition behaviour explicit?
+- Are agent-requested actions and transitions treated as proposals rather than authoritative commands?
+- Are authentication, authorization, and capability allocation separated?
+- Are tools allocated just in time according to state, role, caller identity, and task policy?
 - Are agent responsibilities, contracts, state ownership, and handoffs explicit?
 - Is each agent's context and tool surface bounded enough that tool choice remains reliable?
 - Could any agent be replaced by deterministic code or a typed tool?
 - Are structured outputs enforced and tested?
 - Are tool permissions, side effects, approval points, and idempotency clear?
+- Are quality gates applied before authoritative state changes and external side effects?
 - Can one bad premise poison downstream work, and if so where is the validation gate?
 - Are sub-agent outputs treated with provenance/confidence rather than blindly becoming shared truth?
+- Is there an append-only event log as well as a current-state snapshot?
+- Can execution resume safely from a checkpoint without repeating side effects?
 - Are traces and evals present before non-trivial behaviour ships?
 - Is retrieval scoped to data plumbing rather than becoming accidental architecture?
 - Is provider routing a real need, with cost and fallback behaviour defined?
@@ -94,10 +147,13 @@ When applying this skill, produce:
 - alternatives rejected and why
 - capability scaling decision table: deterministic tool vs embedded capability vs split agent vs orchestration layer
 - text-operation classification where relevant: deterministic structure parsing vs semantic LLM judgment
+- runner responsibility map and explicit control-flow ownership
+- workflow state and legal-transition map, including terminal and recovery states
+- authentication, authorization, and just-in-time capability-allocation plan
 - agent and tool boundary map
-- structured-output contracts
-- state, durability, retry, and failure-containment plan
-- high-risk assumptions and validation gates
+- structured-output contracts, including proposed actions and transitions where relevant
+- state, durability, checkpoint, retry, and failure-containment plan
+- high-risk assumptions, quality gates, and human approval points
 - retrieval plan if relevant
-- observability, tracing, eval, cost, and reproducibility plan
+- append-only event-log, observability, tracing, eval, cost, and reproducibility plan
 - immediate implementation slice and validation checks
