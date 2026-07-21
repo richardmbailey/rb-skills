@@ -51,17 +51,22 @@ For trusted agents inside one process, cryptographic authentication may be omitt
 
 Maintain both a current-state record and an append-only event log. The current state supports execution; the event log supports audit, replay, debugging, evaluation, and recovery. For in-process systems, an in-memory transport may implement the same typed message and task contracts as a future HTTP, JSON-RPC, gRPC, or A2A boundary.
 
-## Runner, A2A, and MCP boundaries
+## Runner, A2A, MCP, and agent-runtime boundaries
 
-Keep orchestration, agent communication, and capability access conceptually separate:
+Keep orchestration, agent execution, agent communication, and capability access conceptually separate:
 
 - The runner governs the workflow, policy, state transitions, permissions, budgets, quality gates, and recovery.
+- An agent runtime such as PydanticAI implements and executes owned agents, including model calls, typed dependencies, structured outputs, tools, retries, and local delegation.
 - A2A is an agent-delegation boundary for communicating with an independently deployed, independently owned, or otherwise opaque agent system.
 - MCP is a capability boundary for exposing tools, resources, and prompts to the runner or to a bounded agent.
 
+Do not treat PydanticAI and A2A as competing alternatives. PydanticAI is an implementation/runtime choice; A2A is a protocol/transport choice. A PydanticAI agent may be called directly inside the application or exposed behind an A2A server when a real external boundary exists.
+
+For owned Python agents, prefer direct PydanticAI calls or programmatic hand-offs when PydanticAI fits the repository's requirements. Use actual A2A networking only when independent deployment, language, framework, team, organisational ownership, opacity, or interoperability justifies the additional protocol boundary.
+
 A2A does not replace the runner, and MCP servers should not quietly become orchestration layers. The runner decides whether an agent may be contacted and whether an MCP capability may be used.
 
-For agents in the same process, prefer typed direct calls or an in-memory transport. Preserve A2A-compatible message, task, context, status, and artifact contracts only when future transport substitution or interoperability is useful. Use actual A2A networking when a real deployment, language, framework, team, or organisational boundary justifies it.
+For agents in the same process, prefer typed direct calls or an in-memory transport. Preserve A2A-compatible message, task, context, status, and artifact contracts only when future transport substitution or interoperability is useful. Keep one logical runner dispatch interface where useful, but implement distinct in-process and A2A transports rather than pretending their failure and trust models are identical.
 
 Maintain two separate policy surfaces:
 
@@ -76,7 +81,7 @@ Prefer these invocation modes:
 - judgement-dependent agent or tool calls are proposed through typed outputs and validated by the runner
 - low-risk autonomous loops may let an agent choose among a small, explicitly granted capability set
 
-Treat a remote A2A agent as opaque unless its internal implementation is also under the application's governance. It may use its own runner, agents, and MCP servers internally. The local runner controls the information sent across the boundary, the allowed remote skill, the task budget, and validation of the returned result; it does not assume control of the remote agent's private tools.
+Treat a remote A2A agent as opaque unless its internal implementation is also under the application's governance. It may use PydanticAI or another runtime, its own runner, agents, and MCP servers internally. The local runner controls the information sent across the boundary, the allowed remote skill, the task budget, and validation of the returned result; it does not assume control of the remote agent's private tools.
 
 Keep application workflow state distinct from delegated A2A task state. A remote task may be working, waiting for input, waiting for authorization, completed, failed, or cancelled, while the local runner remains authoritative about what those states mean for the larger workflow.
 
@@ -100,6 +105,9 @@ Keep application workflow state distinct from delegated A2A task state. A remote
    - Reject a new agent if it mostly proxies every decision back to the parent, needs the parent's full context to work, has no independent success criteria, or adds model-call latency without reducing context noise or failure blast radius.
    - Record the expected effect on cost, latency, reliability, and context size whenever adding tools to an agent or splitting work across agents.
 3. Choose the primary stack only after the preceding decisions. Keep an existing working stack unless it creates a concrete problem. Read `references/framework-selection.md` only when the user needs a greenfield stack recommendation, a framework comparison, or a concrete product choice; verify every version-sensitive recommendation against current official documentation.
+   - Choose the agent runtime independently from the communication protocol.
+   - For owned Python agents, prefer PydanticAI when it fits the repository's requirements and conventions.
+   - Do not add A2A merely because a system contains multiple agents; add it only where the communication boundary warrants protocol interoperability.
 4. Define agent boundaries:
    - Give each agent a clear responsibility, input contract, output contract, state ownership, tool permissions, and failure mode.
    - Do not create an agent when a deterministic function, typed tool call, or normal workflow step is enough.
@@ -115,8 +123,9 @@ Keep application workflow state distinct from delegated A2A task state. A remote
    - Keep tools idempotent where possible, explicit about side effects, and narrow in permissions.
    - Record which tools require human approval, secrets, filesystem access, network access, or external writes.
    - Allocate tools just in time according to workflow state, agent role, caller identity, and task policy rather than exposing the full catalogue by default.
-   - Decide explicitly whether each agent boundary uses a direct call, an in-memory transport, or A2A; do not add a network protocol where there is no meaningful boundary.
-   - Use A2A for independently deployed or opaque agent systems, not as a substitute for ordinary internal function calls.
+   - Decide explicitly whether each agent boundary uses a direct runtime call, an in-memory transport, or A2A; do not add a network protocol where there is no meaningful boundary.
+   - Prefer direct PydanticAI calls or programmatic hand-offs for owned in-process agents when PydanticAI is the selected runtime.
+   - Use A2A for independently deployed or opaque agent systems, not as a substitute for ordinary internal agent-runtime calls.
    - Maintain separate A2A agent-and-skill and MCP capability allow-lists.
    - Distinguish runner-selected MCP calls, agent-proposed MCP calls, and bounded agent-controlled tool loops.
    - Treat discovered agents, skills, tools, resources, and prompts as candidates that must be filtered by policy before exposure or execution.
@@ -131,7 +140,7 @@ Keep application workflow state distinct from delegated A2A task state. A remote
    - Prefer the repository's existing tracing and evaluation stack unless it cannot capture the required events.
    - Trace prompts, model calls, tool calls, handoffs, retrieved context, costs, latency, errors, and final decisions.
    - Maintain an append-only workflow event log distinct from the mutable current-state snapshot.
-   - Record A2A task identifiers and states, MCP server and capability identifiers, policy decisions, grants, denials, and approval outcomes.
+   - Record agent-runtime invocations, A2A task identifiers and states, MCP server and capability identifiers, policy decisions, grants, denials, and approval outcomes.
    - Favour tools that emit or can export OpenTelemetry-compatible traces, while treating GenAI semantic conventions as evolving.
 9. Add durability only when the workflow needs it:
    - Require durable execution when work must survive process failure, support scheduled or long-running jobs, resume after interruption, or guarantee retry semantics.
@@ -149,7 +158,9 @@ Keep application workflow state distinct from delegated A2A task state. A remote
 
 ## Review checklist
 
-- Is there one primary agent framework?
+- Is there one primary agent runtime?
+- Is the agent-runtime choice separate from the communication-protocol choice?
+- For owned Python agents, is PydanticAI used or explicitly rejected for a concrete reason?
 - Has each new capability been classified as deterministic code/tool, embedded capability, split agent, or orchestration concern?
 - For text-heavy capabilities, is semantic understanding handled by an LLM-backed path rather than brittle regex/string heuristics?
 - Is control flow owned by deterministic runner code rather than an LLM?
@@ -157,8 +168,9 @@ Keep application workflow state distinct from delegated A2A task state. A remote
 - Are agent-requested actions and transitions treated as proposals rather than authoritative commands?
 - Are authentication, authorization, and capability allocation separated?
 - Are tools allocated just in time according to state, role, caller identity, and task policy?
-- Is each communication boundary explicitly classified as direct call, in-memory transport, or A2A?
+- Is each communication boundary explicitly classified as direct runtime call, in-memory transport, or A2A?
 - Is A2A limited to boundaries where independent deployment, ownership, opacity, or interoperability justifies it?
+- Has A2A been avoided for ordinary calls between owned in-process agents?
 - Are A2A agent-and-skill allow-lists distinct from MCP server, tool, resource, and prompt allow-lists?
 - Are discovery results filtered before agents see or invoke them?
 - Are deterministic MCP calls runner-controlled and judgement-dependent calls represented as validated proposals?
@@ -191,8 +203,9 @@ When applying this skill, produce:
 - text-operation classification where relevant: deterministic structure parsing vs semantic LLM judgment
 - runner responsibility map and explicit control-flow ownership
 - workflow state and legal-transition map, including terminal and recovery states
+- agent-runtime and communication-protocol decision, including where PydanticAI and A2A each apply
 - authentication, authorization, and just-in-time capability-allocation plan
-- communication-boundary map classifying direct calls, in-memory transports, and A2A boundaries
+- communication-boundary map classifying direct runtime calls, in-memory transports, and A2A boundaries
 - separate A2A agent-and-skill and MCP capability allow-lists
 - agent and tool boundary map
 - structured-output contracts, including proposed actions and transitions where relevant
