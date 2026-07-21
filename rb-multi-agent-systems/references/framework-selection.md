@@ -37,8 +37,7 @@ failure model.
 
 ## Durable Orchestration
 
-- LangGraph may fit agent control flow naturally expressed as a persisted graph
-  or state machine with streaming, resumability, or human checkpoints.
+- Prefer an explicit runner and state model in the primary application stack for ordinary state-machine orchestration.
 - Temporal, DBOS, and Restate are candidates when production workflows need
   durable execution, schedules, retries, resumability, or crash survival.
 
