@@ -65,11 +65,19 @@ class VerificationModeTests(unittest.TestCase):
             with self.subTest(mode=mode):
                 plan = safe_plan(self.root)
                 operation = plan.operations[0].model_copy(
-                    update={"verifier_checks": [f"{mode}::service reports healthy"]}
+                    update={
+                        "verifier_checks": [
+                            *plan.operations[0].verifier_checks,
+                            f"{mode}::service reports healthy",
+                        ]
+                    }
                 )
                 assessment = self._assess(plan.model_copy(update={"operations": [operation]}))
                 self.assertFalse(assessment.safe)
                 self.assertFalse(assessment.deterministic_pass)
+                self.assertTrue(
+                    any(item.finding_id.startswith("verification-mode-") for item in assessment.findings)
+                )
 
 
 if __name__ == "__main__":
