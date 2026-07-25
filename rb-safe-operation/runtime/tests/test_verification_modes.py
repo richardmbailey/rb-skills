@@ -31,7 +31,7 @@ class VerificationModeTests(unittest.TestCase):
             [],
         )
 
-    def test_static_file_state_requirements_pass_deterministic_gate(self):
+    def test_typed_static_requirements_pass(self):
         assessment = self._assess(safe_plan(self.root))
         self.assertTrue(assessment.safe)
         self.assertTrue(assessment.deterministic_pass)
@@ -48,20 +48,8 @@ class VerificationModeTests(unittest.TestCase):
             any(item.finding_id.startswith("verification-format-") for item in assessment.findings)
         )
 
-    def test_executable_requirement_fails_deterministically(self):
-        plan = safe_plan(self.root)
-        operation = plan.operations[0].model_copy(
-            update={"success_criteria": ["executable_test::pytest passes"]}
-        )
-        assessment = self._assess(plan.model_copy(update={"operations": [operation]}))
-        self.assertFalse(assessment.safe)
-        self.assertFalse(assessment.deterministic_pass)
-        self.assertTrue(
-            any(item.finding_id.startswith("verification-mode-") for item in assessment.findings)
-        )
-
-    def test_runtime_and_external_observation_modes_fail_deterministically(self):
-        for mode in ("runtime_observation", "external_observation"):
+    def test_executable_and_runtime_modes_fail_deterministically(self):
+        for mode in ("executable_test", "runtime_observation", "external_observation"):
             with self.subTest(mode=mode):
                 plan = safe_plan(self.root)
                 operation = plan.operations[0].model_copy(
