@@ -8,7 +8,9 @@
         "ask for explicit approval",
         "## Workflow Routing",
         "| Material behaviour, interface, edge cases, or acceptance criteria are unresolved | `$rb-discuss` |",
-        "After implementation, require a review+fix cycle"
+        "After implementation, require a review+fix cycle",
+        "canonical CI-equivalent local command",
+        "coverage thresholds"
       ],
       "forbidden": ["## Guided Implementation Sequence", "## Inline Discuss Fallback"],
       "max_occurrences": {"## Workflow Routing": 1},
@@ -27,7 +29,11 @@
         "use `$rb-implement-with-tests` for one bounded ordinary software or product change",
         "## Optional Constrained Route",
         "never select `constrained` implicitly",
-        "accept phase completion only when `$rb-safe-operation` reaches `verified`"
+        "accept phase completion only when `$rb-safe-operation` reaches `verified`",
+        "Use automated behavioural tests by default",
+        "The first-release constrained route cannot execute unit tests",
+        "canonical CI-equivalent command",
+        "Do not rerun until green"
       ],
       "forbidden": ["PydanticAI", "Ollama", "For greenfield Python projects"],
       "max_occurrences": {"## Phase Completion Review": 1},
@@ -39,7 +45,49 @@
         "Implement one agreed ordinary change",
         "Use `$rb-execute-plan` when the user asks",
         "Do not create, resequence, or mark a multi-phase plan complete",
-        "final review+fix loop"
+        "final review+fix loop",
+        "Select the test level",
+        "Add or update an automated test",
+        "closest available repository CI-equivalent command",
+        "Do not rerun an intermittent test until it happens to pass",
+        "Do not introduce a universal percentage target"
+      ],
+      "forbidden": [],
+      "max_occurrences": {"## Test Integrity Rules": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-tdd-scientific-code/SKILL.md",
+      "required": [
+        "Select the required test levels",
+        "closest available repository CI-equivalent command",
+        "Do not repeatedly rerun a stochastic or intermittent failure until it passes",
+        "statistical tests for stochastic components",
+        "## Test Integrity Rules"
+      ],
+      "forbidden": [],
+      "max_occurrences": {"## Test Integrity Rules": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-diagnose/SKILL.md",
+      "required": [
+        "A bug fix must normally include an automated regression test",
+        "do not rerun until green",
+        "why existing tests did not catch the defect",
+        "Do not delete, skip, quarantine, weaken, or repeatedly rerun a failing test"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-review-pr-or-diff/SKILL.md",
+      "required": [
+        "Review the testing strategy against the likely regression boundary",
+        "Check test integrity",
+        "wrongly levelled tests",
+        "Do not impose a universal numerical coverage target"
       ],
       "forbidden": [],
       "max_occurrences": {},
@@ -59,7 +107,11 @@
         "separate A2A agent-and-skill and MCP capability allow-lists",
         "references/framework-selection.md",
         "current official documentation",
-        "maximum model calls, tool calls, retries, wall-clock time, spend"
+        "maximum model calls, tool calls, retries, wall-clock time, spend",
+        "## Required Test Matrix",
+        "state-machine unit tests for every legal transition",
+        "held-out agent evals",
+        "checkpoint, crash-recovery, replay, and event-log consistency tests"
       ],
       "forbidden": [
         "FastMCP",
@@ -75,7 +127,7 @@
         "DSPy",
         "OpenAI Agents SDK"
       ],
-      "max_occurrences": {"## Review checklist": 1},
+      "max_occurrences": {"## Review checklist": 1, "## Required Test Matrix": 1},
       "max_lines": 500
     },
     {
@@ -115,14 +167,43 @@
     },
     {
       "path": "rb-create-implementation-plan/SKILL.md",
-      "required": ["Produce the durable top-level plan", "assets/IMPLEMENTATION_PLAN.md", "Route an approved plan to `$rb-execute-plan`", "Present exactly these plan-wide choices", "never infer `constrained`"],
+      "required": [
+        "Produce the durable top-level plan",
+        "assets/IMPLEMENTATION_PLAN.md",
+        "Route an approved plan to `$rb-execute-plan`",
+        "Present exactly these plan-wide choices",
+        "never infer `constrained`",
+        "Define the testing architecture at the top level",
+        "cannot execute tests, builds, linting, typing, or application commands"
+      ],
       "forbidden": ["Restate the idea.", "Ask clarifying questions if needed."],
       "max_occurrences": {},
       "max_lines": 500
     },
     {
+      "path": "rb-create-implementation-plan/assets/IMPLEMENTATION_PLAN.md",
+      "required": [
+        "## Testing Strategy",
+        "### Unit and Property Tests",
+        "### Component and Integration Tests",
+        "### Critical End-to-End Workflows",
+        "### Canonical CI-Equivalent Command",
+        "Do not introduce an arbitrary universal percentage target"
+      ],
+      "forbidden": [],
+      "max_occurrences": {"## Testing Strategy": 1},
+      "max_lines": 500
+    },
+    {
       "path": "rb-create-low-level-plan/SKILL.md",
-      "required": ["Compile exactly one approved implementation phase", "Do not execute it, assess it, or compile later phases in advance", "attempt_limit: \"unbounded\"", "Never include private planner reasoning"],
+      "required": [
+        "Compile exactly one approved implementation phase",
+        "Do not execute it, assess it, or compile later phases in advance",
+        "attempt_limit: \"unbounded\"",
+        "Never include private planner reasoning",
+        "static file-state inspection",
+        "The first-release constrained route is not a behavioural code-testing path"
+      ],
       "forbidden": ["automatically select", "install dependencies"],
       "max_occurrences": {"## Procedure": 1},
       "max_lines": 500
@@ -136,9 +217,18 @@
     },
     {
       "path": "rb-safe-operation/SKILL.md",
-      "required": ["Execute only an unchanged approved bundle", "Normal operation never installs", "attempt_limit: \"unbounded\"", "A repairable in-envelope finding", "Reach `verified` only"],
+      "required": [
+        "Execute only an unchanged approved bundle",
+        "Normal operation never installs",
+        "attempt_limit: \"unbounded\"",
+        "A repairable in-envelope finding",
+        "Reach `verified` only",
+        "## Executable Verification Limit",
+        "cannot run unit tests",
+        "Do not use source inspection"
+      ],
       "forbidden": ["automatically installs", "skip independent verification"],
-      "max_occurrences": {"## Separated Verification": 1},
+      "max_occurrences": {"## Separated Verification": 1, "## Executable Verification Limit": 1},
       "max_lines": 500
     }
   ]
