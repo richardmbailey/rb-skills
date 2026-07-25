@@ -1,4 +1,4 @@
 interface:
   display_name: "RB End Session"
-  short_description: "End a session with continuity notes"
-  default_prompt: "Use $rb-end-session to prepare continuity notes before ending or handing off this project session."
+  short_description: "End with evidence-rich continuity notes"
+  default_prompt: "Use $rb-end-session to close or hand off this project session while preserving Git state, selected test levels, exact test and CI outcomes, coverage or flaky-test context, omitted checks, residual regression risk, constraints, and the next safe action."
