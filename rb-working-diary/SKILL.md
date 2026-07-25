@@ -73,7 +73,7 @@ Good diary entries include:
 - exact next steps for future-you;
 - changed behaviours and the selected test levels;
 - focused, negative/boundary, integration, contract, migration, end-to-end, scientific, or agent-eval evidence as relevant;
-- canonical CI-equivalent result, coverage status, fixtures/environment, and checks available only remotely;
+- canonical CI-equivalent command and result, coverage status, fixtures/environment, and checks available only remotely;
 - checks not run, stale evidence, and residual regression or scientific risk.
 
 For an implementation plan using the optional constrained route, also record:
