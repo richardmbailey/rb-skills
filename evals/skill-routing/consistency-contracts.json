@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "file_contracts": [
+    {
+      "path": "README.md",
+      "required": [
+        "automated behavioural tests",
+        "CI-equivalent",
+        "static-only",
+        "static_file_state",
+        "runtime-dependent phases must use the standard route",
+        "Material requirements unresolved"
+      ],
+      "forbidden": [
+        "implement changes with focused tests and checks",
+        "Then let the agent route through `$rb-discuss` and `$rb-create-implementation-plan`",
+        "implements them in a roughly deterministic manner"
+      ]
+    },
+    {
+      "path": "docs/safe-operation-process.html",
+      "required": [
+        "Static-only first release",
+        "static_file_state",
+        "runtime-dependent acceptance criteria are rejected",
+        "standard route"
+      ],
+      "forbidden": [
+        "preserve the model’s ability to solve a bounded coding problem",
+        "preserve the model's ability to solve a bounded coding problem"
+      ]
+    },
+    {
+      "path": "rb-safe-operation/references/runtime-contract.md",
+      "required": [
+        "static_file_state::<description>",
+        "deterministic preflight",
+        "executable_test",
+        "runtime_observation",
+        "external_observation"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-create-low-level-plan/SKILL.md",
+      "required": [
+        "closed `<mode>::<description>` syntax",
+        "`static_file_state`",
+        "`executable_test`",
+        "`runtime_observation`",
+        "`external_observation`"
+      ],
+      "forbidden": ["exact read and check actions"]
+    },
+    {
+      "path": "rb-assess-plan-safety/SKILL.md",
+      "required": [
+        "untyped strings are invalid",
+        "unsupported verification mode",
+        "deterministic preflight"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-safe-operation/SKILL.md",
+      "required": [
+        "typed `static_file_state::<description>`",
+        "Reject any criterion or check that is untyped",
+        "static-only"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-continue-project/SKILL.md",
+      "required": [
+        "If material behaviour remains unresolved, recommend `$rb-discuss`",
+        "If the next step is one agreed bounded ordinary feature",
+        "canonical CI-equivalent command"
+      ],
+      "forbidden": [
+        "recommend `$rb-discuss` before `$rb-implement-with-tests`",
+        "recommend `$rb-discuss` before `$rb-tdd-scientific-code`"
+      ]
+    },
+    {
+      "path": "rb-start-project/SKILL.md",
+      "required": [
+        "Agreed bounded ordinary change",
+        "Agreed scientific, numerical",
+        "Material requirements unresolved"
+      ],
+      "forbidden": ["Proceed into the discuss session for the first task now?"]
+    },
+    {
+      "path": "rb-safe-operation/runtime/src/rb_safe_operation/__init__.py",
+      "required": ["install_policy_guard"],
+      "forbidden": []
+    },
+    {
+      "path": "rb-safe-operation/runtime/src/rb_safe_operation/verification.py",
+      "required": [
+        "FIRST_RELEASE_SUPPORTED_MODES = {\"static_file_state\"}",
+        "verification_mode_findings",
+        "install_policy_guard"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-safe-operation/runtime/tests/test_verification_modes.py",
+      "required": [
+        "test_typed_static_requirements_pass",
+        "test_untyped_requirement_fails_deterministically",
+        "test_executable_and_runtime_modes_fail_deterministically"
+      ],
+      "forbidden": []
+    }
+  ],
+  "skill_metadata_contracts": [
+    {"skill": "rb-start-project", "required": ["testing", "CI-equivalent", "route"]},
+    {"skill": "rb-continue-project", "required": ["testing", "CI-equivalent", "route"]},
+    {"skill": "rb-create-implementation-plan", "required": ["testing architecture", "constrained static-only"]},
+    {"skill": "rb-execute-plan", "required": ["automated behavioural tests", "CI-equivalent", "static-only"]},
+    {"skill": "rb-implement-with-tests", "required": ["automated behavioural tests", "test levels", "CI-equivalent"]},
+    {"skill": "rb-tdd-scientific-code", "required": ["test levels", "invariants", "CI-equivalent"]},
+    {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
+    {"skill": "rb-review-pr-or-diff", "required": ["wrongly levelled", "flaky", "CI"]},
+    {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
+    {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported"]},
+    {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only"]},
+    {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "Stop"]},
+    {"skill": "rb-end-session", "required": ["test levels", "CI", "residual"]},
+    {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
+  ],
+  "json_case_contracts": [
+    {
+      "path": "evals/skill-routing/cases/constrained-execution.json",
+      "required_ids": [
+        "constrained-compile-static-bounded-task",
+        "constrained-compile-check-unsupported",
+        "constrained-assess-untyped-criterion",
+        "constrained-assess-executable-criterion",
+        "constrained-execute-approved-static-bundle"
+      ],
+      "required_substrings": ["static_file_state", "executable_test"],
+      "forbidden_substrings": ["exact read and check actions"]
+    }
+  ],
+  "behavioural_eval_contracts": [
+    {"path": "rb-implement-with-tests/evals/eval-plan.json", "skill": "rb-implement-with-tests", "minimum_cases": 8},
+    {"path": "rb-tdd-scientific-code/evals/eval-plan.json", "skill": "rb-tdd-scientific-code", "minimum_cases": 7},
+    {"path": "rb-execute-plan/evals/eval-plan.json", "skill": "rb-execute-plan", "minimum_cases": 7},
+    {"path": "rb-create-low-level-plan/evals/eval-plan.json", "skill": "rb-create-low-level-plan", "minimum_cases": 10},
+    {"path": "rb-assess-plan-safety/evals/eval-plan.json", "skill": "rb-assess-plan-safety", "minimum_cases": 12},
+    {"path": "rb-safe-operation/evals/eval-plan.json", "skill": "rb-safe-operation", "minimum_cases": 11}
+  ]
+}
