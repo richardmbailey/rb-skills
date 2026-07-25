@@ -1,7 +1,7 @@
 # Runtime Contract
 
 - Source: `runtime/`; package `rb-safe-operation-runtime`; CLI module `rb_safe_operation.cli`.
-- Supported Python: 3.9 or newer. Supported Pydantic: 2.12 or newer and below 3.
+- Supported Python: 3.10 or newer. Supported Pydantic: 2.12 or newer and below 3.
 - The committed first-release lock includes the probed CPython 3.12 macOS ARM64 `pydantic-core` wheel hash. Other supported Python/platform combinations need a reviewed lock update and matching approved wheelhouse before setup; they fail with `copy_install_dependency_missing` rather than downloading.
 - Explicit setup trust boundary: invoke `scripts/setup_runtime.py --control-root <absolute-control-root> --wheelhouse <approved-wheelhouse> --python <absolute-bootstrap-python>`. Setup records the resolved bootstrap interpreter path and SHA-256 identity in the manifest.
 - Normal invocation: read only `launcher_bootstrap_interpreter_path` from the canonical `${CODEX_HOME:-~/.codex}/rb-safe-operation/current.json`, then invoke `<absolute-bootstrap-python> -I -S -B <absolute-installed-skill>/scripts/run_runtime.py <CLI command>`. The launcher has no manifest/control-root override; disposable installs use an isolated `CODEX_HOME` and explicitly set setup's destination to its `rb-safe-operation` child.
