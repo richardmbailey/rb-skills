@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Multi-Agent Systems"
-  short_description: "Design robust multi-agent LLM systems"
-  default_prompt: "Use $rb-multi-agent-systems to design or review this multi-agent LLM architecture."
+  short_description: "Design and test robust multi-agent systems"
+  default_prompt: "Use $rb-multi-agent-systems to design or review this multi-agent architecture with the simplest sufficient control model, deterministic runner ownership, explicit permissions and state, and a concrete matrix of transition, denial, contract, recovery, end-to-end, and held-out behavioural tests."
