@@ -23,7 +23,7 @@
         "`[x]` implemented",
         "`[v]` verified",
         "Prefer a walking-skeleton approach",
-        "complete the phase-level review+fix gate",
+        "complete the phase-level integration, CI-equivalent, and review+fix gates below",
         "use `$rb-multi-agent-systems`",
         "orchestration layer",
         "use `$rb-implement-with-tests` for one bounded ordinary software or product change",
