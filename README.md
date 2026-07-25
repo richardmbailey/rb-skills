@@ -1,39 +1,12 @@
 # RB Agent Skills
-This repository contains reusable skills which can be used with Codex and Claude Code. A skill is a reusable set of instructions and resources an AI agent can use to complete tasks in ways you have directed. In practical terms, a skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders, which your agent is aware of. The agent can either choose to use a skill or the skill can be invoked directly by the user. These skills are ones I have used and developed over recent months for work on general coding projects, with a bias towards modelling/AI/ML projects. Expect them to change significantly as new generations of models are released - sometimes it's useful to direct AI models, sometimes it's just better to get out of their way!
 
-## Easiest Setup
+This repository contains reusable skills for Codex and Claude Code. A skill is a versioned directory containing a `SKILL.md` workflow and, where useful, model-facing metadata, scripts, references, assets, and behavioural evaluations.
 
-If you are not comfortable installing this manually, clone or download this repository onto your computer, open the folder in Codex or Claude Code, and ask the agent to install it for you.
+The skills are intended for practical coding, modelling, AI/ML, research, review, and project-continuity work. They provide process guidance rather than a framework that you run directly.
 
-Copy and paste this into Codex:
+## Quick Start
 
-```text
-I have cloned this rb-skills repository. Please install these skills for Codex. Run the sync script in dry-run mode first, then install using symlink mode, check that the skills are visible in my Codex skills directory, and tell me whether I need to restart Codex.
-```
-
-Copy and paste this into Claude Code:
-
-```text
-I have cloned this rb-skills repository. Please install these skills for Claude Code. Run the sync script in dry-run mode first, then install using symlink mode for Claude, check that the skills are visible in ~/.claude/skills, and tell me whether I need to restart Claude Code.
-```
-
-If you use both tools, ask the agent to install the skills for both Codex and Claude Code. After installation, restart the relevant app if the agent recommends it, then open the project you want to work on and start with `$rb-start-project` in Codex or `/rb-start-project` in Claude Code.
-
-Codex uses:
-
-```text
-${CODEX_HOME:-$HOME/.codex}/skills
-```
-
-Claude Code personal skills use:
-
-```text
-$HOME/.claude/skills
-```
-
-## Manual Quick Start
-
-Use this route if you are comfortable running terminal commands yourself. On a new computer:
+Clone the repository to a stable location:
 
 ```bash
 git clone <repo-url> ~/src/rb-skills
@@ -42,315 +15,228 @@ python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --dry-run
 python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink
 ```
 
-The installer chooses the destination automatically. It tries Codex first when `$CODEX_HOME` or `~/.codex` exists. If Codex is not present and Claude Code is detected, it installs to `~/.claude/skills`.
+The sync script selects a destination automatically:
 
-Restart Codex after installing for Codex. For Claude Code, restart if `~/.claude/skills` was newly created; otherwise edits under that directory are usually detected live.
+- Codex: `${CODEX_HOME:-$HOME/.codex}/skills`
+- Claude Code: `$HOME/.claude/skills`
 
-Then open the project or repository you want to work on and type one of:
-
-```text
-Codex: $rb-start-project
-Claude Code: /rb-start-project
-```
-
-`rb-start-project` inspects the repository, asks setup questions, records useful context, and routes the session to the right workflow.
-
-## What These Skills Are For
-
-These skills are not a framework you run directly. They are reusable instructions Codex or Claude Code can discover and apply when you ask for a matching workflow.
-
-Use them to:
-
-- start new coding or research projects in a structured way;
-- onboard an unfamiliar repository before editing;
-- discuss requirements before implementation;
-- debug bugs and failing tests without jumping to fixes too early;
-- implement changes with focused tests and checks;
-- handle scientific, modelling, numerical, or domain-sensitive code carefully;
-- review diffs and pull requests;
-- turn ideas into implementation plans and execute them in verified phases;
-- optionally compile, assess, execute, and verify one higher-assurance phase at a time using requested fresh contexts, with the actual instruction-only or host-enforced assurance level disclosed;
-- preserve continuity across long sessions;
-
-## Installation
-
-Clone this repo to a stable location. For your own machines, prefer `--mode symlink` so the clone remains the source of truth and the agent sees live links into it.
-
-```bash
-git clone <repo-url> ~/src/rb-skills
-cd ~/src/rb-skills
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --dry-run
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink
-```
-
-The dry run should list the skills that would be installed. By default, the script selects the destination automatically:
-
-- Codex first: `$CODEX_HOME/skills` when set, otherwise `~/.codex/skills` when `~/.codex` exists.
-- Claude Code next: `~/.claude/skills` when Claude Code is detected and Codex is not present.
-
-Force a destination with `--agent`:
+Force an agent destination with:
 
 ```bash
 python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --agent codex
 python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --agent claude
 ```
 
-Use `--dest /path/to/skills` for an explicit directory.
-
-Use `--mode copy` only when you want a standalone install that does not depend on keeping the clone in place.
-
-Install only selected skills with `--skills`:
+Install selected skills with:
 
 ```bash
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --skills rb-start-project rb-diagnose rb-implement-with-tests
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink \
+  --skills rb-start-project rb-diagnose rb-implement-with-tests
 ```
 
-Existing local skills are skipped by default. To replace them, use `--replace`; the script moves the previous version into a timestamped backup folder before installing.
+Restart Codex after adding, removing, renaming, or substantially changing skills. Claude Code usually detects changes under an existing `~/.claude/skills` directory, but restart it when new skills do not appear.
 
-Restart Codex after installing, adding, removing, or renaming Codex skills so discovery refreshes cleanly. In Claude Code, changes under an existing `~/.claude/skills` directory are usually detected live, but restart Claude Code if the top-level skills directory was newly created.
+## Starting Project Work
 
-## First Use In A Project
-
-After installing the pack:
-
-1. Open Codex or Claude Code in the target project directory.
-2. Invoke the start-project skill: `$rb-start-project` in Codex or `/rb-start-project` in Claude Code.
-3. Let `$rb-start-project` inspect the repository and ask its setup questions.
-4. Confirm the project goal, constraints, test/check commands, and first task.
-5. Let the agent route the session to the recommended workflow.
-
-For a brand new or poorly documented project, `rb-start-project` is usually the right entrypoint. It should not write product code during onboarding. It should first understand the repository, clarify the goal, and only then ask whether to continue into implementation, diagnosis, planning, or review.
-
-If the whole repository needs RB workflow setup (new machine, missing `AGENTS.md` or `CONTEXT.md`, or the agent cannot see the RB skills), ask for:
+Open the target repository and invoke:
 
 ```text
-Use $rb-install-skills on this repository.
+Codex: $rb-start-project
+Claude Code: /rb-start-project
 ```
 
-`$rb-install-skills` installs or verifies the RB skills, prepares project resources such as `AGENTS.md` and `CONTEXT.md`, runs visibility checks, and then continues into start-project onboarding.
+`rb-start-project` inspects the repository, discovers its test and CI conventions, asks only for missing decisions, and routes the first task through the narrowest appropriate workflow.
 
-If `$rb-install-skills` reports that existing installed skills are not symlinks to this repo, rerun only after deciding those installed folders should be backed up and replaced:
+The routing rule is:
 
-```bash
-python3 rb-install-skills/scripts/install_skills.py --target "$PWD" --replace-skills
+| Task state | Workflow |
+| --- | --- |
+| Material requirements unresolved | `rb-discuss` |
+| Sufficiently understood idea needs a top-level plan | `rb-create-implementation-plan` |
+| Existing multi-step plan needs sequencing or status ownership | `rb-execute-plan` |
+| Agreed bounded ordinary change | `rb-implement-with-tests` |
+| Agreed scientific, numerical, modelling, simulation, stochastic, or domain-sensitive change | `rb-tdd-scientific-code` |
+| Unknown bug, regression, failing test, flaky test, or surprising output | `rb-diagnose` |
+| Neutral repository orientation | `rb-explain-codebase` |
+| Structural critique | `rb-architecture-review` |
+| Defect review of a diff or pull request | `rb-review-pr-or-diff` |
+
+`rb-discuss` is not a mandatory stage. Agreed work routes directly to planning or implementation.
+
+## Testing Policy
+
+The coding pipeline uses automated behavioural tests by default. A successful lint, import, build, smoke check, or source inspection does not replace a behavioural test when a plausible regression could escape.
+
+The workflow selects test levels from the likely failure boundary:
+
+- unit or property tests for local logic and invariants;
+- component or integration tests for databases, filesystems, networks, queues, frameworks, solvers, processes, and services;
+- contract tests for APIs, schemas, events, tools, and compatibility promises;
+- migration, existing-data, rollback, and partial-failure tests where state changes;
+- end-to-end tests for critical user and operational workflows;
+- stochastic, scientific, performance, security, concurrency, recovery, and multi-agent evaluations where those risks matter.
+
+Changes to decisions, validation, external interactions, and side effects should include relevant negative and boundary cases. Bug fixes normally require a regression test that demonstrates the defective behaviour before the fix and passes afterward.
+
+Before completion, the agent runs the closest available repository CI-equivalent command or the largest relevant affordable subset. Anything omitted must be named with its reason and residual risk.
+
+The skills do not impose a universal coverage percentage. They preserve existing project thresholds and focus on changed behaviours, changed branches, and diff coverage where available.
+
+Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun until green merely to complete a task. Intermittent failures are defects to diagnose.
+
+## Standard and Constrained Execution Routes
+
+A new implementation plan records one of three routes:
+
+- `standard`: normal tested implementation through `rb-execute-plan`, `rb-implement-with-tests`, and `rb-tdd-scientific-code`;
+- `constrained`: a Codex-only, first-release static-only workflow for exact read/patch operations and statically observable acceptance criteria;
+- `undecided`: preserve the choice and do not enter the constrained pipeline.
+
+The agent never selects `constrained` automatically.
+
+### Standard Route
+
+Use the standard route for ordinary software behaviour, scientific code, refactors, migrations, integrations, and any phase requiring tests, builds, linting, type checking, application startup, browser automation, benchmarks, network activity, or runtime observation.
+
+In practical terms, runtime-dependent phases must use the standard route in the first release.
+
+### Constrained Static-Only Route
+
+The constrained route processes one approved phase at a time:
+
+```text
+rb-execute-plan
+  -> rb-create-low-level-plan
+  -> rb-assess-plan-safety
+  -> rb-safe-operation
+  -> stop before the next phase
 ```
 
-## How Skills Are Invoked
+It is suitable only when the phase can be expressed through the supported `read_file`, `apply_patch`, or bounded read/patch operations and every acceptance criterion is observable from file state.
 
-Codex and Claude Code can use these skills in two ways:
+Every constrained success criterion and verifier check uses a closed machine-readable form:
 
-- Automatic invocation: when your request matches a skill description, the agent should load and follow that skill before acting.
-- Explicit invocation: you can name a skill directly, such as `Use $rb-diagnose` in Codex or `/rb-diagnose` in Claude Code, when you want to steer the session.
+```text
+<mode>::<description>
+```
 
-You do not need to memorize every skill name. In normal project work, start with `rb-start-project` and let it route the session. Explicit skill names are useful when you already know the workflow you want or when you want to correct the agent's routing.
+The recognised modes are:
 
-If the agent does not appear to use the right skill, mention it directly with `$skill-name` in Codex or `/skill-name` in Claude Code.
+```text
+static_file_state
+executable_test
+runtime_observation
+external_observation
+```
+
+The first-release runtime supports only `static_file_state`. Untyped criteria and the other modes fail deterministic preflight. For example:
+
+```text
+static_file_state::README.md contains the canonical installation command
+```
+
+is supported, while:
+
+```text
+executable_test::pytest passes
+runtime_observation::the service answers /health
+external_observation::the deployed endpoint is healthy
+```
+
+are rejected under the current capability profile.
+
+`safe: true` means one exact typed plan passed deterministic policy and verification-mode checks plus a fresh semantic assessment. It is permission to attempt that unchanged plan. It is not a general claim that the agent, task, machine, or resulting software is safe.
+
+Constrained `verified` means the declared static file-state criteria were covered by coordinator-observed product state and context-separated verifier evidence. It does not prove runtime behaviour.
+
+The route is semi-formal, not an operating-system sandbox. Read-only role restrictions and fresh-context separation are instruction-only on the current host; complete child traces are unavailable. See [`docs/safe-operation-process.html`](docs/safe-operation-process.html) for the detailed guide.
 
 ## Skill Reference
 
-This pack currently contains these skills:
-
-| Skill | Invoke when |
+| Skill | Use when |
 | --- | --- |
-| `$rb-explain-diff` | You want a teaching-oriented, interactive HTML explanation of a code change; use `$rb-review-pr-or-diff` when the aim is to find defects. |
-| `$rb-create-skill-evals` | You want behavioural evaluations for an agent skill, including trigger boundaries, outcomes, regressions, repeated trials, or ablation comparisons—not ordinary product-code tests. |
-| `$rb-architecture-review` | You want an architectural critique covering boundaries, coupling, duplication, hidden assumptions, and improvement opportunities, rather than neutral repository orientation. |
-| `$rb-context-tokens` | You ask about current context size, token usage, the latest call, or `/tokens`. |
-| `$rb-continue-project` | You are resuming a mature project from existing instructions, diary, handoff, and Git state; clarify if the user may instead want a standalone status artifact. |
-| `$rb-diagnose` | A bug, regression, failing test, or surprising output needs root-cause investigation before choosing a fix. |
-| `$rb-install-skills` | You want the full RB setup workflow: global skills, project resources, visibility checks, and initial onboarding—not sync-only or repair-only work. |
-| `$rb-discuss` | A non-trivial change still has unresolved material requirements, behaviour, interfaces, edge cases, or acceptance criteria that must be discussed before planning or coding. |
-| `$rb-execute-plan` | An existing multi-step implementation plan or phase checklist needs sequencing, progress tracking, status updates, or phase-level verification; it selects the appropriate implementation workflow for each task. |
-| `$rb-implement-with-tests` | One bounded ordinary software/product change is ready to implement with focused tests and a final review+fix loop; it does not own multi-phase plan state. |
-| `$rb-multi-agent-systems` | You are designing, reviewing, or debugging multiple LLM agents or orchestration layers, including boundaries, tools, handoffs, state, routing, failures, observability, evaluation, budgets, and durability. |
-| `$rb-project-language` | You need shared vocabulary or `CONTEXT.md` updated with domain terms, acronyms, units, invariants, assumptions, or modelling concepts. |
-| `$rb-research-question-gate` | You are evaluating a research idea, scientific hypothesis, algorithm proposal, or technical novelty claim before investing in PRD/planning/coding. |
-| `$rb-review-pr-or-diff` | You want defects and risks found in a pull request or diff, with findings first and risks tied to file references. |
-| `$rb-end-session` | You want to pause or close current work, prepare durable continuity notes, or create a handoff—not report ongoing project status. |
-| `$rb-setup-local-agent-skills` | An existing RB skill installation or project-resource setup is incomplete, stale, or undiscoverable and needs verification or repair. |
-| `$rb-start-project` | You are first onboarding a new or poorly understood project and need discovery, setup questions, goals, constraints, and workflow routing before coding. |
-| `$rb-sync-skills-repo` | You want to copy, symlink, clone, update, publish, or otherwise synchronize skill folders between a Git repository and agent skill directories. |
-| `$rb-tdd-scientific-code` | You are changing scientific, numerical, modelling, simulation, stochastic, or domain-sensitive code where units, invariants, tolerances, reproducibility, and review+fix matter. |
-| `$rb-create-implementation-plan` | An idea, rough feature request, or product goal needs a new top-level implementation plan; use `$rb-execute-plan` when a plan already exists. |
-| `$rb-create-low-level-plan` | **Codex-only in the first release.** An approved plan selected the optional constrained route and its next single phase must become a typed operational contract; it does not assess or execute. |
-| `$rb-assess-plan-safety` | **Codex-only in the first release.** A canonical low-level plan needs deterministic policy checks and fresh-context semantic safety assessment; any violation or uncertainty returns immutable `safe: false`. |
-| `$rb-safe-operation` | **Codex-only in the first release.** An exact low-level plan has `safe: true` and must be revalidated, executed inside its envelope, audited, repaired only in scope, and verified in a fresh context with the host's actual separation level disclosed. |
-| `$rb-where-are-we` | You want a deep, evidence-backed HTML state-of-play report covering goals, phase, progress, code health, risks, recent changes, and next steps. |
-| `$rb-working-diary` | Long-running, context-heavy, or cumulatively substantial multi-turn work needs durable decisions, evidence, status, and next actions across compaction, sessions, or handoffs. |
-| `$rb-write-skill` | You want to create or update a reusable RB-style skill; use `$rb-create-skill-evals` when the work is behavioural evaluation rather than authoring. |
-| `$rb-explain-codebase` | You want neutral orientation to an unfamiliar repository's structure, control flow, data flow, dependencies, and change hotspots. |
+| `$rb-start-project` | First onboarding of a new or poorly understood project, including testing and CI discovery before routing. |
+| `$rb-continue-project` | Resume a mature project from instructions, diary, handoff, Git state, and preserved testing context. |
+| `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
+| `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan, testing architecture, risks, success criteria, and route choice. |
+| `$rb-execute-plan` | An existing multi-step plan needs phase sequencing, task status, test coverage, CI-equivalent checks, and phase-level verification. |
+| `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
+| `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
+| `$rb-diagnose` | A bug, regression, flaky test, or surprising output needs evidence-led root-cause work before a fix. |
+| `$rb-review-pr-or-diff` | A diff or pull request needs findings-first review, including wrongly levelled, missing, flaky, or weakened tests. |
+| `$rb-explain-codebase` | Neutral orientation to structure, control flow, data flow, dependencies, tests, and change hotspots. |
+| `$rb-architecture-review` | Structural critique of boundaries, coupling, duplication, hidden assumptions, test seams, and refactoring opportunities. |
+| `$rb-multi-agent-systems` | Design or review multiple agents or orchestration, including deterministic runner control and a transition, denial, contract, recovery, end-to-end, and held-out test matrix. |
+| `$rb-project-language` | Capture domain terminology, units, invariants, assumptions, and shared vocabulary. |
+| `$rb-research-question-gate` | Evaluate a scientific, algorithmic, or novelty claim before investing in planning or coding. |
+| `$rb-where-are-we` | Produce a deep evidence-backed HTML project state-of-play report. |
+| `$rb-end-session` | Close or hand off a session with Git state, testing evidence, omitted checks, risks, and next actions. |
+| `$rb-working-diary` | Preserve cumulative decisions, evidence, test/CI status, risks, and next actions across sessions or compaction. |
+| `$rb-explain-diff` | Create a teaching-oriented interactive explanation of a code change. |
+| `$rb-create-skill-evals` | Design behavioural evaluations for agent skills, routing boundaries, outcomes, regressions, and ablations. |
+| `$rb-write-skill` | Create or update a reusable RB-style skill. |
+| `$rb-install-skills` | Install or verify the complete RB setup and project resources. |
+| `$rb-setup-local-agent-skills` | Repair an incomplete, stale, or undiscoverable skill installation. |
+| `$rb-sync-skills-repo` | Synchronise skill folders between this repository and agent skill directories. |
+| `$rb-context-tokens` | Inspect context size or token usage. |
+| `$rb-create-low-level-plan` | **Codex-only.** Compile one statically verifiable constrained phase into a typed operational contract. |
+| `$rb-assess-plan-safety` | **Codex-only.** Run deterministic identity, policy, capability, evidence, effect, and verification-mode checks plus semantic assessment. |
+| `$rb-safe-operation` | **Codex-only.** Execute an unchanged approved static-only bundle and verify its typed file-state criteria. |
 
-Wiki-specific skills are maintained with the wiki system in [`richardmbailey/rb-wiki`](https://github.com/richardmbailey/rb-wiki), rather than duplicated in this general skill pack. Install `rb-wiki`, `rb-new-wiki`, `rb-wiki-ingest`, and `rb-wiki-maintenance` from that repository.
+Wiki-specific operational skills live with the wiki system in [`richardmbailey/rb-wiki`](https://github.com/richardmbailey/rb-wiki). They are not duplicated in this general skill pack.
 
-Codex or Claude Code should automatically invoke matching skills except where a table entry is explicitly marked Codex-only. The table is mainly for orientation and for cases where you want to steer the agent explicitly.
+Retired skills remain under [`retired-skills/`](retired-skills/README.md) for historical reference and are not installed by the normal sync.
 
-Retired skills are preserved in [`retired-skills/`](retired-skills/README.md) for historical reference. They are not part of the active skill pack and are not installed by the normal repository sync.
+## Continuity and Handoff
 
-## Recommended Session Patterns
+For long-running work, the diary and handoff should preserve:
 
-For a new project:
+- objective and current status;
+- selected test levels and affected boundaries;
+- exact focused, integration, coverage, benchmark, and CI-equivalent commands and outcomes;
+- checks not run and why;
+- flaky-test evidence and unresolved failures;
+- accepted residual regression or scientific risk;
+- current Git state, plan/phase state, and exact next action.
 
-```text
-$rb-start-project
+Tests are never reported as passed unless they were run in the current session or clearly documented with date and context in an authoritative handoff.
+
+## Repository Validation
+
+The repository CI validates:
+
+- constrained runtime unit tests;
+- runtime schema drift;
+- instruction contracts;
+- cross-file routing, metadata, documentation, capability, and eval consistency;
+- JSON syntax for active routing and behavioural evaluation plans.
+
+Run the local checks from the repository root with:
+
+```bash
+python3 evals/skill-routing/validate_instruction_contracts.py \
+  evals/skill-routing/instruction-contracts.json
+python3 evals/skill-routing/validate_consistency_contracts.py \
+  evals/skill-routing/consistency-contracts.json
+python3 -m json.tool evals/skill-routing/eval-plan.json >/dev/null
+python3 -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
 ```
 
-Then let the agent route through `$rb-discuss` and `$rb-create-implementation-plan`. For substantial planned work, `$rb-execute-plan` runs phase sequencing and status while applying `$rb-implement-with-tests` or `$rb-tdd-scientific-code` to each selected task.
+Install the runtime package or its declared dependency before running its tests:
 
-When a new implementation plan is created, the agent also reminds you about an optional higher-assurance route. Choose `standard` for most tasks, allowing the agent to work through the plan in the most efficient way. A currently experimental option is `constrained`, which runs one implementation phase at a time through `$rb-create-low-level-plan`, `$rb-assess-plan-safety`, and `$rb-safe-operation`. You can also choose `undecided` to defer the choice. The `constrained` route is Codex-only in this release and is a semi-formal control layer which plans low-level implementation steps, verifies their safety, and then implements them in a roughly deterministic manner—see the next section.
-
-### When To Use The Constrained “Safe” Route
-
-Use the `constrained` route when a change is narrow enough to describe as exact operations on exact files, and when an unintended write, stale preimage, scope change, or unrecorded decision would be costly. It is most useful for higher-consequence changes where explicit stop conditions, immutable plans and assessments, phase-by-phase execution, and an auditable record justify the extra time and ceremony.
-
-The current first release is a good fit when the phase can be completed using its supported read and patch operations. Prefer the `standard` route for ordinary low-risk edits, exploratory work, broad refactors whose exact scope is not yet known, or work that needs builds, test commands, dependency installation, browser automation, network access, or other unsupported actions inside the constrained run. Choose `undecided` when the risks or operational shape are not clear enough to make that choice yet.
-
-The practical lesson from the pilot is that the constrained route is valuable for narrow, high-consequence operations, but is currently too heavyweight for most routine changes. It reduces risk by binding one exact plan, detecting drift, stopping on uncertainty, and preserving evidence. It does not make an agent generally safe, replace a sandbox, or provide host-enforced proof that no unrecorded action occurred.
-
-### What `safe` Means In This Workflow
-
-Here, `safe: true` means that one exact low-level plan, with its declared scope, permissions, side effects, evidence, policy, capabilities, approvals, and repository snapshot, passed both deterministic checks and semantic assessment. It is permission to attempt that unchanged plan through `$rb-safe-operation`; it is not a general claim that the task, agent, or computer is safe. Any relevant change invalidates the handoff and stops execution for review or reassessment.
-
-```mermaid
-flowchart TD
-    A["Implementation plan<br/>route: constrained"] --> B["Compile one phase<br/>$rb-create-low-level-plan"]
-    B --> C["Assess the exact plan and effects<br/>$rb-assess-plan-safety"]
-    C --> D{"Assessment result"}
-    D -- "false or uncertain" --> E["Stop for human decision<br/>revise, leave the route, or abandon"]
-    D -- "safe: true" --> F["Revalidate the unchanged bundle<br/>$rb-safe-operation"]
-    F --> G["Execute inside the approved envelope"]
-    G --> H["Requested fresh verification<br/>plus coordinator-observed product state"]
-    H --> I{"All criteria met?"}
-    I -- "yes" --> J["Phase verified<br/>stop before the next phase"]
-    I -- "repair remains in scope" --> G
-    I -- "new scope, risk, or uncertainty" --> E
+```bash
+python3 -m pip install -e rb-safe-operation/runtime
 ```
 
-- **Instruction-only restrictions:** the assessor and verifier are told to inspect evidence and report findings without changing the project. Codex does not currently enforce this by placing them in separate read-only sandboxes or removing every write-capable tool. The coordinator checks their structured responses and compares project state before and after their work, but these checks detect changes rather than prevent them.
-- **Incomplete child traces:** the coordinator receives a child agent's final response, but Codex does not provide it with a guaranteed complete record of every action the child took. A comparison can reveal a lasting file change, but it cannot prove that the child did not briefly read a secret, make an external request, or perform another action that left no visible project change.
+## Updating and Publishing
 
-A project that requires technically enforced read-only roles or proof that no unrecorded action occurred should not treat this first-release constrained route as providing those guarantees.
-
-For a detailed plain-language walkthrough with flow diagrams, artifact maps, worked examples, assurance limits, and the planned policy extension, read [How the RB Safe-Operation Process Works](docs/safe-operation-process.html).
-
-### Planned Project-Specific Safe-Operation Policy
-
-The next planned extension adds a canonical `.rb-safe-operation-policy.json` at the project root and a new `$rb-create-safe-operation-policy` skill. The skill will translate natural-language restrictions into typed policy, show the user a deterministic preview, and write the JSON only after confirmation. Users will not need to author the policy file themselves.
-
-This extension is **planned but not implemented yet**. The current runtime can validate and monotonically merge an explicitly supplied schema-`1.0` `ProjectPolicy`, but the constrained skills do not automatically discover or enforce `.rb-safe-operation-policy.json`. There is no natural-language policy-authoring workflow yet, and `$rb-create-safe-operation-policy` must not be listed or invoked as an active skill until its implementation, tests, installation, and routing checks pass.
-
-The planned extension will:
-
-- support exact-file and directory-subtree denials for `read`, `create`, `modify`, and `delete`;
-- treat user-facing “write” as `create + modify + delete` and explain that interpretation before saving;
-- apply the policy only to the optional `constrained` execution route, while leaving `standard` execution unchanged;
-- bind the installed global policy, exact project-policy source, effective merged policy, and complete low-level plan to hashes that are independently revalidated before assessment and use;
-- make `$rb-assess-plan-safety` return `safe: false` with structured findings for policy violations, uncontrolled detrimental side effects, missing evidence, or material uncertainty;
-- prevent owned runtime paths from reading denied contents, including during snapshot and verification work, while clearly disclosing prior-context, denied-directory observability, and whole-host limitations;
-- use Pydantic for typed artifacts and deterministic validation, with Pydantic AI considered for role-specific tool allocation only after dependency, provider, packaging, and capability tests pass;
-- report framework-enforced tool allocation independently from instruction-only and host-enforced controls rather than treating them as one assurance ladder; and
-- record proposals, confirmations, policy hashes, denials, drift stops, framework-mediated tool calls, and final outcomes without storing protected contents or private model reasoning.
-
-Once implemented, `$rb-create-implementation-plan` will remind the user that policy authoring is an optional step before execution-route selection and that the policy is enforced only on the constrained route. Policy creation will use a proposal-and-confirm flow, an exclusive project lease, compare-and-swap persistence, and an auditable intent/commit sequence. A policy change will invalidate earlier plans and assessments without rewriting their historical records.
-
-The reviewed implementation plan is [`plans/2026-07-19-safe-operation-project-policy/IMPLEMENTATION_PLAN.md`](plans/2026-07-19-safe-operation-project-policy/IMPLEMENTATION_PLAN.md). Its execution route is currently `undecided`, and no implementation work has begun.
-
-In Claude Code, direct invocations use slash commands, for example `/rb-start-project`, `/rb-discuss`, `/rb-execute-plan`, and `/rb-implement-with-tests`.
-
-For a bug:
-
-```text
-Use $rb-diagnose for this failing behaviour.
-```
-
-The agent should gather evidence, reproduce the issue where possible, separate diagnosis from fixes, and preserve a check that proves the fix.
-
-For scientific or modelling code:
-
-```text
-Use $rb-tdd-scientific-code for this change.
-```
-
-The agent should work test-first around units, invariants, tolerances, reproducibility, fixtures, stochastic behaviour, domain assumptions, and final review+fix.
-
-For an unfamiliar repository:
-
-```text
-Use $rb-explain-codebase before editing.
-```
-
-The agent should explain structure, control flow, dependencies, change hotspots, and likely risks before proposing edits.
-
-For long-running work:
-
-```text
-Use $rb-working-diary as we go.
-```
-
-The agent should preserve durable decisions, assumptions, status, and next actions so another session can resume without starting from scratch.
-
-## Adding Or Updating Skills
-
-This repo should be the source of truth for general global skills. Product-specific skills may instead live with the product they operate; the wiki skills, for example, are maintained in `rb-wiki`. When creating a new skill for this pack, prefer this workflow:
-
-1. Create the skill folder in this repo, for example `rb-example-skill/`.
-2. Add `SKILL.md` with `name` and `description` frontmatter.
-3. Add `agents/openai.yaml` with the display metadata.
-4. Validate that the folder name matches the skill name.
-5. Install or refresh the skill into the active agent with `$rb-sync-skills-repo` or:
-
-    ```bash
-    python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --skills rb-example-skill
-    ```
-
-6. Restart Codex, or restart Claude Code if the top-level `~/.claude/skills` directory was newly created.
-
-When editing an existing symlinked skill, edit the repo copy. Codex will read the updated file through the symlink after restart. Claude Code usually detects `SKILL.md` edits live when the skills directory is already watched.
-
-## Updating This Pack Later
-
-If you installed with symlinks, update the clone:
+With a symlink installation:
 
 ```bash
 cd ~/src/rb-skills
 git pull
 ```
 
-Restart Codex after pulling changes that add, remove, rename, or substantially change skill descriptions. For Claude Code, restart if newly added or renamed skills do not appear.
+Restart Codex after pulling changes that add, remove, rename, or substantially change skill descriptions. Re-run the sync command when using copy mode.
 
-If you installed with copy mode, run the sync script again after pulling.
-
-## Sharing And Publishing
-
-Before sharing publicly, check that the repo does not include:
-
-- secrets, API keys, tokens, or `.env` files;
-- private account IDs;
-- confidential institutional context;
-- local-only absolute paths that should not travel;
-- generated outputs, caches, or temporary files.
-
-Keep local/system material out of the repo, especially:
-
-```text
-.system/
-.rb-agent-global-backups/
-output/
-outputs/
-codex-primary-runtime/
-.env
-.env.*
-__pycache__/
-*.pyc
-```
-
-## Troubleshooting
-
-If the agent cannot see a skill:
-
-1. Check that the skill directory exists under `${CODEX_HOME:-$HOME/.codex}/skills` for Codex or `~/.claude/skills` for Claude Code.
-2. Check that the directory contains `SKILL.md`.
-3. If it is a symlink, check that the clone has not moved.
-4. Restart Codex or Claude Code.
-5. Run `$rb-setup-local-agent-skills` if the setup still looks wrong.
-
-If a newly cloned machine has no `$rb-sync-skills-repo` yet, run the bootstrap script directly from the clone as shown in the Quick Start section. The skill becomes available only after installation and the relevant agent reload/restart.
+Before publishing, check that the repository contains no secrets, private identifiers, confidential context, local-only paths, caches, generated temporary outputs, or environment files.
