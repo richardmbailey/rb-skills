@@ -1,0 +1,70 @@
+name: Validate skills
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: rb-safe-operation/runtime/pyproject.toml
+
+      - name: Install constrained runtime
+        run: python -m pip install -e rb-safe-operation/runtime
+
+      - name: Compile Python sources
+        run: |
+          python -m compileall -q \
+            evals/skill-routing \
+            rb-safe-operation/runtime/src \
+            rb-safe-operation/runtime/tests
+
+      - name: Validate JSON manifests and eval plans
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          patterns = (
+              "evals/skill-routing/*.json",
+              "evals/skill-routing/cases/*.json",
+              "rb-*/evals/*.json",
+          )
+          paths = sorted({path for pattern in patterns for path in Path(".").glob(pattern)})
+          if not paths:
+              raise SystemExit("no JSON manifests or eval plans found")
+          for path in paths:
+              json.loads(path.read_text(encoding="utf-8"))
+              print(f"PASS: {path}")
+          PY
+
+      - name: Validate instruction contracts
+        run: |
+          python evals/skill-routing/validate_instruction_contracts.py \
+            evals/skill-routing/instruction-contracts.json
+
+      - name: Validate cross-file consistency
+        run: |
+          python evals/skill-routing/validate_consistency_contracts.py \
+            evals/skill-routing/consistency-contracts.json
+
+      - name: Run constrained-runtime tests
+        run: python -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
+
+      - name: Check generated schema drift
+        run: |
+          python -m rb_safe_operation.cli check-schema-drift \
+            --expected rb-safe-operation/references/generated
