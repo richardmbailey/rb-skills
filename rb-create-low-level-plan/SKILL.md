@@ -18,7 +18,7 @@ Compile exactly one approved implementation phase into a strict proposal. Do not
 
 ## Verification Requirement Syntax
 
-Every entry in `success_criteria` and `verifier_checks` must use the closed syntax:
+Every entry in `success_criteria` and `verifier_checks` must use the closed `<mode>::<description>` syntax:
 
 ```text
 <mode>::<description>
