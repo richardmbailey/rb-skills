@@ -5,7 +5,7 @@ description: "Use when an exact constrained plan has safe true and needs executi
 
 # RB Safe Operation
 
-Execute only an unchanged approved bundle. This is a semi-formal control workflow, not a sandbox; disclose instruction-only role restrictions, incomplete child traces, and the inability of the first-release capability set to execute behavioural tests.
+Execute only an unchanged approved bundle. This is a static-only, semi-formal control workflow, not a sandbox; disclose instruction-only role restrictions, incomplete child traces, and the inability of the first-release capability set to execute behavioural tests.
 
 ## Executable Verification Limit
 
