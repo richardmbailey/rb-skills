@@ -31,8 +31,40 @@
       ]
     },
     {
+      "path": ".github/workflows/validate-skills.yml",
+      "required": [
+        "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "validate_eval_manifest.py",
+        "python-version: [\"3.10\", \"3.12\"]",
+        "wheelhouse-sha256.txt"
+      ],
+      "forbidden": [
+        "uses: actions/checkout@v4",
+        "uses: actions/setup-python@v5",
+        "uses: actions/upload-artifact@v4"
+      ]
+    },
+    {
+      "path": "rb-safe-operation/runtime/pyproject.toml",
+      "required": ["requires-python = \">=3.10\""],
+      "forbidden": ["requires-python = \">=3.9\""]
+    },
+    {
+      "path": "rb-safe-operation/scripts/setup_runtime.py",
+      "required": ["(3, 10, 0)", "expected >=3.10"],
+      "forbidden": ["(3, 9, 0)", "expected >=3.9"]
+    },
+    {
+      "path": "rb-safe-operation/scripts/run_runtime.py",
+      "required": ["(3, 10, 0)", "expected >=3.10"],
+      "forbidden": ["(3, 9, 0)", "expected >=3.9"]
+    },
+    {
       "path": "rb-safe-operation/references/runtime-contract.md",
       "required": [
+        "Supported Python: 3.10 or newer",
         "static_file_state::<description>",
         "deterministic preflight",
         "executable_test",
@@ -40,7 +72,7 @@
         "external_observation",
         "ignoring only that provenance field"
       ],
-      "forbidden": []
+      "forbidden": ["Supported Python: 3.9 or newer"]
     },
     {
       "path": "rb-create-low-level-plan/SKILL.md",
@@ -171,5 +203,14 @@
     {"path": "rb-create-low-level-plan/evals/eval-plan.json", "skill": "rb-create-low-level-plan", "minimum_cases": 10},
     {"path": "rb-assess-plan-safety/evals/eval-plan.json", "skill": "rb-assess-plan-safety", "minimum_cases": 12},
     {"path": "rb-safe-operation/evals/eval-plan.json", "skill": "rb-safe-operation", "minimum_cases": 11}
+  ],
+  "directory_mirror_contracts": [
+    {
+      "canonical": "rb-safe-operation/references/generated",
+      "mirrors": [
+        "rb-assess-plan-safety/references/generated",
+        "rb-create-low-level-plan/references/generated"
+      ]
+    }
   ]
 }
