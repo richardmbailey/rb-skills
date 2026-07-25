@@ -215,8 +215,8 @@ def main() -> int:
     except Exception as exc:
         print(f"missing_runtime_environment: invalid version preflight output: {exc}", file=sys.stderr)
         return 2
-    if python_version < (3, 9, 0):
-        print(f"unsupported_python_version: expected >=3.9, observed {versions['python']}", file=sys.stderr)
+    if python_version < (3, 10, 0):
+        print(f"unsupported_python_version: expected >=3.10, observed {versions['python']}", file=sys.stderr)
         return 2
     pydantic_major, pydantic_minor = pydantic_parts
     if (pydantic_major, pydantic_minor) < (2, 12) or pydantic_major >= 3:
