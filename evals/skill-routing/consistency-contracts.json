@@ -22,7 +22,7 @@
       "required": [
         "Static-only first release",
         "static_file_state",
-        "runtime-dependent acceptance criteria are rejected",
+        "Runtime-dependent acceptance criteria are rejected.",
         "standard route"
       ],
       "forbidden": [
@@ -73,8 +73,8 @@
     {
       "path": "rb-continue-project/SKILL.md",
       "required": [
-        "If material behaviour remains unresolved, recommend `$rb-discuss`",
-        "If the next step is one agreed bounded ordinary feature",
+        "If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved",
+        "If one bounded ordinary change is already agreed",
         "canonical CI-equivalent command"
       ],
       "forbidden": [
@@ -85,11 +85,11 @@
     {
       "path": "rb-start-project/SKILL.md",
       "required": [
-        "Agreed bounded ordinary change",
-        "Agreed scientific, numerical",
-        "Material requirements unresolved"
+        "| One bounded ordinary product change is agreed",
+        "| Scientific, numerical, modelling, simulation, or domain-sensitive work is agreed",
+        "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved"
       ],
-      "forbidden": ["Proceed into the discuss session for the first task now?"]
+      "forbidden": ["For feature work, ask:"]
     },
     {
       "path": "rb-safe-operation/runtime/src/rb_safe_operation/__init__.py",
@@ -127,7 +127,7 @@
     {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
     {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported"]},
     {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only"]},
-    {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "Stop"]},
+    {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "stop"]},
     {"skill": "rb-end-session", "required": ["test levels", "CI", "residual"]},
     {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
   ],
