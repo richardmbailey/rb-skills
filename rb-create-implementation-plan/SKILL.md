@@ -11,7 +11,7 @@ Use this to create the first top-level plan for a sufficiently understood idea o
 
 1. Read `CONTEXT.md`, relevant requirements, architecture notes, tests, and existing plans when present. Note missing context that affects the plan.
 2. Confirm only decisions that materially change scope, users, constraints, compatibility, rollout, validation, or success criteria; ask one question at a time when user input is required.
-3. For multi-agent systems, use `$rb-multi-agent-systems` to define agent and tool boundaries, state, handoffs, failure containment, observability, evaluation, budgets, and durability before choosing phases.
+3. For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to choose the simplest sufficient control model and define agent and tool boundaries, state, handoffs, failure containment, observability, evaluation, budgets, and durability before choosing phases.
 4. Define goals, non-goals, users, requirements, constraints, assumptions, risks, success criteria, implementation phases, rollout or rollback where relevant, and validation.
 5. Produce the durable top-level plan using `assets/IMPLEMENTATION_PLAN.md` or a project-specific template supplied by the repository or human.
 6. At the point the implementation plan is created, remind the human that an optional constrained route is available for higher-assurance work. Present exactly these plan-wide choices without choosing for them:

@@ -13,6 +13,18 @@ Use this when shaping, reviewing, or diagnosing systems with multiple LLM agents
 
 Preserve the repository's existing production constraints and framework choices unless evidence supports a change. For new designs, choose one primary agent framework only after defining capability boundaries and operational requirements. Verify version-sensitive implementation details against current official documentation before coding.
 
+## Architecture escalation
+
+Use the simplest architecture that can express the required behaviour. Escalate workflow control only as requirements demand:
+
+1. Use a state machine for predictable processes whose transitions can be specified in advance.
+2. Use an extended state machine when decisions require bounded contextual data but the control flow can remain explicit.
+3. Use a dynamic stateful workflow orchestrator only when planning, adaptation, or coordination cannot be expressed clearly by the simpler models.
+
+Choose control-flow complexity and runtime durability independently. A predictable state machine may still need persistence, crash recovery, scheduling, or durable retries.
+
+As control-flow complexity and autonomy increase, strengthen validation, execution limits, permissions, human checkpoints, testing, and auditability. Logging and tracing improve visibility and provide audit evidence, but they do not enforce permissions, constrain behaviour, or control risk by themselves.
+
 ## Default orchestration architecture
 
 For non-trivial multi-agent systems, prefer a deterministic state-machine runner unless the workflow is more naturally represented as a simple pipeline or dependency graph.
@@ -162,6 +174,7 @@ Keep application workflow state distinct from delegated A2A task state. A remote
 - Is the agent-runtime choice separate from the communication-protocol choice?
 - For owned Python agents, is PydanticAI used or explicitly rejected for a concrete reason?
 - Has each new capability been classified as deterministic code/tool, embedded capability, split agent, or orchestration concern?
+- Could the required workflow control be expressed by a state machine or extended state machine without dynamic orchestration?
 - For text-heavy capabilities, is semantic understanding handled by an LLM-backed path rather than brittle regex/string heuristics?
 - Is control flow owned by deterministic runner code rather than an LLM?
 - Are workflow states, legal transitions, terminal states, and invalid-transition behaviour explicit?
@@ -183,6 +196,7 @@ Keep application workflow state distinct from delegated A2A task state. A remote
 - Are quality gates applied before authoritative state changes and external side effects?
 - Can one bad premise poison downstream work, and if so where is the validation gate?
 - Are sub-agent outputs treated with provenance/confidence rather than blindly becoming shared truth?
+- As complexity and autonomy increase, are validation, limits, permissions, human checkpoints, testing, and auditability strengthened, with logging treated as evidence rather than a control?
 - Is there an append-only event log as well as a current-state snapshot?
 - Can execution resume safely from a checkpoint without repeating side effects or duplicating delegated tasks?
 - Are traces and evals present before non-trivial behaviour ships?
@@ -199,6 +213,7 @@ When applying this skill, produce:
 
 - recommended architecture and primary stack, including whether it preserves or changes the existing stack
 - alternatives rejected and why
+- workflow-control choice: state machine vs extended state machine vs dynamic stateful orchestration
 - capability scaling decision table: deterministic tool vs embedded capability vs split agent vs orchestration layer
 - text-operation classification where relevant: deterministic structure parsing vs semantic LLM judgment
 - runner responsibility map and explicit control-flow ownership

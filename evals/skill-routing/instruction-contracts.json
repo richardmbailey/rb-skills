@@ -49,6 +49,10 @@
       "path": "rb-multi-agent-systems/SKILL.md",
       "required": [
         "deterministic tool vs embedded capability vs split agent vs orchestration layer",
+        "Use the simplest architecture that can express the required behaviour",
+        "dynamic stateful workflow orchestrator",
+        "Choose control-flow complexity and runtime durability independently",
+        "do not enforce permissions, constrain behaviour, or control risk by themselves",
         "For non-trivial multi-agent systems, prefer a deterministic state-machine runner",
         "Runner, A2A, MCP, and agent-runtime boundaries",
         "Do not treat PydanticAI and A2A as competing alternatives",
@@ -76,7 +80,7 @@
     },
     {
       "path": "rb-multi-agent-systems/references/framework-selection.md",
-      "required": ["PydanticAI", "OpenAI Agents SDK", "A2A", "FastMCP", "LiteLLM", "DSPy", "current official documentation"],
+      "required": ["PydanticAI", "OpenAI Agents SDK", "A2A", "FastMCP", "LiteLLM", "DSPy", "current official documentation", "Choose control-flow complexity and runtime durability independently"],
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500

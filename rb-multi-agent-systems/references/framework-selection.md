@@ -42,6 +42,7 @@ failure model.
 
 ## Durable Orchestration
 
+- Choose control-flow complexity and runtime durability independently. A predictable state machine may still need durable execution for schedules, retries, resumability, or crash survival, while dynamic planning alone does not justify a particular durability platform.
 - Prefer an explicit runner and state model in the primary application stack for ordinary state-machine orchestration.
 - Temporal, DBOS, and Restate are candidates when production workflows need
   durable execution, schedules, retries, resumability, or crash survival.

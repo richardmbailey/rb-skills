@@ -20,7 +20,7 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
 - Avoid silent fallbacks. Prefer fail-fast or fail-closed behavior with clear diagnostics.
 - Only include degraded modes or fallback-like behavior when the human explicitly asks for them or when they are deliberate, visible, and auditable product states.
 - Preserve the repository's existing language, framework, validation, test, and deployment conventions unless there is a clear reason to change them.
-- For multi-agent architecture, use `$rb-multi-agent-systems` to resolve agent boundaries, tools, handoffs, state, failure containment, observability, evaluation, budgets, and durability.
+- For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to choose the simplest sufficient control model and resolve agent boundaries, tools, handoffs, state, failure containment, observability, evaluation, budgets, and durability.
 - For text-processing work, separate deterministic handling of stable structure from LLM-backed judgment about natural-language meaning.
 
 ## Optional Constrained Route
@@ -66,7 +66,7 @@ When converting an implementation plan into executable phases, or revising phase
 4. State exit criteria in terms of user-observable workflow and validation checks.
 5. Include fail-fast diagnostics for missing dependencies, provider failures, validation errors, unsupported states, and policy blocks.
 6. Record the existing stack and project conventions before proposing dependency or framework changes.
-7. For multi-agent systems, record the decisions produced by `$rb-multi-agent-systems` rather than repeating framework selection in this plan.
+7. For systems with multiple LLM agents, agentic workflows, or orchestration layers, record the decisions produced by `$rb-multi-agent-systems` rather than repeating control-model or framework selection in this plan.
 8. For text-heavy features, identify which steps are deterministic structure handling and which require semantic LLM judgment. Do not plan elaborate regexes or keyword heuristics as substitutes for understanding natural-language meaning.
 9. Include tests or verification checks for every task.
 10. For each phase, create or reference a dedicated phase implementation file with:
@@ -113,7 +113,7 @@ When reviewing an existing implementation plan:
 - Flag horizontal phases that build isolated layers without user-visible workflow progress.
 - Flag fallback paths that may hide defects.
 - Flag stack or dependency changes that ignore existing repo conventions.
-- For multi-LLM-agent plans, confirm `$rb-multi-agent-systems` concerns are addressed explicitly.
+- For plans involving multiple LLM agents, agentic workflows, or orchestration layers, confirm `$rb-multi-agent-systems` concerns are addressed explicitly.
 - For text-processing plans, flag semantic tasks implemented only with brittle regex, keyword matching, or ad hoc string scoring.
 - Flag tasks without test or verification coverage.
 - Check whether task status uses `[ ]`, `[x]`, and `[v]` correctly.

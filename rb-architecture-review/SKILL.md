@@ -17,7 +17,7 @@ Inspect the codebase for structural problems and opportunities for clearer bound
 4. Look for shallow modules, unclear names, duplication, implicit dependencies, hidden scientific assumptions, poor test seams, circular imports, scattered configuration, unnecessary coupling, and ownership gaps.
 5. Identify candidate deeper modules with simple interfaces and testable contracts.
 6. Check whether proposed architecture changes preserve current behavior, public APIs, data contracts, deployment constraints, and user workflows.
-7. If the architecture includes multiple LLM agents, also use `$rb-multi-agent-systems`.
+7. If the architecture includes multiple LLM agents, agentic state machines, or stateful orchestration layers, also use `$rb-multi-agent-systems`.
 8. Update `$rb-working-diary` with durable architecture findings, decisions, and follow-up risks when the review is substantial.
 9. Produce a prioritised refactoring plan.
 
@@ -25,6 +25,7 @@ Inspect the codebase for structural problems and opportunities for clearer bound
 
 - Do not refactor immediately unless asked.
 - Distinguish architecture risks from stylistic preferences.
+- Prefer the simplest architecture that expresses the required behaviour; require evidence before escalating from explicit state machines to dynamic planning or orchestration.
 - Prefer incremental refactors with tests over large rewrites.
 - Preserve existing project conventions unless a proposed change has a clear payoff.
 

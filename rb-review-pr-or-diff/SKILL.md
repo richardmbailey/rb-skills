@@ -14,7 +14,7 @@ Review changes for actionable defects, regressions, missing tests, and maintaina
 1. Inspect the diff or PR scope, including added, modified, deleted, and generated files.
 2. Read relevant surrounding code, tests, configuration, migrations, and public interfaces touched by the change.
 3. Read `AGENTS.md` and `CONTEXT.md` when present and relevant, especially for domain logic, scientific assumptions, deployment, or project-specific rules.
-4. If the diff affects a multi-LLM-agent system, also use `$rb-multi-agent-systems` to review agent boundaries, tool permissions, handoffs, state, structured outputs, tracing, evals, retrieval, provider routing, and durability.
+4. If the diff affects multiple LLM agents, an agentic workflow, or an orchestration layer, also use `$rb-multi-agent-systems` to review whether the control model is the simplest sufficient architecture, along with agent boundaries, tool permissions, handoffs, state, structured outputs, tracing, evals, retrieval, provider routing, and durability.
 5. For text-handling changes, check whether the code separates deterministic structure parsing from semantic understanding:
    - Deterministic parsing is appropriate for stable syntax, exact delimiters, structured formats, known IDs, file paths, URLs, logs, or protocol fields.
    - LLM calls are appropriate when correctness depends on meaning, intent, relevance, classification, summarisation, ambiguity resolution, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence.
