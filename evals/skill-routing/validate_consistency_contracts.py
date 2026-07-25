@@ -36,6 +36,22 @@ def frontmatter_name(text: str) -> str | None:
     return None
 
 
+def _case_ids(cases: list[object], relative: str, errors: list[str]) -> list[str]:
+    ids: list[str] = []
+    for index, case in enumerate(cases):
+        if not isinstance(case, dict):
+            errors.append(f"{relative}: cases[{index}] must be an object")
+            continue
+        case_id = case.get("id")
+        if not isinstance(case_id, str) or not case_id.strip():
+            errors.append(f"{relative}: cases[{index}].id must be a non-empty string")
+            continue
+        ids.append(case_id)
+    if len(ids) != len(set(ids)):
+        errors.append(f"{relative}: eval case IDs must be unique")
+    return ids
+
+
 def validate(manifest_path: Path, repo: Path) -> list[str]:
     try:
         manifest = load_json(manifest_path)
@@ -104,7 +120,7 @@ def validate(manifest_path: Path, repo: Path) -> list[str]:
         if not isinstance(payload, list):
             errors.append(f"{relative}: expected a JSON list")
             continue
-        ids = {case.get("id") for case in payload if isinstance(case, dict)}
+        ids = set(_case_ids(payload, relative, errors))
         for required_id in contract.get("required_ids", []):
             if required_id not in ids:
                 errors.append(f"{relative}: missing required case ID {required_id!r}")
@@ -141,11 +157,12 @@ def validate(manifest_path: Path, repo: Path) -> list[str]:
         if payload.get("skill") != skill:
             errors.append(f"{relative}: expected skill {skill!r}, found {payload.get('skill')!r}")
         cases = payload.get("cases")
-        if not isinstance(cases, list) or len(cases) < minimum_cases:
-            observed = len(cases) if isinstance(cases, list) else "non-list"
-            errors.append(f"{relative}: requires at least {minimum_cases} cases; found {observed}")
-        elif len({case.get("id") for case in cases if isinstance(case, dict)}) != len(cases):
-            errors.append(f"{relative}: eval case IDs must be unique and present")
+        if not isinstance(cases, list):
+            errors.append(f"{relative}: cases must be a list")
+            continue
+        if len(cases) < minimum_cases:
+            errors.append(f"{relative}: requires at least {minimum_cases} cases; found {len(cases)}")
+        _case_ids(cases, relative, errors)
 
     return errors
 
