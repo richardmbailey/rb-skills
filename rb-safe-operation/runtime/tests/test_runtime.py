@@ -433,6 +433,46 @@ class ModelPolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "must be disjoint"):
             plan.__class__.model_validate(data)
 
+    def test_assessment_rejects_nonexistent_create_root_before_execution(self):
+        plan = safe_plan(self.root)
+        target = self.root / "created.txt"
+        patch_text = (
+            "diff --git a/created.txt b/created.txt\n"
+            "--- /dev/null\n"
+            "+++ b/created.txt\n"
+            "@@ -0,0 +1 @@\n"
+            "+created\n"
+        )
+        data = plan.model_dump(mode="json")
+        data["snapshot"]["expected_product_changes"] = [str(target)]
+        operation = data["operations"][0]
+        operation.update({
+            "adapter": "apply_patch",
+            "patch": patch_text,
+            "patch_hash": hashlib.sha256(patch_text.encode()).hexdigest(),
+            "preimage_hashes": {},
+            "expected_created_paths": [str(target)],
+            "expected_modified_paths": [],
+            "expected_deleted_paths": [],
+        })
+        for key in ("path", "byte_start", "byte_end", "expected_hash"):
+            operation.pop(key)
+        operation["path_contract"]["read_roots"] = []
+        operation["path_contract"]["create_roots"] = [str(target)]
+        operation["effects"][0].update({
+            "effect_class": "repository_create",
+            "targets": [str(target)],
+        })
+        plan = plan.__class__.model_validate(data)
+
+        result = assess_plan(plan, default_global_policy(str(self.root)), capabilities(), semantic(), [])
+
+        self.assertFalse(result.safe)
+        self.assertTrue(any(
+            item.category == "operation_contract" and "create_roots" in item.explanation
+            for item in result.findings
+        ))
+
     def test_omitted_applicable_instruction_is_rejected(self):
         (self.root / "AGENTS.md").write_text("Do not read input.txt", encoding="utf-8")
         plan = safe_plan(self.root)
@@ -484,6 +524,66 @@ class PathStateTests(unittest.TestCase):
         (self.root / "UNDECLARED.txt").write_text("unexpected", encoding="utf-8")
         after = capture_snapshot(str(self.root), ["inside.txt"], [], [])
         equal, differences = snapshot_materially_equal(before, after)
+        self.assertFalse(equal)
+        self.assertIn("full_file_inventory", differences)
+
+    def test_declared_file_creation_ignores_parent_directory_nlink_drift(self):
+        product = self.root / "product"
+        product.mkdir()
+        target = product / "created.txt"
+        before = capture_snapshot(str(self.root), ["inside.txt"], [], [str(target)])
+        target.write_text("declared", encoding="utf-8")
+        after = capture_snapshot(str(self.root), ["inside.txt"], [], [str(target)])
+        directory_identity = after.full_file_inventory["product/"]
+        prefix, marker, _ = directory_identity.rpartition(":nlink=")
+        self.assertEqual(marker, ":nlink=")
+        forced_inventory = {
+            **after.full_file_inventory,
+            "product/": f"{prefix}:nlink=999999",
+        }
+        after = after.model_copy(update={"full_file_inventory": forced_inventory})
+
+        equal, differences = snapshot_materially_equal(before, after, {str(target)})
+
+        self.assertTrue(equal, differences)
+
+    def test_declared_file_creation_does_not_hide_parent_directory_inode_drift(self):
+        product = self.root / "product"
+        product.mkdir()
+        target = product / "created.txt"
+        before = capture_snapshot(str(self.root), ["inside.txt"], [], [str(target)])
+        target.write_text("declared", encoding="utf-8")
+        after = capture_snapshot(str(self.root), ["inside.txt"], [], [str(target)])
+        directory_identity = after.full_file_inventory["product/"]
+        observed_inode = product.stat().st_ino
+        changed_identity = directory_identity.replace(
+            f":ino={observed_inode}:",
+            ":ino=999999999:",
+            1,
+        )
+        self.assertNotEqual(changed_identity, directory_identity)
+        forced_inventory = {
+            **after.full_file_inventory,
+            "product/": changed_identity,
+        }
+        after = after.model_copy(update={"full_file_inventory": forced_inventory})
+
+        equal, differences = snapshot_materially_equal(before, after, {str(target)})
+
+        self.assertFalse(equal)
+        self.assertIn("full_file_inventory", differences)
+
+    def test_declared_file_creation_does_not_hide_undeclared_sibling(self):
+        product = self.root / "product"
+        product.mkdir()
+        target = product / "created.txt"
+        before = capture_snapshot(str(self.root), ["inside.txt"], [], [str(target)])
+        target.write_text("declared", encoding="utf-8")
+        (product / "UNDECLARED.txt").write_text("unexpected", encoding="utf-8")
+        after = capture_snapshot(str(self.root), ["inside.txt"], [], [str(target)])
+
+        equal, differences = snapshot_materially_equal(before, after, {str(target)})
+
         self.assertFalse(equal)
         self.assertIn("full_file_inventory", differences)
 
@@ -690,6 +790,100 @@ class AuditFakeWorkflowTests(unittest.TestCase):
         coordinator.abandon()
         self.assertTrue(reports[0].success)
         self.assertEqual(target.read_text(encoding="utf-8"), "changed\n")
+
+    def test_preflight_rejects_patch_metadata_unsupported_by_execution(self):
+        target = self.root / "input.txt"
+        target.write_text("hello\n", encoding="utf-8")
+        original = target.read_bytes()
+        patch_text = (
+            "diff --git a/input.txt b/input.txt\n"
+            "new file mode 100644\n"
+            "--- a/input.txt\n"
+            "+++ b/input.txt\n"
+            "@@ -1 +1 @@\n"
+            "-hello\n"
+            "+changed\n"
+        )
+        base = safe_plan(self.root)
+        data = base.model_dump(mode="json")
+        operation = data["operations"][0]
+        operation.update({
+            "kind": "exact_action",
+            "adapter": "apply_patch",
+            "patch": patch_text,
+            "patch_hash": hashlib.sha256(patch_text.encode()).hexdigest(),
+            "preimage_hashes": {str(target): hashlib.sha256(original).hexdigest()},
+            "expected_created_paths": [],
+            "expected_modified_paths": [str(target)],
+            "expected_deleted_paths": [],
+        })
+        for key in ("path", "byte_start", "byte_end", "expected_hash"):
+            operation.pop(key)
+        operation["path_contract"]["modify_roots"] = [str(self.root)]
+        operation["effects"][0]["effect_class"] = "repository_modify"
+        plan = base.__class__.model_validate(data)
+
+        result = deterministic_preflight(
+            plan,
+            default_global_policy(str(self.root)),
+            default_global_policy(str(self.root)),
+            current_snapshot(plan),
+            capabilities(),
+            [],
+        )
+
+        self.assertFalse(result.deterministic_pass)
+        self.assertFalse(result.semantic_assessment_required)
+        self.assertTrue(any(
+            item.category == "operation_contract" and "patch syntax" in item.explanation
+            for item in result.findings
+        ))
+
+    def test_preflight_rejects_patch_target_inventory_mismatch(self):
+        target = self.root / "input.txt"
+        target.write_text("hello\n", encoding="utf-8")
+        patch_text = (
+            "diff --git a/other.txt b/other.txt\n"
+            "--- a/other.txt\n"
+            "+++ b/other.txt\n"
+            "@@ -1 +1 @@\n"
+            "-hello\n"
+            "+changed\n"
+        )
+        base = safe_plan(self.root)
+        data = base.model_dump(mode="json")
+        operation = data["operations"][0]
+        operation.update({
+            "kind": "exact_action",
+            "adapter": "apply_patch",
+            "patch": patch_text,
+            "patch_hash": hashlib.sha256(patch_text.encode()).hexdigest(),
+            "preimage_hashes": {str(target): hashlib.sha256(target.read_bytes()).hexdigest()},
+            "expected_created_paths": [],
+            "expected_modified_paths": [str(target)],
+            "expected_deleted_paths": [],
+        })
+        for key in ("path", "byte_start", "byte_end", "expected_hash"):
+            operation.pop(key)
+        operation["path_contract"]["modify_roots"] = [str(self.root)]
+        operation["effects"][0]["effect_class"] = "repository_modify"
+        plan = base.__class__.model_validate(data)
+
+        result = deterministic_preflight(
+            plan,
+            default_global_policy(str(self.root)),
+            default_global_policy(str(self.root)),
+            current_snapshot(plan),
+            capabilities(),
+            [],
+        )
+
+        self.assertFalse(result.deterministic_pass)
+        self.assertFalse(result.semantic_assessment_required)
+        self.assertTrue(any(
+            item.category == "operation_contract" and "target inventory" in item.explanation
+            for item in result.findings
+        ))
 
     def test_first_release_rejects_locally_widened_exec_and_check_adapters(self):
         executable = Path(shutil.which("true") or "/usr/bin/true").resolve(strict=True)

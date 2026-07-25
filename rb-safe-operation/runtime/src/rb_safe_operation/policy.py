@@ -20,6 +20,7 @@ from .models import (
     NetworkPolicyGrant,
     ProjectPolicy,
 )
+from .patches import PatchContractError, inspect_patch_paths
 
 
 ENFORCEMENT_ORDER = {"instruction_only": 0, "host_enforced": 1}
@@ -430,6 +431,28 @@ def _operation_contract_findings(op) -> list[Finding]:
     findings: list[Finding] = []
     required_effect_targets: dict[str, set[str]] = {}
 
+    for field in ("read_roots", "create_roots", "modify_roots", "delete_roots", "working_directories"):
+        for root_value in getattr(op.path_contract, field):
+            root = Path(root_value)
+            root_key = hashlib.sha256(root_value.encode("utf-8")).hexdigest()[:16]
+            if not root.exists():
+                findings.append(_finding(
+                    f"root-exists-{op.operation_id}-{field}-{root_key}",
+                    "O-002",
+                    "operation_contract",
+                    f"{field} root must exist before execution: {root_value}",
+                    [op.operation_id],
+                ))
+                continue
+            if field in {"create_roots", "working_directories"} and not root.is_dir():
+                findings.append(_finding(
+                    f"root-directory-{op.operation_id}-{field}-{root_key}",
+                    "O-002",
+                    "operation_contract",
+                    f"{field} root must be an existing directory: {root_value}",
+                    [op.operation_id],
+                ))
+
     def require_path(path: str, roots: list[str], label: str) -> None:
         if not _contained_in_any(path, roots):
             path_key = hashlib.sha256(path.encode("utf-8")).hexdigest()[:16]
@@ -442,6 +465,40 @@ def _operation_contract_findings(op) -> list[Finding]:
         require_path(op.path, op.path_contract.read_roots, "read")
         require_effect("repository_read", [op.path])
     elif op.kind == "exact_action" and op.adapter == "apply_patch":
+        try:
+            relative_created, relative_modified, relative_deleted = inspect_patch_paths(op.patch)
+        except PatchContractError as exc:
+            findings.append(_finding(
+                f"patch-syntax-{op.operation_id}",
+                "O-002",
+                "operation_contract",
+                f"patch syntax is unsupported or malformed: {exc}",
+                [op.operation_id],
+            ))
+        else:
+            working_directory = Path(op.path_contract.working_directories[0]).resolve(strict=False)
+
+            def absolute_targets(relative_paths: set[str]) -> set[str]:
+                return {str((working_directory / value).resolve(strict=False)) for value in relative_paths}
+
+            observed_inventories = (
+                absolute_targets(relative_created),
+                absolute_targets(relative_modified),
+                absolute_targets(relative_deleted),
+            )
+            expected_inventories = (
+                set(op.expected_created_paths),
+                set(op.expected_modified_paths),
+                set(op.expected_deleted_paths),
+            )
+            if observed_inventories != expected_inventories:
+                findings.append(_finding(
+                    f"patch-targets-{op.operation_id}",
+                    "O-002",
+                    "operation_contract",
+                    "patch target inventory differs from declared expected paths",
+                    [op.operation_id],
+                ))
         expected_preimages = set(op.expected_modified_paths) | set(op.expected_deleted_paths)
         if set(op.preimage_hashes) != expected_preimages:
             findings.append(_finding(f"patch-preimages-{op.operation_id}", "O-002", "operation_contract", "patch preimages must exactly cover modified and deleted paths", [op.operation_id]))

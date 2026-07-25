@@ -1,5 +1,5 @@
 # RB Agent Skills
-This repository contains reusable skills (some of which are strongly influenced by Matt Pocock's skills https://github.com/mattpocock/skills) to be used with Codex and Claude Code. A skill is a reusable set of instructions and resources an AI agent can use to complete tasks in ways you have directed. In practical terms, a skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders, which your agent is aware of. The agent can either choose to use a skill or the skill can be invoked directly by the user. These skills are ones I have used and developed over recent months for work on general coding projects, with a bias towards modelling projects. Expect them to change significantly as new generations of models are released - sometimes it's useful to direct AI models, sometimes it's just better to get out of their way!
+This repository contains reusable skills which can be used with Codex and Claude Code. A skill is a reusable set of instructions and resources an AI agent can use to complete tasks in ways you have directed. In practical terms, a skill is a directory with a `SKILL.md` file and, optionally, supporting `agents/`, `scripts/`, `references/`, or `assets/` folders, which your agent is aware of. The agent can either choose to use a skill or the skill can be invoked directly by the user. These skills are ones I have used and developed over recent months for work on general coding projects, with a bias towards modelling/AI/ML projects. Expect them to change significantly as new generations of models are released - sometimes it's useful to direct AI models, sometimes it's just better to get out of their way!
 
 ## Easiest Setup
 
@@ -18,8 +18,6 @@ I have cloned this rb-skills repository. Please install these skills for Claude 
 ```
 
 If you use both tools, ask the agent to install the skills for both Codex and Claude Code. After installation, restart the relevant app if the agent recommends it, then open the project you want to work on and start with `$rb-start-project` in Codex or `/rb-start-project` in Claude Code.
-
-For reference, the installer places skills where each tool expects to find them.
 
 Codex uses:
 
@@ -73,7 +71,6 @@ Use them to:
 - turn ideas into implementation plans and execute them in verified phases;
 - optionally compile, assess, execute, and verify one higher-assurance phase at a time using requested fresh contexts, with the actual instruction-only or host-enforced assurance level disclosed;
 - preserve continuity across long sessions;
-- sync this skills pack across computers.
 
 ## Installation
 
@@ -193,15 +190,23 @@ Retired skills are preserved in [`retired-skills/`](retired-skills/README.md) fo
 
 ## Recommended Session Patterns
 
-For a new feature:
+For a new project:
 
 ```text
 $rb-start-project
 ```
 
-Then let the agent route through `$rb-discuss` and `$rb-create-implementation-plan`. For substantial planned work, `$rb-execute-plan` owns phase sequencing and status while applying `$rb-implement-with-tests` or `$rb-tdd-scientific-code` to each selected task.
+Then let the agent route through `$rb-discuss` and `$rb-create-implementation-plan`. For substantial planned work, `$rb-execute-plan` runs phase sequencing and status while applying `$rb-implement-with-tests` or `$rb-tdd-scientific-code` to each selected task.
 
-When a new implementation plan is created, the agent also reminds you about an optional higher-assurance route. Choose `standard` for the existing workflow, `constrained` to run one phase at a time through `$rb-create-low-level-plan`, `$rb-assess-plan-safety`, and `$rb-safe-operation`, or `undecided` to defer the choice. The constrained route is Codex-only in this release and is a semi-formal control layer rather than a sandbox: assessor and verifier restrictions are **instruction-only**, and **child traces are incomplete**. Dependencies are provisioned only through the explicit setup procedure documented by `$rb-safe-operation`; normal operation never installs them.
+When a new implementation plan is created, the agent also reminds you about an optional higher-assurance route. Choose `standard` for most tasks, allowing the agent to work through the plan in the most efficient way. A currently experimental option is `constrained`, which runs one implementation phase at a time through `$rb-create-low-level-plan`, `$rb-assess-plan-safety`, and `$rb-safe-operation`. You can also choose `undecided` to defer the choice. The `constrained` route is Codex-only in this release and is a semi-formal control layer which plans low-level implementation steps, verifies their safety, and then implements them in a roughly deterministic manner—see the next section.
+
+### When To Use The Constrained “Safe” Route
+
+Use the `constrained` route when a change is narrow enough to describe as exact operations on exact files, and when an unintended write, stale preimage, scope change, or unrecorded decision would be costly. It is most useful for higher-consequence changes where explicit stop conditions, immutable plans and assessments, phase-by-phase execution, and an auditable record justify the extra time and ceremony.
+
+The current first release is a good fit when the phase can be completed using its supported read and patch operations. Prefer the `standard` route for ordinary low-risk edits, exploratory work, broad refactors whose exact scope is not yet known, or work that needs builds, test commands, dependency installation, browser automation, network access, or other unsupported actions inside the constrained run. Choose `undecided` when the risks or operational shape are not clear enough to make that choice yet.
+
+The practical lesson from the pilot is that the constrained route is valuable for narrow, high-consequence operations, but is currently too heavyweight for most routine changes. It reduces risk by binding one exact plan, detecting drift, stopping on uncertainty, and preserving evidence. It does not make an agent generally safe, replace a sandbox, or provide host-enforced proof that no unrecorded action occurred.
 
 ### What `safe` Means In This Workflow
 

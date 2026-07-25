@@ -179,6 +179,15 @@ def capture_snapshot(
 def snapshot_materially_equal(before: RepositorySnapshot, after: RepositorySnapshot, declared_changed_paths: set[str] | None = None) -> tuple[bool, list[str]]:
     declared = {str(Path(os.path.abspath(value))) for value in (declared_changed_paths or set())}
     control_roots = [Path(os.path.abspath(value)) for value in before.control_plane_roots]
+    project_root = Path(before.project_root)
+    declared_parent_inventory_keys: set[str] = set()
+    for path_value in declared:
+        try:
+            relative_parent = Path(path_value).parent.relative_to(project_root)
+        except ValueError:
+            continue
+        if relative_parent != Path("."):
+            declared_parent_inventory_keys.add(relative_parent.as_posix().rstrip("/") + "/")
 
     def ignored(path_value: str) -> bool:
         candidate = Path(path_value)
@@ -191,6 +200,34 @@ def snapshot_materially_equal(before: RepositorySnapshot, after: RepositorySnaps
 
     def filtered(mapping: dict[str, str]) -> dict[str, str]:
         return {key: value for key, value in mapping.items() if not ignored(key)}
+
+    def directory_identity_without_nlink(value: str) -> str | None:
+        if not value.startswith("directory:"):
+            return None
+        prefix, marker, nlink = value.rpartition(":nlink=")
+        if marker != ":nlink=" or not nlink.isdigit():
+            return None
+        return prefix
+
+    def full_inventory_equal() -> bool:
+        before_inventory = filtered(before.full_file_inventory)
+        after_inventory = filtered(after.full_file_inventory)
+        if set(before_inventory) != set(after_inventory):
+            return False
+        for key, before_value in before_inventory.items():
+            after_value = after_inventory[key]
+            if before_value == after_value:
+                continue
+            before_directory = directory_identity_without_nlink(before_value)
+            after_directory = directory_identity_without_nlink(after_value)
+            if (
+                key in declared_parent_inventory_keys
+                and before_directory is not None
+                and before_directory == after_directory
+            ):
+                continue
+            return False
+        return True
 
     differences: list[str] = []
     stable_fields = (
@@ -208,7 +245,7 @@ def snapshot_materially_equal(before: RepositorySnapshot, after: RepositorySnaps
     for field in ("staged_paths", "unstaged_paths", "untracked_paths"):
         if filtered(getattr(before, field)) != filtered(getattr(after, field)):
             differences.append(field)
-    if filtered(before.full_file_inventory) != filtered(after.full_file_inventory):
+    if not full_inventory_equal():
         differences.append("full_file_inventory")
     return not differences, differences
 
