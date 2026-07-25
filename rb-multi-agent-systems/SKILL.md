@@ -1,6 +1,6 @@
 ---
 name: rb-multi-agent-systems
-description: Use when designing, reviewing, or debugging a system with multiple LLM agents or orchestration layers, including agent boundaries, tool permissions, handoffs, shared state, routing, failure containment, observability, evaluation, budgets, and durability. Do not use for a single ordinary LLM call.
+description: Use when designing, reviewing, or debugging a system with multiple LLM agents or orchestration layers, including agent boundaries, tool permissions, handoffs, shared state, routing, failure containment, observability, testing, evaluation, budgets, and durability. Do not use for a single ordinary LLM call.
 ---
 
 # /rb:multi-agent-systems - design multi-LLM-agent systems
@@ -148,25 +148,51 @@ Keep application workflow state distinct from delegated A2A task state. A remote
    - Validate every proposed transition against the current state, transition policy, preconditions, permissions, quality gates, and budgets before committing it.
    - Stop, retry, route to an alternate path, or ask for human confirmation when a sub-agent returns low confidence, schema-invalid output, contradictory evidence, or a failed precondition.
    - Put explicit budgets around autonomous loops: maximum model calls, tool calls, retries, wall-clock time, spend, and destructive or externally visible actions.
-8. Add observability and evals before the system becomes non-trivial:
+8. Define the testing strategy before non-trivial behaviour ships:
+   - Separate deterministic software tests from model-behaviour evals; neither replaces the other.
+   - Use deterministic agent stubs, fake clocks, seeded model adapters, and controlled tool doubles to test runner behaviour without relying on live model variability.
+   - Cover every legal state transition, rejection of illegal transitions, terminal states, invalid structured outputs, permission denials, missing approvals, retry and timeout paths, cancellation, budget exhaustion, idempotency, duplicate suppression, checkpoint/recovery, event-log replay, and side-effect failure where applicable.
+   - Add integration and contract tests for direct runtime calls, in-memory transports, A2A task/status/artifact mapping, MCP schemas and allow-lists, authentication/authorization boundaries, and external-service failure behaviour.
+   - Use held-out behavioural evals for judgement-dependent agents, including malformed, adversarial, ambiguous, low-confidence, contradictory, and tool-misuse cases. Track repeated trials where nondeterminism matters.
+   - Test fallback behaviour explicitly and confirm it is visible, bounded, and does not silently convert failure into success.
+   - Run recovery tests from realistic checkpoints and prove side effects are not duplicated during replay or retry.
+9. Add observability and evals before the system becomes non-trivial:
    - Prefer the repository's existing tracing and evaluation stack unless it cannot capture the required events.
    - Trace prompts, model calls, tool calls, handoffs, retrieved context, costs, latency, errors, and final decisions.
    - Maintain an append-only workflow event log distinct from the mutable current-state snapshot.
    - Record agent-runtime invocations, A2A task identifiers and states, MCP server and capability identifiers, policy decisions, grants, denials, and approval outcomes.
    - Favour tools that emit or can export OpenTelemetry-compatible traces, while treating GenAI semantic conventions as evolving.
-9. Add durability only when the workflow needs it:
+10. Add durability only when the workflow needs it:
    - Require durable execution when work must survive process failure, support scheduled or long-running jobs, resume after interruption, or guarantee retry semantics.
    - Checkpoint enough information to resume safely: workflow state, validated inputs, tool results, pending approvals, retry counters, budgets, and idempotency keys for side effects.
    - Persist enough delegated-task state to resume polling, streaming, cancellation, or result retrieval without creating duplicate A2A tasks.
    - Do not add a durability platform to a short request-response path without an operational need.
-10. Add retrieval/document infrastructure when agents work over papers, reports, notes, PDFs, codebases, or lab documentation:
+11. Add retrieval/document infrastructure when agents work over papers, reports, notes, PDFs, codebases, or lab documentation:
    - Do not adopt a whole agent framework just to get retrieval.
    - Define source provenance, chunking, access control, freshness, and answer-grounding checks before choosing the retrieval product.
-11. Add provider routing and cost control only when needed:
+12. Add provider routing and cost control only when needed:
    - Centralize routing policy, keys, logging, budgets, fallback behaviour, and reproducibility when multiple providers are a real requirement.
-12. Add prompt/program optimisation only when there are examples and metrics:
+13. Add prompt/program optimisation only when there are examples and metrics:
    - Optimize only bounded repeatable subtasks with representative examples, measurable outcomes, and held-out evaluation.
-13. Update `$rb-working-diary` with durable architecture decisions, rejected alternatives, observability/eval commitments, and open risks when the work is substantial.
+14. Update `$rb-working-diary` with durable architecture decisions, rejected alternatives, testing/eval commitments, observability commitments, and open risks when the work is substantial.
+
+## Required Test Matrix
+
+For a non-trivial runner or multi-agent workflow, explicitly include the applicable rows below:
+
+- state-machine unit tests for every legal transition and every illegal-transition rejection
+- terminal, cancellation, timeout, retry, and budget-exhaustion tests
+- structured-output schema success and failure tests
+- authentication, authorization, approval, and just-in-time capability-allocation denial tests
+- tool allow-list and side-effect/idempotency tests
+- deterministic runner tests using agent stubs and tool doubles
+- integration tests for agent-runtime, MCP, persistence, queues, files, databases, and external-service boundaries
+- A2A contract tests for task creation, status mapping, artifacts, input requests, cancellation, failure, and duplicate suppression
+- checkpoint, crash-recovery, replay, and event-log consistency tests
+- retrieval provenance, access-control, stale-data, and answer-grounding tests where retrieval is used
+- held-out agent evals with repeated trials for semantic quality, tool selection, refusal/escalation, adversarial inputs, and distribution shift
+- end-to-end tests for critical user workflows and high-consequence side effects
+- observability assertions confirming traces and events contain required identities, decisions, denials, costs, and error states without leaking secrets
 
 ## Review checklist
 
@@ -177,9 +203,9 @@ Keep application workflow state distinct from delegated A2A task state. A remote
 - Could the required workflow control be expressed by a state machine or extended state machine without dynamic orchestration?
 - For text-heavy capabilities, is semantic understanding handled by an LLM-backed path rather than brittle regex/string heuristics?
 - Is control flow owned by deterministic runner code rather than an LLM?
-- Are workflow states, legal transitions, terminal states, and invalid-transition behaviour explicit?
+- Are workflow states, legal transitions, terminal states, and invalid-transition behaviour explicit and tested?
 - Are agent-requested actions and transitions treated as proposals rather than authoritative commands?
-- Are authentication, authorization, and capability allocation separated?
+- Are authentication, authorization, and capability allocation separated and covered by denial tests?
 - Are tools allocated just in time according to state, role, caller identity, and task policy?
 - Is each communication boundary explicitly classified as direct runtime call, in-memory transport, or A2A?
 - Is A2A limited to boundaries where independent deployment, ownership, opacity, or interoperability justifies it?
@@ -187,18 +213,19 @@ Keep application workflow state distinct from delegated A2A task state. A remote
 - Are A2A agent-and-skill allow-lists distinct from MCP server, tool, resource, and prompt allow-lists?
 - Are discovery results filtered before agents see or invoke them?
 - Are deterministic MCP calls runner-controlled and judgement-dependent calls represented as validated proposals?
-- Are remote A2A task states mapped explicitly into local workflow transitions?
+- Are remote A2A task states mapped explicitly into local workflow transitions and contract-tested?
 - Are agent responsibilities, contracts, state ownership, and handoffs explicit?
 - Is each agent's context and tool surface bounded enough that tool choice remains reliable?
 - Could any agent be replaced by deterministic code or a typed tool?
-- Are structured outputs enforced and tested?
-- Are tool permissions, side effects, approval points, and idempotency clear?
+- Are structured outputs enforced and tested, including malformed outputs?
+- Are tool permissions, side effects, approval points, and idempotency clear and tested?
 - Are quality gates applied before authoritative state changes and external side effects?
-- Can one bad premise poison downstream work, and if so where is the validation gate?
+- Can one bad premise poison downstream work, and if so where is the validation gate and its negative test?
 - Are sub-agent outputs treated with provenance/confidence rather than blindly becoming shared truth?
 - As complexity and autonomy increase, are validation, limits, permissions, human checkpoints, testing, and auditability strengthened, with logging treated as evidence rather than a control?
 - Is there an append-only event log as well as a current-state snapshot?
-- Can execution resume safely from a checkpoint without repeating side effects or duplicating delegated tasks?
+- Can execution resume safely from a checkpoint without repeating side effects or duplicating delegated tasks, and has that been tested?
+- Are deterministic tests, integration/contract tests, held-out evals, and end-to-end checks all present where applicable?
 - Are traces and evals present before non-trivial behaviour ships?
 - Is retrieval scoped to data plumbing rather than becoming accidental architecture?
 - Is provider routing a real need, with cost and fallback behaviour defined?
@@ -227,5 +254,6 @@ When applying this skill, produce:
 - state, durability, checkpoint, retry, and failure-containment plan
 - high-risk assumptions, quality gates, and human approval points
 - retrieval plan if relevant
+- required deterministic test, integration/contract test, recovery test, held-out eval, and end-to-end matrix
 - append-only event-log, observability, tracing, eval, cost, and reproducibility plan
 - immediate implementation slice and validation checks
