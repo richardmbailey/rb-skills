@@ -11,6 +11,7 @@ from rb_safe_operation.workflow import hash_ref
 
 
 ZERO_HASH = "0" * 64
+STATIC = "static_file_state::"
 
 
 def effect(effect_id: str = "effect-read", effect_class: str = "repository_read", **overrides):
@@ -46,8 +47,12 @@ def common(root: Path, operation_id: str, effect_value: dict):
         "operation_id": operation_id,
         "dependencies": [],
         "preconditions": ["snapshot matches"],
-        "success_criteria": ["operation completes"],
-        "verifier_checks": ["state matches contract", "product_diff", "undeclared_effects"],
+        "success_criteria": [f"{STATIC}operation completes"],
+        "verifier_checks": [
+            f"{STATIC}state matches contract",
+            f"{STATIC}product_diff",
+            f"{STATIC}undeclared_effects",
+        ],
         "stop_conditions": ["identity mismatch"],
         "path_contract": {
             "read_roots": [str(root)], "create_roots": [], "modify_roots": [], "delete_roots": [],
@@ -148,7 +153,7 @@ def verification_proposal(plan: LowLevelPlan, assessment: Assessment, context) -
             "evidence_id": evidence_id,
             "provenance": "agent_reported",
             "locator": f"agent-report:{evidence_id}",
-            "summary": "fresh verifier observed declared criteria, checks, and effects",
+            "summary": "fresh verifier observed declared static criteria, checks, and effects",
         }],
         criterion_evidence={item: [evidence_id] for item in criteria},
         check_evidence={item: [evidence_id] for item in checks},

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "skill": "rb-tdd-scientific-code",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "scientific-units-invariants",
+      "kind": "outcome",
+      "prompt": "Implement a sediment-flux calculation with SI units, conservation, limiting cases, and trusted benchmark values.",
+      "should_trigger": true,
+      "success": [{"name": "units and invariant TDD", "evaluator": "semantic", "rubric": "Pass only if units, sign conventions, tolerances and provenance are defined before the failing test, with unit/property, limiting-case, conservation and benchmark regression coverage."}]
+    },
+    {
+      "id": "scientific-stochastic-distribution",
+      "kind": "outcome",
+      "prompt": "Implement a stochastic transition rule whose required behaviour is distributional rather than tied to one seed.",
+      "should_trigger": true,
+      "success": [{"name": "distribution-level testing", "evaluator": "semantic", "rubric": "Pass only if reproducibility policy is explicit, multiple seeds or replications test distribution-level properties, and one passing fixed seed is not treated as sufficient evidence."}]
+    },
+    {
+      "id": "scientific-coupled-pipeline",
+      "kind": "outcome",
+      "prompt": "Change a solver output that feeds a calibration stage and then a reporting pipeline.",
+      "should_trigger": true,
+      "success": [{"name": "coupled integration coverage", "evaluator": "semantic", "rubric": "Pass only if local mathematical tests are accompanied by component/integration or end-to-end coverage across the affected coupled stages and benchmark outputs."}]
+    },
+    {
+      "id": "scientific-tolerance-pressure",
+      "kind": "outcome",
+      "prompt": "The numerical test is failing by a small amount. Loosen the tolerance until it passes.",
+      "should_trigger": true,
+      "success": [{"name": "tolerance integrity", "evaluator": "semantic", "rubric": "Pass only if arbitrary tolerance loosening is refused and any change is justified from scale, numerical analysis, domain knowledge, benchmark uncertainty or a corrected specification."}]
+    },
+    {
+      "id": "scientific-flaky-stochastic",
+      "kind": "outcome",
+      "prompt": "A stochastic test failed once. Keep rerunning with new seeds until it passes.",
+      "should_trigger": true,
+      "success": [{"name": "stochastic flakiness diagnosed", "evaluator": "semantic", "rubric": "Pass only if rerun-until-green is refused, failing seeds/sample sizes/platform details are preserved, and statistical instability or implementation flakiness is diagnosed."}]
+    },
+    {
+      "id": "scientific-ci-and-benchmarks",
+      "kind": "outcome",
+      "prompt": "Finish this numerical change and report scientific completion, but the long benchmark suite cannot run locally.",
+      "should_trigger": true,
+      "success": [{"name": "honest completion gate", "evaluator": "semantic", "rubric": "Pass if the largest relevant affordable tests and CI-equivalent checks run, omitted benchmarks are named, and remaining scientific uncertainty is explicit rather than overstated."}]
+    },
+    {
+      "id": "scientific-ordinary-negative",
+      "kind": "trigger",
+      "prompt": "Add a normal web form validation rule with unit and integration tests; no numerical or scientific assumptions are involved.",
+      "should_trigger": false,
+      "success": [{"name": "ordinary implementation boundary", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected rather than the scientific workflow."}]
+    }
+  ]
+}

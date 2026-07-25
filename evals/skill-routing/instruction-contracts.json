@@ -7,13 +7,30 @@
         "Do not write product code during onboarding.",
         "ask for explicit approval",
         "## Workflow Routing",
-        "| Material behaviour, interface, edge cases, or acceptance criteria are unresolved | `$rb-discuss` |",
+        "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved | `$rb-discuss` |",
         "After implementation, require a review+fix cycle",
         "canonical CI-equivalent local command",
-        "coverage thresholds"
+        "coverage thresholds",
+        "Do not route an agreed task through `$rb-discuss` merely because it is substantial."
       ],
-      "forbidden": ["## Guided Implementation Sequence", "## Inline Discuss Fallback"],
+      "forbidden": ["## Guided Implementation Sequence", "## Inline Discuss Fallback", "For feature work, ask:"],
       "max_occurrences": {"## Workflow Routing": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-continue-project/SKILL.md",
+      "required": [
+        "Recover the testing context established by prior work",
+        "canonical CI-equivalent command",
+        "If one bounded ordinary change is already agreed",
+        "recommend `$rb-implement-with-tests` directly",
+        "Do not insert `$rb-discuss` merely because a change is substantial."
+      ],
+      "forbidden": [
+        "recommend `$rb-discuss` before `$rb-implement-with-tests`",
+        "recommend `$rb-discuss` before `$rb-tdd-scientific-code`"
+      ],
+      "max_occurrences": {"## Routing": 1},
       "max_lines": 500
     },
     {
@@ -25,13 +42,13 @@
         "Prefer a walking-skeleton approach",
         "complete the phase-level integration, CI-equivalent, and review+fix gates below",
         "use `$rb-multi-agent-systems`",
-        "orchestration layer",
         "use `$rb-implement-with-tests` for one bounded ordinary software or product change",
         "## Optional Constrained Route",
         "never select `constrained` implicitly",
+        "static_file_state::<description>",
+        "runtime deterministically rejects untyped requirements",
         "accept phase completion only when `$rb-safe-operation` reaches `verified`",
         "Use automated behavioural tests by default",
-        "The first-release constrained route cannot execute unit tests",
         "canonical CI-equivalent command",
         "Do not rerun until green"
       ],
@@ -114,53 +131,62 @@
         "checkpoint, crash-recovery, replay, and event-log consistency tests"
       ],
       "forbidden": [
-        "FastMCP",
-        "LiteLLM",
-        "LangGraph",
-        "Temporal",
-        "DBOS",
-        "Restate",
-        "LlamaIndex",
-        "Langfuse",
-        "Logfire",
-        "Outlines",
-        "DSPy",
-        "OpenAI Agents SDK"
+        "FastMCP", "LiteLLM", "LangGraph", "Temporal", "DBOS", "Restate", "LlamaIndex",
+        "Langfuse", "Logfire", "Outlines", "DSPy", "OpenAI Agents SDK"
       ],
       "max_occurrences": {"## Review checklist": 1, "## Required Test Matrix": 1},
       "max_lines": 500
     },
     {
       "path": "rb-multi-agent-systems/references/framework-selection.md",
-      "required": ["PydanticAI", "OpenAI Agents SDK", "A2A", "FastMCP", "LiteLLM", "DSPy", "current official documentation", "Choose control-flow complexity and runtime durability independently"],
+      "required": [
+        "PydanticAI", "OpenAI Agents SDK", "A2A", "FastMCP", "LiteLLM", "DSPy",
+        "current official documentation", "Choose control-flow complexity and runtime durability independently"
+      ],
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500
     },
     {
-      "path": "rb-setup-local-agent-skills/SKILL.md",
-      "required": ["references/legacy-pack.md", "current flat `rb-skills` source repo"],
-      "forbidden": ["python3 scripts/verify_pack.py", "python3 scripts/audit_skill_visibility.py"],
-      "max_occurrences": {},
-      "max_lines": 500
-    },
-    {
-      "path": "rb-setup-local-agent-skills/references/legacy-pack.md",
-      "required": ["python3 scripts/verify_pack.py", "python3 scripts/audit_skill_visibility.py", "Do not prefer it over the current flat repository."],
+      "path": "rb-end-session/SKILL.md",
+      "required": [
+        "## Testing And Verification",
+        "Changed behaviours / test levels",
+        "Canonical CI-equivalent result",
+        "Checks not run or stale",
+        "Residual regression risk",
+        "Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence."
+      ],
       "forbidden": [],
-      "max_occurrences": {},
+      "max_occurrences": {"## Testing And Verification": 1},
       "max_lines": 500
     },
     {
       "path": "rb-working-diary/SKILL.md",
-      "required": ["For isolated one-turn tasks, skip diary reads and writes", "sequence of individually small turns", "Update the matching `Last touched` date", "Do not store secrets", "facts and useful synthesis, not a transcript", "For an implementation plan using the optional constrained route", "A resume pointer does not authorise execution"],
+      "required": [
+        "For isolated one-turn tasks, skip diary reads and writes",
+        "sequence of individually small turns",
+        "Update the matching `Last touched` date",
+        "Do not store secrets",
+        "facts and useful synthesis, not a transcript",
+        "For an implementation plan using the optional constrained route",
+        "A resume pointer does not authorise execution",
+        "selected test levels",
+        "canonical CI-equivalent command",
+        "residual regression"
+      ],
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500
     },
     {
       "path": "rb-discuss/SKILL.md",
-      "required": ["decisions that materially affect behaviour", "Ask one targeted question at a time", "Do not start coding until material ambiguity is resolved", "$rb-create-implementation-plan"],
+      "required": [
+        "decisions that materially affect behaviour",
+        "Ask one targeted question at a time",
+        "Do not start coding until material ambiguity is resolved",
+        "$rb-create-implementation-plan"
+      ],
       "forbidden": ["Produce a short implementation plan", "Restate the requested change"],
       "max_occurrences": {},
       "max_lines": 500
@@ -174,6 +200,7 @@
         "Present exactly these plan-wide choices",
         "never infer `constrained`",
         "Define the testing architecture at the top level",
+        "constrained static-only route",
         "cannot execute tests, builds, linting, typing, or application commands"
       ],
       "forbidden": ["Restate the idea.", "Ask clarifying questions if needed."],
@@ -188,7 +215,8 @@
         "### Component and Integration Tests",
         "### Critical End-to-End Workflows",
         "### Canonical CI-Equivalent Command",
-        "Do not introduce an arbitrary universal percentage target"
+        "Do not introduce an arbitrary universal percentage target",
+        "static_file_state::<description>"
       ],
       "forbidden": [],
       "max_occurrences": {"## Testing Strategy": 1},
@@ -202,15 +230,29 @@
         "attempt_limit: \"unbounded\"",
         "Never include private planner reasoning",
         "static file-state inspection",
-        "The first-release constrained route is not a behavioural code-testing path"
+        "The first-release constrained route is not a behavioural code-testing path",
+        "closed `<mode>::<description>` syntax",
+        "`static_file_state`",
+        "`executable_test`",
+        "`runtime_observation`",
+        "`external_observation`"
       ],
-      "forbidden": ["automatically select", "install dependencies"],
+      "forbidden": ["automatically select", "install dependencies", "exact read and check actions"],
       "max_occurrences": {"## Procedure": 1},
       "max_lines": 500
     },
     {
       "path": "rb-assess-plan-safety/SKILL.md",
-      "required": ["Machine output is `safe: true|false`", "## Deterministic Gate", "## Fresh Semantic Assessment", "A human may `revise_and_reassess`", "None relabels the rejected artifact"],
+      "required": [
+        "Machine output is `safe: true|false`",
+        "## Deterministic Gate",
+        "## Fresh Semantic Assessment",
+        "A human may `revise_and_reassess`",
+        "None relabels the rejected artifact",
+        "untyped strings are invalid",
+        "unsupported verification mode",
+        "static_file_state"
+      ],
       "forbidden": ["confidence makes", "execute the plan"],
       "max_occurrences": {"## Fresh Semantic Assessment": 1},
       "max_lines": 500
@@ -225,10 +267,43 @@
         "Reach `verified` only",
         "## Executable Verification Limit",
         "cannot run unit tests",
-        "Do not use source inspection"
+        "Do not use source inspection",
+        "typed `static_file_state::<description>`",
+        "Reject any criterion or check that is untyped"
       ],
       "forbidden": ["automatically installs", "skip independent verification"],
       "max_occurrences": {"## Separated Verification": 1, "## Executable Verification Limit": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-safe-operation/references/runtime-contract.md",
+      "required": [
+        "static_file_state::<description>",
+        "executable_test",
+        "runtime_observation",
+        "external_observation",
+        "deterministic preflight"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-setup-local-agent-skills/SKILL.md",
+      "required": ["references/legacy-pack.md", "current flat `rb-skills` source repo"],
+      "forbidden": ["python3 scripts/verify_pack.py", "python3 scripts/audit_skill_visibility.py"],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-setup-local-agent-skills/references/legacy-pack.md",
+      "required": [
+        "python3 scripts/verify_pack.py",
+        "python3 scripts/audit_skill_visibility.py",
+        "Do not prefer it over the current flat repository."
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
       "max_lines": 500
     }
   ]

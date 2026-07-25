@@ -35,14 +35,11 @@ Use the diary when any of these are true:
 
 - the task is long-running, investigative, or likely to span compaction;
 - you read many files, run meaningful experiments, or form conclusions future-you should not rediscover;
-- a sequence of individually small turns has collectively accumulated substantial
-  decisions, evidence, implementation state, verification results, or unresolved work;
+- a sequence of individually small turns has collectively accumulated substantial decisions, evidence, implementation state, verification results, or unresolved work;
 - the user explicitly asks for durable continuity or cross-session notes;
 - the repository has an existing diary entry whose state is needed for the current multi-step work.
 
-For isolated one-turn tasks, skip diary reads and writes unless the user explicitly asks
-for them. Do not treat the immediate request as isolated when the surrounding project or
-conversation has already accumulated state that future work should not reconstruct.
+For isolated one-turn tasks, skip diary reads and writes unless the user explicitly asks for them. Do not treat the immediate request as isolated when the surrounding project or conversation has already accumulated state that future work should not reconstruct.
 
 ## Start Of Work
 
@@ -73,7 +70,11 @@ Good diary entries include:
 - hypotheses tested and conclusions;
 - decisions and rejected alternatives when they matter;
 - known risks, blockers, and unresolved questions;
-- exact next steps for future-you.
+- exact next steps for future-you;
+- changed behaviours and the selected test levels;
+- focused, negative/boundary, integration, contract, migration, end-to-end, scientific, or agent-eval evidence as relevant;
+- canonical CI-equivalent command and result, coverage status, fixtures/environment, and checks available only remotely;
+- checks not run, stale evidence, and residual regression or scientific risk.
 
 For an implementation plan using the optional constrained route, also record:
 
@@ -83,6 +84,7 @@ For an implementation plan using the optional constrained route, also record:
 - any explicit `leave_constrained_pipeline` choice, the rejected run and assessment-bundle hash, resulting route, and exact next action; label this as instruction-only continuity evidence rather than authenticated runtime intervention;
 - run ID, lifecycle state, and suspended prior state when resumable;
 - canonical plan, policy, assessment, approval, snapshot, event-head, and verification hashes and locations;
+- verification requirement modes and confirmation that every accepted criterion is `static_file_state` under the first-release runtime;
 - enforcement and observation levels without calling instruction-only controls isolated or read-only without qualification;
 - required human decision, if any, and the exact next skill/action.
 
@@ -90,9 +92,9 @@ Never copy secrets, raw sensitive output, or planner/executor private reasoning 
 
 For a constrained run, the canonical `${CODEX_HOME:-~/.codex}/diary/` is external control-plane continuity state. It may be updated from the coordinator's terminal stdout handoff after the final product snapshot, with the enforcement limitations and provenance stated accurately. Do not create or change a repository-local diary or progress file after that snapshot unless the change was an explicit assessed product operation.
 
-Do not store secrets, credentials, private tokens, or large raw logs. Link to files or summarize outputs instead.
+Do not store secrets, credentials, private tokens, or large raw logs. Link to files or summarise outputs instead.
 
-If another skill or project convention keeps a local progress file, such as `progress.md`, treat that file as project-local task history. Use the working diary for cross-session operational memory: summarize key state, decisions, and where to resume, and link to the project-local file rather than duplicating it.
+If another skill or project convention keeps a local progress file, such as `progress.md`, treat that file as project-local task history. Use the working diary for cross-session operational memory: summarise key state, decisions, and where to resume, and link to the project-local file rather than duplicating it.
 
 ## Update Rhythm
 
@@ -101,9 +103,10 @@ Update the diary:
 - after substantial investigation or an important decision;
 - before switching tasks or ending a session;
 - before a likely compaction point when useful context is only in chat;
-- after verification, especially if tests fail or are not run.
-- Update the matching `Last touched` date in `diary.md` whenever a project diary
-  is changed.
+- after verification, especially if tests fail or are not run;
+- whenever a CI-equivalent result, selected test level, coverage status, or residual risk materially changes.
+
+Update the matching `Last touched` date in `diary.md` whenever a project diary is changed.
 
 Prefer one compact update at each natural checkpoint over constant logging.
 
@@ -131,7 +134,9 @@ Use this shape for dated entries:
 - Status:
 - Findings:
 - Decisions:
-- Commands/checks:
+- Test levels / commands:
+- CI / coverage / environment:
+- Checks omitted / residual risk:
 - Next:
 ```
 

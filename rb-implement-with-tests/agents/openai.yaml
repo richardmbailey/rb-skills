@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Implement With Tests"
-  short_description: "Implement one bounded change with tests"
-  default_prompt: "Use $rb-implement-with-tests to implement this single bounded ordinary change with focused tests and a final review."
+  short_description: "Implement a bounded change with appropriate automated tests"
+  default_prompt: "Use $rb-implement-with-tests to implement this single bounded ordinary change. Select test levels by failure boundary, add automated behavioural tests and relevant negative-path coverage, run the closest CI-equivalent checks, preserve test integrity, and complete the final review+fix loop."

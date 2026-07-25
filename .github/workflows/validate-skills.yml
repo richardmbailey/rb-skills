@@ -1,0 +1,126 @@
+name: Validate skills
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: rb-safe-operation/runtime/pyproject.toml
+
+      - name: Install constrained runtime
+        run: python -m pip install -e rb-safe-operation/runtime
+
+      - name: Prepare validation evidence
+        run: mkdir -p validation-output/generated-schemas
+
+      - name: Compile Python sources
+        id: compile
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m compileall -q \
+            evals/skill-routing \
+            rb-safe-operation/runtime/src \
+            rb-safe-operation/runtime/tests \
+            2>&1 | tee validation-output/compile.txt
+
+      - name: Validate JSON manifests and eval plans
+        id: json
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python - <<'PY' 2>&1 | tee validation-output/json.txt
+          import json
+          from pathlib import Path
+
+          patterns = (
+              "evals/skill-routing/*.json",
+              "evals/skill-routing/cases/*.json",
+              "rb-*/evals/*.json",
+          )
+          paths = sorted({path for pattern in patterns for path in Path(".").glob(pattern)})
+          if not paths:
+              raise SystemExit("no JSON manifests or eval plans found")
+          for path in paths:
+              json.loads(path.read_text(encoding="utf-8"))
+              print(f"PASS: {path}")
+          PY
+
+      - name: Validate instruction contracts
+        id: instructions
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python evals/skill-routing/validate_instruction_contracts.py \
+            evals/skill-routing/instruction-contracts.json \
+            2>&1 | tee validation-output/instruction-contracts.txt
+
+      - name: Validate cross-file consistency
+        id: consistency
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python evals/skill-routing/validate_consistency_contracts.py \
+            evals/skill-routing/consistency-contracts.json \
+            2>&1 | tee validation-output/consistency-contracts.txt
+
+      - name: Run constrained-runtime tests
+        id: runtime
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py' \
+            2>&1 | tee validation-output/runtime-tests.txt
+
+      - name: Export and check generated schemas
+        id: schemas
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m rb_safe_operation.cli export-schemas \
+            --destination validation-output/generated-schemas \
+            > validation-output/schema-export.json
+          python -m rb_safe_operation.cli check-schema-drift \
+            --expected rb-safe-operation/references/generated \
+            2>&1 | tee validation-output/schema-drift.txt
+
+      - name: Upload validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-output
+          path: validation-output/
+          if-no-files-found: error
+
+      - name: Fail for validation errors
+        if: always()
+        run: |
+          outcomes=(
+            "${{ steps.compile.outcome }}"
+            "${{ steps.json.outcome }}"
+            "${{ steps.instructions.outcome }}"
+            "${{ steps.consistency.outcome }}"
+            "${{ steps.runtime.outcome }}"
+            "${{ steps.schemas.outcome }}"
+          )
+          printf 'Validation outcomes: %s\n' "${outcomes[*]}"
+          for outcome in "${outcomes[@]}"; do
+            if [[ "$outcome" != "success" ]]; then
+              exit 1
+            fi
+          done

@@ -10,6 +10,14 @@
 
 The constrained route is optional. In the first release it is Codex-only and compiles, assesses, executes, and verifies one phase at a time with context separation that is instruction-only rather than host-proven. Its current capability set cannot execute tests, builds, linting, typing, or application commands. Do not select it automatically or use it for phases whose acceptance depends on runtime behaviour.
 
+For every constrained phase, write each success criterion and verifier check using the closed form:
+
+```text
+<mode>::<description>
+```
+
+The first-release constrained runtime accepts only `static_file_state::<description>`. Untyped strings and the modes `executable_test`, `runtime_observation`, and `external_observation` fail deterministic preflight and require the standard route.
+
 ## Goals
 
 ## Non-goals

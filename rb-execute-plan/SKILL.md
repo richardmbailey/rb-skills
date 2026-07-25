@@ -19,11 +19,11 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
 - Each implementation increment should preserve a runnable path through user input, core processing, output, validation, and persistence/audit when those concerns apply.
 - Use automated behavioural tests by default. Manual verification is an exception that must explain why automation is infeasible and what regression risk remains.
 - Choose test levels from the likely failure boundary, not from convenience: unit/property, component/integration, contract, migration, workflow/end-to-end, stochastic, performance, security, or concurrency as applicable.
-- Avoid silent fallbacks. Prefer fail-fast or fail-closed behavior with clear diagnostics.
-- Only include degraded modes or fallback-like behavior when the human explicitly asks for them or when they are deliberate, visible, tested, and auditable product states.
+- Avoid silent fallbacks. Prefer fail-fast or fail-closed behaviour with clear diagnostics.
+- Only include degraded modes or fallback-like behaviour when the human explicitly asks for them or when they are deliberate, visible, tested, and auditable product states.
 - Preserve the repository's existing language, framework, validation, test, coverage, CI, and deployment conventions unless there is a clear reason to change them.
 - For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to choose the simplest sufficient control model and resolve agent boundaries, tools, handoffs, state, failure containment, observability, evaluation, budgets, durability, and the orchestration test matrix.
-- For text-processing work, separate deterministic handling of stable structure from LLM-backed judgment about natural-language meaning.
+- For text-processing work, separate deterministic handling of stable structure from LLM-backed judgement about natural-language meaning.
 
 ## Optional Constrained Route
 
@@ -31,13 +31,14 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
 - Keep the ordinary procedure in this skill for `standard` plans.
 - The first-release constrained route cannot execute unit tests, integration tests, builds, linting, type checking, application commands, or other behavioural checks because `exec_argv` and `check` are unavailable. Do not choose or continue the constrained route for a phase whose acceptance depends on executing code. Use `standard`, narrow the phase to criteria fully verifiable by static file-state inspection, or stop until reviewed command capability exists.
 - File inspection, hashes, and agent-reported reasoning do not constitute behavioural test evidence. A constrained phase must not be marked `[v]` for runtime behaviour based only on source inspection.
+- Before invoking `$rb-create-low-level-plan`, confirm every constrained criterion and verifier check can be compiled as `static_file_state::<description>`. The runtime deterministically rejects untyped requirements and the unsupported modes `executable_test`, `runtime_observation`, and `external_observation`.
 - For a statically verifiable `constrained` phase, keep this skill as route and phase-state owner, but process only the next current phase:
   1. invoke `$rb-create-low-level-plan` to compile the phase and preserve every later phase ID;
   2. invoke `$rb-assess-plan-safety` in a fresh context;
   3. stop for human intervention on `safe: false`; a rejected artifact cannot be relabelled;
   4. hand only an unchanged exact `safe: true` bundle to `$rb-safe-operation`;
-  5. accept phase completion only when `$rb-safe-operation` reaches `verified` from coordinator-observed product state plus context-separated agent verifier evidence, and only when every criterion is genuinely static under the supported capability set; on the current host the separation is instruction-only, not host-proven independence.
-- Stop after the current constrained phase. Use the coordinator stdout handoff for route, run/phase identity, artifact hashes and locations, lifecycle state, event head, every remaining phase ID, enforcement limitations, and exact next action. Write that checkpoint to the canonical external `${CODEX_HOME:-~/.codex}/diary/` with `$rb-working-diary`; this is control-plane continuity state. Never mutate a project-local diary or progress file after verification unless it was an assessed product operation.
+  5. accept phase completion only when `$rb-safe-operation` reaches `verified` from coordinator-observed product state plus context-separated agent verifier evidence, and only when every criterion is typed `static_file_state` and genuinely static under the supported capability set; on the current host the separation is instruction-only, not host-proven independence.
+- Stop after the current constrained phase. Use the coordinator stdout handoff for route, run/phase identity, artifact hashes and locations, lifecycle state, event head, verification modes, every remaining phase ID, enforcement limitations, and exact next action. Write that checkpoint to the canonical external `${CODEX_HOME:-~/.codex}/diary/` with `$rb-working-diary`; this is control-plane continuity state. Never mutate a project-local diary or progress file after verification unless it was an assessed product operation.
 - On the constrained route, treat the external diary checkpoint as the authoritative phase-status overlay: record the completed phase as `[v]` only after the coordinator reaches `verified`, while leaving the repository plan unchanged. The next phase is the first ID in the verified handoff's ordered `remaining_phase_ids`, cross-checked against the unchanged authoritative plan. Do not infer constrained progress from stale repository checkboxes or make an unassessed post-verification checklist edit.
 - Leaving the constrained pipeline requires an explicit human choice recorded by `$rb-working-diary` in the canonical external `${CODEX_HOME:-~/.codex}/diary/` checkpoint, including the rejected run/bundle hash, `leave_constrained_pipeline`, the resulting route, and the exact next action. This first-release record is instruction-only continuity evidence, not a runtime-authenticated or resumable `HumanIntervention` artifact. It does not make a rejected assessment executable; subsequent standard execution is a separately authorised workflow choice.
 
@@ -72,21 +73,21 @@ When converting an implementation plan into executable phases, or revising phase
 5. Include fail-fast diagnostics and negative-path tests for missing dependencies, provider failures, validation errors, unsupported states, policy blocks, timeouts, partial failures, and duplicate side effects where relevant.
 6. Record the existing stack, test frameworks, coverage configuration, canonical CI-equivalent command, and project conventions before proposing dependency or framework changes.
 7. For systems with multiple LLM agents, agentic workflows, or orchestration layers, record the decisions and test matrix produced by `$rb-multi-agent-systems` rather than repeating control-model or framework selection in this plan.
-8. For text-heavy features, identify which steps are deterministic structure handling and which require semantic LLM judgment. Do not plan elaborate regexes or keyword heuristics as substitutes for understanding natural-language meaning.
+8. For text-heavy features, identify which steps are deterministic structure handling and which require semantic LLM judgement. Do not plan elaborate regexes or keyword heuristics as substitutes for understanding natural-language meaning.
 9. Include automated tests or justified exceptional verification checks for every task, and ensure the phase collectively covers unit/property logic, important integration boundaries, public contracts, migrations, and critical end-to-end paths as applicable.
 10. Include coverage of changed branches and behaviours when project tooling supports it; do not lower established thresholds without approval or impose a new universal percentage target without project agreement.
 11. For each phase, create or reference a dedicated phase implementation file with:
-   - phase goal
-   - scope and non-scope
-   - dependencies
-   - granular `[ ]` task checklist
-   - changed behaviours and failure modes
-   - selected test levels
-   - tests to add or run, including negative and boundary cases
-   - coverage expectations where tooling exists
-   - canonical CI-equivalent command or justified subset
-   - verification checklist
-   - phase exit criteria
+   - phase goal;
+   - scope and non-scope;
+   - dependencies;
+   - granular `[ ]` task checklist;
+   - changed behaviours and failure modes;
+   - selected test levels;
+   - tests to add or run, including negative and boundary cases;
+   - coverage expectations where tooling exists;
+   - canonical CI-equivalent command or justified subset;
+   - verification checklist;
+   - phase exit criteria.
 
 ## Execution Requirements
 
@@ -136,15 +137,15 @@ When reviewing an existing implementation plan:
 
 ## Output
 
-- walking skeleton summary
-- proposed phases with `[ ]` task lists
-- selected task-level implementation workflow and evidence returned
-- changed behaviours, failure modes, selected test levels, and coverage strategy
-- task status updates using `[ ]`, `[x]`, and `[v]` when executing a phase
-- focused, integration, contract, end-to-end, coverage, and CI-equivalent evidence as applicable
-- review+fix findings, fixes applied, checks rerun, and accepted residual risks
-- stack/dependency assumptions and which are existing vs proposed
-- text-processing split, where relevant: deterministic parsing vs semantic LLM calls
-- verification plan and phase exit criteria
-- constrained-route capability limitations when applicable
-- risks, open questions, and decisions needed from the human
+- walking skeleton summary;
+- proposed phases with `[ ]` task lists;
+- selected task-level implementation workflow and evidence returned;
+- changed behaviours, failure modes, selected test levels, and coverage strategy;
+- task status updates using `[ ]`, `[x]`, and `[v]` when executing a phase;
+- focused, integration, contract, end-to-end, coverage, and CI-equivalent evidence as applicable;
+- review+fix findings, fixes applied, checks rerun, and accepted residual risks;
+- stack/dependency assumptions and which are existing vs proposed;
+- text-processing split, where relevant: deterministic parsing vs semantic LLM calls;
+- verification plan and phase exit criteria;
+- constrained-route capability and verification-mode limitations when applicable;
+- risks, open questions, and decisions needed from the human.

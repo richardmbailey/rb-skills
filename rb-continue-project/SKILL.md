@@ -33,29 +33,42 @@ Use this when the human wants continuity from durable project context rather tha
    - `README.md` and nearby docs that describe setup, architecture, tests, or current work;
    - active implementation plans, issue notes, or project-local handoff files if clearly relevant.
 5. Inspect read-only repo state:
-   - top-level files and obvious build/test configuration;
+   - top-level files and build, test, coverage, lint, typing, formatting, packaging, pre-commit, and CI configuration;
    - `git status --short`;
    - current branch;
    - recent commits when useful.
-6. Summarise before editing:
+6. Recover the testing context established by prior work:
+   - focused unit/property test commands;
+   - integration, contract, migration, end-to-end, benchmark, scientific, or agent-eval commands;
+   - canonical CI-equivalent command and checks available only remotely;
+   - coverage tooling and existing thresholds;
+   - fixture, service, secret, container, hardware, network, or test-data requirements;
+   - known flaky or quarantined tests;
+   - checks last run, their dates/context, omitted checks, and residual regression risk.
+7. Summarise before editing:
    - what the project is;
    - what prior sessions appear to have been doing;
    - current git/worktree state;
-   - relevant commands for running, testing, linting, or validating;
-   - unresolved questions, blockers, risks, and assumptions;
+   - relevant test levels, commands, and CI-equivalent gate;
+   - unresolved questions, blockers, risks, assumptions, and stale evidence;
    - recommended next action and matching RB workflow skill.
-7. Stop and ask for approval before code edits, destructive commands, dependency changes, migrations, or broad refactors.
+8. Stop and ask for approval before code edits, destructive commands, dependency changes, migrations, or broad refactors.
 
 ## Routing
 
+Use the same routing rule as `$rb-start-project`:
+
+- If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved, recommend `$rb-discuss`.
 - If an existing multi-step implementation plan or phase checklist must be continued, refined, or tracked, recommend `$rb-execute-plan`.
-- If the next step is one bounded ordinary feature or product change without plan-state ownership, recommend `$rb-discuss` before `$rb-implement-with-tests`.
-- If the next step is scientific, numerical, modelling, simulation, or domain-sensitive work, recommend `$rb-discuss` before `$rb-tdd-scientific-code`.
-- If the next step is a bug, regression, failing test, or surprising output, recommend `$rb-diagnose`.
+- If one bounded ordinary change is already agreed and does not need plan-state ownership, recommend `$rb-implement-with-tests` directly.
+- If an agreed change is scientific, numerical, modelling, simulation, stochastic, or domain-sensitive, recommend `$rb-tdd-scientific-code` directly.
+- If the next step is a bug, regression, failing or flaky test, or surprising output with an unknown cause, recommend `$rb-diagnose`.
 - If the next step is understanding an unfamiliar area, recommend `$rb-explain-codebase`.
 - If the next step is structural review, recommend `$rb-architecture-review`.
 - If the next step is reviewing changes, recommend `$rb-review-pr-or-diff`.
 - If the user explicitly authorises the next workflow, continue with the selected skill.
+
+Do not insert `$rb-discuss` merely because a change is substantial. Use it only when material ambiguity remains.
 
 ## Required Behaviour
 
@@ -63,7 +76,8 @@ Use this when the human wants continuity from durable project context rather tha
 - Do not write product code during the continuity pass.
 - Do not invent missing project history. State what was found and what is absent.
 - Do not load every diary file by default. Start with handoff and recent working-diary entries, then expand only as needed.
-- Do not claim tests passed unless they were run in this session or documented in the handoff with dates/context.
+- Do not claim tests passed unless they were run in this session or documented in the handoff with dates and context.
+- Distinguish passed, failed, not run, unavailable, remote-only, and stale checks.
 - Preserve user changes in the worktree. Report them rather than reverting them.
 
 ## Output
@@ -76,8 +90,11 @@ Provide a concise continuity brief:
 - Project:
 - Prior context:
 - Current state:
-- Commands/checks:
-- Open questions/risks:
+- Test levels and commands:
+- CI-equivalent gate:
+- Coverage / fixtures / environment:
+- Checks last run and omissions:
+- Open questions / risks:
 - Recommended next step:
 ```
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Working Diary"
-  short_description: "Preserve cumulative project state across sessions"
-  default_prompt: "Use $rb-working-diary to update durable notes for the current project."
+  short_description: "Preserve decisions, evidence, tests, and next steps"
+  default_prompt: "Use $rb-working-diary to preserve durable project state, including decisions, implementation status, selected test levels, exact commands and results, CI-equivalent status, omitted checks, flaky-test evidence, residual risk, and the next action without storing secrets or transcript-like detail."

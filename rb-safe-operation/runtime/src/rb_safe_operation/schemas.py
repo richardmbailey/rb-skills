@@ -50,12 +50,36 @@ def export_schemas(destination: Path, runtime_root: Path, runtime_source_hash: s
     return written
 
 
+def _comparable_schema_bytes(path: Path) -> bytes:
+    """Return the schema identity used for drift checks.
+
+    `runtime_source_hash` records which reviewed runtime exported a file, but it is not
+    itself part of the JSON-schema contract. Ignoring only that provenance field avoids
+    invalidating every generated schema after unrelated runtime implementation changes.
+    Generator version, model schema version, payload hash, and the complete schema remain
+    compared exactly.
+    """
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return path.read_bytes()
+    if isinstance(payload, dict):
+        payload = dict(payload)
+        payload.pop("runtime_source_hash", None)
+    return canonical_bytes(payload) + b"\n"
+
+
 def check_drift(expected: Path, generated: Path) -> list[str]:
     differences: list[str] = []
     expected_names = {path.name for path in expected.glob("*.json")}
     generated_names = {path.name for path in generated.glob("*.json")}
     for name in sorted(expected_names | generated_names):
         left, right = expected / name, generated / name
-        if not left.exists() or not right.exists() or left.read_bytes() != right.read_bytes():
+        if (
+            not left.exists()
+            or not right.exists()
+            or _comparable_schema_bytes(left) != _comparable_schema_bytes(right)
+        ):
             differences.append(name)
     return differences

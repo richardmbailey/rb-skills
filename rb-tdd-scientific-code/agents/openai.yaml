@@ -1,4 +1,4 @@
 interface:
   display_name: "RB TDD Scientific Code"
-  short_description: "Test-drive scientific code changes"
-  default_prompt: "Use $rb-tdd-scientific-code to implement this scientific code change with focused tests."
+  short_description: "Test-drive scientific code across invariants and boundaries"
+  default_prompt: "Use $rb-tdd-scientific-code to implement this scientific change test-first. Define units, tolerances, seeds and provenance; select the required test levels including unit, integration, benchmark, invariant and stochastic tests; run CI-equivalent checks; and preserve test integrity."

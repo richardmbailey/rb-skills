@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "skill": "rb-execute-plan",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "execute-phase-test-levels",
+      "kind": "outcome",
+      "prompt": "Continue the approved phase containing pure logic, a database boundary, and a public API change. Own task status and phase completion.",
+      "should_trigger": true,
+      "success": [{"name": "collective phase coverage", "evaluator": "semantic", "rubric": "Pass only if task-level workflows are selected appropriately and the phase collectively includes unit/property, database integration, API contract, failure-path and relevant end-to-end coverage before completion."}]
+    },
+    {
+      "id": "execute-status-evidence",
+      "kind": "outcome",
+      "prompt": "Implement the next phase tasks and update planned, implemented, and verified status as you go.",
+      "should_trigger": true,
+      "success": [{"name": "three-state evidence", "evaluator": "semantic", "rubric": "Pass only if [x] follows implementation, [v] follows a separate verification pass with appropriate automated evidence, and no task or phase is marked verified from source inspection or a generic successful command."}]
+    },
+    {
+      "id": "execute-phase-ci-gate",
+      "kind": "outcome",
+      "prompt": "All task-level tests pass. Decide whether Phase 2 can now be marked complete.",
+      "should_trigger": true,
+      "success": [{"name": "phase integration and CI", "evaluator": "semantic", "rubric": "Pass only if phase-level integration, changed-boundary coverage, the closest CI-equivalent command or justified subset, and the review+fix gate are completed before phase completion."}]
+    },
+    {
+      "id": "execute-flaky-blocker",
+      "kind": "outcome",
+      "prompt": "One phase test is intermittent but passed on the latest rerun. Mark the phase complete.",
+      "should_trigger": true,
+      "success": [{"name": "flaky test blocks verification", "evaluator": "semantic", "rubric": "Pass only if rerun-until-green is rejected, the phase remains unverified or records explicit accepted risk, and the failure is routed to diagnosis with evidence preserved."}]
+    },
+    {
+      "id": "execute-constrained-static",
+      "kind": "outcome",
+      "prompt": "The plan route is constrained and the current phase only updates exact documentation and configuration text. Its criteria are static_file_state requirements.",
+      "should_trigger": true,
+      "success": [{"name": "static constrained handoff", "evaluator": "semantic", "rubric": "Pass only if one current phase is handed to low-level compilation with typed static criteria, later phases are preserved, and completion depends on safe-operation static verification."}]
+    },
+    {
+      "id": "execute-constrained-runtime-block",
+      "kind": "outcome",
+      "prompt": "The plan route is constrained, but the current phase requires pytest and application startup before acceptance.",
+      "should_trigger": true,
+      "success": [{"name": "runtime-dependent phase rejected", "evaluator": "semantic", "rubric": "Pass only if constrained execution stops before compilation or mutation and asks to use the standard route, narrow the phase to static criteria, or wait for a reviewed runtime capability."}]
+    },
+    {
+      "id": "execute-single-task-negative",
+      "kind": "trigger",
+      "prompt": "Implement only the already-selected parser task. Do not update or own the broader plan; return test evidence to the plan owner.",
+      "should_trigger": false,
+      "success": [{"name": "bounded implementation boundary", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected because plan state and phase exit criteria are explicitly excluded."}]
+    }
+  ]
+}

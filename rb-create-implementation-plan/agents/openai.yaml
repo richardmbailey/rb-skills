@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Create Implementation Plan"
-  short_description: "Turn rough ideas into implementation plans"
-  default_prompt: "Use $rb-create-implementation-plan to turn this rough idea into a practical implementation plan."
+  short_description: "Plan phases, testing, and execution route"
+  default_prompt: "Use $rb-create-implementation-plan to turn this sufficiently understood idea into a phased implementation plan with testing architecture, CI-equivalent completion checks, risks and success criteria, then present standard, constrained static-only, or undecided execution-route choices without choosing for the user."

@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Review PR or Diff"
-  short_description: "Review diffs for regressions and risks"
-  default_prompt: "Use $rb-review-pr-or-diff to review this diff for bugs, regressions, and missing tests."
+  short_description: "Review diffs for defects and test-strategy gaps"
+  default_prompt: "Use $rb-review-pr-or-diff to review this change for bugs, regressions, wrongly levelled or missing tests, negative and integration gaps, flaky or weakened tests, coverage and CI omissions, and concrete fixes with file references."

@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Continue Project"
-  short_description: "Resume from diary and handoff context"
-  default_prompt: "Use $rb-continue-project to resume this repository from the latest working diary and handoff."
+  short_description: "Resume with testing and CI context"
+  default_prompt: "Use $rb-continue-project to resume this repository from the latest diary and handoff, reconcile Git state, preserve test levels, coverage and CI-equivalent commands, and route unresolved work to discussion or agreed work directly to the appropriate implementation workflow."
