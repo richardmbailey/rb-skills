@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Diagnose"
-  short_description: "Debug failures with evidence"
-  default_prompt: "Use $rb-diagnose to investigate a failing test or surprising behavior with a tight feedback loop."
+  short_description: "Diagnose failures and preserve regression evidence"
+  default_prompt: "Use $rb-diagnose to reproduce and localise this bug, failing or flaky test, test hypotheses one at a time, explain why existing coverage missed it, and define the automated regression test required before implementation. Do not rerun until green or weaken the test."
