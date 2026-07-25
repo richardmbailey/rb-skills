@@ -209,9 +209,9 @@ def main() -> int:
         capture_output=True,
         text=True,
     )
-    if python_version.returncode != 0 or tuple(json.loads(python_version.stdout)) < (3, 9, 0):
+    if python_version.returncode != 0 or tuple(json.loads(python_version.stdout)) < (3, 10, 0):
         observed = python_version.stdout.strip() or python_version.stderr.strip()
-        print(f"unsupported_python_version: expected >=3.9, observed {observed}", file=sys.stderr)
+        print(f"unsupported_python_version: expected >=3.10, observed {observed}", file=sys.stderr)
         return 2
     lock_hash = combined_lock_hash(runtime)
     source_hash = tree_hash(runtime)
