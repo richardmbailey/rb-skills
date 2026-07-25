@@ -10,7 +10,8 @@ Execute only an unchanged approved bundle. This is a semi-formal control workflo
 ## Executable Verification Limit
 
 - The first-release global policy does not permit `exec_argv`, `check`, subprocesses, command-capable bounded tools, or delegation. Therefore this workflow cannot run unit tests, integration tests, builds, linters, formatters, type checkers, benchmarks, application commands, or CI-equivalent workflows.
-- Every accepted success criterion and verifier check must be typed `static_file_state::<description>`. Untyped criteria and the modes `executable_test`, `runtime_observation`, and `external_observation` fail deterministic preflight.
+- Every accepted success criterion and verifier check must be typed `static_file_state::<description>`.
+- Reject any criterion or check that is untyped or uses `executable_test`, `runtime_observation`, or `external_observation`; deterministic preflight must fail before mutation.
 - Do not use source inspection, hashes, generated plans, or agent-reported reasoning as a substitute for executable behavioural evidence.
 - If any success criterion depends on executing code or observing runtime behaviour, stop before mutation as unsupported, or enter `human_required` if the limitation is discovered later. Return to the standard route or wait for a reviewed release with contained command capability.
 - Reach `verified` only for criteria that are fully and truthfully observable through the supported static file-state operations. A documentation, configuration, schema, or exact text transformation may qualify; ordinary behavioural code changes generally do not.
