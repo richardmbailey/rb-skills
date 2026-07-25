@@ -52,6 +52,16 @@ def _case_ids(cases: list[object], relative: str, errors: list[str]) -> list[str
     return ids
 
 
+def _directory_files(path: Path) -> dict[str, bytes]:
+    if not path.is_dir():
+        raise ValueError(f"directory does not exist: {path}")
+    return {
+        item.relative_to(path).as_posix(): item.read_bytes()
+        for item in sorted(path.rglob("*"))
+        if item.is_file()
+    }
+
+
 def validate(manifest_path: Path, repo: Path) -> list[str]:
     try:
         manifest = load_json(manifest_path)
@@ -163,6 +173,41 @@ def validate(manifest_path: Path, repo: Path) -> list[str]:
         if len(cases) < minimum_cases:
             errors.append(f"{relative}: requires at least {minimum_cases} cases; found {len(cases)}")
         _case_ids(cases, relative, errors)
+
+    for index, contract in enumerate(manifest.get("directory_mirror_contracts", [])):
+        label = f"directory_mirror_contracts[{index}]"
+        if not isinstance(contract, dict) or not isinstance(contract.get("canonical"), str):
+            errors.append(f"{label}.canonical must be a string")
+            continue
+        mirrors = contract.get("mirrors")
+        if not isinstance(mirrors, list) or not mirrors or not all(isinstance(item, str) for item in mirrors):
+            errors.append(f"{label}.mirrors must be a non-empty list of strings")
+            continue
+        canonical_relative = contract["canonical"]
+        try:
+            canonical_files = _directory_files(repo / canonical_relative)
+        except (OSError, ValueError) as exc:
+            errors.append(str(exc))
+            continue
+        for mirror_relative in mirrors:
+            try:
+                mirror_files = _directory_files(repo / mirror_relative)
+            except (OSError, ValueError) as exc:
+                errors.append(str(exc))
+                continue
+            canonical_names = set(canonical_files)
+            mirror_names = set(mirror_files)
+            missing = sorted(canonical_names - mirror_names)
+            extra = sorted(mirror_names - canonical_names)
+            if missing:
+                errors.append(f"{mirror_relative}: missing canonical files: {missing}")
+            if extra:
+                errors.append(f"{mirror_relative}: contains extra files: {extra}")
+            for name in sorted(canonical_names & mirror_names):
+                if canonical_files[name] != mirror_files[name]:
+                    errors.append(
+                        f"{mirror_relative}/{name}: differs from {canonical_relative}/{name}"
+                    )
 
     return errors
 
