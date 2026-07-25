@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Assess Plan Safety"
-  short_description: "Assess a constrained plan for safety"
-  default_prompt: "Use $rb-assess-plan-safety to validate and assess this low-level plan in a context-separated pass with the actual assurance level disclosed."
+  short_description: "Assess a static-only constrained plan"
+  default_prompt: "Use $rb-assess-plan-safety to run deterministic policy and verification-mode preflight, then a context-separated semantic assessment. Return safe false for untyped criteria or any executable_test, runtime_observation, or external_observation requirement under the first-release capability profile."
