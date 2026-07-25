@@ -205,20 +205,24 @@ Tests are never reported as passed unless they were run in the current session o
 
 The repository CI validates:
 
-- constrained runtime unit tests;
-- runtime schema drift;
+- the constrained runtime on Python 3.10 and 3.12;
+- the full runtime unit and integration suite, including setup, manifest, launcher, reuse, and tamper gates on the reviewed Linux wheelhouse;
+- runtime schema drift and byte-identical generated-schema mirrors;
 - instruction contracts;
 - cross-file routing, metadata, documentation, capability, and eval consistency;
-- JSON syntax for active routing and behavioural evaluation plans.
+- JSON syntax for active routing and behavioural evaluation plans;
+- the complete behavioural-eval manifest structure, including cases, evaluator fields, and duplicate IDs.
 
-Run the local checks from the repository root with:
+Run the local checks from the repository root with Python 3.10 or newer:
 
 ```bash
 python3 evals/skill-routing/validate_instruction_contracts.py \
   evals/skill-routing/instruction-contracts.json
 python3 evals/skill-routing/validate_consistency_contracts.py \
   evals/skill-routing/consistency-contracts.json
-python3 -m json.tool evals/skill-routing/eval-plan.json >/dev/null
+for manifest in rb-*/evals/eval-plan.json; do
+  python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest"
+done
 python3 -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
 ```
 
@@ -227,6 +231,8 @@ Install the runtime package or its declared dependency before running its tests:
 ```bash
 python3 -m pip install -e rb-safe-operation/runtime
 ```
+
+The setup/manifest/launcher/tamper integration test requires an approved wheelhouse supplied through `RB_SAFE_OPERATION_TEST_WHEELHOUSE`; repository CI provides the reviewed Linux wheelhouse automatically.
 
 ## Updating and Publishing
 
