@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "skill": "rb-implement-with-tests",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "implement-pure-logic-unit",
+      "kind": "outcome",
+      "prompt": "Implement an agreed pure function that normalizes account identifiers, including invalid and boundary inputs.",
+      "should_trigger": true,
+      "success": [{"name": "unit and negative coverage", "evaluator": "semantic", "rubric": "Pass only if the workflow chooses unit or property tests, includes invalid/boundary cases, runs a focused failing or baseline check before editing when possible, and does not substitute lint or import success for behavioural coverage."}]
+    },
+    {
+      "id": "implement-database-boundary",
+      "kind": "outcome",
+      "prompt": "Add an agreed repository method that writes an order and handles transaction rollback when the second insert fails.",
+      "should_trigger": true,
+      "success": [{"name": "integration and rollback", "evaluator": "semantic", "rubric": "Pass only if the workflow requires a real database/component integration test covering rollback or partial failure, rather than relying only on mocked unit tests."}]
+    },
+    {
+      "id": "implement-public-api-contract",
+      "kind": "outcome",
+      "prompt": "Implement the agreed API response field and preserve compatibility for existing clients.",
+      "should_trigger": true,
+      "success": [{"name": "contract coverage", "evaluator": "semantic", "rubric": "Pass only if public API/schema contract coverage and relevant integration tests are selected, compatibility failure paths are considered, and the CI-equivalent command is run or explicitly bounded."}]
+    },
+    {
+      "id": "implement-known-bug-regression",
+      "kind": "outcome",
+      "prompt": "The root cause is confirmed: timezone normalization is missing. Implement the fix.",
+      "should_trigger": true,
+      "success": [{"name": "regression proof", "evaluator": "semantic", "rubric": "Pass only if an automated regression test is added, evidence is preserved that it fails against the defective behaviour when possible, and it passes after the smallest fix."}]
+    },
+    {
+      "id": "implement-flaky-failure",
+      "kind": "outcome",
+      "prompt": "The new test failed once but passes on rerun. Keep rerunning until the suite is green and finish the change.",
+      "should_trigger": true,
+      "success": [{"name": "flakiness treated as defect", "evaluator": "semantic", "rubric": "Pass only if rerun-until-green is refused, seed/timing/order/environment evidence is preserved where relevant, and the intermittent failure is diagnosed or reported as blocking/residual risk."}]
+    },
+    {
+      "id": "implement-full-ci-impractical",
+      "kind": "outcome",
+      "prompt": "Finish this small shared-library change, but the full repository suite takes six hours.",
+      "should_trigger": true,
+      "success": [{"name": "proportionate CI gate", "evaluator": "semantic", "rubric": "Pass if the largest relevant affordable focused, integration, lint/type/build subset is run, every omitted check is named with a reason, and residual regression risk is explicit rather than claiming the complete suite passed."}]
+    },
+    {
+      "id": "implement-no-arbitrary-coverage",
+      "kind": "outcome",
+      "prompt": "This repository has no coverage threshold. Implement the change and make sure coverage is good.",
+      "should_trigger": true,
+      "success": [{"name": "changed-behaviour coverage", "evaluator": "semantic", "rubric": "Pass if changed behaviours and branches are exercised and existing tooling is used when present, without inventing a universal numerical target."}]
+    },
+    {
+      "id": "implement-plan-owner-negative",
+      "kind": "trigger",
+      "prompt": "Continue Phase 3 of the implementation plan, update every task status, and decide whether the phase exit criteria are met.",
+      "should_trigger": false,
+      "success": [{"name": "plan ownership boundary", "evaluator": "semantic", "rubric": "Pass if rb-execute-plan is selected because sequencing, status and phase verification are requested."}]
+    }
+  ]
+}
