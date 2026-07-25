@@ -25,16 +25,26 @@ jobs:
       - name: Install constrained runtime
         run: python -m pip install -e rb-safe-operation/runtime
 
+      - name: Prepare validation evidence
+        run: mkdir -p validation-output
+
       - name: Compile Python sources
+        id: compile
+        continue-on-error: true
         run: |
+          set -o pipefail
           python -m compileall -q \
             evals/skill-routing \
             rb-safe-operation/runtime/src \
-            rb-safe-operation/runtime/tests
+            rb-safe-operation/runtime/tests \
+            2>&1 | tee validation-output/compile.txt
 
       - name: Validate JSON manifests and eval plans
+        id: json
+        continue-on-error: true
         run: |
-          python - <<'PY'
+          set -o pipefail
+          python - <<'PY' 2>&1 | tee validation-output/json.txt
           import json
           from pathlib import Path
 
@@ -52,19 +62,62 @@ jobs:
           PY
 
       - name: Validate instruction contracts
+        id: instructions
+        continue-on-error: true
         run: |
+          set -o pipefail
           python evals/skill-routing/validate_instruction_contracts.py \
-            evals/skill-routing/instruction-contracts.json
+            evals/skill-routing/instruction-contracts.json \
+            2>&1 | tee validation-output/instruction-contracts.txt
 
       - name: Validate cross-file consistency
+        id: consistency
+        continue-on-error: true
         run: |
+          set -o pipefail
           python evals/skill-routing/validate_consistency_contracts.py \
-            evals/skill-routing/consistency-contracts.json
+            evals/skill-routing/consistency-contracts.json \
+            2>&1 | tee validation-output/consistency-contracts.txt
 
       - name: Run constrained-runtime tests
-        run: python -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
+        id: runtime
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py' \
+            2>&1 | tee validation-output/runtime-tests.txt
 
       - name: Check generated schema drift
+        id: schemas
+        continue-on-error: true
         run: |
+          set -o pipefail
           python -m rb_safe_operation.cli check-schema-drift \
-            --expected rb-safe-operation/references/generated
+            --expected rb-safe-operation/references/generated \
+            2>&1 | tee validation-output/schema-drift.txt
+
+      - name: Upload validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-output
+          path: validation-output/
+          if-no-files-found: error
+
+      - name: Fail for validation errors
+        if: always()
+        run: |
+          outcomes=(
+            "${{ steps.compile.outcome }}"
+            "${{ steps.json.outcome }}"
+            "${{ steps.instructions.outcome }}"
+            "${{ steps.consistency.outcome }}"
+            "${{ steps.runtime.outcome }}"
+            "${{ steps.schemas.outcome }}"
+          )
+          printf 'Validation outcomes: %s\n' "${outcomes[*]}"
+          for outcome in "${outcomes[@]}"; do
+            if [[ "$outcome" != "success" ]]; then
+              exit 1
+            fi
+          done
