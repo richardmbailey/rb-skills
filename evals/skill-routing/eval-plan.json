@@ -8,9 +8,8 @@
     "cases/lifecycle.json",
     "cases/understanding-review.json",
     "cases/skill-management.json",
-    "cases/wiki-operations.json",
-    "cases/context-research-architecture.json"
-    ,"cases/constrained-execution.json"
+    "cases/context-research-architecture.json",
+    "cases/constrained-execution.json"
   ],
   "cases": [
     {

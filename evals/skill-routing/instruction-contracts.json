@@ -107,13 +107,6 @@
       "max_lines": 500
     },
     {
-      "path": "rb-wiki/SKILL.md",
-      "required": ["For routine operations", "$rb-new-wiki", "$rb-wiki-ingest", "$rb-wiki-maintenance", "work spans those boundaries"],
-      "forbidden": [],
-      "max_occurrences": {},
-      "max_lines": 500
-    },
-    {
       "path": "rb-discuss/SKILL.md",
       "required": ["decisions that materially affect behaviour", "Ask one targeted question at a time", "Do not start coding until material ambiguity is resolved", "$rb-create-implementation-plan"],
       "forbidden": ["Produce a short implementation plan", "Restate the requested change"],
