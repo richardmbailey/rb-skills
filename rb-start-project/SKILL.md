@@ -46,12 +46,12 @@ inspect repo -> ask setup questions -> summarise answers -> propose context upda
    - checks that can run locally versus only in CI;
    - test-data, fixture, external-service, secret, container, hardware, or network requirements.
 7. Give a short initial summary:
-   - apparent project type
-   - important files found
-   - test levels and check commands discovered
-   - canonical CI-equivalent command or missing equivalent
-   - coverage thresholds and test-environment constraints
-   - missing setup information
+   - apparent project type;
+   - important files found;
+   - test levels and check commands discovered;
+   - canonical CI-equivalent command or missing equivalent;
+   - coverage thresholds and test-environment constraints;
+   - missing setup information.
 
 Continue with this global skill. `.rb-agent/` may contain project resources, prompts, templates, or workflows, but reusable skills are installed globally from the versioned `rb-skills` source repo.
 
@@ -77,7 +77,7 @@ Route to the narrowest next workflow supported by the first task:
 
 | First-task signal | Next workflow |
 | --- | --- |
-| Material behaviour, interface, edge cases, or acceptance criteria are unresolved | `$rb-discuss` |
+| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved | `$rb-discuss` |
 | A sufficiently understood idea needs its first top-level plan | `$rb-create-implementation-plan` |
 | An existing multi-step plan or phase checklist needs sequencing, status tracking, or phase-level verification | `$rb-execute-plan` |
 | One bounded ordinary product change is agreed and ready to implement without plan-state ownership | `$rb-implement-with-tests` |
@@ -97,32 +97,25 @@ If a named global skill is unavailable, run the equivalent bounded workflow inli
 
 At the end of onboarding, provide:
 
-- project summary
-- agreed constraints
-- test levels and test/check commands
-- canonical CI-equivalent command and checks available only remotely
-- coverage thresholds, fixture requirements, and known flaky tests
-- domain/context items to capture
-- first task and definition of done
-- recommended next workflow
-- exact handoff question
+- project summary;
+- agreed constraints;
+- test levels and test/check commands;
+- canonical CI-equivalent command and checks available only remotely;
+- coverage thresholds, fixture requirements, and known flaky tests;
+- domain/context items to capture;
+- first task and definition of done;
+- recommended next workflow;
+- exact handoff question.
 
 For non-trivial projects, update `$rb-working-diary` with the project path, summary, constraints, testing/CI conventions, and next workflow before handoff.
 
-For feature work, ask:
+Ask the handoff question for the route actually selected:
 
-```text
-Proceed into the discuss session for the first task now? After requirements are resolved, I will continue into implementation planning, plan execution, implementation, and review+fix only after you approve each step.
-```
+- unresolved feature requirements: `Proceed into the discuss session for the first task now?`
+- agreed bounded ordinary change: `Proceed into implementation with tests now?`
+- agreed scientific or modelling change: `Proceed into scientific TDD now?`
+- existing implementation plan: `Proceed into verified plan execution now?`
+- new top-level planning: `Proceed into implementation planning now?`
+- unknown-cause bug or flaky test: `Proceed into diagnosis now?`
 
-For bug work, ask:
-
-```text
-Proceed into diagnosis now?
-```
-
-For planning work, ask:
-
-```text
-Proceed into implementation planning now? Once the plan is approved, I can use $rb-execute-plan to turn it into verified phase work.
-```
+Do not route an agreed task through `$rb-discuss` merely because it is substantial.
