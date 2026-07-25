@@ -37,7 +37,8 @@
         "deterministic preflight",
         "executable_test",
         "runtime_observation",
-        "external_observation"
+        "external_observation",
+        "ignoring only that provenance field"
       ],
       "forbidden": []
     },
@@ -106,11 +107,29 @@
       "forbidden": []
     },
     {
+      "path": "rb-safe-operation/runtime/src/rb_safe_operation/schemas.py",
+      "required": [
+        "payload.pop(\"runtime_source_hash\", None)",
+        "Generator version, model schema version, payload hash, and the complete schema remain",
+        "_comparable_schema_bytes"
+      ],
+      "forbidden": []
+    },
+    {
       "path": "rb-safe-operation/runtime/tests/test_verification_modes.py",
       "required": [
         "test_typed_static_requirements_pass",
         "test_untyped_requirement_fails_deterministically",
         "test_executable_and_runtime_modes_fail_deterministically"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-safe-operation/runtime/tests/test_schema_drift.py",
+      "required": [
+        "test_runtime_source_provenance_change_is_not_schema_drift",
+        "test_schema_payload_change_is_drift",
+        "test_missing_or_malformed_schema_is_drift"
       ],
       "forbidden": []
     }
