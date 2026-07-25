@@ -9,7 +9,9 @@
         "static-only",
         "static_file_state",
         "runtime-dependent phases must use the standard route",
-        "Material requirements unresolved"
+        "Material requirements unresolved",
+        "Python 3.10 or newer",
+        "complete behavioural-eval manifest structure"
       ],
       "forbidden": [
         "implement changes with focused tests and checks",
@@ -38,7 +40,10 @@
         "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
         "validate_eval_manifest.py",
         "python-version: [\"3.10\", \"3.12\"]",
-        "wheelhouse-sha256.txt"
+        "wheelhouse-sha256.txt",
+        "RB_SAFE_OPERATION_TEST_WHEELHOUSE",
+        "--require-hashes",
+        "skipped runtime tests are not allowed"
       ],
       "forbidden": [
         "uses: actions/checkout@v4",
@@ -50,6 +55,14 @@
       "path": "rb-safe-operation/runtime/pyproject.toml",
       "required": ["requires-python = \">=3.10\""],
       "forbidden": ["requires-python = \">=3.9\""]
+    },
+    {
+      "path": "rb-safe-operation/runtime/requirements.lock",
+      "required": [
+        "962ccbab7b642487b1d8b7df90ef677e03134cf1fd8880bf698649b22a69371f",
+        "926c9541b14b12b1681dca8a0b75feb510b06c6341b70a8e500c2fdcff837cce"
+      ],
+      "forbidden": []
     },
     {
       "path": "rb-safe-operation/scripts/setup_runtime.py",
@@ -65,6 +78,7 @@
       "path": "rb-safe-operation/references/runtime-contract.md",
       "required": [
         "Supported Python: 3.10 or newer",
+        "Linux x86-64",
         "static_file_state::<description>",
         "deterministic preflight",
         "executable_test",
