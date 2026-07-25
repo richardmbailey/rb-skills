@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Execute Plan"
-  short_description: "Coordinate and verify implementation phases"
-  default_prompt: "Use $rb-execute-plan to coordinate and track this existing implementation phase through verified completion."
+  short_description: "Coordinate tested and verified implementation phases"
+  default_prompt: "Use $rb-execute-plan to coordinate this existing implementation phase through appropriate task-level tests, phase integration and CI-equivalent gates, final review+fix, and evidence-backed verified completion. Use constrained execution only for criteria typed and observable as static_file_state."
