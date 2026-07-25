@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import wraps
+import hashlib
 from typing import Literal
 
 from .models import Finding, LowLevelPlan
@@ -51,19 +52,21 @@ def _finding(
     index: int,
     requirement: VerificationRequirement,
 ) -> Finding:
-    suffix = f"{operation_id}-{field}-{index}"
+    identity = hashlib.sha256(
+        f"{operation_id}\0{field}\0{index}\0{requirement.raw}".encode("utf-8")
+    ).hexdigest()[:24]
     if not requirement.valid:
         explanation = (
             "verification requirements must use the closed '<mode>::<description>' syntax; "
             f"received {requirement.raw!r}"
         )
-        finding_id = f"verification-format-{suffix}"
+        finding_id = f"verification-format-{identity}"
     else:
         explanation = (
             f"verification mode {requirement.mode!r} is unsupported by the first-release "
             "static-only capability profile"
         )
-        finding_id = f"verification-mode-{suffix}"
+        finding_id = f"verification-mode-{identity}"
     return Finding(
         finding_id=finding_id,
         invariant_id="E-003",
@@ -102,11 +105,11 @@ def verification_mode_findings(plan: LowLevelPlan) -> list[Finding]:
 
 
 def _normalized_plan(plan: LowLevelPlan) -> LowLevelPlan:
-    """Strip the mode prefix for legacy policy feature-name checks.
+    """Strip mode prefixes for legacy policy feature-name checks.
 
     The artifact keeps the closed observation-mode syntax. The existing policy checker
-    still recognises feature names such as product_diff and undeclared_effects, so the
-    compatibility view exposes only each parsed description to that checker.
+    still recognises feature names such as product_diff and undeclared_effects, so this
+    compatibility view exposes each parsed description to that checker.
     """
 
     operations = []
@@ -124,7 +127,7 @@ def _normalized_plan(plan: LowLevelPlan) -> LowLevelPlan:
 def install_policy_guard() -> None:
     """Install deterministic verification-mode enforcement before workflow imports.
 
-    This compatibility guard keeps the schema at 1.0 while making the observation mode
+    This compatibility guard keeps schema 1.0 while making observation modes
     machine-enforced. It can be removed when a future schema represents requirements as
     dedicated typed objects.
     """
