@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Start Project"
-  short_description: "Guided project onboarding from any folder"
-  default_prompt: "Use $rb-start-project to run guided project onboarding from the current folder."
+  short_description: "Onboard a project with testing and workflow routing"
+  default_prompt: "Use $rb-start-project to inspect this project, recover its testing and CI conventions, clarify the first task, and route directly to discuss, planning, implementation, diagnosis, or review according to whether material ambiguity remains."
