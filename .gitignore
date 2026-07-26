@@ -12,3 +12,5 @@ node_modules/
 rb-safe-operation/runtime/build/
 rb-safe-operation/runtime/src/*.egg-info/
 rb-safe-operation/runtime/src/rb_safe_operation/_source_identity.json
+/.rb-safe-operation/artifacts
+/.rb-safe-operation/runs
