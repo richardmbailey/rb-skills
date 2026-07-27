@@ -305,6 +305,28 @@
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500
+    },
+    {
+      "path": "rb-revise-ai-draft/SKILL.md",
+      "required": [
+        "Do not add facts, examples, statistics, sources, quotations, experiences, feelings, beliefs, or opinions.",
+        "Preserve claim strength.",
+        "diagnostic cues, not banned forms",
+        "Remove slogan-like and marketing-like language wherever it appears.",
+        "Do not merge or embed the slogan wording in a longer sentence.",
+        "The final prose must contain no slogans, taglines, aphoristic contrasts, punch lines, or promotional claims.",
+        "Do not treat sentence length as the problem.",
+        "Keep a factual contrast when the distinction is necessary to the meaning.",
+        "If a quotation contains slogan-like or marketing language",
+        "Do not produce the revision until that conflict is resolved",
+        "Check headings, list labels, captions, callouts, and closing lines",
+        "Every material claim in the revision must trace to the source",
+        "does not establish authorship or make detector results reliable",
+        "references/editorial-patterns.md"
+      ],
+      "forbidden": ["Add soul", "Let some mess in", "Replace all curly quotes"],
+      "max_occurrences": {"## Editing approach": 1},
+      "max_lines": 500
     }
   ]
 }

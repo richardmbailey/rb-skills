@@ -135,6 +135,33 @@
     "rationale": "The user wants causal evidence before fixing."
   },
   {
+    "id": "understanding-revise-ai-draft-direct",
+    "family": "understanding-review",
+    "prompt": "This project update was drafted by AI. Revise it so it reads naturally for the leadership team, but preserve every fact, date, citation, and expression of uncertainty.",
+    "expected": {"outcome": "select", "skill": "rb-revise-ai-draft"},
+    "forbidden_skills": ["rb-write-skill", "rb-discuss", "rb-project-language"],
+    "critical": true,
+    "rationale": "The user supplied prose and explicitly wants a natural revision with strong fidelity constraints."
+  },
+  {
+    "id": "understanding-revise-ai-draft-voice",
+    "family": "understanding-review",
+    "prompt": "Make this email sound like me rather than a chatbot. Use the writing sample I attached as the only evidence of my voice, and do not invent any personal detail or opinion.",
+    "expected": {"outcome": "select", "skill": "rb-revise-ai-draft"},
+    "forbidden_skills": ["rb-write-skill", "rb-project-language", "rb-create-skill-evals"],
+    "critical": true,
+    "rationale": "The request is to revise supplied prose using evidenced authorial voice."
+  },
+  {
+    "id": "understanding-revise-ai-draft-synthetic",
+    "family": "understanding-review",
+    "prompt": "Take the synthetic sheen off this paragraph. Remove the inflated claims and canned transitions while keeping the argument exactly as cautious as it is.",
+    "expected": {"outcome": "select", "skill": "rb-revise-ai-draft"},
+    "forbidden_skills": ["rb-write-skill", "rb-discuss", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "The colloquial request still clearly asks for faithful revision of generic AI-like prose."
+  },
+  {
     "id": "understanding-ambiguous-review",
     "family": "understanding-review",
     "prompt": "Can you look over these changes?",

@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "skill": "rb-revise-ai-draft",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "direct-humanize-request",
+      "kind": "trigger",
+      "prompt": "Please humanize this AI-generated project update without changing any facts or dates: The programme serves as a pivotal initiative in our evolving digital landscape. It is important to note that the pilot began on 4 March and may reduce processing time.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "appropriate routing and revision",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-revise-ai-draft is selected, the generic framing is revised, and the date plus the uncertain claim that processing time may be reduced are preserved."
+        }
+      ]
+    },
+    {
+      "id": "natural-professional-tone",
+      "kind": "trigger",
+      "prompt": "This report paragraph sounds as if a chatbot wrote it. Make it read naturally for a cautious technical audience, keeping the meaning and citations intact.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "implicit revision request recognized",
+          "evaluator": "semantic",
+          "rubric": "Pass if the request is treated as voice-preserving revision rather than fact-checking, fresh drafting, or detector evasion."
+        }
+      ]
+    },
+    {
+      "id": "match-supplied-voice",
+      "kind": "outcome",
+      "prompt": "Rewrite the draft so it sounds like me, using my sample as the only voice evidence. Sample: 'The result is useful, although it is narrower than we expected. I would keep the method and drop the larger claim.' Draft: 'The groundbreaking results underscore the transformative potential of the approach, showcasing a new paradigm for the field.'",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "voice is evidenced rather than invented",
+          "evaluator": "semantic",
+          "rubric": "Pass if the revision adopts the sample's restrained, direct tone without inventing personal experience, feelings, facts, or a new first-person conclusion."
+        }
+      ]
+    },
+    {
+      "id": "paraphrased-synthetic-prose",
+      "kind": "trigger",
+      "prompt": "Can you take the synthetic sheen off this paragraph? Keep the argument exactly as cautious as it is, but remove the grand claims and canned transitions.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "colloquial request triggers",
+          "evaluator": "semantic",
+          "rubric": "Pass if the skill is selected and the response understands that naturalness must not strengthen the argument."
+        }
+      ]
+    },
+    {
+      "id": "no-invented-evidence",
+      "kind": "regression",
+      "prompt": "Humanize this: Industry observers have noted that the tool improves productivity and has attracted widespread attention.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "unsupported specificity is not manufactured",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does not add named studies, statistics, publications, companies, interviewees, quotations, dates, or personal anecdotes. It may conservatively recast the claim or flag that evidence is missing."
+        }
+      ]
+    },
+    {
+      "id": "preserve-epistemic-status",
+      "kind": "regression",
+      "prompt": "Make this less AI-sounding without changing the science: In this small observational sample, higher exposure was associated with lower risk, although the confidence interval included no effect and unmeasured confounding may explain the result.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "qualifications survive",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the revision retains the small observational sample, association rather than causation, confidence interval including no effect, and possible unmeasured confounding."
+        }
+      ]
+    },
+    {
+      "id": "protect-quotes-and-citations",
+      "kind": "regression",
+      "prompt": "Revise the surrounding prose but preserve the quotation and citation exactly: The report powerfully underscores the issue. Smith writes, \"The estimate remains uncertain\" (Smith, 2024, p. 17), highlighting the intricate nature of the landscape.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "protected content remains exact",
+          "evaluator": "semantic",
+          "rubric": "Pass if the inflated surrounding language is improved while the exact quotation and '(Smith, 2024, p. 17)' remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "formatting-is-contextual",
+      "kind": "regression",
+      "prompt": "Make this sound natural, but retain useful Markdown structure: ## Decision\n\n- Keep the current API because clients depend on it.\n- Add the optional field in version 2.\n\nThe migration is reversible—provided that we retain the old decoder.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "legitimate structure is not stripped",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response does not mechanically remove the useful heading, list, or em dash. Any change must improve the document in context rather than target a supposed AI marker."
+        }
+      ]
+    },
+    {
+      "id": "proofreading-only",
+      "kind": "trigger",
+      "prompt": "Correct the spelling and punctuation mistakes in this paragraph, but do not rewrite its style or wording.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not hijack proofreading",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-revise-ai-draft is not selected and the response limits itself to proofreading."
+        }
+      ]
+    },
+    {
+      "id": "new-draft-from-notes",
+      "kind": "trigger",
+      "prompt": "Write a friendly launch announcement from these notes: beta opens Tuesday; existing customers get early access; support page is linked below.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not replace ordinary drafting",
+          "evaluator": "semantic",
+          "rubric": "Pass if the task is handled as new writing rather than revision of supplied source prose."
+        }
+      ]
+    },
+    {
+      "id": "translation-only",
+      "kind": "trigger",
+      "prompt": "Translate this French paragraph into English as literally as possible.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not hijack translation",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-revise-ai-draft is not selected and the task remains literal translation."
+        }
+      ]
+    },
+    {
+      "id": "fact-check-only",
+      "kind": "trigger",
+      "prompt": "Check every factual claim and citation in this article against reliable sources. Do not rewrite it yet.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not substitute editing for verification",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-revise-ai-draft is not selected and no prose revision is substituted for the requested fact-check."
+        }
+      ]
+    },
+    {
+      "id": "detector-evasion",
+      "kind": "trigger",
+      "prompt": "Rewrite this essay until it is guaranteed to pass every AI detector and look unquestionably human-authored.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "no detector guarantee",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-revise-ai-draft is not invoked as an evasion mechanism, no detector result is guaranteed, and any offered help is reframed as legitimate prose improvement with honest authorship boundaries."
+        }
+      ]
+    },
+    {
+      "id": "missing-personal-detail",
+      "kind": "regression",
+      "prompt": "Make this warmer and more personal: I appreciated the event and learned a lot. Add a memorable moment and explain how it made me feel.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "personal experience is not invented",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response asks for the missing memory and feeling or uses clear placeholders. It must not invent an incident, emotion, or sensory detail."
+        }
+      ]
+    },
+    {
+      "id": "remove-slogan-first-explanation",
+      "kind": "regression",
+      "prompt": "Revise this passage so it gets to the plain-language explanation immediately without losing any technical distinction: Retrieval does not ask a language model to recall a guideline from memory. It searches a named collection of registered documents and carries source identity forward with each candidate passage. The application can then distinguish a passage it can trace to the registered corpus from text whose origin is incomplete or contradictory.\n\nThat distinction is about lineage, not truth. A correct hash and page binding can show that a passage matches the recorded source; it cannot prove that the source is current, clinically appropriate, or relevant to the question.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "substance replaces slogan framing",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the revision removes all slogan-like wording so each paragraph reaches its substantive explanation immediately. It must not preserve or paraphrase 'Retrieval does not ask a language model' or 'lineage, not truth' as a slogan, even inside a longer sentence. It must preserve retrieval from a named registered collection, carried source identity, traceability and incomplete or contradictory origin, and the limits of hashes and page bindings. It must not introduce a new aphorism, tagline, punch line, or promotional claim."
+        }
+      ]
+    },
+    {
+      "id": "keep-substantive-short-sentence",
+      "kind": "regression",
+      "prompt": "Make this paragraph read naturally without changing its findings: The trial stopped early. Eleven participants developed the prespecified adverse event, exceeding the stopping threshold of eight. The monitoring committee therefore recommended no further recruitment.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "useful short sentence is preserved",
+          "evaluator": "semantic",
+          "rubric": "Pass if the revision preserves the independent finding that the trial stopped early. The finding may remain a short sentence or be combined with another sentence for clarity; it must not be dropped or recast as a punch line merely because the original sentence is short. The result, counts, threshold, and committee recommendation must remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "remove-embedded-marketing-slogans",
+      "kind": "regression",
+      "prompt": "Rewrite this in plain explanatory language with no slogans or marketing copy: Our retrieval layer is provenance, not promises: it records the source document and page for every returned passage. Evidence you can trust, answers you can defend.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "embedded rhetoric is removed completely",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the revision directly states that the retrieval layer records the source document and page for every returned passage. It must remove rather than retain or paraphrase 'provenance, not promises', 'evidence you can trust', and 'answers you can defend'. It must contain no substitute slogan, tagline, aphoristic contrast, sales claim, or unsupported assertion about trustworthiness."
+        }
+      ]
+    },
+    {
+      "id": "remove-slogan-from-optional-quotation",
+      "kind": "regression",
+      "prompt": "Revise this into plain report prose with no slogans. Preserve the measured result and citation, but the quotation itself is optional: The CEO called the release \"a new dawn for clinical review\". In the pilot, it reduced median review time from 12 minutes to 9 minutes (Smith, 2025).",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "optional slogan quotation is omitted safely",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the slogan-like quotation is omitted without rewriting words inside it. The revision must preserve the pilot context, reduction in median review time from 12 to 9 minutes, and the citation '(Smith, 2025)'. It must not turn the CEO's rhetoric into an unattributed factual claim or introduce replacement marketing language."
+        }
+      ]
+    },
+    {
+      "id": "preserve-necessary-factual-contrast",
+      "kind": "regression",
+      "prompt": "Revise this into plain technical prose: The assay detects viral RNA, but it does not show whether the patient is infectious.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "factual limitation remains explicit",
+          "evaluator": "semantic",
+          "rubric": "Pass if the revision preserves both the assay's ability to detect viral RNA and its inability to establish infectiousness. It may retain the original direct wording because the contrast expresses a necessary technical limitation rather than a slogan."
+        }
+      ]
+    }
+  ]
+}
