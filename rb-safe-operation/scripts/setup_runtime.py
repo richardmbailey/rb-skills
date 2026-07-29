@@ -14,8 +14,12 @@ import tempfile
 from pathlib import Path
 
 
-RUNTIME_VERSION = "0.1.0"
-SCHEMA_VERSION = "1.0"
+RUNTIME_VERSION = "0.3.0"
+SCHEMA_VERSION = "3.0"
+PYDANTIC_VERSION = "2.13.4"
+PYDANTIC_AI_VERSION = "2.19.0"
+OPENAI_VERSION = "2.45.0"
+TIKTOKEN_VERSION = "0.12.0"
 CLI_MODULE = "rb_safe_operation.cli"
 
 
@@ -129,6 +133,10 @@ def validate_installed_runtime(
     expected = {
         "runtime_version": RUNTIME_VERSION,
         "schema_version": SCHEMA_VERSION,
+        "pydantic_version": PYDANTIC_VERSION,
+        "pydantic_ai_version": PYDANTIC_AI_VERSION,
+        "openai_version": OPENAI_VERSION,
+        "tiktoken_version": TIKTOKEN_VERSION,
         "runtime_source_hash": expected_source_hash,
         "runtime_lock_hash": expected_lock_hash,
     }
@@ -170,6 +178,11 @@ def write_manifest(control: Path, manifest: dict[str, object]) -> None:
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary_name, control / "current.json")
+        directory = os.open(control, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     finally:
         try:
             os.unlink(temporary_name)

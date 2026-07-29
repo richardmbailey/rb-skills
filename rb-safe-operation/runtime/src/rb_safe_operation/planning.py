@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -101,6 +102,61 @@ def discover_instruction_files(project_root: str, target_paths: list[str]) -> di
                 except ValueError:
                     pass
                 discovered[str(resolved)] = sha256_file(instruction)
+    return dict(sorted(discovered.items()))
+
+
+def discover_instruction_files_policy(loaded_policy, target_paths: list[str]) -> dict[str, str]:
+    """Discover instructions without opening denied files or descending denied subtrees."""
+
+    from .project_policy import evaluate_path, require_path, revalidate_decision
+
+    root = loaded_policy.project_root
+    discovered: dict[str, str] = {}
+
+    def observe(instruction: Path) -> None:
+        decision = evaluate_path(loaded_policy, instruction, "read")
+        if decision.allowed:
+            decision = require_path(loaded_policy, instruction, "read")
+            revalidate_decision(loaded_policy, decision)
+        if decision.allowed and instruction.is_file() and not instruction.is_symlink():
+            discovered[str(instruction.resolve(strict=True))] = sha256_file(instruction)
+
+    observe(root / "AGENTS.md")
+    for target_value in target_paths:
+        target = Path(target_value)
+        if not target.is_absolute():
+            target = root / target
+        target = Path(os.path.abspath(target))
+        try:
+            relative = target.relative_to(root)
+        except ValueError as exc:
+            raise PlanningError(f"target outside project root: {target}") from exc
+        current = root
+        for component in relative.parts[:-1] if target.suffix else relative.parts:
+            current = current / component
+            decision = evaluate_path(loaded_policy, current, "read")
+            if not decision.allowed:
+                break
+            observe(current / "AGENTS.md")
+        if target.is_dir() and evaluate_path(loaded_policy, target, "read").allowed:
+            target_decision = require_path(loaded_policy, target, "read")
+            revalidate_decision(loaded_policy, target_decision)
+            stack = [target]
+            while stack:
+                directory = stack.pop()
+                directory_decision = require_path(loaded_policy, directory, "read")
+                revalidate_decision(loaded_policy, directory_decision)
+                with os.scandir(directory) as entries:
+                    for entry in sorted(entries, key=lambda item: item.name):
+                        child = Path(entry.path)
+                        decision = evaluate_path(loaded_policy, child, "read")
+                        if not decision.allowed:
+                            continue
+                        revalidate_decision(loaded_policy, decision)
+                        if entry.is_dir(follow_symlinks=False):
+                            stack.append(child)
+                        elif entry.name == "AGENTS.md" and entry.is_file(follow_symlinks=False):
+                            observe(child)
     return dict(sorted(discovered.items()))
 
 

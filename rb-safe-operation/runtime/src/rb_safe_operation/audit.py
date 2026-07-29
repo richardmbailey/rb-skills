@@ -11,6 +11,8 @@ from typing import Any
 
 from .canonical import artifact_hash, canonical_bytes, parse_json_strict
 from .models import AuditEvent, EventPayload
+from .proposal_models import AuditEventV2, EventPayloadV2
+from .policy_models import PolicyBinding
 
 
 class AuditError(RuntimeError):
@@ -65,16 +67,65 @@ def build_event(
     return AuditEvent.model_validate({**body, "event_record_hash": record_hash})
 
 
+def build_event_v2(
+    run_id: str,
+    sequence: int,
+    payload: EventPayloadV2,
+    provenance: str,
+    observation: dict[str, Any],
+    previous_hash: str | None,
+    policy_binding: PolicyBinding,
+    event_uuid: str | None = None,
+) -> AuditEventV2:
+    sanitized_payload = payload.model_copy(update={"summary": "[OMITTED: uncertain_free_text]" if payload.summary else ""})
+    payload_data = sanitized_payload.model_dump(mode="json")
+    payload_hash = artifact_hash("event-payload", "3.0", payload_data)
+    body = {
+        "schema_version": "3.0",
+        "run_id": run_id,
+        "sequence": sequence,
+        "event_uuid": event_uuid or str(uuid.uuid4()),
+        "payload": payload_data,
+        "payload_hash": payload_hash,
+        "provenance": provenance,
+        "observation": {
+            "observer_id": provenance,
+            "observed_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "data": redact(observation),
+        },
+        "previous_event_record_hash": previous_hash,
+        "algorithm": "sha256",
+        "policy_binding": policy_binding.model_dump(mode="json"),
+    }
+    record_hash = artifact_hash("event-record", "3.0", body)
+    return AuditEventV2.model_validate({**body, "event_record_hash": record_hash})
+
+
 class AuditLog:
-    def __init__(self, root: str, run_id: str):
+    def __init__(self, root: str, run_id: str, *, schema_version: str = "1.0", policy_binding: PolicyBinding | None = None):
+        if schema_version not in {"1.0", "3.0"}:
+            raise ValueError("unsupported audit schema version")
+        if (schema_version == "3.0") != (policy_binding is not None):
+            raise ValueError("schema-3 audit logs require exactly one policy binding")
         self.root = Path(root).resolve()
         self.run_id = run_id
+        self.schema_version = schema_version
+        self.policy_binding = policy_binding
         self.root.mkdir(parents=True, mode=0o700, exist_ok=True)
 
-    def append(self, payload: EventPayload, provenance: str, observation: dict[str, Any]) -> AuditEvent:
+    def append(self, payload: EventPayload | EventPayloadV2, provenance: str, observation: dict[str, Any]):
         events = self.validate_chain()
         previous = events[-1].event_record_hash if events else None
-        event = build_event(self.run_id, len(events), payload, provenance, observation, previous)
+        if self.schema_version == "3.0":
+            event = build_event_v2(
+                self.run_id, len(events), EventPayloadV2.model_validate(payload.model_dump(mode="json")),
+                provenance, observation, previous, self.policy_binding,
+            )
+        else:
+            event = build_event(
+                self.run_id, len(events), EventPayload.model_validate(payload.model_dump(mode="json")),
+                provenance, observation, previous,
+            )
         target = self.root / f"{event.sequence:08d}-{event.event_uuid}.json"
         data = canonical_bytes(event.model_dump(mode="json")) + b"\n"
         descriptor, temp_name = tempfile.mkstemp(prefix=".event-", suffix=".tmp", dir=self.root)
@@ -91,7 +142,7 @@ class AuditLog:
                 pass
         return event
 
-    def validate_chain(self) -> list[AuditEvent]:
+    def validate_chain(self) -> list[AuditEvent | AuditEventV2]:
         temporary = sorted(self.root.glob(".event-*.tmp"))
         if temporary:
             quarantine = self.root / "quarantine"
@@ -100,13 +151,14 @@ class AuditLog:
                 os.replace(path, quarantine / path.name)
             raise AuditError("incomplete event files quarantined; human review required")
         files = sorted(self.root.glob("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-*.json"))
-        events: list[AuditEvent] = []
+        events: list[AuditEvent | AuditEventV2] = []
         uuids: set[str] = set()
         for expected, path in enumerate(files):
             try:
                 persisted = path.read_bytes()
                 payload = parse_json_strict(persisted)
-                event = AuditEvent.model_validate(payload)
+                event_type = AuditEventV2 if self.schema_version == "3.0" else AuditEvent
+                event = event_type.model_validate(payload)
             except Exception as exc:
                 raise AuditError(f"invalid audit event: {path.name}") from exc
             if persisted != canonical_bytes(event.model_dump(mode="json")) + b"\n":
@@ -121,9 +173,9 @@ class AuditLog:
                 raise AuditError("audit chain fork or missing predecessor")
             body = event.model_dump(mode="json")
             observed_hash = body.pop("event_record_hash")
-            if artifact_hash("event-record", "1.0", body) != observed_hash:
+            if artifact_hash("event-record", self.schema_version, body) != observed_hash:
                 raise AuditError("audit event hash mismatch")
-            if artifact_hash("event-payload", "1.0", event.payload.model_dump(mode="json")) != event.payload_hash:
+            if artifact_hash("event-payload", self.schema_version, event.payload.model_dump(mode="json")) != event.payload_hash:
                 raise AuditError("audit payload hash mismatch")
             events.append(event)
         return events

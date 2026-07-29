@@ -176,6 +176,149 @@ def capture_snapshot(
     )
 
 
+def capture_policy_snapshot(
+    loaded_policy,
+    selected_paths: list[str],
+    instruction_paths: list[str],
+    expected_product_changes: list[str],
+    control_plane_roots: list[str] | None = None,
+    metadata_loader=None,
+):
+    """Capture repository state without opening denied content or descending denied subtrees."""
+
+    from .patches import capture_file_metadata, metadata_fingerprint_hash
+    from .policy_models import RepositorySnapshotV3
+    from .project_policy import evaluate_path, require_path, revalidate_decision
+
+    root = loaded_policy.project_root
+    load_metadata = metadata_loader or capture_file_metadata
+    canonical_controls = [
+        Path(value).resolve(strict=False)
+        for value in (control_plane_roots or [str(root / ".rb-safe-operation")])
+    ]
+    denied_rule_ids = sorted(
+        {rule.rule_id for rule in loaded_policy.effective_policy.path_rules if "read" in rule.deny}
+    )
+    unobserved_subtrees = sorted(
+        {
+            rule.rule_id
+            for rule in loaded_policy.effective_policy.path_rules
+            if "read" in rule.deny and rule.scope == "subtree"
+        }
+    )
+
+    def policy_inventory() -> dict[str, str]:
+        inventory: dict[str, str] = {}
+
+        def descend(directory: Path, relative: Path) -> None:
+            if directory != root:
+                directory_decision = require_path(loaded_policy, directory, "read")
+                revalidate_decision(loaded_policy, directory_decision)
+            with os.scandir(directory) as entries:
+                ordered = sorted(entries, key=lambda item: unicodedata.normalize("NFC", item.name))
+            for entry in ordered:
+                child_relative = relative / entry.name
+                child = root / child_relative
+                lexical = Path(os.path.abspath(child))
+                if any(_within(lexical, control) for control in canonical_controls) or _within(
+                    lexical, root / ".git"
+                ):
+                    continue
+                decision = evaluate_path(loaded_policy, child, "read")
+                key = child_relative.as_posix()
+                if not decision.allowed:
+                    matched_subtree = any(
+                        rule.rule_id in decision.matched_rule_ids and rule.scope == "subtree"
+                        for rule in loaded_policy.effective_policy.path_rules
+                    )
+                    inventory[key] = (
+                        "unobserved-policy-denied:rules="
+                        + ",".join(decision.matched_rule_ids)
+                    )
+                    if matched_subtree:
+                        continue
+                    # Exact denied paths expose only the path already named by the rule.
+                    continue
+                revalidate_decision(loaded_policy, decision)
+                observed = entry.stat(follow_symlinks=False)
+                identity = (
+                    f"mode={observed.st_mode:o}:uid={observed.st_uid}:gid={observed.st_gid}:"
+                    f"dev={observed.st_dev}:ino={observed.st_ino}:nlink={observed.st_nlink}"
+                )
+                if entry.is_symlink():
+                    inventory[key] = "symlink:" + os.readlink(child) + ":" + identity
+                elif entry.is_file(follow_symlinks=False):
+                    inventory[key] = "file:" + sha256_file(child) + ":" + identity
+                elif entry.is_dir(follow_symlinks=False):
+                    inventory[key + "/"] = "directory:" + identity
+                    descend(child, child_relative)
+                else:
+                    inventory[key] = "special:" + identity
+
+        descend(root, Path("."))
+        return inventory
+
+    selected: dict[str, str] = {}
+    selected_metadata: dict[str, str] = {}
+    instructions: dict[str, str] = {}
+    links: dict[str, str] = {}
+    for supplied in selected_paths:
+        path = Path(supplied) if Path(supplied).is_absolute() else root / supplied
+        decision = evaluate_path(loaded_policy, path, "read")
+        if not decision.allowed:
+            continue
+        decision = require_path(loaded_policy, path, "read")
+        revalidate_decision(loaded_policy, decision)
+        if path.is_symlink():
+            raise StateError("selected paths cannot cross a symlink under project policy")
+        if path.is_file():
+            resolved = path.resolve(strict=True)
+            selected[str(resolved)] = sha256_file(path)
+            selected_metadata[str(resolved)] = metadata_fingerprint_hash(load_metadata(path))
+    for supplied in instruction_paths:
+        path = Path(supplied) if Path(supplied).is_absolute() else root / supplied
+        decision = evaluate_path(loaded_policy, path, "read")
+        if decision.allowed:
+            revalidate_decision(loaded_policy, decision)
+        if decision.allowed and path.is_file() and not path.is_symlink():
+            instructions[str(path.resolve(strict=True))] = sha256_file(path)
+    expected: list[str] = []
+    for supplied in expected_product_changes:
+        path = Path(supplied) if Path(supplied).is_absolute() else root / supplied
+        lexical = Path(os.path.abspath(path))
+        if not _within(lexical.resolve(strict=False), root):
+            raise StateError(f"expected product change outside project: {supplied}")
+        expected.append(str(lexical.resolve(strict=False)))
+    inventory = policy_inventory()
+    return RepositorySnapshotV3(
+        project_root=str(root),
+        platform=platform.system().lower(),
+        case_sensitive=_case_sensitive(root),
+        unicode_normalization="NFC",
+        device_identity=str(root.stat().st_dev),
+        observation_mode="policy_pruned_filesystem",
+        git_executable_path=None,
+        git_executable_hash=None,
+        git_head=None,
+        git_branch=None,
+        index_hash=None,
+        staged_paths={},
+        unstaged_paths={},
+        untracked_paths={},
+        full_file_inventory=inventory,
+        selected_file_hashes=selected,
+        instruction_hashes=instructions,
+        resolved_links=links,
+        expected_product_changes=expected,
+        control_plane_roots=[str(value) for value in canonical_controls],
+        policy_binding=loaded_policy.binding,
+        denied_rule_ids=denied_rule_ids,
+        unobserved_subtree_rule_ids=unobserved_subtrees,
+        selected_file_metadata_hashes=selected_metadata,
+        proposal_context_observation_hashes={},
+    )
+
+
 def snapshot_materially_equal(before: RepositorySnapshot, after: RepositorySnapshot, declared_changed_paths: set[str] | None = None) -> tuple[bool, list[str]]:
     declared = {str(Path(os.path.abspath(value))) for value in (declared_changed_paths or set())}
     control_roots = [Path(os.path.abspath(value)) for value in before.control_plane_roots]
@@ -336,31 +479,46 @@ def release_lease(lease: Lease) -> None:
     lease.path.unlink()
 
 
-ACTIVE = {"drafting", "validating", "approved", "executing", "verifying", "repairing"}
+ACTIVE = {
+    "drafting", "validating", "approved", "executing", "proposing", "validating_proposal",
+    "assessing_proposal", "proposal_approved", "applying_proposal", "verifying", "repairing",
+}
 RESUMABLE = {"paused_resource"}
 TERMINAL = {"rejected", "human_required", "verified", "failed", "abandoned"}
 TRANSITIONS = {
     "drafting": {"validating", "paused_resource", "human_required", "abandoned"},
     "validating": {"rejected", "approved", "paused_resource", "human_required", "failed", "abandoned"},
     "approved": {"executing", "paused_resource", "human_required", "failed", "abandoned"},
-    "executing": {"verifying", "repairing", "paused_resource", "human_required", "failed", "abandoned"},
+    "executing": {"proposing", "verifying", "repairing", "paused_resource", "human_required", "failed", "abandoned"},
+    "proposing": {"validating_proposal", "paused_resource", "human_required", "failed", "abandoned"},
+    "validating_proposal": {"assessing_proposal", "paused_resource", "human_required", "failed", "abandoned"},
+    "assessing_proposal": {"proposal_approved", "paused_resource", "human_required", "failed", "abandoned"},
+    "proposal_approved": {"applying_proposal", "paused_resource", "human_required", "failed", "abandoned"},
+    "applying_proposal": {"executing", "verifying", "human_required", "failed", "abandoned"},
     "repairing": {"executing", "paused_resource", "human_required", "failed", "abandoned"},
     "verifying": {"verified", "repairing", "paused_resource", "human_required", "failed", "abandoned"},
-    "paused_resource": {"drafting", "validating", "approved", "executing", "verifying", "repairing", "abandoned"},
+    "paused_resource": {"drafting", "validating", "approved", "executing", "proposing", "validating_proposal", "assessing_proposal", "proposal_approved", "verifying", "repairing", "abandoned"},
     "human_required": set(),
 }
 
 
-def transition(manifest: RunManifest, target: str, evidence_ids: list[str], resumed_state: str | None = None) -> RunManifest:
-    if target not in TRANSITIONS.get(manifest.state, set()):
+def transition(manifest: RunManifest, target: str, evidence_ids: list[str], resumed_state: str | None = None):
+    current_pause_escalation = (
+        manifest.schema_version == "3.0"
+        and manifest.state == "paused_resource"
+        and target == "human_required"
+    )
+    if target not in TRANSITIONS.get(manifest.state, set()) and not current_pause_escalation:
         raise StateError(f"illegal lifecycle transition: {manifest.state} -> {target}")
     if not evidence_ids:
         raise StateError("lifecycle transition requires evidence")
     prior = manifest.state
     payload = manifest.model_dump()
     payload["state"] = target
-    if target == "human_required":
+    if target == "human_required" and manifest.schema_version == "1.0":
         payload["suspended_from"] = manifest.suspended_from or prior
+    elif target == "human_required":
+        payload["suspended_from"] = None
     elif target in RESUMABLE:
         payload["suspended_from"] = manifest.suspended_from or prior
     elif prior in RESUMABLE:
@@ -369,7 +527,7 @@ def transition(manifest: RunManifest, target: str, evidence_ids: list[str], resu
         payload["suspended_from"] = None
     else:
         payload["suspended_from"] = None
-    return RunManifest.model_validate(payload)
+    return type(manifest).model_validate(payload)
 
 
 def escalate_resume_drift(manifest: RunManifest, evidence_ids: list[str]) -> RunManifest:
@@ -380,7 +538,8 @@ def escalate_resume_drift(manifest: RunManifest, evidence_ids: list[str]) -> Run
         raise StateError("resume-drift escalation requires evidence")
     payload = manifest.model_dump()
     payload["state"] = "human_required"
-    return RunManifest.model_validate(payload)
+    payload["suspended_from"] = None if manifest.schema_version == "3.0" else manifest.suspended_from
+    return type(manifest).model_validate(payload)
 
 
 def validate_resume_identity(manifest: RunManifest, *, plan_hash, assessment_hash, policy_hash, snapshot_hash, event_head_hash: str | None) -> None:

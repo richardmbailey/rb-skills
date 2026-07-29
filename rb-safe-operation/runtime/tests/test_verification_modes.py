@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from rb_safe_operation.policy import default_global_policy
-from rb_safe_operation.workflow import assess_plan
+from rb_safe_operation.workflow import _assess_plan_legacy_compatible as assess_plan
 
 from helpers import capabilities, current_snapshot, safe_plan, semantic
 

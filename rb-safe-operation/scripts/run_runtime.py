@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 
 
-RUNTIME_VERSION = "0.1.0"
-SCHEMA_VERSION = "1.0"
+RUNTIME_VERSION = "0.3.0"
+SCHEMA_VERSION = "3.0"
 CLI_MODULE = "rb_safe_operation.cli"
 
 
@@ -200,13 +200,17 @@ def main() -> int:
         print("runtime_source_hash_mismatch: installed package bytes differ from the reviewed source package tree", file=sys.stderr)
         return 2
     preflight = subprocess.run(
-        [str(interpreter), "-I", "-B", "-c", "import json,sys; import pydantic; print(json.dumps({'python':list(sys.version_info[:3]),'pydantic':pydantic.__version__}))"],
+        [str(interpreter), "-I", "-B", "-c", "import json,sys; from importlib.metadata import version; import pydantic; from pydantic_ai.models.openai import OpenAIResponsesModel; from pydantic_ai.providers.openai import OpenAIProvider; print(json.dumps({'python':list(sys.version_info[:3]),'pydantic':pydantic.__version__,'pydantic_ai':version('pydantic-ai-slim'),'openai':version('openai'),'tiktoken':version('tiktoken')}))"],
         check=False,
         capture_output=True,
         text=True,
     )
     if preflight.returncode != 0:
-        print("missing_pydantic: manifest interpreter cannot import Pydantic; run setup_runtime.py explicitly", file=sys.stderr)
+        print(
+            "missing_runtime_dependency: manifest interpreter cannot import the locked "
+            "Pydantic, PydanticAI, and selected provider dependencies; run setup_runtime.py explicitly",
+            file=sys.stderr,
+        )
         return 2
     try:
         versions = json.loads(preflight.stdout)
@@ -221,6 +225,24 @@ def main() -> int:
     pydantic_major, pydantic_minor = pydantic_parts
     if (pydantic_major, pydantic_minor) < (2, 12) or pydantic_major >= 3:
         print(f"unsupported_pydantic_version: expected >=2.12,<3, observed {versions['pydantic']}", file=sys.stderr)
+        return 2
+    if versions.get("pydantic_ai") != "2.19.0":
+        print(
+            f"unsupported_pydantic_ai_version: expected 2.19.0, observed {versions.get('pydantic_ai')}",
+            file=sys.stderr,
+        )
+        return 2
+    if versions.get("openai") != "2.45.0":
+        print(
+            f"unsupported_openai_provider_version: expected 2.45.0, observed {versions.get('openai')}",
+            file=sys.stderr,
+        )
+        return 2
+    if versions.get("tiktoken") != "0.12.0":
+        print(
+            f"unsupported_openai_provider_version: expected tiktoken 0.12.0, observed {versions.get('tiktoken')}",
+            file=sys.stderr,
+        )
         return 2
     identity_result = subprocess.run(
         [str(interpreter), "-I", "-B", "-m", CLI_MODULE, "runtime-info"],
