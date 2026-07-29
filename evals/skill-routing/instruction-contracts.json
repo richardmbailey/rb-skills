@@ -47,6 +47,8 @@
         "never select `constrained` implicitly",
         "static_file_state::<description>",
         "runtime deterministically rejects untyped requirements",
+        "manifest-pinned read-only `doctor` command",
+        "persist authority only after the human supplies the exact preview-bound confirmation statement",
         "accept phase completion only when `$rb-safe-operation` reaches `verified`",
         "Use automated behavioural tests by default",
         "canonical CI-equivalent command",
@@ -235,7 +237,12 @@
         "`static_file_state`",
         "`executable_test`",
         "`runtime_observation`",
-        "`external_observation`"
+        "`external_observation`",
+        "proposal-only `bounded_agent_task`",
+        "ProviderGrant",
+        "RunResourceGrant",
+        "Require a current manifest-pinned `doctor` result",
+        "never receives `apply_patch`"
       ],
       "forbidden": ["automatically select", "install dependencies", "exact read and check actions"],
       "max_occurrences": {"## Procedure": 1},
@@ -251,7 +258,11 @@
         "None relabels the rejected artifact",
         "untyped strings are invalid",
         "unsupported verification mode",
-        "static_file_state"
+        "static_file_state",
+        "approves only the proposal-generation envelope",
+        "fresh patch assessment",
+        "Re-run manifest-pinned `doctor`",
+        "accepts no caller-authored semantic proposal"
       ],
       "forbidden": ["confidence makes", "execute the plan"],
       "max_occurrences": {"## Fresh Semantic Assessment": 1},
@@ -260,7 +271,7 @@
     {
       "path": "rb-safe-operation/SKILL.md",
       "required": [
-        "Execute only an unchanged approved bundle",
+        "Execute only an unchanged approved schema-3 bundle",
         "Normal operation never installs",
         "attempt_limit: \"unbounded\"",
         "A repairable in-envelope finding",
@@ -269,10 +280,42 @@
         "cannot run unit tests",
         "Do not use source inspection",
         "typed `static_file_state::<description>`",
-        "Reject any criterion or check that is untyped"
+        "Reject any criterion or check that is untyped",
+        "## Execute Bounded Proposal Operations",
+        "AgentPatchProposal",
+        "PatchProposalPreflight",
+        "PatchAssessment",
+        "coordinator code",
+        "Before acquiring the lease, invoke manifest-pinned `doctor`",
+        "manifest-pinned `codex-run`",
+        "`codex-resume`",
+        "explicit `--enable-codex-cli`",
+        "Never repeat a provider call whose durable request has an incomplete or uncertain outcome"
       ],
       "forbidden": ["automatically installs", "skip independent verification"],
       "max_occurrences": {"## Separated Verification": 1, "## Executable Verification Limit": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-create-safe-operation-policy/SKILL.md",
+      "required": [
+        "<project-root>/.rb-safe-operation-policy.json",
+        "The policy can only narrow",
+        "Translate user-facing `write` to all three mutation capabilities",
+        "Never read a target's contents",
+        "Run `policy-preview`",
+        "Ask the human to confirm that exact preview",
+        "A relaxation or mixed change needs a separately explicit confirmation",
+        "compare-and-swap",
+        "indeterminate"
+      ],
+      "forbidden": [
+        "inherit policy from parent directories",
+        "relax restrictions without confirmation"
+      ],
+      "max_occurrences": {
+        "## Procedure": 1
+      },
       "max_lines": 500
     },
     {
@@ -282,7 +325,18 @@
         "executable_test",
         "runtime_observation",
         "external_observation",
-        "deterministic preflight"
+        "deterministic preflight",
+        "Codex CLI",
+        "ProviderGrant",
+        "RunResourceGrant",
+        "ApplyIntent",
+        "`codex-run` requires the fixed plan",
+        "`codex-resume` requires the same confirmed preparation",
+        "`acceptance-summary` reads one fixed canonical coordinator bundle",
+        "It never reads an API key",
+        "rejects every tool event",
+        "there is no `--semantic-proposal` input",
+        "there is no separate manually assembled `verification_response` protocol"
       ],
       "forbidden": [],
       "max_occurrences": {},

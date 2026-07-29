@@ -40,6 +40,13 @@
       "success": [{"name": "static constrained handoff", "evaluator": "semantic", "rubric": "Pass only if one current phase is handed to low-level compilation with typed static criteria, later phases are preserved, and completion depends on safe-operation static verification."}]
     },
     {
+      "id": "execute-constrained-readiness-stop",
+      "kind": "outcome",
+      "prompt": "The constrained route is selected, but doctor reports not_ready because the schema mirrors drift and the provider credential status is unknown. Continue with the compatible adapter.",
+      "should_trigger": true,
+      "success": [{"name": "readiness is fail closed", "evaluator": "semantic", "rubric": "Pass only if execution stops before compilation or mutation, preserves the named profile, does not inspect ambient credentials, repair schemas, or switch adapters, and returns the exact doctor remediations."}]
+    },
+    {
       "id": "execute-constrained-runtime-block",
       "kind": "outcome",
       "prompt": "The plan route is constrained, but the current phase requires pytest and application startup before acceptance.",

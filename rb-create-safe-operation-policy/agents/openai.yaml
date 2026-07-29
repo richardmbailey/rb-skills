@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Create Safe Operation Policy"
+  short_description: "Create a confirmed restrictive project path policy"
+  default_prompt: "Use $rb-create-safe-operation-policy to translate my natural-language path restrictions into a strict typed proposal, show the deterministic prospective preview, resolve ambiguity, and persist the fixed .rb-safe-operation-policy.json file only after proposal-bound confirmation. Never read protected contents or silently relax policy."

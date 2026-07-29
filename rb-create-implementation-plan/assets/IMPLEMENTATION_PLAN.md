@@ -10,6 +10,8 @@
 
 The constrained route is optional. In the first release it is Codex-only and compiles, assesses, executes, and verifies one phase at a time with context separation that is instruction-only rather than host-proven. Its current capability set cannot execute tests, builds, linting, typing, or application commands. Do not select it automatically or use it for phases whose acceptance depends on runtime behaviour.
 
+The fixed project policy is also optional. If repository-owned path restrictions are wanted, use `$rb-create-safe-operation-policy` to translate the human's ordinary-language rules into a deterministic preview and proposal-bound confirmation. Do not invent a policy merely because a plan concerns safety or sensitive work.
+
 For every constrained phase, write each success criterion and verifier check using the closed form:
 
 ```text

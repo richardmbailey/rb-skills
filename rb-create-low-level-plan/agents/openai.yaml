@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Create Low-Level Plan"
   short_description: "Compile one statically verifiable phase"
-  default_prompt: "Use $rb-create-low-level-plan to compile the next approved constrained phase into read_file, apply_patch, or bounded read/patch operations with closed mode::description verification requirements. Stop as unsupported if any criterion needs tests, builds, runtime behaviour, or external observation."
+  default_prompt: "Use $rb-create-low-level-plan to compile the next approved constrained phase into a schema-3 plan containing exact coordinator actions or proposal-only bounded patch operations. Bind the fixed project-policy identity plus explicit provider and run-resource grants, permit only narrowly mediated reads, and use closed mode::description verification requirements. Return an unsupported-operation stop if any criterion needs tests, builds, runtime behaviour, or external observation."

@@ -71,6 +71,9 @@
     <a href="#routes">Route choice</a>
     <a href="#modes">Verification modes</a>
     <a href="#flow">Process</a>
+    <a href="#proposal">Bounded patch</a>
+    <a href="#authority">Authority</a>
+    <a href="#recovery">Recovery</a>
     <a href="#safe">Meaning of safe</a>
     <a href="#verification">Verification</a>
     <a href="#limits">Assurance limits</a>
@@ -81,7 +84,7 @@
     <h2>1. Purpose</h2>
     <p>The constrained route reduces the chance that an agent silently widens an approved operation, acts against stale repository state, overlooks declared side effects, or loses the execution record. It binds one current phase to an exact plan, policy, repository snapshot, capability profile, evidence set, approvals, and audit trail.</p>
     <div class="callout warn">
-      <strong>Static-only first release.</strong> The current route can read files, apply approved patches, and use bounded semantic editing limited to read and patch. It cannot run tests, builds, linters, type checkers, applications, browsers, benchmarks, or network-dependent validation.
+      <strong>Static-only first release.</strong> The current route can read files, apply an already specified patch, or ask a bounded model to return an exact proposed text diff. The model does not apply the diff. It cannot run tests, builds, linters, type checkers, applications, browsers, benchmarks, shell commands, or network-dependent validation.
     </div>
   </section>
 
@@ -132,30 +135,126 @@ external_observation::the deployed endpoint reports healthy</pre>
     <div class="flow" role="list">
       <div class="step" role="listitem"><strong>1. Route selection.</strong> The user explicitly chooses <code>constrained</code>; the agent never infers it.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>2. Phase selection.</strong> <code>rb-execute-plan</code> selects one current phase and confirms all acceptance is static.</div>
+      <div class="step" role="listitem"><strong>2. Optional project policy.</strong> The user may use <code>rb-create-safe-operation-policy</code> to turn ordinary-language path restrictions into a typed preview and confirmed fixed-root policy. Canonical absence preserves baseline behaviour.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>3. Compilation.</strong> <code>rb-create-low-level-plan</code> binds exact operations, paths, effects, evidence, stop conditions, later-phase continuity, and typed verification requirements.</div>
+      <div class="step" role="listitem"><strong>3. Phase selection.</strong> <code>rb-execute-plan</code> selects one current phase and confirms all acceptance is static.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>4. Deterministic preflight.</strong> The runtime validates identities, policy, capabilities, evidence, effects, approvals, and every verification mode. Unsupported or untyped criteria produce immutable <code>safe: false</code>.</div>
+      <div class="step" role="listitem"><strong>4. Compilation.</strong> <code>rb-create-low-level-plan</code> binds schema-3 operations, paths, effects, evidence, stop conditions, later-phase continuity, fixed source and effective policy identities, provider and resource grants, and typed verification requirements. A bounded operation authorises a proposal, not a direct write.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>5. Semantic assessment.</strong> A fresh assessor checks hidden scope, ambiguity, prompt injection, detrimental effects, recovery realism, and dishonest classification of behavioural claims as static.</div>
+      <div class="step" role="listitem"><strong>5. Plan preflight.</strong> The runtime validates identities, policy, adapter capabilities, provider and resource grants, evidence, effects, approvals, and every verification mode. Unsupported or untyped criteria produce immutable <code>safe: false</code>.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>6. Execution.</strong> Only the unchanged <code>safe: true</code> bundle may run. Every identity and repository snapshot is revalidated before mutation.</div>
+      <div class="step" role="listitem"><strong>6. Plan assessment.</strong> The coordinator builds the complete typed request and a fresh no-tool assessor checks the operation envelope for hidden scope, ambiguity, prompt injection, detrimental effects, recovery realism, and dishonest classification of behavioural claims as static. The user does not copy hashes or construct a semantic response file.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>7. Static verification.</strong> The coordinator captures product state and a context-separated verifier reports against the exact typed criteria. Repairs remain inside the approved read/patch envelope.</div>
+      <div class="step" role="listitem"><strong>7. Proposal and exact-patch assessment.</strong> For bounded work, a model returns a strict diff. The coordinator materialises it without writing, checks it deterministically, and asks a different no-tool assessor to judge those exact proposed bytes.</div>
       <div class="arrow" aria-hidden="true">↓</div>
-      <div class="step" role="listitem"><strong>8. Handoff.</strong> The run records hashes, lifecycle state, event head, evidence, limitations, remaining phases, and the exact next action. It stops before compiling another phase.</div>
+      <div class="step" role="listitem"><strong>8. Coordinator commit.</strong> Only an unchanged accepted proposal may run. The coordinator records an apply intent and approval receipts, rechecks the fixed policy before implicit parent creation and every read or mutation, then applies the prepared bytes and records each target. The model never crosses this write boundary.</div>
+      <div class="arrow" aria-hidden="true">↓</div>
+      <div class="step" role="listitem"><strong>9. Static verification and handoff.</strong> The coordinator captures policy-permitted file contents and builds a complete typed verifier packet. Denied state is recorded as unobserved, not unchanged. A context-separated no-tool verifier reports semantic coverage, evidence, effects, and findings against the exact packet. The trusted transport attaches the immutable request and post-execution identities from that packet, so the model is not asked to copy hashes. The coordinator validates the complete response, records state and limitations, and stops before compiling another phase.</div>
     </div>
   </section>
 
+  <section id="project-policy">
+    <h2>5. Optional fixed project policy</h2>
+    <p>The fixed file <code>&lt;project-root&gt;/.rb-safe-operation-policy.json</code> lets a user add repository-owned restrictions without writing JSON. It is optional and can only narrow the installed global policy. The runtime never searches a parent directory or accepts a different action-bearing path.</p>
+    <pre aria-label="Natural-language policy authoring flow">User states a restriction in ordinary language
+                 ↓
+No-tool translator returns a typed proposal
+                 ↓
+Python computes the complete effective-authority difference
+                 ↓
+Human confirms that exact preview
+                 ↓
+Coordinator reacquires the shared lease and rechecks source identity
+                 ↓
+Python atomically writes only the fixed policy and durable records
+                 ↓
+All later constrained artifacts bind the new policy identity</pre>
+    <p>An exact or subtree rule can independently deny <code>read</code>, <code>create</code>, <code>modify</code>, or <code>delete</code>. “Write” expands to all three mutation capabilities. A denied read is pruned before content hashing, instruction loading, role transmission, or descendant enumeration. The preview also explains that restrictions are prospective: they cannot erase information already present in a conversation, provider log, Git history, backup, copy, cache, or process memory.</p>
+    <p><code>policy-preview</code> computes the complete restriction change. Relaxing a restriction requires a separate explicit confirmation. The apply step recomputes the preview rather than trusting the supplied classification, uses compare-and-swap against the exact old source hash, and records an indeterminate outcome if replacement occurred but durable completion could not be proved.</p>
+  </section>
+
+  <section id="proposal">
+    <h2>6. How a bounded model change is actually applied</h2>
+    <p>The model communicates its intended code or text change as a standard unified diff inside a strict typed <code>AgentPatchProposal</code>. It does not write a script for later execution and does not receive a filesystem write tool. The runtime treats the diff as untrusted data.</p>
+    <pre aria-label="Proposal-first bounded patch flow">Coordinator builds exact source context
+                 ↓
+Proposer model returns a strict unified diff
+                 ↓
+Python parses the diff and materialises candidate files in memory
+                 ↓
+Deterministic checks derive paths, actions, hashes, metadata and effects
+                 ↓
+Fresh no-tool assessor judges the exact preimages and postimages
+                 ↓
+Coordinator records an apply intent and consumes exact approvals
+                 ↓
+Python writes the already assessed bytes and records each committed target
+                 ↓
+Fresh verifier checks the committed static file state</pre>
+    <div class="grid">
+      <article class="card">
+        <h3>What the proposer decides</h3>
+        <p>The proposer can choose the exact wording or code within the approved goal, file roots, patch actions, effects, and permitted adaptations. It returns the complete diff, claimed file inventory, claimed effect IDs, and bounded evidence.</p>
+      </article>
+      <article class="card">
+        <h3>What Python decides</h3>
+        <p>The coordinator independently derives which files would be created, modified, or deleted. It computes exact preimages and candidate postimages, checks metadata and paths, applies policy and approvals, controls state transitions, and performs the write.</p>
+      </article>
+      <article class="card">
+        <h3>What the patch assessor decides</h3>
+        <p>A different fresh context judges whether the exact proposed content fits the plan and whether it introduces hidden, detrimental, security, privacy, audit, or verification effects. It receives no product tools.</p>
+      </article>
+    </div>
+    <p>The coordinator supplies complete material source content rather than presenting hashes as if they were semantic evidence. If the required content cannot fit the approved data or resource limits, the run stops before mutation.</p>
+  </section>
+
+  <section id="authority">
+    <h2>7. Provider, tool, and resource authority</h2>
+    <p>A schema-3 bounded plan names the fixed project-policy identity, an explicit provider grant, and a finite run-resource grant. The provider grant fixes the adapter, endpoint, model and revision, credential audience, permitted source-data class, retention and training disclosures, response types, expiry, and provider ceilings. The resource grant separately limits proposer calls, assessor calls, model requests, mediated reads, bytes, patch size, tokens, elapsed time, and cost.</p>
+    <table>
+      <thead><tr><th>Role or component</th><th>What it receives</th><th>What it cannot authorise</th></tr></thead>
+      <tbody>
+        <tr><td>Plan assessor</td><td>The exact plan, deterministic preflight, policy, capabilities, approvals, provider authority, resource authority, and coordinator-created bindings.</td><td>No product tools, copied caller hashes, mutation, or transition authority.</td></tr>
+        <tr><td>Codex CLI proposer</td><td>A strict request, exact supplied source bundle, role-specific output schema, fresh temporary working state, read-only sandbox, and disabled unnecessary Codex capabilities.</td><td>No project write interface, interactive read tool, shell, MCP, delegation, browser, workflow-state, or success-report authority. Any observed tool event fails closed.</td></tr>
+        <tr><td>Codex CLI verifier</td><td>The complete post-execution static packet and a schema limited to semantic coverage, evidence, effects, and findings.</td><td>No project tools or authority to choose request identities. The trusted transport derives those identities from the validated packet.</td></tr>
+        <tr><td>Compatibility proposer</td><td>The same typed request through a separately selected PydanticAI or caller-mediated JSON-line host.</td><td>No implicit fallback from the reviewed Codex profile and no authority beyond its explicit adapter contract.</td></tr>
+        <tr><td>Patch assessor</td><td>Exact proposal, preimages, candidate postimages, effects, instructions, policy facts, and preflight.</td><td>No product tools and no mutation or transition authority.</td></tr>
+        <tr><td>Verifier</td><td>Coordinator-captured file contents and hashes, instructions, criteria, effects, committed proposals, assessments, and execution reports.</td><td>No product tools, repairs, mutation, or final lifecycle authority.</td></tr>
+        <tr><td>Policy translator</td><td>The bounded user request, current typed policy facts, sanitised named paths, and strict proposal schema.</td><td>No protected contents, persistence tool, product tools, or authority to classify its own preview.</td></tr>
+        <tr><td>Coordinator</td><td>Validated plan, policies, grants, approvals, snapshots, proposals, assessments, and durable state.</td><td>Cannot widen the assessed envelope or turn static verification into behavioural proof.</td></tr>
+      </tbody>
+    </table>
+    <p>The reviewed profile uses the Codex CLI already authenticated through the local Codex application. It does not read an OpenAI API key. Before every role call, the runtime checks the exact executable, CLI revision, model, and ChatGPT login. The call runs ephemerally in a fresh temporary directory with isolated SQLite and log state, a read-only sandbox, strict structured output, and a closed disabled-capability list. The coordinator accepts reasoning lifecycle events and exactly one final typed message; a tool event, unsupported event, malformed stream, missing usage, or inconsistent result fails closed. These controls narrow the available interface, but they do not prove operating-system isolation or expose complete internal service traces. The assurance label therefore remains <code>instruction_only_proposal_host</code>.</p>
+    <p>The authenticated Codex service receives the deliberately selected source packet and the absolute path names used for policy and file-identity binding. Both must fit the confirmed data classification and account policy. The temporary role directory prevents ambient project discovery; it does not keep the supplied request data on the local machine.</p>
+    <div class="callout">
+      <code>codex-run</code> is the reviewed live path. It remains disabled unless the operator supplies an unchanged confirmed preparation and the explicit <code>--enable-codex-cli</code> switch. In one Python process it performs plan assessment, optional diff proposal, optional patch assessment, coordinator-owned application, and static verification. <code>codex-resume</code> continues the same journalled run after reloading complete call usage. The older <code>framework-run</code> and <code>framework-resume</code> commands are separately selected PydanticAI/OpenAI compatibility paths; they are never an implicit fallback.
+    </div>
+    <p>After a trial, <code>acceptance-summary</code> produces a small typed measurement record containing only role order, assurance profiles, provider and grant identities, calls, tools, tokens, bytes, elapsed time, cost, terminal state, and static-only limits. It deliberately excludes prompts, diffs, source contents, model responses, reasoning, and credential values.</p>
+  </section>
+
+  <section id="recovery">
+    <h2>8. Approval timing, crashes, repair, and recovery</h2>
+    <p>One-use mutation approval is not spent when the model is merely asked for a proposal. The coordinator first persists an apply intent that binds the exact accepted patch, assessment, approvals, ordered targets, and every preimage and postimage hash. It then creates matching approval-consumption records immediately before mutation.</p>
+    <p>Multi-file changes are committed in order and are not described as globally atomic. Nested file creation may create only missing parent components below the approved working directory. Each component is checked against symlinks and conflicting files, created with fixed mode <code>0755</code>, and fsynced. Removable undeclared extended attributes are stripped. Because macOS automatically adds <code>com.apple.provenance</code> and may refuse to remove it, the coordinator accepts that one attribute only when its value exactly matches the parent; it does not call the resulting metadata empty. Empty components are removed if preparation fails before a file is committed. After each target reaches its postimage, the coordinator checkpoints the committed prefix. On reload it accepts only four understandable situations:</p>
+    <ul>
+      <li>all targets are still at their exact preimages, so commit may start;</li>
+      <li>a recorded prefix is at its exact postimages and the rest are exact preimages, so the same accepted patch may continue forward;</li>
+      <li>all targets are at their exact postimages, so the operation is recognised rather than repeated;</li>
+      <li>anything else is unknown state and enters non-resumable <code>human_required</code>.</li>
+    </ul>
+    <p>A correctness repair creates a new immutable repair attempt and a new proposal cycle bound to the verification finding. Eligible repair attempts can remain logically unbounded, while the active aggregate resource grant stays finite. Exhaustion pauses before mutation. A new grant must explicitly replenish the previous one and does not erase earlier usage or permit broader work.</p>
+    <p>Every semantic role request is written as a create-only typed record before the provider call. A validated response and its usage record are also written create-only before the lifecycle checkpoint advances. A recovered complete call is added back into the host's aggregate call, token, byte, time, and cost totals before another role can run. Restarting a process therefore does not reset the budget. If the process stops while a call may have happened but no complete response is durable, recovery does not call the provider again. It enters <code>human_required</code>. If the owned host proves it rejected the request before dispatch because the finite grant was exhausted, the run may use <code>paused_resource</code> and an exact replenishment grant instead. This distinction prevents hidden duplicate calls without turning every pre-dispatch budget limit into a terminal failure.</p>
+    <p>A patch-safety failure is different from an ordinary correctness repair. It enters <code>human_required</code> with the rejected proposal and typed findings. A person can revise and reassess, leave the constrained route, or abandon the run, but cannot relabel that same unsafe proposal as safe.</p>
+  </section>
+
   <section id="safe">
-    <h2>5. What <code>safe: true</code> means</h2>
-    <p><code>safe: true</code> means that one exact low-level plan passed deterministic identity, policy, capability, approval, evidence, effect, and verification-mode checks, plus a fresh semantic assessment.</p>
-    <p>It authorises an attempt to execute that unchanged plan. It is not a general claim that the agent, computer, task, code, or resulting system is safe. Any relevant drift invalidates the handoff.</p>
+    <h2>9. What <code>safe: true</code> means</h2>
+    <p>There are two deliberately separate safety verdicts. Plan <code>safe: true</code> means that one exact low-level plan envelope passed deterministic identity, policy, capability, provider, resource, approval, evidence, effect, and verification-mode checks, plus a fresh semantic assessment. Patch <code>safe: true</code> means one exact diff passed its deterministic proposal preflight and fresh semantic patch assessment.</p>
+    <p>The plan verdict authorises an attempt to obtain a proposal. The patch verdict permits only the coordinator to attempt the exact accepted bytes. Neither is a general claim that the agent, computer, task, code, or resulting system is safe. Relevant drift invalidates the handoff.</p>
   </section>
 
   <section id="verification">
-    <h2>6. What <code>verified</code> means</h2>
+    <h2>10. What <code>verified</code> means</h2>
     <p>In this first release, <code>verified</code> means the declared <code>static_file_state</code> requirements are covered by coordinator-observed repository state and context-separated verifier evidence, with no blocking or undeclared material effect.</p>
     <div class="callout bad">
       Static verification must never be described as proof that code compiles, tests pass, the application works, performance is acceptable, or integrations behave correctly. Those claims require the standard route.
@@ -163,20 +262,21 @@ external_observation::the deployed endpoint reports healthy</pre>
   </section>
 
   <section id="limits">
-    <h2>7. Assurance limits</h2>
+    <h2>11. Assurance limits</h2>
     <ul>
       <li>The workflow is semi-formal, not an operating-system sandbox.</li>
-      <li>Assessor and verifier read-only behaviour is instruction-only on the current host.</li>
-      <li>Fresh-context separation is requested and recorded but is not host-proven independence.</li>
+      <li>The Codex roles receive complete bounded packets and no project write interface. Unnecessary Codex capabilities are disabled and observed tool events fail closed, but these process controls do not control unrelated processes or prove operating-system isolation.</li>
+      <li>The Codex and caller-mediated JSON-line boundaries retain instruction-level assurance. Surrounding state checks detect lasting unauthorised mutation after a call; they cannot prove no transient external action occurred.</li>
+      <li>Fresh-context assurance is recorded from the selected adapter and host rather than assumed.</li>
       <li>Complete child-agent traces are unavailable.</li>
-      <li>Repository-state comparison can detect lasting changes but cannot prove that no transient external action occurred.</li>
       <li>The manual approval channel records exact declared consent but does not authenticate a human principal.</li>
       <li>Hashes bind reviewed artifacts and state; they do not create authorization or tamper-proof storage by themselves.</li>
+      <li>Semantic plan, patch, and verification roles can still miss harmful meaning. Deterministic boundaries reduce the available scope but do not make model judgement infallible.</li>
     </ul>
   </section>
 
   <section id="examples">
-    <h2>8. Worked route examples</h2>
+    <h2>12. Worked route examples</h2>
     <table>
       <thead><tr><th>Task</th><th>Route</th><th>Why</th></tr></thead>
       <tbody>

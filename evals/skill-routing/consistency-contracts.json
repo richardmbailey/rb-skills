@@ -11,7 +11,14 @@
         "runtime-dependent phases must use the standard route",
         "Material requirements unresolved",
         "Python 3.10 or newer",
-        "complete behavioural-eval manifest structure"
+        "complete behavioural-eval manifest structure",
+        "model returns exact diff",
+        "coordinator applies bytes",
+        "runtime owns four separate typed semantic roles",
+        "An incomplete or uncertain provider call is not replayed",
+        "rb-create-safe-operation-policy",
+        ".rb-safe-operation-policy.json",
+        "schema-3"
       ],
       "forbidden": [
         "implement changes with focused tests and checks",
@@ -25,7 +32,13 @@
         "Static-only first release",
         "static_file_state",
         "Runtime-dependent acceptance criteria are rejected.",
-        "standard route"
+        "standard route",
+        "Proposer model returns a strict unified diff",
+        "Python writes the already assessed bytes",
+        "Every semantic role request is written as a create-only typed record",
+        "Optional fixed project policy",
+        "policy-preview",
+        "Denied state is recorded as unobserved"
       ],
       "forbidden": [
         "preserve the model’s ability to solve a bounded coding problem",
@@ -59,32 +72,46 @@
     {
       "path": "rb-safe-operation/runtime/requirements.lock",
       "required": [
+        "pydantic-ai-slim[openai]==2.19.0",
+        "5663f4e2fa0b0a63eab355ccf297bae8682bfcbb0efd7c1dd6e334860d794687",
+        "pydantic==2.13.4",
         "962ccbab7b642487b1d8b7df90ef677e03134cf1fd8880bf698649b22a69371f",
-        "926c9541b14b12b1681dca8a0b75feb510b06c6341b70a8e500c2fdcff837cce"
+        "openai==2.45.0",
+        "tiktoken==0.12.0"
       ],
       "forbidden": []
     },
     {
       "path": "rb-safe-operation/scripts/setup_runtime.py",
-      "required": ["(3, 10, 0)", "expected >=3.10"],
+      "required": ["(3, 10, 0)", "expected >=3.10", "PYDANTIC_AI_VERSION = \"2.19.0\"", "OPENAI_VERSION = \"2.45.0\"", "TIKTOKEN_VERSION = \"0.12.0\""],
       "forbidden": ["(3, 9, 0)", "expected >=3.9"]
     },
     {
       "path": "rb-safe-operation/scripts/run_runtime.py",
-      "required": ["(3, 10, 0)", "expected >=3.10"],
+      "required": ["(3, 10, 0)", "expected >=3.10", "unsupported_pydantic_ai_version", "unsupported_openai_provider_version", "OpenAIResponsesModel"],
       "forbidden": ["(3, 9, 0)", "expected >=3.9"]
     },
     {
       "path": "rb-safe-operation/references/runtime-contract.md",
       "required": [
-        "Supported Python: 3.10 or newer",
-        "Linux x86-64",
+        "Python: 3.10 or newer",
+        "pydantic-ai-slim[openai]==2.19.0",
+        "openai==2.45.0",
+        "codex-run",
+        "Codex CLI",
+        "It never reads an API key",
         "static_file_state::<description>",
         "deterministic preflight",
         "executable_test",
         "runtime_observation",
         "external_observation",
-        "ignoring only that provenance field"
+        "ignores only that provenance value",
+        "AgentPatchProposal",
+        "ApplyIntent",
+        "there is no `--semantic-proposal` input",
+        "there is no separate manually assembled `verification_response` protocol",
+        "Fixed Project Policy",
+        "policy-apply"
       ],
       "forbidden": ["Supported Python: 3.9 or newer"]
     },
@@ -104,7 +131,9 @@
       "required": [
         "untyped strings are invalid",
         "unsupported verification mode",
-        "deterministic preflight"
+        "deterministic preflight",
+        "proposal-generation envelope",
+        "accepts no caller-authored semantic proposal"
       ],
       "forbidden": []
     },
@@ -113,9 +142,26 @@
       "required": [
         "typed `static_file_state::<description>`",
         "Reject any criterion or check that is untyped",
-        "static-only"
+        "static-only",
+        "AgentPatchProposal",
+        "PatchAssessment",
+        "ApplyIntent",
+        "Never repeat a provider call whose durable request has an incomplete or uncertain outcome"
       ],
       "forbidden": []
+    },
+    {
+      "path": "rb-create-safe-operation-policy/SKILL.md",
+      "required": [
+        ".rb-safe-operation-policy.json",
+        "can only narrow",
+        "write",
+        "policy-preview",
+        "confirmation",
+        "compare-and-swap",
+        "prospective"
+      ],
+      "forbidden": ["operating-system sandbox"]
     },
     {
       "path": "rb-continue-project/SKILL.md",
@@ -178,6 +224,30 @@
         "test_missing_or_malformed_schema_is_drift"
       ],
       "forbidden": []
+    },
+    {
+      "path": "rb-safe-operation/runtime/src/rb_safe_operation/readiness.py",
+      "required": [
+        "ready_exact_static",
+        "ready_codex_cli",
+        "ready_framework_proposal",
+        "ready_instruction_only_compatibility",
+        "not_ready",
+        "CONFIRM RUN AUTHORITY",
+        "execution_lease_present",
+        "unsupported_verification_mode"
+      ],
+      "forbidden": ["os.environ", "getenv(", "pip install"]
+    },
+    {
+      "path": "rb-safe-operation/runtime/tests/test_readiness.py",
+      "required": [
+        "test_doctor_is_read_only_and_exact_static_can_be_ready",
+        "test_framework_profile_requires_explicit_grants_and_credential_status",
+        "test_confirmation_is_bound_to_preview_and_persists_create_only",
+        "test_lease_appearing_after_preview_blocks_persistence"
+      ],
+      "forbidden": []
     }
   ],
   "skill_metadata_contracts": [
@@ -190,9 +260,10 @@
     {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
     {"skill": "rb-review-pr-or-diff", "required": ["wrongly levelled", "flaky", "CI"]},
     {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
-    {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported"]},
-    {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only"]},
-    {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "stop"]},
+    {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported", "proposal"]},
+    {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only", "patch"]},
+    {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "stop", "proposal"]},
+    {"skill": "rb-create-safe-operation-policy", "required": ["fixed", "natural-language", "path policy"]},
     {"skill": "rb-end-session", "required": ["test levels", "CI", "residual"]},
     {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
   ],
@@ -204,9 +275,16 @@
         "constrained-compile-check-unsupported",
         "constrained-assess-untyped-criterion",
         "constrained-assess-executable-criterion",
-        "constrained-execute-approved-static-bundle"
+        "constrained-readiness-doctor",
+        "constrained-prepare-run-authority",
+        "constrained-execute-approved-static-bundle",
+        "constrained-assess-owned-handoff",
+        "constrained-recover-uncertain-role-call",
+        "constrained-execute-reject-harmful-proposal",
+        "constrained-policy-author-natural-language",
+        "constrained-policy-explain-read-only"
       ],
-      "required_substrings": ["static_file_state", "executable_test"],
+      "required_substrings": ["static_file_state", "executable_test", "strict diff", "patch assessment", "read-only doctor", "exact confirmation statement", "do not read or write x.txt", ".rb-safe-operation-policy.json"],
       "forbidden_substrings": ["exact read and check actions"]
     }
   ],
@@ -216,14 +294,16 @@
     {"path": "rb-execute-plan/evals/eval-plan.json", "skill": "rb-execute-plan", "minimum_cases": 7},
     {"path": "rb-create-low-level-plan/evals/eval-plan.json", "skill": "rb-create-low-level-plan", "minimum_cases": 10},
     {"path": "rb-assess-plan-safety/evals/eval-plan.json", "skill": "rb-assess-plan-safety", "minimum_cases": 12},
-    {"path": "rb-safe-operation/evals/eval-plan.json", "skill": "rb-safe-operation", "minimum_cases": 11}
+    {"path": "rb-safe-operation/evals/eval-plan.json", "skill": "rb-safe-operation", "minimum_cases": 11},
+    {"path": "rb-create-safe-operation-policy/evals/eval-plan.json", "skill": "rb-create-safe-operation-policy", "minimum_cases": 9}
   ],
   "directory_mirror_contracts": [
     {
       "canonical": "rb-safe-operation/references/generated",
       "mirrors": [
         "rb-assess-plan-safety/references/generated",
-        "rb-create-low-level-plan/references/generated"
+        "rb-create-low-level-plan/references/generated",
+        "rb-create-safe-operation-policy/references/generated"
       ]
     }
   ]
