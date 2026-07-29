@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'">
+  <title>Sandpile avalanche laboratory</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">A finite experiment in self-organised criticality</p>
+      <h1>Sandpile avalanche laboratory</h1>
+      <p class="intro">Add grains to an open platform, watch unstable slopes or sites relax, and inspect how often avalanches of different sizes occur.</p>
+    </div>
+    <div class="hero-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+  </header>
+
+  <main>
+    <section class="control-panel" aria-labelledby="controls-heading">
+      <div class="section-heading">
+        <div><p class="step-label">Experiment controls</p><h2 id="controls-heading">Shape the run</h2></div>
+        <p id="status" class="status" role="status" aria-live="polite">Connecting…</p>
+      </div>
+      <form id="controls">
+        <label>Simulation model<select id="model-type"><option value="slope" selected>Physical slope pile</option><option value="btw">Critical sandpile (BTW)</option></select></label>
+        <label>Angle of repose (degrees)<input id="repose-angle" type="number" min="10" max="60" step="1" value="40"></label>
+        <label>Grid size<input id="grid-size" type="number" min="3" max="128" value="32"></label>
+        <label>Random seed<input id="seed" type="number" value="7"></label>
+        <label>Grain source<select id="drop-mode"><option value="random">Uniform random across platform</option><option value="center">Central source with optional jitter</option></select></label>
+        <label>Central jitter radius (cells)<input id="central-noise" type="number" min="0" max="32" step="1" value="1" disabled></label>
+        <label>Grains per step<input id="batch-size" type="number" min="1" max="5000" value="40"></label>
+        <label>Step interval (ms)<input id="interval" type="number" min="40" max="5000" value="180"></label>
+        <label>Tail threshold x<sub>min</sub><input id="xmin" type="number" min="1" value="1"></label>
+      </form>
+      <p class="control-note">The physical model builds an unrestricted layered pile and moves material through eight neighbours whenever the distance-corrected slope exceeds the selected repose angle. Model and angle changes apply on Reset. Source and jitter changes apply to the next batch without clearing the pile. Radius zero sends every grain to the exact middle site. The classic BTW mode remains available for comparison and is necessarily limited to heights from zero to three.</p>
+      <div class="button-row">
+        <button id="start" type="button">Start trickle</button>
+        <button id="pause" type="button" class="secondary" disabled>Pause</button>
+        <button id="step" type="button" class="secondary">Add one step</button>
+        <button id="reset" type="button" class="ghost">Reset experiment</button>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Simulation and measurements">
+      <article class="card pile-card">
+        <div class="card-heading"><div><p class="step-label">Live platform</p><h2>Grain height</h2></div><span class="legend"><span id="height-units">Layers</span>&nbsp; 0 <i class="h0"></i><i class="h1"></i><i class="h2"></i><i class="h3"></i> <span id="height-max">0</span></span></div>
+        <canvas id="pile" width="720" height="720" aria-label="Grid showing the current number of grains at each site"></canvas>
+      </article>
+
+      <aside class="stats" aria-label="Current measurements">
+        <div class="stat"><span>Grains added</span><strong id="added">0</strong></div>
+        <div class="stat"><span>Mass retained</span><strong id="retained">0</strong></div>
+        <div class="stat"><span>Mass lost</span><strong id="lost">0</strong></div>
+        <div class="stat"><span>Positive avalanches</span><strong id="positive">0</strong></div>
+        <div class="stat"><span>Largest avalanche</span><strong id="largest">0</strong></div>
+        <div class="stat"><span>Maximum height (layers)</span><strong id="maximum-height">0</strong></div>
+        <div class="stat"><span>Steepest local slope</span><strong id="maximum-slope">0°</strong></div>
+        <div class="stat check"><span>Mass-balance residual</span><strong id="residual">0</strong></div>
+      </aside>
+    </section>
+
+    <section class="relief-section" aria-labelledby="relief-heading">
+      <article class="card relief-card">
+        <div class="card-heading">
+          <div><p class="step-label">Isometric relief</p><h2 id="relief-heading">Three-dimensional grain surface</h2></div>
+          <span class="axis-note">≈ 40° view</span>
+        </div>
+        <canvas id="pile-3d" width="1100" height="680" aria-label="Isometric three-dimensional view of grain height across the platform"></canvas>
+        <p class="relief-note">The relief uses the same live lattice as the square view. Physical-mode height uses the documented 0.1-cell layer thickness, so the rendered surface and its slope share the model's scale. BTW height remains vertically exaggerated because that model has only four stable height states. In central-source mode, the amber marker identifies the nominal centre and its dashed footprint shows the configured jitter radius.</p>
+      </article>
+    </section>
+
+    <section class="charts">
+      <article class="card">
+        <div class="card-heading"><div><p class="step-label">Observed counts</p><h2>Size-frequency distribution</h2></div><span class="axis-note">log–log</span></div>
+        <canvas id="frequency" width="760" height="440" aria-label="Log-log plot of avalanche size against frequency"></canvas>
+      </article>
+      <article class="card">
+        <div class="card-heading"><div><p class="step-label">Tail view</p><h2>Complementary cumulative distribution</h2></div><span class="axis-note">log–log</span></div>
+        <canvas id="ccdf" width="760" height="440" aria-label="Log-log plot of avalanche size against probability of an avalanche at least that large"></canvas>
+      </article>
+    </section>
+
+    <section class="fit-panel" aria-labelledby="fit-heading">
+      <div><p class="step-label">Descriptive tail estimate</p><h2 id="fit-heading">Does it resemble a power law?</h2><p id="fit-message">More positive avalanches are needed before estimating the tail.</p></div>
+      <dl><div><dt>Estimated exponent α</dt><dd id="alpha">—</dd></div><div><dt>Tail observations</dt><dd id="tail-n">0</dd></div><div><dt>KS distance</dt><dd id="ks">—</dd></div></dl>
+      <p class="caveat">This finite simulation offers a visual and descriptive diagnostic. A straight-looking log–log plot, an estimated exponent, or a small KS distance does not by itself prove that the data follow a power law. The physical and BTW modes define avalanche size differently, so their observations must not be pooled. Formal distribution comparison and uncertainty analysis would be needed for a defensible statistical claim.</p>
+    </section>
+  </main>
+
+  <footer>Open-boundary physical slope and Bak–Tang–Wiesenfeld models · every grain is tracked from entry to retention or loss</footer>
+</body>
+</html>
