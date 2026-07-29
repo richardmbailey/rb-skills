@@ -226,12 +226,14 @@ class PackagingDiagnosticTests(unittest.TestCase):
         self.assertNotIn("typing-extensions==4.15.0", workflow)
 
     def test_normative_invariant_headings_equal_closed_runtime_registry(self):
-        reference_root = self.skill_root.parent / "plans" / "2026-07-18-constrained-plan-execution" / "references"
-        observed: set[str] = set()
-        for name in (
-            "assurance-and-threat-model.md", "operation-and-policy-contract.md", "execution-audit-state-model.md",
-        ):
-            observed.update(re.findall(r"^### `([A-Z]-[0-9]{3})`", (reference_root / name).read_text(encoding="utf-8"), re.MULTILINE))
+        registry = self.skill_root / "references" / "normative-invariant-registry.md"
+        observed = set(
+            re.findall(
+                r"^### `([A-Z]-[0-9]{3})`",
+                registry.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            )
+        )
         self.assertEqual(observed, INVARIANT_IDS)
 
     def test_launcher_requires_isolated_no_site_no_bytecode_bootstrap(self):

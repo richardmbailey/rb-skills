@@ -5,6 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from rb_safe_operation.patches import capture_file_metadata
+
 
 DRIVER_PATH = Path(__file__).resolve().parents[2] / "scripts" / "run_codex_acceptance.py"
 SPEC = importlib.util.spec_from_file_location("run_codex_acceptance", DRIVER_PATH)
@@ -25,7 +27,16 @@ class CodexAcceptanceDriverTests(unittest.TestCase):
                 run_id = f"codex-accept-test-{scenario}"
                 now, preview, _ = DRIVER._authority(root, run_id, calls)
                 plan, observed_expected = DRIVER._build_plan(
-                    root, run_id, scenario, preview, now
+                    root,
+                    run_id,
+                    scenario,
+                    preview,
+                    now,
+                    metadata_loader=lambda path: capture_file_metadata(
+                        path,
+                        acl_reader=lambda _: b"",
+                        xattr_reader=lambda _: {},
+                    ),
                 )
                 self.assertEqual(observed_expected, expected)
                 self.assertEqual(plan.run_id, run_id)

@@ -18,7 +18,7 @@ import time
 
 from rb_safe_operation.acceptance import summarize_acceptance_run
 from rb_safe_operation.canonical import artifact_hash, canonical_bytes
-from rb_safe_operation.cli import _current_assessment_snapshot, cmd_codex_run
+from rb_safe_operation.cli import cmd_codex_run
 from rb_safe_operation.models import HashRef
 from rb_safe_operation.patches import capture_file_metadata, metadata_fingerprint_hash
 from rb_safe_operation.planning import select_markdown_phase
@@ -207,7 +207,15 @@ def _doctor_request(root: Path, run_id: str, observed_at: datetime, paths: dict[
     )
 
 
-def _build_plan(root: Path, run_id: str, scenario: str, preview, now: datetime) -> tuple[LowLevelPlanV2, dict[str, str]]:
+def _build_plan(
+    root: Path,
+    run_id: str,
+    scenario: str,
+    preview,
+    now: datetime,
+    *,
+    metadata_loader=capture_file_metadata,
+) -> tuple[LowLevelPlanV2, dict[str, str]]:
     plan_file = root / "PLAN.md"
     expected: dict[str, str]
     if scenario == "exact-create":
@@ -241,10 +249,11 @@ def _build_plan(root: Path, run_id: str, scenario: str, preview, now: datetime) 
         [],
         target_paths,
         [str(root / ".rb-safe-operation")],
+        metadata_loader=metadata_loader,
     )
     snapshot = RepositorySnapshotV2.model_validate(snapshot_base.model_dump(mode="json") | {
         "selected_file_metadata_hashes": {
-            path: metadata_fingerprint_hash(capture_file_metadata(Path(path)))
+            path: metadata_fingerprint_hash(metadata_loader(Path(path)))
             for path in snapshot_base.selected_file_hashes
         },
         "proposal_context_observation_hashes": {},
@@ -326,11 +335,27 @@ def _build_plan(root: Path, run_id: str, scenario: str, preview, now: datetime) 
         "run_resource_grant_hash": _ref("run-resource-grant", "1.0", preview.run_resource_grant.model_dump(mode="json")).model_dump(mode="json"),
         "policy_binding": loaded_policy.binding.model_dump(mode="json"),
     })
+    current_snapshot_base = capture_policy_snapshot(
+        loaded_policy,
+        list(plan.snapshot.selected_file_hashes),
+        list(plan.snapshot.instruction_hashes),
+        plan.snapshot.expected_product_changes,
+        plan.snapshot.control_plane_roots,
+        metadata_loader=metadata_loader,
+    )
+    current_snapshot = RepositorySnapshotV2.model_validate(
+        current_snapshot_base.model_dump(mode="json")
+        | {
+            "proposal_context_observation_hashes": dict(
+                plan.snapshot.proposal_context_observation_hashes
+            )
+        }
+    )
     preflight = deterministic_preflight(
         plan,
         global_policy,
         loaded_policy.effective_policy,
-        _current_assessment_snapshot(plan),
+        current_snapshot,
         preview.host_capabilities,
         [],
         now=now,
