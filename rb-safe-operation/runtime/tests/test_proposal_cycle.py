@@ -203,6 +203,10 @@ class FakeProposalHost:
 
 
 class ProposalCycleTests(unittest.TestCase):
+    def _portable_policy_snapshot(self, *args, **kwargs):
+        kwargs["metadata_loader"] = self.metadata_loader
+        return capture_policy_snapshot(*args, **kwargs)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name).resolve()
@@ -216,7 +220,7 @@ class ProposalCycleTests(unittest.TestCase):
         self.metadata_loader = lambda path: capture_file_metadata(
             path, acl_reader=lambda _: b"", xattr_reader=lambda _: {}
         )
-        base_snapshot = capture_policy_snapshot(
+        base_snapshot = self._portable_policy_snapshot(
             self.loaded_policy, [str(self.target), str(self.plan_file)], [], [str(self.target)],
             [str(self.root / ".rb-safe-operation")],
         )
@@ -423,7 +427,7 @@ class ProposalCycleTests(unittest.TestCase):
                     "verifier", request, complete_verification_response(request)
                 )
 
-        framework_snapshot = capture_policy_snapshot(
+        framework_snapshot = self._portable_policy_snapshot(
             self.loaded_policy,
             list(self.plan.snapshot.selected_file_hashes),
             list(self.plan.snapshot.instruction_hashes),
@@ -457,6 +461,10 @@ class ProposalCycleTests(unittest.TestCase):
             "rb_safe_operation.cli.load_confirmed_run_preparation", return_value=preview
         ), patch(
             "rb_safe_operation.openai_adapter.build_openai_role_host", return_value=host
+        ), patch(
+            "rb_safe_operation.cli.capture_policy_snapshot", self._portable_policy_snapshot
+        ), patch(
+            "rb_safe_operation.cli.capture_file_metadata", self.metadata_loader
         ), patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
             cmd_framework_run(args)
 
@@ -909,9 +917,9 @@ class ProposalCycleTests(unittest.TestCase):
     def test_runtime_mediated_patch_target_requires_a_complete_file_read(self):
         discovered = self.root / "discovered.txt"
         discovered.write_text("old\n", encoding="utf-8")
-        base_snapshot = capture_policy_snapshot(
+        base_snapshot = self._portable_policy_snapshot(
             self.loaded_policy, [str(self.target), str(self.plan_file)], [], [str(discovered)],
-            [str(self.root / ".rb-safe-operation")], metadata_loader=self.metadata_loader,
+            [str(self.root / ".rb-safe-operation")],
         )
         snapshot = RepositorySnapshotV2.model_validate(base_snapshot.model_dump(mode="json") | {
             "selected_file_metadata_hashes": {
@@ -1601,7 +1609,7 @@ class ProposalCycleTests(unittest.TestCase):
                 "required_adapter": "json_line",
                 "required_assurance_profile": "instruction_only_proposal_host",
             })
-            cli_snapshot = capture_policy_snapshot(
+            cli_snapshot = self._portable_policy_snapshot(
                 self.loaded_policy,
                 list(self.plan.snapshot.selected_file_hashes),
                 list(self.plan.snapshot.instruction_hashes),
@@ -1627,7 +1635,7 @@ class ProposalCycleTests(unittest.TestCase):
             fixed_plan = self.root / ".rb-safe-operation" / "artifacts" / self.plan.run_id / "low-level-plan.json"
             output = SimpleNamespace(buffer=io.BytesIO())
             with patch("sys.stdout", output), patch(
-                "rb_safe_operation.cli.capture_file_metadata", self.metadata_loader
+                "rb_safe_operation.cli.capture_policy_snapshot", self._portable_policy_snapshot
             ):
                 cmd_assess_preflight(SimpleNamespace(
                     plan=str(fixed_plan), project_policy=None,
@@ -1684,7 +1692,7 @@ class ProposalCycleTests(unittest.TestCase):
                     return response
 
             with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())), patch(
-                "rb_safe_operation.cli.capture_file_metadata", self.metadata_loader
+                "rb_safe_operation.cli.capture_policy_snapshot", self._portable_policy_snapshot
             ), patch("rb_safe_operation.cli.JsonLineProposalRoleHost", CliPlanHost):
                 cmd_assess(SimpleNamespace(
                     plan=str(fixed_plan), project_policy=None,
@@ -1714,7 +1722,7 @@ class ProposalCycleTests(unittest.TestCase):
                     inner_self.call_records.append(record)
 
             with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())), patch(
-                "rb_safe_operation.cli.capture_file_metadata", self.metadata_loader
+                "rb_safe_operation.cli.capture_policy_snapshot", self._portable_policy_snapshot
             ), patch("rb_safe_operation.cli.JsonLineProposalRoleHost", NoPlanAssessorReplay):
                 cmd_assess(SimpleNamespace(
                     plan=str(fixed_plan), project_policy=None,

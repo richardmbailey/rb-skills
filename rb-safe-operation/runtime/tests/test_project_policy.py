@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from rb_safe_operation.canonical import canonical_bytes
 from rb_safe_operation.models import HashRef
+from rb_safe_operation.patches import capture_file_metadata
 from rb_safe_operation.policy import default_global_policy
 from rb_safe_operation.policy_models import (
     PathRule,
@@ -64,6 +65,10 @@ def rule(rule_id: str, path: str, scope: str = "exact", deny=None) -> dict:
         "deny": sorted(deny or ["create", "delete", "modify", "read"]),
         "reason": "fixture restriction",
     }
+
+
+def portable_metadata(path: Path):
+    return capture_file_metadata(path, acl_reader=lambda _: b"", xattr_reader=lambda _: {})
 
 
 class ProjectPolicyModelTests(unittest.TestCase):
@@ -203,6 +208,7 @@ class ProjectPolicyRuntimeTests(unittest.TestCase):
                 [str(secret), str(allowed)],
                 [str(secret)],
                 [],
+                metadata_loader=portable_metadata,
             )
         serialized = canonical_bytes(snapshot.model_dump(mode="json"))
         self.assertNotIn(b"CANARY-CONTENT", serialized)

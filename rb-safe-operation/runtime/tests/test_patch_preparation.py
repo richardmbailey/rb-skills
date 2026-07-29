@@ -73,8 +73,11 @@ class PurePatchPreparationTests(unittest.TestCase):
         with self.assertRaisesRegex(MetadataContractError, "extended attributes"):
             capture_file_metadata(self.target, acl_reader=lambda _: b"", xattr_reader=None)
 
-    @unittest.skipUnless(sys.platform == "darwin", "initial metadata profile is macOS only")
-    def test_default_macos_metadata_inspector_captures_regular_file(self):
+    def test_default_metadata_inspector_matches_the_supported_host_profile(self):
+        if sys.platform != "darwin":
+            with self.assertRaisesRegex(MetadataContractError, "unavailable on this host"):
+                capture_file_metadata(self.target)
+            return
         metadata = capture_file_metadata(self.target)
         self.assertEqual(metadata.file_type, "regular")
         self.assertEqual(metadata.link_count, 1)
