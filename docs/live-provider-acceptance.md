@@ -6,7 +6,7 @@ The model does not edit project files. For a bounded semantic operation, Codex r
 
 ## Qualification State
 
-The Codex-native transport, readiness check, run and resume commands, durable accounting, and redacted acceptance summary are implemented. On 29 July 2026, the five-run live matrix passed against one manifest-pinned candidate. The deterministic failure and recovery matrix also passed. The route remains optional and static-only; release still requires the complete repository validation, committed-source installation, remote CI, and installed smoke gates described below.
+The Codex-native transport, readiness check, run and resume commands, durable accounting, and redacted acceptance summary are implemented. On 29 July 2026, the five-run live matrix passed against the committed, CI-green, actively installed candidate. The deterministic failure and recovery matrix also passed. The route remains optional and static-only.
 
 ## Fixed Codex Profile
 
@@ -93,17 +93,19 @@ The release evidence may list defects found during qualification and their regre
 
 ### 29 July 2026 qualifying matrix
 
-All five runs used runtime source identity `6e705b68e61826505755d24b3c9b236dd4580d5ca3117f63eefb2192186b7d28`, installed package identity `6428d3fe509832a33fc0cba855fa846748d0d19b1f2a7956de56215396d51087`, and dependency-lock identity `ace8a89387026529ad20366a89bc6dc694fb9028bf6f701eb328538b7b4964e5`. Every run reported `ready_codex_cli`, reached terminal `verified`, used zero tools, had complete usage records, and needed no manual protocol repair.
+All five final runs used runtime source identity `5934d6d4cd206b0cc89ea10275ed7cb2ca71b3daf054c818bac652abfbc5d6b4`, installed package identity `e63092846f07d469f06012beed17e4da7ffb49482d081c6cff3e777c17a26c61`, and dependency-lock identity `ace8a89387026529ad20366a89bc6dc694fb9028bf6f701eb328538b7b4964e5`. Every run reported `ready_codex_cli`, reached terminal `verified`, used zero tools, had complete usage records, and needed no manual protocol repair.
 
 | Run | Roles / calls | Input / output tokens | Request / response bytes | Provider time | Wall time |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `codex-accept-release-v3-create-20260729-1` | 2 | 41,510 / 1,698 | 38,129 / 7,113 | 178.900 s | 179.566 s |
-| `codex-accept-release-v3-multi-20260729-1` | 4 | 84,973 / 2,818 | 79,121 / 10,366 | 377.146 s | 378.308 s |
-| `codex-accept-release-v3-central-20260729-1` | 4 | 81,630 / 2,778 | 72,417 / 9,790 | 339.594 s | 340.734 s |
-| `codex-accept-release-v3-central-20260729-2` | 4 | 82,620 / 2,474 | 72,417 / 9,877 | 349.719 s | 350.775 s |
-| `codex-accept-release-v3-central-20260729-3` | 4 | 83,548 / 2,612 | 72,417 / 9,960 | 387.895 s | 388.981 s |
+| `codex-accept-release-v4-create-20260729-1` | 2 | 41,438 / 1,646 | 38,129 / 6,939 | 188.417 s | 188.815 s |
+| `codex-accept-release-v4-multi-20260729-1` | 4 | 86,954 / 2,840 | 79,121 / 10,065 | 474.842 s | 476.418 s |
+| `codex-accept-release-v4-central-20260729-1` | 4 | 81,853 / 2,679 | 72,417 / 9,978 | 438.252 s | 439.462 s |
+| `codex-accept-release-v4-central-20260729-2` | 4 | 81,663 / 2,539 | 72,417 / 9,964 | 344.573 s | 345.501 s |
+| `codex-accept-release-v4-central-20260729-3` | 4 | 81,638 / 2,694 | 72,417 / 10,053 | 462.477 s | 463.727 s |
 
-The three repeated central runs averaged 360.163 seconds wall time and 359.069 seconds provider time. Their median wall time was 350.775 seconds and their wall-time range was 48.247 seconds. Across all five runs, the process made 18 model requests, consumed 374,281 input tokens and 12,380 output tokens, sent 334,501 request bytes, received 47,106 response bytes, and took 1,638.364 seconds wall time. Cost is recorded as declared zero because this ChatGPT-authenticated path does not use a metered API grant; that is an accounting statement, not a claim that the underlying service has no cost.
+The three repeated central runs averaged 416.230 seconds wall time. Their median wall time was 439.462 seconds and their wall-time range was 118.226 seconds. Across all five runs, the process made 18 model requests, consumed 373,546 input tokens and 12,398 output tokens, sent 334,501 request bytes, received 46,999 response bytes, spent 1,908.561 seconds in provider calls, and took 1,913.923 seconds wall time. Cost is recorded as declared zero because this ChatGPT-authenticated path does not use a metered API grant; that is an accounting statement, not a claim that the underlying service has no cost.
+
+Before this final matrix, an installed smoke against the preceding candidate reached `verifying` after a successful assessor call and coordinator-owned exact write, but its verifier did not return before the run's aggregate 2,400-second allowance expired. The run was stopped at that boundary and remained terminal `human_required`; it was not resumed, relabelled, or counted as a pass. Review found that both semantic hosts checked aggregate elapsed use before a call but passed the full per-call timeout into every new invocation. The final candidate passes only the remaining aggregate allowance to Codex/JSON-line subprocesses and PydanticAI cancellation. Residual-time propagation and exhausted-budget refusal now have regression coverage on both supported Python versions.
 
 The matched standard operation applied and hashed the same one-file change 1,000 times in 2.292 seconds of summed operation time, with a median of 2.042 milliseconds per iteration. That comparison excludes temporary-fixture setup and all LLM deliberation. It demonstrates only the gross overhead of this tiny constrained workflow and does not predict the ratio for larger tasks, where ordinary implementation also spends time understanding and designing changes.
 
