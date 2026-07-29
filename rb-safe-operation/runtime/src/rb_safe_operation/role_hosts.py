@@ -77,6 +77,20 @@ class RoleHostResourceExhausted(RoleHostError):
     pass
 
 
+def _remaining_elapsed_timeout(
+    *,
+    configured_timeout_seconds: float,
+    aggregate_elapsed_milliseconds: int,
+    aggregate_limit_seconds: int,
+) -> float:
+    """Return the timeout that cannot exceed the remaining aggregate grant."""
+
+    remaining_milliseconds = aggregate_limit_seconds * 1000 - aggregate_elapsed_milliseconds
+    if remaining_milliseconds <= 0:
+        raise RoleHostResourceExhausted("aggregate elapsed-time grant is exhausted")
+    return min(configured_timeout_seconds, remaining_milliseconds / 1000)
+
+
 def _failure_outcome(error: Exception) -> str:
     if isinstance(error, RoleHostTimeout):
         return "timeout"
@@ -310,7 +324,14 @@ class JsonLineProposalRoleHost:
         started = time.monotonic()
         try:
             try:
-                response_bytes = self.transport.exchange(request_bytes, self.timeout_seconds)
+                response_bytes = self.transport.exchange(
+                    request_bytes,
+                    _remaining_elapsed_timeout(
+                        configured_timeout_seconds=self.timeout_seconds,
+                        aggregate_elapsed_milliseconds=self._aggregate_elapsed_milliseconds,
+                        aggregate_limit_seconds=self.run_resource_grant.max_elapsed_seconds,
+                    ),
+                )
             finally:
                 elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
                 self._last_attempt_elapsed_milliseconds = elapsed_ms
@@ -601,8 +622,8 @@ class PydanticAIProposalRoleHost:
         *,
         tool_calls_limit: int,
         request_limit: int,
+        timeout_seconds: float,
     ):
-        timeout = min(self.provider_grant.max_seconds, self.run_resource_grant.max_elapsed_seconds)
         try:
             return await asyncio.wait_for(
                 agent.run(
@@ -618,7 +639,7 @@ class PydanticAIProposalRoleHost:
                         ),
                     ),
                 ),
-                timeout=timeout,
+                timeout=timeout_seconds,
             )
         except (TimeoutError, asyncio.TimeoutError) as exc:
             raise RoleHostTimeout("PydanticAI role call timed out and was cancelled") from exc
@@ -712,6 +733,14 @@ class PydanticAIProposalRoleHost:
                         1,
                         min(self.provider_grant.max_calls, self.run_resource_grant.max_model_requests)
                         - sum(item.requests for item in self.call_records),
+                    ),
+                    timeout_seconds=_remaining_elapsed_timeout(
+                        configured_timeout_seconds=min(
+                            self.provider_grant.max_seconds,
+                            self.run_resource_grant.max_elapsed_seconds,
+                        ),
+                        aggregate_elapsed_milliseconds=self._aggregate_elapsed_milliseconds,
+                        aggregate_limit_seconds=self.run_resource_grant.max_elapsed_seconds,
                     ),
                 ))
             else:

@@ -431,6 +431,56 @@ class ProposalRoleHostTests(unittest.TestCase):
         with self.assertRaisesRegex(RoleHostProtocolError, "request token"):
             self.json_line_host(mismatched, timeout_seconds=1).propose_patch(request)
 
+    def test_json_line_host_limits_each_call_to_remaining_aggregate_time(self):
+        response = canonical_bytes({
+            "type": "role_response", "role": "proposer", "adapter": "json_line",
+            "payload": self.proposal_payload(),
+        }) + b"\n"
+        host = self.json_line_host(response, timeout_seconds=5)
+        host._aggregate_elapsed_milliseconds = 9_500
+
+        host.propose_patch(self.proposal_request("json_line"))
+
+        self.assertEqual(len(host.transport.requests), 1)
+        self.assertAlmostEqual(host.transport.requests[0][1], 0.5)
+
+    def test_json_line_host_refuses_call_when_aggregate_time_is_exhausted(self):
+        host = self.json_line_host(b"", timeout_seconds=5)
+        host._aggregate_elapsed_milliseconds = 10_000
+
+        with self.assertRaisesRegex(RoleHostResourceExhausted, "elapsed-time grant"):
+            host.propose_patch(self.proposal_request("json_line"))
+
+        self.assertEqual(host.transport.requests, [])
+
+    def test_pydantic_ai_host_limits_each_call_to_remaining_aggregate_time(self):
+        observed_timeouts: list[float] = []
+
+        async def bounded_run(agent, prompt, *, tool_calls_limit, request_limit, timeout_seconds):
+            observed_timeouts.append(timeout_seconds)
+            return SimpleNamespace(
+                output=AgentPatchProposal.model_validate(self.proposal_payload()),
+                usage=SimpleNamespace(requests=1, tool_calls=0, input_tokens=100, output_tokens=20),
+            )
+
+        models.ALLOW_MODEL_REQUESTS = False
+        host = PydanticAIProposalRoleHost(
+            model=FunctionModel(lambda messages, info: ModelResponse(), model_name="role-model"),
+            provider_grant=self.provider_grant,
+            run_resource_grant=self.resource_grant,
+            observed_provider="test-provider",
+            observed_endpoint="in-memory://function-model",
+            observed_credential_audience="none:test-only",
+            observed_model_revision="test-1",
+            now=lambda: "2026-07-28T10:30:00Z",
+        )
+        host._aggregate_elapsed_milliseconds = 9_500
+
+        with patch.object(host, "_run_agent", new=bounded_run):
+            host.propose_patch(self.proposal_request())
+
+        self.assertEqual(observed_timeouts, [0.5])
+
     def test_pydantic_ai_host_exposes_no_function_tools_and_records_usage(self):
         seen: list[list[str]] = []
         seen_settings: list[dict[str, object]] = []
