@@ -290,6 +290,9 @@
         "manifest-pinned `codex-run`",
         "`codex-resume`",
         "explicit `--enable-codex-cli`",
+        "`proposal_format_error`",
+        "fresh request token",
+        "finite aggregate",
         "Never repeat a provider call whose durable request has an incomplete or uncertain outcome"
       ],
       "forbidden": ["automatically installs", "skip independent verification"],

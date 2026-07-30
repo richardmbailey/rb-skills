@@ -120,6 +120,14 @@ jobs:
             evals/skill-routing/consistency-contracts.json \
             2>&1 | tee validation-output/consistency-contracts.txt
 
+      - name: Validate publication hygiene
+        id: publication
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python evals/skill-routing/validate_publication_hygiene.py \
+            2>&1 | tee validation-output/publication-hygiene.txt
+
       - name: Run constrained-runtime tests including setup and tamper gates
         id: runtime
         continue-on-error: true
@@ -163,6 +171,7 @@ jobs:
             "${{ steps.evals.outcome }}"
             "${{ steps.instructions.outcome }}"
             "${{ steps.consistency.outcome }}"
+            "${{ steps.publication.outcome }}"
             "${{ steps.runtime.outcome }}"
             "${{ steps.schemas.outcome }}"
           )
