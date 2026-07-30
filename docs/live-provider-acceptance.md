@@ -6,7 +6,7 @@ The model does not edit project files. For a bounded semantic operation, Codex r
 
 ## Qualification State
 
-The Codex-native transport, readiness check, run and resume commands, durable accounting, and redacted acceptance summary are implemented. On 29 July 2026, the five-run live matrix passed against the exact committed, CI-green, actively installed source identity recorded below, and the corresponding deterministic failure and recovery matrix passed. That matrix remains historical evidence for that candidate only. The current release candidate adds preparation-bound automatic format retry and related authority checks, so it is not qualified for optional routine Codex-native use until the complete release gate is repeated against its new committed source identity. Exact static operation remains separately available when `doctor` reports `ready_exact_static`. Every route remains optional and static-only.
+The Codex-native transport, readiness check, run and resume commands, durable accounting, and redacted acceptance summary are implemented. On 30 July 2026, the complete five-run live matrix and deterministic failure/recovery matrix passed against the exact committed release-candidate runtime identity recorded below. That identity is qualified for optional routine Codex-native static use within the stated limits. It is not the default route, does not qualify a later changed runtime, and does not by itself complete the repository's licensing, review, remote-CI, or public-release gates. Exact static operation remains separately available when `doctor` reports `ready_exact_static`. Every route remains optional and static-only.
 
 ## Fixed Codex Profile
 
@@ -92,6 +92,24 @@ For every terminal live trial, record only:
 - the matched standard-edit elapsed time and why one tiny deterministic comparison does not predict overhead for larger work.
 
 The release evidence may list defects found during qualification and their regression tests. It must not include credentials, prompts, source text, proposed diffs, raw model responses, reasoning, temporary directories, user-home paths, or protected-content canaries.
+
+### 30 July 2026 current release-candidate matrix
+
+All five final runs used runtime source identity `ecfd1ae5c1d4cae4d086b2ee50704a23da986ca9736655773acc4c284e43ad29`, installed package identity `f3d84c047089875216f67b4f7a7882e2074cfe24d5e2b279edbffa3c382dcfd8`, and dependency-lock identity `ace8a89387026529ad20366a89bc6dc694fb9028bf6f701eb328538b7b4964e5`. Every run reported `ready_codex_cli`, reached terminal `verified`, used zero tools, had complete usage records, matched the expected target hashes, and needed no manual protocol repair.
+
+| Run | Roles / calls | Input / output tokens | Request / response bytes | Provider time | Wall time |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `codex-accept-release-v6-create-20260730-1` | 2 | 41,636 / 1,634 | 38,129 / 7,122 | 180.383 s | 181.107 s |
+| `codex-accept-release-v6-multi-20260730-1` | 4 | 85,190 / 2,776 | 79,121 / 10,074 | 340.753 s | 342.171 s |
+| `codex-accept-release-v6-central-20260730-1` | 4 | 81,910 / 2,547 | 72,417 / 10,281 | 363.144 s | 364.331 s |
+| `codex-accept-release-v6-central-20260730-2` | 4 | 81,735 / 2,567 | 72,417 / 9,747 | 337.641 s | 338.743 s |
+| `codex-accept-release-v6-central-20260730-3` | 4 | 82,044 / 2,586 | 72,417 / 9,599 | 381.904 s | 383.186 s |
+
+The three repeated central runs averaged 362.087 seconds wall time. Their median was 364.331 seconds and their range was 44.443 seconds. Across all five runs, the process made 18 model requests, consumed 372,515 input tokens and 12,110 output tokens, sent 334,501 request bytes, received 46,823 response bytes, spent 1,603.825 seconds in provider calls, and took 1,609.538 seconds wall time. Cost is recorded as declared zero because this ChatGPT-authenticated path does not use a metered API grant; that is an accounting statement, not a claim that the underlying service has no cost.
+
+Qualification initially found a false-negative plan assessment. The assessor saw source hashes and metadata in its packet and inferred that the later proposer would never receive the selected source text. The coordinator already re-read, re-hashed, metadata-checked, and supplied that exact text immediately before proposal, but the role contract did not explain the separation. The acceptance driver also assumed that an assessment rejection had produced a coordinator bundle and raised `FileNotFoundError` while reporting the safe stop. Commit `f6677d2` clarified the source handoff and added redacted rejection reporting. Because runtime source changed, every earlier positive result was discarded; both clean Python suites and the entire five-run matrix above were repeated.
+
+The same candidate passed 285 no-skip runtime tests under both Python 3.10 and Python 3.12. Those tests cover denied reads and writes, harmful semantic rejection, drift, retry eligibility and exclusions, finite aggregate ceilings, incomplete usage, timeouts, expiry, resource exhaustion, corruption, ambiguous state, forward recovery, and replay prevention.
 
 ### 29 July 2026 historical qualifying matrix
 
