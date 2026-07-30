@@ -190,6 +190,61 @@ def write_manifest(control: Path, manifest: dict[str, object]) -> None:
             pass
 
 
+def manifest_identity(manifest: dict[str, object]) -> str:
+    """Hash a setup manifest without its self-describing identity field."""
+
+    payload = dict(manifest)
+    payload.pop("manifest_hash", None)
+    body = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(
+        b"rb-safe-operation\0runtime-setup-manifest\01.0\0" + body
+    ).hexdigest()
+
+
+def archive_manifest(control: Path, manifest: dict[str, object]) -> None:
+    """Persist one immutable manifest so an explicit validated rollback can select it."""
+
+    expected_hash = manifest_identity(manifest)
+    if manifest.get("manifest_hash") != expected_hash:
+        raise RuntimeError("setup manifest has an invalid self-identity")
+    archive_root = control / "manifests"
+    if archive_root.is_symlink():
+        raise RuntimeError("manifest archive directory is a symbolic link")
+    archive_root.mkdir(mode=0o700, exist_ok=True)
+    if not archive_root.is_dir():
+        raise RuntimeError("manifest archive path is not a directory")
+    data = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
+    target = archive_root / f"{expected_hash}.json"
+    try:
+        descriptor = os.open(
+            target,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+        )
+    except FileExistsError:
+        if target.is_symlink() or not target.is_file() or target.read_bytes() != data:
+            raise RuntimeError("archived setup manifest conflicts with its identity")
+        return
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        directory = os.open(archive_root, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    except Exception:
+        try:
+            target.unlink()
+        except OSError:
+            pass
+        raise
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--control-root", required=True)
@@ -326,6 +381,8 @@ def main() -> int:
             "launcher_bootstrap_interpreter_path": str(bootstrap_interpreter),
             "launcher_bootstrap_interpreter_hash": file_hash(bootstrap_interpreter),
         }
+        manifest["manifest_hash"] = manifest_identity(manifest)
+        archive_manifest(control, manifest)
         write_manifest(control, manifest)
         print(json.dumps(manifest, sort_keys=True))
         return 0
