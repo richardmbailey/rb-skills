@@ -8,8 +8,10 @@ runtime interpreter. It never targets the skill repository itself.
 from __future__ import annotations
 
 import argparse
+from contextlib import redirect_stdout
 from datetime import datetime, timedelta, timezone
 import hashlib
+import io
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -426,6 +428,13 @@ def _load_rejected_assessment_result(
     )
 
 
+def _run_codex_without_intermediate_output(arguments: SimpleNamespace) -> None:
+    """Keep coordinator detail, including disposable paths, out of harness stdout."""
+
+    with redirect_stdout(io.StringIO()):
+        cmd_codex_run(arguments)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scenario", choices=("exact-create", "bounded-one", "bounded-multi"), required=True)
@@ -445,7 +454,7 @@ def main() -> int:
     fixed_plan.parent.mkdir(parents=True)
     fixed_plan.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
     started = time.monotonic()
-    cmd_codex_run(SimpleNamespace(
+    _run_codex_without_intermediate_output(SimpleNamespace(
         enable_codex_cli=True,
         plan=str(fixed_plan),
         run_preparation_preview=paths["run_preparation_preview"],

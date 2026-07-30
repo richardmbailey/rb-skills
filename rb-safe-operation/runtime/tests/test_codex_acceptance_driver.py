@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from contextlib import redirect_stdout
 import hashlib
 import importlib.util
+import io
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from rb_safe_operation.patches import capture_file_metadata
 
@@ -18,6 +21,16 @@ SPEC.loader.exec_module(DRIVER)
 
 
 class CodexAcceptanceDriverTests(unittest.TestCase):
+    def test_driver_suppresses_intermediate_coordinator_output(self) -> None:
+        captured = io.StringIO()
+        with patch.object(
+            DRIVER,
+            "cmd_codex_run",
+            side_effect=lambda _: print("temporary project path must not escape"),
+        ), redirect_stdout(captured):
+            DRIVER._run_codex_without_intermediate_output(SimpleNamespace())
+        self.assertEqual(captured.getvalue(), "")
+
     def test_rejected_assessment_result_is_redacted_and_does_not_need_coordinator_bundle(self) -> None:
         raw = b'{"synthetic":"canonical assessment bytes"}\n'
         finding = SimpleNamespace(
