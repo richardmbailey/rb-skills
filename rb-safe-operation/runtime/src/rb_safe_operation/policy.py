@@ -23,7 +23,7 @@ from .models import (
 from .patches import PatchContractError, inspect_patch_paths
 
 
-ENFORCEMENT_ORDER = {"instruction_only": 0, "host_enforced": 1}
+ENFORCEMENT_ORDER = {"instruction_only": 0, "framework_enforced": 1, "host_enforced": 2}
 OBSERVATION_ORDER = {"agent_reported": 0, "coordinator_observed": 1, "host_observed": 2}
 SEVERITY_ORDER = ["none", "low", "medium", "high", "critical"]
 
@@ -362,11 +362,40 @@ def deterministic_assessment_findings(
             findings.append(_finding(f"operation-{op.operation_id}", "O-001", "unsupported_operation", "operation is denied or unsupported", [op.operation_id]))
         if op.kind == "exact_action" and (op.adapter not in policy.allowed_adapters or op.adapter in policy.denied_adapters):
             findings.append(_finding(f"adapter-{op.operation_id}", "O-002", "unsupported_adapter", "adapter is denied or unsupported", [op.operation_id]))
-        if op.kind == "bounded_agent_task" and not set(op.allowed_tools).issubset(set(policy.allowed_tools)):
+        bounded_tools = (
+            list(getattr(op, "allowed_tools", []))
+            if op.kind == "bounded_agent_task" and hasattr(op, "allowed_tools")
+            else ["read" for _ in getattr(op, "allowed_read_tools", [])]
+        )
+        if op.kind == "bounded_agent_task" and not set(bounded_tools).issubset(set(policy.allowed_tools)):
             findings.append(_finding(f"tools-{op.operation_id}", "O-001", "unsupported_tool", "bounded task requests a tool outside active policy", [op.operation_id]))
-        if op.kind == "bounded_agent_task" and ({"exec_argv", "check"} & set(op.allowed_tools)):
+        if getattr(plan, "schema_version", None) == "3.0" and op.kind == "bounded_agent_task":
+            for source_path in sorted(plan.snapshot.selected_file_hashes):
+                path_key = hashlib.sha256(source_path.encode("utf-8")).hexdigest()[:16]
+                if not _contained_in_any(source_path, op.path_contract.read_roots):
+                    findings.append(_finding(
+                        f"proposal-source-path-{op.operation_id}-{path_key}",
+                        "X-001",
+                        "path_escape",
+                        "selected proposal source is outside the operation read roots",
+                        [op.operation_id],
+                    ))
+                source_effect_covered = any(
+                    effect.effect_class == "repository_read"
+                    and _contained_in_any(source_path, effect.targets)
+                    for effect in op.effects
+                )
+                if not source_effect_covered:
+                    findings.append(_finding(
+                        f"proposal-source-effect-{op.operation_id}-{path_key}",
+                        "E-001",
+                        "effect_inventory",
+                        "selected proposal source is not covered by a repository-read effect",
+                        [op.operation_id],
+                    ))
+        if op.kind == "bounded_agent_task" and ({"exec_argv", "check"} & set(bounded_tools)):
             findings.append(_finding(f"bounded-command-{op.operation_id}", "O-003", "transitive_execution", "first-release bounded tasks cannot execute repository code because no capability sandbox is available", [op.operation_id]))
-        if op.kind == "bounded_agent_task":
+        if op.kind == "bounded_agent_task" and hasattr(op, "allowed_executables"):
             if op.allowed_executables or op.allowed_executable_hashes or op.allowed_executable_input_hashes:
                 findings.append(_finding(f"bounded-check-contract-{op.operation_id}", "O-003", "transitive_execution", "first-release bounded executable contracts must be empty because identity binding does not constrain executable side effects", [op.operation_id]))
         if op.subprocesses:

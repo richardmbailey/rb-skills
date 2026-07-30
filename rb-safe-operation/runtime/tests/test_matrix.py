@@ -28,7 +28,7 @@ from rb_safe_operation.models import EventPayload, ExecutionReport, HostCapabili
 from rb_safe_operation.paths import PathViolation, resolve_contained
 from rb_safe_operation.policy import default_global_policy
 from rb_safe_operation.state import StateError, capture_snapshot, snapshot_materially_equal, validate_resume_identity
-from rb_safe_operation.workflow import WorkflowError, assess_plan as runtime_assess_plan, begin_verification_context, verify_reports
+from rb_safe_operation.workflow import WorkflowError, _assess_plan_legacy_compatible as runtime_assess_plan, _begin_verification_context_legacy as begin_verification_context, _verify_reports_legacy as verify_reports
 
 from helpers import capabilities, current_snapshot, safe_plan, semantic, verification_proposal
 
@@ -215,13 +215,25 @@ class PackagingDiagnosticTests(unittest.TestCase):
         self.assertIn("missing_runtime_manifest", result.stderr)
         self.assertEqual(list(self.root.iterdir()), [])
 
+    def test_ci_builds_and_installs_from_the_reviewed_complete_locks(self):
+        workflow = (self.skill_root.parent / ".github" / "workflows" / "validate-skills.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertGreaterEqual(workflow.count("-r rb-safe-operation/runtime/requirements.lock"), 3)
+        self.assertGreaterEqual(workflow.count("--require-hashes"), 6)
+        self.assertIn("python -m pip download --only-binary=:all: --require-hashes", workflow)
+        self.assertNotIn("annotated-types==0.7.0", workflow)
+        self.assertNotIn("typing-extensions==4.15.0", workflow)
+
     def test_normative_invariant_headings_equal_closed_runtime_registry(self):
-        reference_root = self.skill_root.parent / "plans" / "2026-07-18-constrained-plan-execution" / "references"
-        observed: set[str] = set()
-        for name in (
-            "assurance-and-threat-model.md", "operation-and-policy-contract.md", "execution-audit-state-model.md",
-        ):
-            observed.update(re.findall(r"^### `([A-Z]-[0-9]{3})`", (reference_root / name).read_text(encoding="utf-8"), re.MULTILINE))
+        registry = self.skill_root / "references" / "normative-invariant-registry.md"
+        observed = set(
+            re.findall(
+                r"^### `([A-Z]-[0-9]{3})`",
+                registry.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            )
+        )
         self.assertEqual(observed, INVARIANT_IDS)
 
     def test_launcher_requires_isolated_no_site_no_bytecode_bootstrap(self):
@@ -297,7 +309,7 @@ class PackagingDiagnosticTests(unittest.TestCase):
 
     def test_unsupported_artifact_version_is_named(self):
         artifact = self.root / "artifact.json"
-        artifact.write_text('{"schema_version":"2.0"}\n', encoding="utf-8")
+        artifact.write_text('{"schema_version":"9.0"}\n', encoding="utf-8")
         result = subprocess.run(
             [sys.executable, "-m", "rb_safe_operation.cli", "validate", "--artifact-type", "active-policy", "--input", str(artifact)],
             check=False, capture_output=True, text=True, env=os.environ.copy(),
@@ -335,7 +347,7 @@ class PackagingDiagnosticTests(unittest.TestCase):
         manifest_path = control / "current.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         target = Path(manifest["interpreter_path"]).parents[2]
-        self.assertEqual(target.name, f"0.1.0-{manifest['installed_source_hash']}-{manifest['lock_hash']}")
+        self.assertEqual(target.name, f"0.3.0-{manifest['installed_source_hash']}-{manifest['lock_hash']}")
         self.assertRegex(manifest["installed_package_hash"], r"^[0-9a-f]{64}$")
         self.assertEqual(manifest["installed_package_hash"], manifest["expected_source_package_hash"])
         self.assertRegex(manifest["interpreter_hash"], r"^[0-9a-f]{64}$")
@@ -368,6 +380,125 @@ class PackagingDiagnosticTests(unittest.TestCase):
         self.assertEqual(reused.returncode, 0, reused.stderr)
         self.assertEqual(interpreter_stat.st_ino, Path(manifest["interpreter_path"]).stat().st_ino)
         self.assertEqual(before, self._tree_snapshot(runtime), "reuse polluted runtime source")
+
+        first_manifest_hash = manifest["manifest_hash"]
+        first_archive = control / "manifests" / f"{first_manifest_hash}.json"
+        self.assertTrue(first_archive.is_file())
+        self.assertEqual(
+            json.loads(first_archive.read_text(encoding="utf-8")),
+            manifest,
+        )
+
+        updated_skill = self.root / "updated-skill"
+        shutil.copytree(
+            copied_skill,
+            updated_skill,
+            ignore=shutil.ignore_patterns(
+                "build", "*.egg-info", "__pycache__", "*.pyc", ".pytest_cache",
+                "_source_identity.json",
+            ),
+        )
+        updated_init = updated_skill / "runtime" / "src" / "rb_safe_operation" / "__init__.py"
+        updated_init.write_bytes(updated_init.read_bytes() + b"\n# second reviewed source revision\n")
+        updated_setup = [
+            sys.executable,
+            str(updated_skill / "scripts/setup_runtime.py"),
+            "--control-root",
+            str(control),
+            "--wheelhouse",
+            wheelhouse_value,
+            "--python",
+            sys.executable,
+        ]
+        second = subprocess.run(updated_setup, check=False, capture_output=True, text=True)
+        self.assertEqual(second.returncode, 0, second.stderr)
+        second_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        second_manifest_hash = second_manifest["manifest_hash"]
+        self.assertNotEqual(second_manifest_hash, first_manifest_hash)
+        self.assertTrue(
+            (control / "manifests" / f"{second_manifest_hash}.json").is_file()
+        )
+
+        rollback = [
+            sys.executable,
+            "-I",
+            "-S",
+            "-B",
+            str(updated_skill / "scripts/rollback_runtime.py"),
+            "--control-root",
+            str(control),
+        ]
+        rolled_back = subprocess.run(
+            [*rollback, "--manifest-hash", first_manifest_hash],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(rolled_back.returncode, 0, rolled_back.stderr)
+        self.assertEqual(
+            json.loads(manifest_path.read_text(encoding="utf-8")),
+            manifest,
+        )
+        old_after_rollback = subprocess.run(
+            run, check=False, capture_output=True, text=True, env=run_environment
+        )
+        self.assertEqual(old_after_rollback.returncode, 0, old_after_rollback.stderr)
+
+        restored_new = subprocess.run(
+            [*rollback, "--manifest-hash", second_manifest_hash],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored_new.returncode, 0, restored_new.stderr)
+        updated_run = [
+            sys.executable,
+            "-I",
+            "-S",
+            "-B",
+            str(updated_skill / "scripts/run_runtime.py"),
+            "runtime-info",
+        ]
+        new_after_restore = subprocess.run(
+            updated_run,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=run_environment,
+        )
+        self.assertEqual(new_after_restore.returncode, 0, new_after_restore.stderr)
+
+        current_before_failed_rollback = manifest_path.read_bytes()
+        corrupted_archive = first_archive.read_bytes()
+        first_archive.write_text("{}\n", encoding="utf-8")
+        rejected_corrupt_rollback = subprocess.run(
+            [*rollback, "--manifest-hash", first_manifest_hash],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(rejected_corrupt_rollback.returncode, 2)
+        self.assertIn("runtime_rollback_failed", rejected_corrupt_rollback.stderr)
+        self.assertEqual(manifest_path.read_bytes(), current_before_failed_rollback)
+        first_archive.write_bytes(corrupted_archive)
+
+        rejected_missing_rollback = subprocess.run(
+            [*rollback, "--manifest-hash", "f" * 64],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(rejected_missing_rollback.returncode, 2)
+        self.assertIn("runtime_rollback_failed", rejected_missing_rollback.stderr)
+        self.assertEqual(manifest_path.read_bytes(), current_before_failed_rollback)
+
+        restored_old = subprocess.run(
+            [*rollback, "--manifest-hash", first_manifest_hash],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored_old.returncode, 0, restored_old.stderr)
 
         sentinel = self.root / "fake-interpreter-ran"
         fake_interpreter = self.root / "fake-python"

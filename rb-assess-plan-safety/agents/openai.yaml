@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Assess Plan Safety"
   short_description: "Assess a static-only constrained plan"
-  default_prompt: "Use $rb-assess-plan-safety to run deterministic policy and verification-mode preflight, then a context-separated semantic assessment. Return safe false for untyped criteria or any executable_test, runtime_observation, or external_observation requirement under the first-release capability profile."
+  default_prompt: "Use $rb-assess-plan-safety to assess the unchanged schema-3 plan envelope against its fixed project-policy binding, adapter capabilities, provider and run-resource grants, approvals, evidence, effects, and the closed verification-mode contract. Return safe false for any unsupported requirement, and state that bounded diff bytes still require execution-time preflight and fresh patch assessment."

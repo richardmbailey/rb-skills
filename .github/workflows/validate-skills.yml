@@ -33,13 +33,10 @@ jobs:
           RB_WHEELHOUSE: ${{ runner.temp }}/rb-wheelhouse
         run: |
           mkdir -p validation-output/generated-schemas "$RB_WHEELHOUSE"
-          python -m pip download --only-binary=:all: --dest "$RB_WHEELHOUSE" \
-            setuptools==80.9.0 \
-            pydantic==2.13.4 \
-            pydantic-core==2.46.4 \
-            annotated-types==0.7.0 \
-            typing-extensions==4.15.0 \
-            typing-inspection==0.4.2
+          python -m pip download --only-binary=:all: --require-hashes \
+            --dest "$RB_WHEELHOUSE" -r rb-safe-operation/runtime/build-requirements.lock
+          python -m pip download --only-binary=:all: --require-hashes \
+            --dest "$RB_WHEELHOUSE" -r rb-safe-operation/runtime/requirements.lock
           sha256sum "$RB_WHEELHOUSE"/* | sort | tee validation-output/wheelhouse-sha256.txt
 
       - name: Install constrained runtime from reviewed locks
@@ -123,6 +120,14 @@ jobs:
             evals/skill-routing/consistency-contracts.json \
             2>&1 | tee validation-output/consistency-contracts.txt
 
+      - name: Validate publication hygiene
+        id: publication
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python evals/skill-routing/validate_publication_hygiene.py \
+            2>&1 | tee validation-output/publication-hygiene.txt
+
       - name: Run constrained-runtime tests including setup and tamper gates
         id: runtime
         continue-on-error: true
@@ -166,6 +171,7 @@ jobs:
             "${{ steps.evals.outcome }}"
             "${{ steps.instructions.outcome }}"
             "${{ steps.consistency.outcome }}"
+            "${{ steps.publication.outcome }}"
             "${{ steps.runtime.outcome }}"
             "${{ steps.schemas.outcome }}"
           )
@@ -192,17 +198,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: rb-safe-operation/runtime/pyproject.toml
+          cache-dependency-path: |
+            rb-safe-operation/runtime/build-requirements.lock
+            rb-safe-operation/runtime/requirements.lock
 
       - name: Install exact runtime dependencies
         run: |
-          python -m pip install \
-            setuptools==80.9.0 \
-            pydantic==2.13.4 \
-            pydantic-core==2.46.4 \
-            annotated-types==0.7.0 \
-            typing-extensions==4.15.0 \
-            typing-inspection==0.4.2
+          python -m pip install --require-hashes \
+            -r rb-safe-operation/runtime/build-requirements.lock
+          python -m pip install --require-hashes \
+            -r rb-safe-operation/runtime/requirements.lock
           python -m pip install --no-deps --no-build-isolation -e rb-safe-operation/runtime
 
       - name: Compile runtime

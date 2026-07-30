@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Safe Operation"
-  short_description: "Execute and statically verify an approved plan"
-  default_prompt: "Use $rb-safe-operation to execute this unchanged approved static-only constrained plan, require machine-typed static_file_state verification in a context-separated pass, disclose the actual assurance level, and preserve the audit trail. Stop rather than claim behavioural verification."
+  short_description: "Check readiness or safely run an approved static proposal plan"
+  default_prompt: "Use $rb-safe-operation to check the exact constrained-runtime readiness profile and prepare explicit finite run authority when requested. For an unchanged approved schema-3 static-only plan bound to the fixed project policy, require bounded models to return an exact diff, then have coordinator code derive and assess the patch, journal and apply it, recover safely, create the authoritative report, and run separated static_file_state verification. Preserve complete typed records, disclose the adapter assurance, and stop on not-ready state, drift, unsafe assessment, unknown state, or unsupported behavioural evidence."

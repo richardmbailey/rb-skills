@@ -14,8 +14,12 @@ import tempfile
 from pathlib import Path
 
 
-RUNTIME_VERSION = "0.1.0"
-SCHEMA_VERSION = "1.0"
+RUNTIME_VERSION = "0.3.0"
+SCHEMA_VERSION = "3.0"
+PYDANTIC_VERSION = "2.13.4"
+PYDANTIC_AI_VERSION = "2.19.0"
+OPENAI_VERSION = "2.45.0"
+TIKTOKEN_VERSION = "0.12.0"
 CLI_MODULE = "rb_safe_operation.cli"
 
 
@@ -129,6 +133,10 @@ def validate_installed_runtime(
     expected = {
         "runtime_version": RUNTIME_VERSION,
         "schema_version": SCHEMA_VERSION,
+        "pydantic_version": PYDANTIC_VERSION,
+        "pydantic_ai_version": PYDANTIC_AI_VERSION,
+        "openai_version": OPENAI_VERSION,
+        "tiktoken_version": TIKTOKEN_VERSION,
         "runtime_source_hash": expected_source_hash,
         "runtime_lock_hash": expected_lock_hash,
     }
@@ -170,11 +178,71 @@ def write_manifest(control: Path, manifest: dict[str, object]) -> None:
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary_name, control / "current.json")
+        directory = os.open(control, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     finally:
         try:
             os.unlink(temporary_name)
         except FileNotFoundError:
             pass
+
+
+def manifest_identity(manifest: dict[str, object]) -> str:
+    """Hash a setup manifest without its self-describing identity field."""
+
+    payload = dict(manifest)
+    payload.pop("manifest_hash", None)
+    body = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(
+        b"rb-safe-operation\0runtime-setup-manifest\01.0\0" + body
+    ).hexdigest()
+
+
+def archive_manifest(control: Path, manifest: dict[str, object]) -> None:
+    """Persist one immutable manifest so an explicit validated rollback can select it."""
+
+    expected_hash = manifest_identity(manifest)
+    if manifest.get("manifest_hash") != expected_hash:
+        raise RuntimeError("setup manifest has an invalid self-identity")
+    archive_root = control / "manifests"
+    if archive_root.is_symlink():
+        raise RuntimeError("manifest archive directory is a symbolic link")
+    archive_root.mkdir(mode=0o700, exist_ok=True)
+    if not archive_root.is_dir():
+        raise RuntimeError("manifest archive path is not a directory")
+    data = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
+    target = archive_root / f"{expected_hash}.json"
+    try:
+        descriptor = os.open(
+            target,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+        )
+    except FileExistsError:
+        if target.is_symlink() or not target.is_file() or target.read_bytes() != data:
+            raise RuntimeError("archived setup manifest conflicts with its identity")
+        return
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        directory = os.open(archive_root, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    except Exception:
+        try:
+            target.unlink()
+        except OSError:
+            pass
+        raise
 
 
 def main() -> int:
@@ -313,6 +381,8 @@ def main() -> int:
             "launcher_bootstrap_interpreter_path": str(bootstrap_interpreter),
             "launcher_bootstrap_interpreter_hash": file_hash(bootstrap_interpreter),
         }
+        manifest["manifest_hash"] = manifest_identity(manifest)
+        archive_manifest(control, manifest)
         write_manifest(control, manifest)
         print(json.dumps(manifest, sort_keys=True))
         return 0

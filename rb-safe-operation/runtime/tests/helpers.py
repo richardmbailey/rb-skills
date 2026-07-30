@@ -56,7 +56,11 @@ def common(root: Path, operation_id: str, effect_value: dict):
         "stop_conditions": ["identity mismatch"],
         "path_contract": {
             "read_roots": [str(root)], "create_roots": [], "modify_roots": [], "delete_roots": [],
-            "protected_roots": [str(root / ".rb-safe-operation")], "working_directories": [str(root)],
+            "protected_roots": [
+                str(root / ".rb-safe-operation"),
+                str(root / ".rb-safe-operation-policy.json"),
+            ],
+            "working_directories": [str(root)],
         },
         "environment": [], "network_grants": [], "subprocesses": [], "delegation": [], "approval_classes": [],
         "effects": [effect_value], "effect_inventory_complete": True, "policy_references": ["O-001", "E-002"],

@@ -112,7 +112,32 @@ rb-execute-plan
   -> stop before the next phase
 ```
 
-It is suitable only when the phase can be expressed through the supported `read_file`, `apply_patch`, or bounded read/patch operations and every acceptance criterion is observable from file state.
+It is suitable only when the phase can be expressed through coordinator-owned `read_file` and exact `apply_patch` operations, or through a bounded model that proposes an exact text patch, and every acceptance criterion is observable from file state.
+
+A bounded model does not edit the repository and does not return an execution-success report. It returns a strict unified diff. The coordinator derives the real target files and candidate contents, checks the proposal deterministically, obtains a fresh no-tool semantic assessment of those exact bytes, and only then may apply the already prepared patch:
+
+```text
+approved schema-3 plan envelope, bound to the fixed project-policy identity
+              |
+              v
+model returns exact diff  -- no write tool -->  deterministic proposal preflight
+                                                      |
+                                                      v
+                                         fresh no-tool patch assessment
+                                                      |
+                                                      v
+                                  coordinator records apply intent and approvals
+                                                      |
+                                                      v
+                                  coordinator applies bytes and records each target
+                                                      |
+                                                      v
+                                      separated static-file verification
+```
+
+The plan assessment and patch assessment answer different questions. Plan `safe: true` says the unchanged operation envelope may be attempted. A later patch `safe: true` refers to one exact proposed diff and does not authorise a different proposal.
+
+Before compiling a constrained phase, the user may optionally create or tighten `<project-root>/.rb-safe-operation-policy.json` with `$rb-create-safe-operation-policy`. The skill translates ordinary-language restrictions into a typed proposal, shows a deterministic preview, and waits for confirmation bound to that exact preview. The coordinator is the only writer. A rule such as “do not read or write `x.txt`” becomes an exact read denial plus create, modify, and delete denials, and every current plan, assessment, proposal, repair, verification, and resume artifact is bound to that policy identity. Policy authoring is optional; canonical absence preserves baseline behaviour.
 
 Every constrained success criterion and verifier check uses a closed machine-readable form:
 
@@ -145,11 +170,17 @@ external_observation::the deployed endpoint is healthy
 
 are rejected under the current capability profile.
 
-`safe: true` means one exact typed plan passed deterministic policy and verification-mode checks plus a fresh semantic assessment. It is permission to attempt that unchanged plan. It is not a general claim that the agent, task, machine, or resulting software is safe.
+Plan `safe: true` means one exact typed plan passed deterministic policy, adapter, provider, resource, evidence, effect, and verification-mode checks plus a fresh semantic assessment. It is permission to attempt that unchanged plan. A bounded patch still needs its own deterministic preflight and fresh semantic assessment before mutation. Neither verdict is a general claim that the agent, task, machine, or resulting software is safe.
 
 Constrained `verified` means the declared static file-state criteria were covered by coordinator-observed product state and context-separated verifier evidence. It does not prove runtime behaviour.
 
-The route is semi-formal, not an operating-system sandbox. Read-only role restrictions and fresh-context separation are instruction-only on the current host; complete child traces are unavailable. See [`docs/safe-operation-process.html`](docs/safe-operation-process.html) for the detailed guide.
+The route is semi-formal, not an operating-system sandbox. The runtime owns four separate typed semantic roles: plan assessor, proposer, patch assessor, and verifier. In the reviewed Codex-native profile, each role runs as an ephemeral, schema-constrained Codex CLI call in a fresh temporary directory. Shell, arbitrary-code, application, MCP, delegation, browser, computer-use, and other unnecessary capabilities are disabled, the event stream must contain no tool call, and no role receives a project write interface. For bounded semantic work, the proposer returns only typed claims and a standard unified diff. The earlier plan-assessment packet binds selected source files by hash and metadata; immediately before proposal, the coordinator re-reads those files, verifies the same hashes and metadata, and places their exact complete text in the fixed proposer packet. `allowed_read_tools` controls only additional interactive proposer reads. `read_roots` must cover the deliberately selected source files that the coordinator supplies. Neither field needs to include new product targets merely for later verification: the deterministic coordinator observes only snapshot-selected files and declared expected product paths under the active policy, then gives that static packet to the no-tool verifier. The coordinator independently parses and assesses the exact candidate bytes, records the apply intent, and alone changes project files. The verifier returns only semantic coverage, evidence, effects, and findings; the trusted transport attaches immutable request and post-execution identities directly from the validated verifier packet. This is a materially restricted process boundary, but it is not proof of operating-system isolation or a complete child trace. The assurance label remains `instruction_only_proposal_host`, and surrounding state comparison detects relevant unexpected host mutations after a call rather than claiming they were impossible.
+
+The Codex-native profile is deliberately opt-in and is never selected merely because a plan says `safe: true`. After `prepare-run-authority`, exact confirmation, plan compilation, and a passing `doctor`, the manifest-pinned `codex-run --enable-codex-cli` command performs plan assessment, optional patch proposal, optional patch assessment, coordinator-only application, and static verification. It uses the locally authenticated Codex CLI and does not read an OpenAI API key. The one confirmed preparation is the authority envelope for all permitted semantic calls in that unchanged run, so the user does not confirm each call separately. A different run, provider, model, plan, policy, target set, effect set, permission set, expiry, or budget needs a new preview and confirmation. `codex-resume --enable-codex-cli` continues a known journalled resource pause under the same confirmed authority and aggregate budget. The host checks the exact Codex executable, version, model, and ChatGPT login before the workflow can persist its first semantic-call intent. Before each dispatch, the coordinator records the complete typed request and the transport rechecks the same identity, then validates the strict response and usage. A complete typed proposer response is persisted before its diff is parsed, so rejected syntax remains auditable. When the confirmed resource grant explicitly permits `proposal_format_error`, the coordinator may automatically ask for corrected unified-diff syntax with a fresh request token. The retry count may be `unbounded`, but calls, tokens, bytes, elapsed time, and cost remain bounded by the same finite aggregate grant. Scope, path, metadata, safety, state, side-effect, identity, incomplete-call, and commit-ambiguity failures are not automatically retried. An incomplete or uncertain provider call is not replayed. The authenticated Codex service receives the deliberately selected source packet and the absolute path names used for policy and identity binding, so both must fit the confirmed data classification and account policy. The temporary working directory prevents ambient project discovery; it does not keep supplied request data local-only. `acceptance-summary` emits only operational totals and identity hashes; it omits prompts, diffs, file contents, reasoning, responses, credentials, and machine-local project paths. See [`docs/safe-operation-process.html`](docs/safe-operation-process.html) for the detailed guide, [`docs/live-provider-acceptance.md`](docs/live-provider-acceptance.md) for qualification evidence and limits, [`docs/project-policy-runtime-0.3-migration.md`](docs/project-policy-runtime-0.3-migration.md) for the current migration boundary, and [`docs/proposal-first-runtime-0.2-migration.md`](docs/proposal-first-runtime-0.2-migration.md) for the historical schema-1 migration.
+
+The release candidate with runtime source `ecfd1ae5c1d4cae4d086b2ee50704a23da986ca9736655773acc4c284e43ad29` passed the complete five-run Codex-native matrix on 30 July 2026 and passed all 286 no-skip runtime tests under Python 3.10 and 3.12. This qualifies that exact runtime identity for optional static use within the limits above. It does not make the route the default or make an unqualified later runtime equivalent. Any public revision carrying this claim must preserve the same runtime identity and pass review and remote CI for its complete repository tree.
+
+Explicit runtime setup retains each complete setup manifest by its content hash before selecting it as current. A rollback is also explicit: `scripts/rollback_runtime.py` accepts one retained manifest hash, revalidates its source checkout, launcher, bootstrap interpreter, installed environment, package, and dependency locks, and only then atomically selects it. The retained source checkout must still exist unchanged. A failed or corrupted rollback leaves the current manifest untouched, and neither setup nor rollback deletes project run records.
 
 ## Skill Reference
 
@@ -179,9 +210,10 @@ The route is semi-formal, not an operating-system sandbox. Read-only role restri
 | `$rb-setup-local-agent-skills` | Repair an incomplete, stale, or undiscoverable skill installation. |
 | `$rb-sync-skills-repo` | Synchronise skill folders between this repository and agent skill directories. |
 | `$rb-context-tokens` | Inspect context size or token usage. |
-| `$rb-create-low-level-plan` | **Codex-only.** Compile one statically verifiable constrained phase into a typed operational contract. |
-| `$rb-assess-plan-safety` | **Codex-only.** Run deterministic identity, policy, capability, evidence, effect, and verification-mode checks plus semantic assessment. |
-| `$rb-safe-operation` | **Codex-only.** Execute an unchanged approved static-only bundle and verify its typed file-state criteria. |
+| `$rb-create-low-level-plan` | **Codex-only.** Compile one statically verifiable constrained phase into a schema-3 plan containing exact actions or proposal-only bounded patch operations, with fixed project-policy, provider, and resource bindings. |
+| `$rb-assess-plan-safety` | **Codex-only.** Assess the unchanged plan envelope, including identity, policy, adapter, grants, evidence, effects, approvals, and static verification limits. |
+| `$rb-safe-operation` | **Codex-only.** Obtain and assess exact bounded diffs, apply accepted bytes through coordinator code, recover from known journalled states, and run separated static verification. |
+| `$rb-create-safe-operation-policy` | **Codex-only.** Translate natural-language path restrictions into a typed fixed-root policy proposal, preview the complete authority change, and persist only after proposal-bound confirmation. |
 
 Wiki-specific operational skills live with the wiki system in [`richardmbailey/rb-wiki`](https://github.com/richardmbailey/rb-wiki). They are not duplicated in this general skill pack.
 
@@ -226,13 +258,21 @@ done
 python3 -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
 ```
 
-Install the runtime package or its declared dependency before running its tests:
+For development tests, install the runtime package and its locked dependency set. Routine skill use must use the manifest-pinned installation described above; it must not import an ambient editable package:
 
 ```bash
 python3 -m pip install -e rb-safe-operation/runtime
 ```
 
 The setup/manifest/launcher/tamper integration test requires an approved wheelhouse supplied through `RB_SAFE_OPERATION_TEST_WHEELHOUSE`; repository CI provides the reviewed Linux wheelhouse automatically.
+
+## Licence
+
+Unless a file states otherwise, the source code, skill instructions, documentation, schemas, and examples in this repository are made available under the [Mozilla Public License 2.0](LICENSE).
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this repository, you can obtain one at <https://mozilla.org/MPL/2.0/>.
+
+Copyright (c) 2026 Richard Bailey.
 
 ## Updating and Publishing
 

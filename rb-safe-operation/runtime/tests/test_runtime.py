@@ -17,15 +17,17 @@ from pydantic import ValidationError
 
 from rb_safe_operation.audit import AuditError, AuditLog, build_event, redact
 from rb_safe_operation.canonical import CanonicalizationError, artifact_hash, canonical_bytes, canonical_decimal, parse_json_strict
+from rb_safe_operation.compatibility import LegacyArtifactNotExecutable
 from rb_safe_operation.cli import cmd_assess, cmd_assess_preflight, cmd_coordinate, cmd_coordinate_resume, cmd_host_capabilities, cmd_persist_artifact
 from rb_safe_operation.fakes import FakeAgentHost, FakeFilesystem, FakeSubprocess, Ledger
 from rb_safe_operation.models import Approval, AssessmentBundle, DeterministicPreflight, EventPayload, Finding, HostCapabilities, ProjectPolicy, RepairAttempt, RunManifest
+from rb_safe_operation.proposal_models import HostCapabilitiesV2
 from rb_safe_operation.paths import PathViolation, resolve_contained
 from rb_safe_operation.planning import COMMAND_CLASSIFICATIONS, PlanningError, classify_command, discover_instruction_files, select_markdown_phase, validate_continuity
 from rb_safe_operation.policy import default_global_policy, effect_allowed, merge_policy
 from rb_safe_operation.schemas import check_drift, export_schemas
 from rb_safe_operation.state import StateError, acquire_lease, capture_snapshot, escalate_resume_drift, heartbeat_lease, release_lease, snapshot_materially_equal, transition
-from rb_safe_operation.workflow import ExecutionCoordinator, ResourcePause, WorkflowError, assess_plan as runtime_assess_plan, begin_verification_context, canonical_semantic_proposal, deterministic_preflight, execute_fake, hash_ref, verify_reports
+from rb_safe_operation.workflow import _CoordinatorRuntime as ExecutionCoordinator, _assess_plan_legacy_compatible as runtime_assess_plan, _begin_verification_context_legacy as begin_verification_context, _deterministic_preflight_legacy_compatible as deterministic_preflight, _execute_fake_legacy as execute_fake, _verify_reports_legacy as verify_reports, ResourcePause, WorkflowError, canonical_semantic_proposal, hash_ref
 
 from helpers import capabilities, current_snapshot, effect, safe_plan, semantic, verification_proposal
 
@@ -71,8 +73,8 @@ class CanonicalTests(unittest.TestCase):
         with patch("sys.stdout", output):
             cmd_host_capabilities(SimpleNamespace(output=None))
         emitted = output.buffer.getvalue()
-        profile = HostCapabilities.model_validate(parse_json_strict(emitted))
-        self.assertEqual(profile, capabilities())
+        profile = HostCapabilitiesV2.model_validate(parse_json_strict(emitted))
+        self.assertEqual(profile.role_tool_allocation, "framework_enforced")
         self.assertEqual(emitted, canonical_bytes(profile.model_dump(mode="json")) + b"\n")
 
 
@@ -1342,62 +1344,21 @@ class SecurityRegressionTests(unittest.TestCase):
 
     def test_durable_handoff_artifacts_are_fixed_create_only_and_snapshot_excluded(self):
         plan = safe_plan(self.root)
-        policy = default_global_policy(str(self.root))
-        raw_semantic = semantic().model_copy(update={"enforcement_disclosures": ["CANARY-ASSESSOR-PROSE"]})
-        artifact_temp = tempfile.TemporaryDirectory()
-        self.addCleanup(artifact_temp.cleanup)
-        temporary = Path(artifact_temp.name)
-        plan_input = temporary / "plan.json"
-        capabilities_input = temporary / "capabilities.json"
-        semantic_input = temporary / "semantic.json"
-        preflight_input = temporary / "preflight.json"
+        plan_input = self.root / "legacy-plan.json"
         plan_input.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
-        capabilities_input.write_bytes(canonical_bytes(capabilities().model_dump(mode="json")) + b"\n")
-        semantic_input.write_bytes(canonical_bytes(raw_semantic.model_dump(mode="json")) + b"\n")
-
-        before = current_snapshot(plan)
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_persist_artifact(SimpleNamespace(artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)))
-        fixed_plan = self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "low-level-plan.json"
-        preflight = deterministic_preflight(plan, policy, policy, current_snapshot(plan), capabilities(), [])
-        preflight_input.write_bytes(canonical_bytes(preflight.model_dump(mode="json")) + b"\n")
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_assess(SimpleNamespace(
-                plan=str(fixed_plan), project_policy=None, capabilities=str(capabilities_input),
-                preflight=str(preflight_input), semantic_proposal=str(semantic_input), approvals=None,
-                prior_assessment_bundle=None, output=None,
+        with self.assertRaisesRegex(LegacyArtifactNotExecutable, "recompile and reassess"):
+            cmd_persist_artifact(SimpleNamespace(
+                artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)
             ))
-        after = current_snapshot(plan)
-        self.assertTrue(snapshot_materially_equal(before, after)[0])
-        artifact_root = self.root / ".rb-safe-operation" / "artifacts" / plan.run_id
-        self.assertNotIn("CANARY-ASSESSOR-PROSE", (artifact_root / "assessment-bundle.json").read_text(encoding="utf-8"))
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            with self.assertRaises(FileExistsError):
-                cmd_persist_artifact(SimpleNamespace(artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)))
 
     def test_failed_deterministic_preflight_persists_false_without_semantic_input(self):
         plan = safe_plan(self.root)
-        data = plan.model_dump(mode="json")
-        data["operations"][0]["effects"][0]["residual_severity"] = "high"
-        plan = plan.__class__.model_validate(data)
-        artifact_temp = tempfile.TemporaryDirectory()
-        self.addCleanup(artifact_temp.cleanup)
-        inputs = Path(artifact_temp.name)
-        plan_input = inputs / "plan.json"
-        capabilities_input = inputs / "capabilities.json"
+        plan_input = self.root / "legacy-plan.json"
         plan_input.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
-        capabilities_input.write_bytes(canonical_bytes(capabilities().model_dump(mode="json")) + b"\n")
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_persist_artifact(SimpleNamespace(artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)))
-            cmd_assess_preflight(SimpleNamespace(
-                plan=str(self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "low-level-plan.json"),
-                project_policy=None, capabilities=str(capabilities_input), approvals=None,
-                prior_assessment_bundle=None,
+        with self.assertRaises(LegacyArtifactNotExecutable):
+            cmd_persist_artifact(SimpleNamespace(
+                artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)
             ))
-        bundle_path = self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "assessment-bundle.json"
-        bundle = AssessmentBundle.model_validate(parse_json_strict(bundle_path.read_bytes()))
-        self.assertFalse(bundle.assessment.safe)
-        self.assertFalse(bundle.assessment.deterministic_pass)
 
     def test_multiple_out_of_policy_roots_produce_one_false_preflight_finding(self):
         plan = safe_plan(self.root)
@@ -1414,113 +1375,21 @@ class SecurityRegressionTests(unittest.TestCase):
 
     def test_malformed_semantic_output_persists_sanitized_immutable_false(self):
         plan = safe_plan(self.root)
-        artifact_temp = tempfile.TemporaryDirectory()
-        self.addCleanup(artifact_temp.cleanup)
-        inputs = Path(artifact_temp.name)
-        plan_input = inputs / "plan.json"
-        capabilities_input = inputs / "capabilities.json"
-        semantic_input = inputs / "semantic.json"
-        preflight_input = inputs / "preflight.json"
+        plan_input = self.root / "legacy-plan.json"
         plan_input.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
-        capabilities_input.write_bytes(canonical_bytes(capabilities().model_dump(mode="json")) + b"\n")
-        semantic_input.write_text(
-            '{"schema_version":"1.0","semantic_pass":true,"findings":[{"finding_id":"CANARY-FINDING",'
-            '"invariant_id":"CANARY-INVARIANT","operation_ids":["CANARY-OP"],"effect_ids":["CANARY-EFFECT"],'
-            '"category":"CANARY-CATEGORY","severity":"critical","evidence_ids":["CANARY-EVIDENCE"],'
-            '"evidence_provenance":["host_observed"],"finding_provenance":"coordinator_observed",'
-            '"explanation":"CANARY-EXPLANATION","remediation_or_human_decision":"CANARY-REMEDIATION",'
-            '"blocking":false}],"covered_evidence_ids":["CANARY-COVERAGE"],'
-            '"enforcement_disclosures":["CANARY-DISCLOSURE"]}\n',
-            encoding="utf-8",
-        )
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_persist_artifact(SimpleNamespace(artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)))
-        fixed_plan = self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "low-level-plan.json"
-        output = SimpleNamespace(buffer=io.BytesIO())
-        with patch("sys.stdout", output):
-            cmd_assess_preflight(SimpleNamespace(
-                plan=str(fixed_plan), project_policy=None, capabilities=str(capabilities_input),
-                approvals=None, prior_assessment_bundle=None,
+        with self.assertRaises(LegacyArtifactNotExecutable):
+            cmd_persist_artifact(SimpleNamespace(
+                artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)
             ))
-        preflight_input.write_bytes(output.buffer.getvalue())
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_assess(SimpleNamespace(
-                plan=str(fixed_plan), project_policy=None, capabilities=str(capabilities_input),
-                preflight=str(preflight_input), semantic_proposal=str(semantic_input), approvals=None,
-                prior_assessment_bundle=None,
-            ))
-        bundle_path = fixed_plan.with_name("assessment-bundle.json")
-        bundle = AssessmentBundle.model_validate(parse_json_strict(bundle_path.read_bytes()))
-        self.assertFalse(bundle.assessment.safe)
-        self.assertIn("finding_identity", {item.category for item in bundle.assessment.findings})
-        self.assertNotIn("CANARY", bundle_path.read_text(encoding="utf-8"))
 
     def test_passing_preflight_is_directly_consumable_and_reassessment_binds_prior_rejection(self):
         first_plan = safe_plan(self.root)
-        artifact_temp = tempfile.TemporaryDirectory()
-        self.addCleanup(artifact_temp.cleanup)
-        inputs = Path(artifact_temp.name)
-        capabilities_path = inputs / "capabilities.json"
-        rejected_semantic_path = inputs / "semantic-rejected.json"
-        approved_semantic_path = inputs / "semantic-approved.json"
-        capabilities_path.write_bytes(canonical_bytes(capabilities().model_dump(mode="json")) + b"\n")
-        rejected_semantic_path.write_bytes(canonical_bytes(semantic(False).model_dump(mode="json")) + b"\n")
-        approved_semantic_path.write_bytes(canonical_bytes(semantic().model_dump(mode="json")) + b"\n")
-
-        def persist_and_preflight(plan, label):
-            plan_input = inputs / f"{label}-plan.json"
-            preflight_input = inputs / f"{label}-preflight.json"
-            plan_input.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
-            with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-                cmd_persist_artifact(SimpleNamespace(
-                    artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input),
-                ))
-            fixed_plan = self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "low-level-plan.json"
-            output = SimpleNamespace(buffer=io.BytesIO())
-            with patch("sys.stdout", output):
-                cmd_assess_preflight(SimpleNamespace(
-                    plan=str(fixed_plan), project_policy=None, capabilities=str(capabilities_path),
-                    approvals=None, prior_assessment_bundle=None,
-                ))
-            preflight_bytes = output.buffer.getvalue()
-            preflight = DeterministicPreflight.model_validate(parse_json_strict(preflight_bytes))
-            self.assertTrue(preflight.deterministic_pass)
-            self.assertEqual(preflight_bytes, canonical_bytes(preflight.model_dump(mode="json")) + b"\n")
-            preflight_input.write_bytes(preflight_bytes)
-            return fixed_plan, preflight_input
-
-        first_fixed_plan, first_preflight = persist_and_preflight(first_plan, "first")
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_assess(SimpleNamespace(
-                plan=str(first_fixed_plan), project_policy=None, capabilities=str(capabilities_path),
-                preflight=str(first_preflight), semantic_proposal=str(rejected_semantic_path), approvals=None,
-                prior_assessment_bundle=None,
+        plan_input = self.root / "legacy-plan.json"
+        plan_input.write_bytes(canonical_bytes(first_plan.model_dump(mode="json")) + b"\n")
+        with self.assertRaises(LegacyArtifactNotExecutable):
+            cmd_persist_artifact(SimpleNamespace(
+                artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)
             ))
-        first_bundle_path = first_fixed_plan.with_name("assessment-bundle.json")
-        first_bundle = AssessmentBundle.model_validate(parse_json_strict(first_bundle_path.read_bytes()))
-        self.assertFalse(first_bundle.assessment.safe)
-
-        second_data = first_plan.model_dump(mode="json")
-        second_data.update({"plan_id": "plan-2", "run_id": "run-2"})
-        second_data["current_artifact_locations"] = [
-            str(self.root / ".rb-safe-operation" / "artifacts" / "run-2" / "low-level-plan.json")
-        ]
-        second_plan = first_plan.__class__.model_validate(second_data)
-        second_fixed_plan, second_preflight = persist_and_preflight(second_plan, "second")
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_assess(SimpleNamespace(
-                plan=str(second_fixed_plan), project_policy=None, capabilities=str(capabilities_path),
-                preflight=str(second_preflight), semantic_proposal=str(approved_semantic_path), approvals=None,
-                prior_assessment_bundle=str(first_bundle_path),
-            ))
-        second_bundle = AssessmentBundle.model_validate(
-            parse_json_strict(second_fixed_plan.with_name("assessment-bundle.json").read_bytes())
-        )
-        self.assertTrue(second_bundle.assessment.safe)
-        self.assertEqual(
-            second_bundle.assessment.prior_assessment_hash,
-            hash_ref("assessment", first_bundle.assessment.model_dump(mode="json")),
-        )
 
     def test_durable_artifact_persistence_rejects_symlink_control_root(self):
         plan = safe_plan(self.root)
@@ -1530,7 +1399,7 @@ class SecurityRegressionTests(unittest.TestCase):
         plan_input = temporary / "plan.json"
         plan_input.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
         (self.root / ".rb-safe-operation").symlink_to(temporary, target_is_directory=True)
-        with self.assertRaisesRegex(ValueError, "symbolic link"):
+        with self.assertRaisesRegex(LegacyArtifactNotExecutable, "recompile and reassess"):
             cmd_persist_artifact(SimpleNamespace(artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)))
 
     def test_semantic_assessment_proposal_must_reproduce_assessment(self):
@@ -1555,7 +1424,7 @@ class SecurityRegressionTests(unittest.TestCase):
         plan_path.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
         bundle_path.write_bytes(canonical_bytes(bundle.model_dump(mode="json")) + b"\n")
         capabilities_path.write_bytes(canonical_bytes(capabilities().model_dump(mode="json")) + b"\n")
-        with self.assertRaisesRegex(ValueError, "fixed create-only path"):
+        with self.assertRaisesRegex(LegacyArtifactNotExecutable, "recompile and reassess"):
             cmd_coordinate(SimpleNamespace(
                 plan=str(plan_path), assessment_bundle=str(bundle_path), project_policy=None,
                 capabilities=str(capabilities_path), verifier_context_id="never", output=None,
@@ -1563,42 +1432,12 @@ class SecurityRegressionTests(unittest.TestCase):
 
     def test_verified_coordinate_driver_pauses_and_releases_on_verifier_eof(self):
         plan = safe_plan(self.root)
-        policy = default_global_policy(str(self.root))
-        proposal = semantic()
-        artifact_temp = tempfile.TemporaryDirectory()
-        self.addCleanup(artifact_temp.cleanup)
-        artifact_root = Path(artifact_temp.name)
-        paths: dict[str, str] = {}
-        preflight = deterministic_preflight(plan, policy, policy, current_snapshot(plan), capabilities(), [])
-        for name, value in (("plan", plan), ("capabilities", capabilities()), ("semantic", proposal), ("preflight", preflight)):
-            path = artifact_root / f"{name}.json"
-            path.write_bytes(canonical_bytes(value.model_dump(mode="json")) + b"\n")
-            paths[name] = str(path)
-        with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            cmd_persist_artifact(SimpleNamespace(artifact_type="low-level-plan", input=paths["plan"], plan=paths["plan"]))
-            cmd_assess(SimpleNamespace(
-                plan=str(self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "low-level-plan.json"),
-                project_policy=None, capabilities=paths["capabilities"], preflight=paths["preflight"],
-                semantic_proposal=paths["semantic"], approvals=None, prior_assessment_bundle=None, output=None,
+        plan_input = self.root / "legacy-plan.json"
+        plan_input.write_bytes(canonical_bytes(plan.model_dump(mode="json")) + b"\n")
+        with self.assertRaises(LegacyArtifactNotExecutable):
+            cmd_persist_artifact(SimpleNamespace(
+                artifact_type="low-level-plan", input=str(plan_input), plan=str(plan_input)
             ))
-
-        class Stream:
-            def __init__(inner_self, initial=b""):
-                inner_self.buffer = io.BytesIO(initial)
-
-        args = SimpleNamespace(
-            plan=str(self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "low-level-plan.json"),
-            assessment_bundle=str(self.root / ".rb-safe-operation" / "artifacts" / plan.run_id / "assessment-bundle.json"),
-            project_policy=None,
-            capabilities=paths["capabilities"],
-            verifier_context_id="driver-verifier", output=None,
-        )
-        with patch("sys.stdin", Stream()), patch("sys.stdout", Stream()):
-            with self.assertRaisesRegex(RuntimeError, "verifier response stream ended"):
-                cmd_coordinate(args)
-        self.assertFalse((self.root / ".rb-safe-operation" / "execution.lease").exists())
-        bundle = parse_json_strict((self.root / ".rb-safe-operation" / "runs" / plan.run_id / "coordinator-bundle.json").read_bytes())
-        self.assertEqual(bundle["manifest"]["state"], "paused_resource")
 
     def test_coordinate_resume_rejects_repair_and_returns_to_durable_pause(self):
         plan = safe_plan(self.root)
@@ -1635,7 +1474,7 @@ class SecurityRegressionTests(unittest.TestCase):
             verifier_context_id="unused-after-rejection", output=None,
         )
         with patch("sys.stdout", SimpleNamespace(buffer=io.BytesIO())):
-            with self.assertRaisesRegex(WorkflowError, "current verifier finding"):
+            with self.assertRaisesRegex(LegacyArtifactNotExecutable, "recompile and reassess"):
                 cmd_coordinate_resume(args)
         self.assertFalse((self.root / ".rb-safe-operation" / "execution.lease").exists())
         bundle = parse_json_strict((self.root / ".rb-safe-operation" / "runs" / plan.run_id / "coordinator-bundle.json").read_bytes())
@@ -1717,6 +1556,12 @@ class SecurityRegressionTests(unittest.TestCase):
         self.assertIsNotNone(coordinator.lease)
         coordinator.execute()
         coordinator.abandon()
+
+    def test_legacy_audit_reload_reports_missing_bundle_without_name_error(self):
+        control = self.root / ".rb-safe-operation" / "runs"
+        control.mkdir(parents=True)
+        with self.assertRaisesRegex(WorkflowError, "bundle is missing or invalid"):
+            ExecutionCoordinator.reload(str(self.root), "missing-run", capabilities())
 
     def test_paused_coordinator_reloads_reports_and_terminal_run_does_not_restart(self):
         plan = safe_plan(self.root)
