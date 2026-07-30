@@ -17,7 +17,7 @@ import tempfile
 import time
 
 from rb_safe_operation.acceptance import summarize_acceptance_run
-from rb_safe_operation.canonical import artifact_hash, canonical_bytes
+from rb_safe_operation.canonical import artifact_hash, canonical_bytes, parse_json_strict
 from rb_safe_operation.cli import cmd_codex_run
 from rb_safe_operation.models import HashRef
 from rb_safe_operation.patches import capture_file_metadata, metadata_fingerprint_hash
@@ -26,6 +26,7 @@ from rb_safe_operation.policy import default_global_policy
 from rb_safe_operation.project_policy import load_project_policy
 from rb_safe_operation.proposal_models import (
     ApplyPatchActionV2,
+    AssessmentBundleV2,
     BoundedAgentTaskV2,
     LowLevelPlanV2,
     RepositorySnapshotV2,
@@ -370,6 +371,61 @@ def _build_plan(
     return plan, expected
 
 
+def _redacted_rejection_result(
+    *,
+    bundle: AssessmentBundleV2,
+    raw: bytes,
+    scenario: str,
+    run_id: str,
+    doctor_status: str,
+    wall_milliseconds: int,
+) -> dict[str, object]:
+    """Describe a safe plan-assessment stop without copying finding prose or paths."""
+
+    findings = bundle.assessment.findings
+    return {
+        "type": "codex_acceptance_rejected",
+        "scenario": scenario,
+        "run_id": run_id,
+        "doctor_status": doctor_status,
+        "assessment_bundle_sha256": hashlib.sha256(raw).hexdigest(),
+        "assessment_status": bundle.assessment.status,
+        "assessment_safe": bundle.assessment.safe,
+        "finding_ids": sorted(item.finding_id for item in findings),
+        "finding_categories": sorted({item.category for item in findings}),
+        "invariant_ids": sorted({item.invariant_id for item in findings}),
+        "wall_milliseconds": wall_milliseconds,
+        "manual_protocol_repair": False,
+    }
+
+
+def _load_rejected_assessment_result(
+    *,
+    root: Path,
+    scenario: str,
+    run_id: str,
+    doctor_status: str,
+    wall_milliseconds: int,
+) -> dict[str, object] | None:
+    path = root / ".rb-safe-operation" / "artifacts" / run_id / "assessment-bundle.json"
+    if not path.is_file() or path.is_symlink():
+        return None
+    raw = path.read_bytes()
+    bundle = AssessmentBundleV2.model_validate(parse_json_strict(raw))
+    if raw != canonical_bytes(bundle.model_dump(mode="json")) + b"\n":
+        raise ValueError("acceptance assessment bundle is not canonical")
+    if bundle.assessment.safe or bundle.assessment.status != "rejected":
+        return None
+    return _redacted_rejection_result(
+        bundle=bundle,
+        raw=raw,
+        scenario=scenario,
+        run_id=run_id,
+        doctor_status=doctor_status,
+        wall_milliseconds=wall_milliseconds,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scenario", choices=("exact-create", "bounded-one", "bounded-multi"), required=True)
@@ -399,6 +455,20 @@ def main() -> int:
         verifier_context_id=f"verifier-{args.run_id}",
     ))
     wall_milliseconds = round((time.monotonic() - started) * 1000)
+    coordinator_bundle = (
+        root / ".rb-safe-operation" / "runs" / args.run_id / "coordinator-bundle.json"
+    )
+    if not coordinator_bundle.is_file():
+        rejected = _load_rejected_assessment_result(
+            root=root,
+            scenario=args.scenario,
+            run_id=args.run_id,
+            doctor_status=doctor.status,
+            wall_milliseconds=wall_milliseconds,
+        )
+        if rejected is not None:
+            print(json.dumps(rejected, sort_keys=True, separators=(",", ":")))
+            return 2
     summary = summarize_acceptance_run(str(root), args.run_id)
     observed = {
         relative: hashlib.sha256((root / relative).read_bytes()).hexdigest()

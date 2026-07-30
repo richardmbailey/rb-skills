@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 import tempfile
 import unittest
 
@@ -16,6 +18,36 @@ SPEC.loader.exec_module(DRIVER)
 
 
 class CodexAcceptanceDriverTests(unittest.TestCase):
+    def test_rejected_assessment_result_is_redacted_and_does_not_need_coordinator_bundle(self) -> None:
+        raw = b'{"synthetic":"canonical assessment bytes"}\n'
+        finding = SimpleNamespace(
+            finding_id="finding-source-context",
+            category="incomplete_operation",
+            invariant_id="O-001",
+            explanation="synthetic source text that must not be copied",
+        )
+        bundle = SimpleNamespace(
+            assessment=SimpleNamespace(
+                findings=[finding],
+                status="rejected",
+                safe=False,
+            )
+        )
+        result = DRIVER._redacted_rejection_result(
+            bundle=bundle,
+            raw=raw,
+            scenario="bounded-one",
+            run_id="codex-accept-test-rejected",
+            doctor_status="ready_codex_cli",
+            wall_milliseconds=123,
+        )
+        self.assertEqual(result["type"], "codex_acceptance_rejected")
+        self.assertEqual(result["finding_ids"], ["finding-source-context"])
+        self.assertEqual(result["assessment_safe"], False)
+        self.assertEqual(result["assessment_bundle_sha256"], hashlib.sha256(raw).hexdigest())
+        self.assertNotIn("explanation", result)
+        self.assertNotIn("synthetic source text", str(result))
+
     def test_all_scenarios_build_and_pass_deterministic_preflight(self) -> None:
         for scenario, calls, expected in (
             ("exact-create", 3, {"created.txt": "created\n"}),

@@ -225,7 +225,9 @@ class CodexCliTransportTests(unittest.TestCase):
 
     def test_plan_assessor_contract_separates_proposer_reads_from_static_verification(self) -> None:
         contract = _ROLE_CONTRACTS["plan_assessor"]
-        self.assertIn("allowed_read_tools governs proposer interactive reads", contract)
+        self.assertIn("selected source text is absent from this assessment packet", contract)
+        self.assertIn("includes its exact complete text in the fixed proposer packet", contract)
+        self.assertIn("allowed_read_tools governs only additional interactive reads", contract)
         self.assertIn("read_roots must cover every deliberately selected source file", contract)
         self.assertIn("expected_product_changes", contract)
         self.assertIn("does not require the new product targets to be proposer read roots", contract)
