@@ -11,6 +11,7 @@ from .canonical import artifact_hash, canonical_bytes, source_tree_hash
 from .models import ActivePolicy, Approval, Assessment, AssessmentBundle, AuditEvent, DeterministicPreflight, ExecutionReport, HostCapabilities, HumanIntervention, LowLevelPlan, ProjectPolicy, RepairAttempt, RepositorySnapshot, RunManifest, SemanticAssessmentProposal, VerificationProposal, VerificationReport
 from .proposal_models import (
     AgentPatchProposal,
+    AutomaticRetryRecord,
     ApplyIntent,
     ApprovalV2,
     AssessmentBundleV2,
@@ -128,6 +129,7 @@ MODEL_SCHEMAS = {
     ("proposal-cycle-record", "2.0"): ProposalCycleRecord,
     ("proposal-request", "2.0"): ProposalRequest,
     ("agent-patch-proposal", "1.0"): AgentPatchProposal,
+    ("automatic-retry-record", "1.0"): AutomaticRetryRecord,
     ("bounded-patch-proposal", "2.0"): BoundedPatchProposal,
     ("patch-proposal-preflight", "2.0"): PatchProposalPreflight,
     ("patch-semantic-assessment-proposal", "2.0"): PatchSemanticAssessmentProposal,

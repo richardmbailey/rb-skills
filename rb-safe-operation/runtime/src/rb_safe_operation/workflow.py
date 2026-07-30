@@ -47,6 +47,7 @@ from .patches import (
 )
 from .proposal_cycle import ProposalCycleArtifacts, ProposalCycleService, ProposalSafetyRejected
 from .proposal_models import (
+    AutomaticRetryRecord,
     ApplyIntent,
     ApprovalV2,
     AssessmentBundleV2,
@@ -119,6 +120,39 @@ class ResourcePause(WorkflowError):
 
 def hash_ref(artifact_type: str, payload: Any, schema_version: str = "1.0") -> HashRef:
     return HashRef(artifact_type=artifact_type, schema_version=schema_version, value=artifact_hash(artifact_type, schema_version, payload))
+
+
+def _proposer_call_evidence(
+    adapter: str,
+    request: ProposalRequest,
+    response: AgentPatchProposal,
+) -> tuple[str, str, int, int]:
+    """Reproduce the bytes that each owned role host records for a proposer call."""
+
+    if adapter == "pydantic_ai":
+        request_bytes = canonical_bytes(request.model_dump(mode="json"))
+        response_bytes = canonical_bytes(response.model_dump(mode="json"))
+    elif adapter == "json_line":
+        request_bytes = canonical_bytes({
+            "type": "role_request",
+            "role": "proposer",
+            "adapter": "json_line",
+            "payload": request.model_dump(mode="json"),
+        }) + b"\n"
+        response_bytes = canonical_bytes({
+            "type": "role_response",
+            "role": "proposer",
+            "adapter": "json_line",
+            "payload": response.model_dump(mode="json"),
+        })
+    else:
+        raise WorkflowError("automatic retry role call uses an unsupported adapter")
+    return (
+        hashlib.sha256(request_bytes).hexdigest(),
+        hashlib.sha256(response_bytes).hexdigest(),
+        len(request_bytes),
+        len(response_bytes),
+    )
 
 
 def _boundary_copy(value: Any, model_type):
@@ -1501,6 +1535,7 @@ class _CoordinatorRuntime:
         reproduced = _assess_plan_legacy_compatible(
             self.plan, self.global_policy, self.active_policy, self.plan.snapshot,
             self.capabilities, self.semantic_proposal, self.assessment.approvals,
+            prior_assessment_hash=self.assessment.prior_assessment_hash,
             provider_grant=self.provider_grant,
             run_resource_grant=self.run_resource_grant,
         )
@@ -1557,6 +1592,7 @@ class _CoordinatorRuntime:
         self.current_metadata = {}
         self.current_apply_intent = None
         self.role_call_records = []
+        self.automatic_retry_history = []
         self.active_semantic_request_token = None
         self.completed_semantic_request_tokens = []
         self.proposal_history = []
@@ -1678,6 +1714,7 @@ class _CoordinatorRuntime:
             repair_outcomes=self.repair_outcomes,
             proposal_cycle_history=self.proposal_cycle_history,
             role_call_records=host_records,
+            automatic_retry_history=self.automatic_retry_history,
             active_semantic_request_token=self.active_semantic_request_token,
             completed_semantic_request_tokens=self.completed_semantic_request_tokens,
             post_execution_snapshot=self.post_execution_snapshot,
@@ -1801,6 +1838,7 @@ class _CoordinatorRuntime:
         self._metadata_loader = metadata_loader or capture_file_metadata
         self.proposal_approvals = bundle.proposal_approvals
         self.role_call_records = list(bundle.role_call_records)
+        self.automatic_retry_history = list(bundle.automatic_retry_history)
         if self.role_call_records:
             adopt_call_record = getattr(role_host, "adopt_call_record", None)
             if adopt_call_record is None:
@@ -1854,6 +1892,79 @@ class _CoordinatorRuntime:
         self._verification_policy_denied_rule_ids = []
         self._persisted_bundle_hash = hashlib.sha256(persisted).hexdigest()
         self._closed = False
+        if self.automatic_retry_history:
+            semantic_root = self.run_root / "semantic-calls"
+            if semantic_root.is_symlink() or not semantic_root.is_dir():
+                raise WorkflowError("automatic retry evidence directory is missing or unsafe")
+            for retry in self.automatic_retry_history:
+                call_root = semantic_root / retry.failed_request_token
+                request_path = call_root / "request.json"
+                response_path = call_root / "response.json"
+                try:
+                    if (
+                        call_root.is_symlink()
+                        or not call_root.is_dir()
+                        or request_path.is_symlink()
+                        or response_path.is_symlink()
+                        or not request_path.is_file()
+                        or not response_path.is_file()
+                    ):
+                        raise ValueError("automatic retry request or response is missing or unsafe")
+                    request_raw = request_path.read_bytes()
+                    request = ProposalRequest.model_validate(parse_json_strict(request_raw))
+                    response_raw = response_path.read_bytes()
+                    response = AgentPatchProposal.model_validate(parse_json_strict(response_raw))
+                    if request_raw != canonical_bytes(request.model_dump(mode="json")) + b"\n":
+                        raise ValueError("automatic retry request is not canonical")
+                    if response_raw != canonical_bytes(response.model_dump(mode="json")) + b"\n":
+                        raise ValueError("automatic retry response is not canonical")
+                    if (
+                        request.context.request_token != retry.failed_request_token
+                        or response.request_token != retry.failed_request_token
+                        or request.context.operation_id != retry.operation_id
+                        or response.operation_id != retry.operation_id
+                        or request.context.attempt_id != retry.operation_attempt_id
+                        or response.attempt_id != retry.operation_attempt_id
+                        or request.context.plan_hash != self.plan_hash
+                        or request.context.plan_assessment_hash != self.assessment_hash
+                        or request.context.policy_binding != self.policy_binding
+                        or request.context.run_resource_grant_hash != retry.resource_grant_hash
+                    ):
+                        raise ValueError("automatic retry evidence differs from its durable authority")
+                    response_hash = artifact_hash(
+                        "agent-patch-proposal", "1.0", response.model_dump(mode="json")
+                    )
+                    if response_hash != retry.rejected_response_hash.value:
+                        raise ValueError("automatic retry response hash differs")
+                    matching_calls = [
+                        item
+                        for item in self.role_call_records
+                        if artifact_hash(
+                            "role-call-record", "2.0", item.model_dump(mode="json")
+                        ) == retry.role_call_record_hash.value
+                    ]
+                    if len(matching_calls) != 1:
+                        raise ValueError("automatic retry role call is missing or ambiguous")
+                    role_call = matching_calls[0]
+                    (
+                        expected_request_hash,
+                        expected_response_hash,
+                        expected_request_bytes,
+                        expected_response_bytes,
+                    ) = _proposer_call_evidence(role_call.adapter, request, response)
+                    if (
+                        role_call.request_hash != expected_request_hash
+                        or role_call.response_hash != expected_response_hash
+                        or role_call.request_bytes != expected_request_bytes
+                        or role_call.response_bytes != expected_response_bytes
+                        or role_call.request_hash != retry.request_sha256
+                        or role_call.response_hash != retry.response_sha256
+                    ):
+                        raise ValueError("automatic retry role-call hashes differ from its evidence")
+                except Exception as exc:
+                    raise WorkflowError(
+                        "automatic retry evidence is missing, malformed, or inconsistent"
+                    ) from exc
         self.lease = acquire_lease(
             self.plan.snapshot.project_root, self.plan.run_id,
             self.plan.snapshot.device_identity, self.manifest.event_head_hash,
@@ -2078,6 +2189,14 @@ class _CoordinatorRuntime:
                 str(item.path): self._metadata_loader(item.path)
                 for item in self.current_prepared_patch.targets if item.action in {"modify", "delete"}
             }
+        elif (
+            self.manifest.state == "proposing"
+            and self.automatic_retry_history
+            and self.current_proposal_context is None
+            and self.current_agent_proposal is None
+            and self.current_proposal is None
+        ):
+            pass
         elif self.manifest.state not in {"executing", "verifying", "repairing", "paused_resource"}:
             self._record_unknown_recovery_v2(
                 f"interrupted lifecycle {self.manifest.state} has no safely resumable checkpoint"
@@ -2829,15 +2948,123 @@ class _CoordinatorRuntime:
                 request.context.request_token, "request.json", request
             )
             self.active_semantic_request_token = request.context.request_token
-        elif stage == "proposal_received":
-            context, agent, prepared, proposal, metadata, exact_changes, source_inputs = payload
+        elif stage == "proposer_response_received":
+            context, agent, source_inputs = payload
+            if self.active_semantic_request_token != context.request_token:
+                raise WorkflowError("proposer response differs from the active semantic request")
             self._persist_semantic_call_artifact(
                 context.request_token, "response.json", agent
             )
-            if self.active_semantic_request_token != context.request_token:
-                raise WorkflowError("proposer response differs from the active semantic request")
             self.active_semantic_request_token = None
             self.completed_semantic_request_tokens.append(context.request_token)
+            self.current_proposal_context = context
+            self.current_agent_proposal = agent
+            self.current_source_inputs = source_inputs
+        elif stage == "automatic_retry_scheduled":
+            context, agent, retry_index, failure_class = payload
+            if self.active_semantic_request_token is not None:
+                raise WorkflowError("automatic retry cannot begin while a semantic call is active")
+            if context.request_token not in self.completed_semantic_request_tokens:
+                raise WorkflowError("automatic retry requires a durably completed proposer response")
+            host_records = list(getattr(self.agent_host, "call_records", []))
+            if not host_records:
+                raise WorkflowError("automatic retry requires a complete role-call usage record")
+            role_call = host_records[-1]
+            if (
+                role_call.role != "proposer"
+                or role_call.outcome != "success"
+                or not role_call.usage_complete
+            ):
+                raise WorkflowError(
+                    "automatic retry requires a successful proposer call with complete usage"
+                )
+            request_path = (
+                self.run_root / "semantic-calls" / context.request_token / "request.json"
+            )
+            try:
+                request = ProposalRequest.model_validate(
+                    parse_json_strict(request_path.read_bytes())
+                )
+            except Exception as exc:
+                raise WorkflowError(
+                    "automatic retry requires its canonical proposer request"
+                ) from exc
+            (
+                expected_request_hash,
+                expected_response_hash,
+                expected_request_bytes,
+                expected_response_bytes,
+            ) = _proposer_call_evidence(role_call.adapter, request, agent)
+            if (
+                request.context.request_token != context.request_token
+                or role_call.adapter != self.provider_grant.adapter
+                or role_call.assurance_profile != context.assurance_profile
+                or role_call.provider_grant_hash != self.provider_grant_hash
+                or role_call.policy_binding != self.policy_binding
+                or role_call.provider != self.provider_grant.provider
+                or role_call.endpoint != self.provider_grant.endpoint
+                or role_call.model != self.provider_grant.model
+                or role_call.model_revision != self.provider_grant.model_revision
+                or role_call.host_revision != self.provider_grant.host_revision
+                or role_call.request_hash != expected_request_hash
+                or role_call.response_hash != expected_response_hash
+                or role_call.request_bytes != expected_request_bytes
+                or role_call.response_bytes != expected_response_bytes
+            ):
+                raise WorkflowError(
+                    "automatic retry proposer call differs from its exact request or response"
+                )
+            response_hash = hash_ref(
+                "agent-patch-proposal", agent.model_dump(mode="json"), "1.0"
+            )
+            role_call_hash = hash_ref(
+                "role-call-record", role_call.model_dump(mode="json"), "2.0"
+            )
+            retry_key = (
+                f"{operation.operation_id}:{context.request_token}:{retry_index}:{failure_class}"
+            )
+            retry = AutomaticRetryRecord(
+                schema_version="1.0",
+                retry_id=f"retry-{hashlib.sha256(retry_key.encode()).hexdigest()[:24]}",
+                retry_index=retry_index,
+                role="proposer",
+                failure_class=failure_class,
+                operation_id=operation.operation_id,
+                operation_attempt_id=context.attempt_id,
+                failed_request_token=context.request_token,
+                rejected_response_hash=response_hash,
+                role_call_record_hash=role_call_hash,
+                request_sha256=role_call.request_hash,
+                response_sha256=role_call.response_hash,
+                resource_grant_hash=self.run_resource_grant_hash,
+                product_state_unchanged=True,
+                protected_control_state_unchanged=True,
+                usage_complete=True,
+                recorded_at=datetime.now(timezone.utc).replace(microsecond=0).strftime(
+                    "%Y-%m-%dT%H:%M:%SZ"
+                ),
+                policy_binding=self.policy_binding,
+            )
+            self.automatic_retry_history.append(retry)
+            self._append_event_v2(
+                "automatic_retry_scheduled",
+                "proposing",
+                "proposing",
+                "a confirmed pre-mutation proposal-format retry was scheduled",
+                operation_id=operation.operation_id,
+                attempt_id=context.attempt_id,
+                evidence_ids=[
+                    f"agent-patch-proposal:{response_hash.value}",
+                    f"role-call-record:{role_call_hash.value}",
+                ],
+            )
+            self.current_proposal_context = None
+            self.current_agent_proposal = None
+            self.current_source_inputs = []
+        elif stage == "proposal_received":
+            context, agent, prepared, proposal, metadata, exact_changes, source_inputs = payload
+            if context.request_token not in self.completed_semantic_request_tokens:
+                raise WorkflowError("proposer response lacks a completed durable semantic call")
             self.current_proposal_context = context
             self.current_agent_proposal = agent
             self.current_prepared_patch = prepared
@@ -3542,6 +3769,28 @@ class _CoordinatorRuntime:
                         root_resource_grant_hash=self.plan.run_resource_grant_hash,
                         authorized_resource_grants=self.resource_grant_history,
                     )
+                    operation_retries = [
+                        item
+                        for item in self.automatic_retry_history
+                        if item.operation_id == operation.operation_id
+                        and item.operation_attempt_id == (
+                            "attempt-initial"
+                            if self.pending_repair_attempt is None
+                            else self.pending_repair_attempt.attempt_id
+                        )
+                    ]
+                    prior_retry_context = None
+                    if operation_retries:
+                        last_retry = operation_retries[-1]
+                        prior_retry_context = {
+                            "retry_index": last_retry.retry_index,
+                            "failure_class": last_retry.failure_class,
+                            "failed_request_token": last_retry.failed_request_token,
+                            "correction": (
+                                "Return a syntactically complete standard unified diff. Keep the same "
+                                "operation, paths, actions, effects, and safety envelope."
+                            ),
+                        }
                     artifacts = service.run(
                         operation.operation_id,
                         attempt_id="attempt-initial" if self.pending_repair_attempt is None else self.pending_repair_attempt.attempt_id,
@@ -3552,6 +3801,8 @@ class _CoordinatorRuntime:
                         ),
                         state_guard=state_guard,
                         artifact_checkpoint=artifact_checkpoint,
+                        automatic_retry_count=len(operation_retries),
+                        retry_context=prior_retry_context,
                     )
                     if not artifacts.patch_assessment.safe or self.manifest.state != "proposal_approved":
                         raise ProposalSafetyRejected("proposal did not reach an approved commit state")

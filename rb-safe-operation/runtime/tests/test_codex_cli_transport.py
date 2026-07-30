@@ -5,17 +5,21 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from rb_safe_operation.canonical import artifact_hash, canonical_bytes
 from rb_safe_operation.codex_cli_transport import (
     REVIEWED_CODEX_CLI_VERSION,
     CodexCliProtocolError,
     CodexCliTransport,
+    _ROLE_CONTRACTS,
     _CodexVerificationDecision,
     _materialize_verifier_response,
     _output_schema_for_role,
 )
 from rb_safe_operation.proposal_models import PlanAssessmentResponse, VerificationRoleResponse
+from rb_safe_operation.proposal_models import PatchSemanticAssessmentProposal
 
 
 class FakeRunner:
@@ -216,6 +220,72 @@ class CodexCliTransportTests(unittest.TestCase):
         evidence = schema["$defs"]["EvidenceRef"]["properties"]
         self.assertEqual(evidence["provenance"]["const"], "agent_reported")
         self.assertTrue(evidence["locator"]["pattern"].startswith("^agent-report:"))
+        finding = schema["$defs"]["Finding"]["properties"]["finding_provenance"]
+        self.assertEqual(finding["const"], "agent_reported")
+
+    def test_plan_assessor_contract_separates_proposer_reads_from_static_verification(self) -> None:
+        contract = _ROLE_CONTRACTS["plan_assessor"]
+        self.assertIn("allowed_read_tools governs proposer interactive reads", contract)
+        self.assertIn("read_roots must cover every deliberately selected source file", contract)
+        self.assertIn("expected_product_changes", contract)
+        self.assertIn("does not require the new product targets to be proposer read roots", contract)
+
+        schema = _output_schema_for_role(
+            "plan_assessor",
+            PlanAssessmentResponse,
+            {
+                "plan": {
+                    "operations": [{
+                        "kind": "bounded_agent_task",
+                        "required_assurance_profile": "instruction_only_proposal_host",
+                    }],
+                },
+            },
+        )
+        provenance = schema["$defs"]["Finding"]["properties"]["finding_provenance"]
+        self.assertEqual(provenance["const"], "agent_reported")
+        self.assertNotIn("enum", provenance)
+        patch_schema = _output_schema_for_role(
+            "patch_assessor",
+            PatchSemanticAssessmentProposal,
+            {},
+        )
+        patch_provenance = patch_schema["$defs"]["Finding"]["properties"]["finding_provenance"]
+        self.assertEqual(patch_provenance["const"], "agent_reported")
+        public_schema = PlanAssessmentResponse.model_json_schema()
+        public_provenance = (
+            public_schema["$defs"]["Finding"]["properties"]["finding_provenance"]
+        )
+        self.assertEqual(
+            set(public_provenance["enum"]),
+            {"agent_reported", "coordinator_observed"},
+        )
+
+    def test_codex_host_factory_validates_identity_before_returning_host(self) -> None:
+        from rb_safe_operation.codex_cli_adapter import build_codex_cli_role_host
+
+        preview = SimpleNamespace(
+            credential_handle="CODEX_CHATGPT_LOGIN",
+            provider_grant=SimpleNamespace(
+                model="gpt-5.6-sol",
+                max_request_bytes=20_000,
+                max_seconds=120,
+            ),
+            run_resource_grant=SimpleNamespace(
+                max_response_bytes=10_000,
+                max_elapsed_seconds=90,
+            ),
+        )
+        with (
+            patch("rb_safe_operation.codex_cli_adapter.validate_reviewed_codex_cli_profile"),
+            patch("rb_safe_operation.codex_cli_adapter.CodexCliTransport") as transport_type,
+            patch("rb_safe_operation.codex_cli_adapter.JsonLineProposalRoleHost") as host_type,
+        ):
+            built = build_codex_cli_role_host(preview)
+
+        transport_type.return_value.validate_identity.assert_called_once_with(90)
+        host_type.assert_called_once()
+        self.assertIs(built, host_type.return_value)
 
     def test_verifier_identity_bindings_are_materialized_from_request(self) -> None:
         policy_binding = {

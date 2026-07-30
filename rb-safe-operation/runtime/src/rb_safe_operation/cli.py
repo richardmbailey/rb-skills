@@ -109,6 +109,22 @@ def _model(name: str, schema_version: str | None = None):
         raise ValueError(f"unsupported artifact type: {name}") from exc
 
 
+def _automatic_retry_attempt_limit(value: str) -> int | str:
+    if value == "unbounded":
+        return value
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            "automatic retry attempt limit must be a non-negative integer or unbounded"
+        ) from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError(
+            "automatic retry attempt limit must be a non-negative integer or unbounded"
+        )
+    return parsed
+
+
 def _canonical_model(path: str, model_type):
     artifact_path = Path(path)
     payload = _load(path)
@@ -436,6 +452,15 @@ def _plain_preparation(preview: RunPreparationPreview) -> str:
         f"Maximum calls: {provider.max_calls}",
         f"Maximum tokens: {resource.max_input_tokens} input, {resource.max_output_tokens} output",
         f"Maximum cost: {resource.max_cost_decimal}",
+        (
+            "Automatic retries: disabled"
+            if not resource.automatic_retry_classes
+            else (
+                "Automatic retries: "
+                f"{resource.automatic_retry_attempt_limit}; classes "
+                f"{', '.join(resource.automatic_retry_classes)}"
+            )
+        ),
         "",
         "Assurance limits:",
         *[f"- {item}" for item in preview.assurance_statements],
@@ -504,6 +529,8 @@ def cmd_prepare_run_authority(args: argparse.Namespace) -> None:
         max_output_tokens=args.max_output_tokens,
         max_elapsed_seconds=args.max_elapsed_seconds,
         max_cost_decimal=args.max_cost_decimal,
+        automatic_retry_attempt_limit=args.automatic_retry_attempt_limit,
+        automatic_retry_classes=args.automatic_retry_class,
         cost_accounting=args.cost_accounting,
         temperature_decimal=args.temperature_decimal,
         seed=args.seed,
@@ -1422,6 +1449,17 @@ def build_parser() -> argparse.ArgumentParser:
     prepare.add_argument("--max-output-tokens", type=int, required=True)
     prepare.add_argument("--max-elapsed-seconds", type=int, required=True)
     prepare.add_argument("--max-cost-decimal", required=True)
+    prepare.add_argument(
+        "--automatic-retry-attempt-limit",
+        type=_automatic_retry_attempt_limit,
+        default=0,
+    )
+    prepare.add_argument(
+        "--automatic-retry-class",
+        action="append",
+        choices=["proposal_format_error"],
+        default=[],
+    )
     prepare.add_argument("--cost-accounting", choices=["observed", "declared_zero", "unavailable"], required=True)
     prepare.add_argument("--temperature-decimal", required=True)
     prepare.add_argument("--seed", type=int)

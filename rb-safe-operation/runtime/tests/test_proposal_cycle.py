@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from types import SimpleNamespace
 
+from pydantic import ValidationError
 from pydantic_ai import ModelResponse, ToolCallPart, models
 from pydantic_ai.models.function import FunctionModel
 
@@ -142,6 +143,37 @@ def successful_verifier_record(request, response, *, adapter="pydantic_ai") -> R
         tool_calls=0, input_tokens=1, output_tokens=1,
         request_bytes=len(request_bytes), response_bytes=len(response_bytes),
         elapsed_milliseconds=1, cost_decimal="0",
+        cost_provenance="provider_declared_zero",
+    )
+
+
+def successful_proposer_record(request, response) -> RoleCallRecord:
+    request_bytes = canonical_bytes(request.model_dump(mode="json"))
+    response_bytes = canonical_bytes(response.model_dump(mode="json"))
+    return RoleCallRecord(
+        schema_version="2.0",
+        call_id=f"call-proposer-{request.context.request_token[-12:]}",
+        role="proposer",
+        adapter="pydantic_ai",
+        assurance_profile="framework_tool_enforced_proposer",
+        provider_grant_hash=request.context.provider_grant_hash,
+        policy_binding=request.context.policy_binding,
+        request_hash=hashlib.sha256(request_bytes).hexdigest(),
+        response_hash=hashlib.sha256(response_bytes).hexdigest(),
+        outcome="success",
+        usage_complete=True,
+        provider="test-provider",
+        endpoint="in-memory://proposal-cycle",
+        model="proposal-cycle",
+        model_revision="test",
+        requests=1,
+        tool_calls=0,
+        input_tokens=1,
+        output_tokens=1,
+        request_bytes=len(request_bytes),
+        response_bytes=len(response_bytes),
+        elapsed_milliseconds=1,
+        cost_decimal="0",
         cost_provenance="provider_declared_zero",
     )
 
@@ -327,6 +359,31 @@ class ProposalCycleTests(unittest.TestCase):
             loaded_project_policy=self.loaded_policy,
             clock=lambda: datetime(2026, 7, 28, 10, 0, tzinfo=timezone.utc),
         )
+
+    def enable_automatic_format_retries(self, limit="unbounded"):
+        self.resource = self.resource.model_copy(update={
+            "automatic_retry_attempt_limit": limit,
+            "automatic_retry_classes": ["proposal_format_error"],
+        })
+        resource_hash = ref(
+            "run-resource-grant", "1.0", self.resource.model_dump(mode="json")
+        )
+        self.plan = self.plan.model_copy(update={
+            "run_resource_grant_hash": resource_hash,
+        })
+        self.assessment = assess_plan(
+            self.plan,
+            self.policy,
+            self.active_policy,
+            self.snapshot,
+            self.capabilities,
+            self.semantic,
+            [],
+            now=datetime(2026, 7, 28, 10, 0, tzinfo=timezone.utc),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+        )
+        self.assertTrue(self.assessment.safe)
 
     def test_cli_has_no_manual_plan_assessor_or_verifier_response_inputs(self):
         parser = build_parser()
@@ -532,6 +589,65 @@ class ProposalCycleTests(unittest.TestCase):
             begin_verification_context(None, None, "legacy", None)
         with self.assertRaisesRegex(LegacyArtifactNotExecutable, "audit-only"):
             verify_reports(None, None, [], None, None)
+
+    def test_preflight_rejects_selected_proposal_source_outside_read_roots(self):
+        operation = self.plan.operations[0]
+        path_contract = operation.path_contract.model_copy(update={"read_roots": []})
+        operation = operation.model_copy(update={"path_contract": path_contract})
+        plan = self.plan.model_copy(update={"operations": [operation]})
+
+        result = assess_plan(
+            plan,
+            self.policy,
+            self.active_policy,
+            self.snapshot,
+            self.capabilities,
+            self.semantic,
+            [],
+            now=datetime(2026, 7, 28, 10, 0, tzinfo=timezone.utc),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+        )
+
+        self.assertFalse(result.safe)
+        self.assertTrue(any(
+            finding.finding_id.startswith("proposal-source-path-edit-1-")
+            and finding.category == "path_escape"
+            for finding in result.findings
+        ))
+
+    def test_coordinator_reproduces_assessment_with_prior_assessment_hash(self):
+        prior_assessment_hash = ref(
+            "assessment", "3.0", {"status": "rejected", "run_id": "prior-run"}
+        )
+        assessment = assess_plan(
+            self.plan,
+            self.policy,
+            self.active_policy,
+            self.snapshot,
+            self.capabilities,
+            self.semantic,
+            [],
+            now=datetime(2026, 7, 28, 10, 0, tzinfo=timezone.utc),
+            prior_assessment_hash=prior_assessment_hash,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+        )
+
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=FakeProposalHost(self.target),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        self.assertEqual(coordinator.assessment.prior_assessment_hash, prior_assessment_hash)
+        release_lease(coordinator.lease)
 
     def test_plan_assessor_request_and_response_are_strictly_cross_bound(self):
         request = self.plan_assessment_request()
@@ -826,6 +942,540 @@ class ProposalCycleTests(unittest.TestCase):
         self.assertEqual(bundle.manifest.state, "human_required")
         self.assertEqual(bundle.human_interventions[0].decision_type, "revise_and_reassess")
         self.assertEqual(self.target.read_text(encoding="utf-8"), "a\n")
+
+    def test_coordinator_persists_typed_proposer_response_before_patch_parsing(self):
+        class MalformedPatchHost(FakeProposalHost):
+            def propose_patch(inner_self, request, read_file=None):
+                response = super().propose_patch(request)
+                return response.model_copy(update={"unified_diff": "--- malformed\n"})
+
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=MalformedPatchHost(self.target),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+
+        with self.assertRaisesRegex(Exception, "standard unified diff"):
+            coordinator.execute()
+
+        call_roots = list((coordinator.run_root / "semantic-calls").iterdir())
+        self.assertEqual(len(call_roots), 1)
+        response = AgentPatchProposal.model_validate(
+            parse_json_strict((call_roots[0] / "response.json").read_bytes())
+        )
+        self.assertEqual(response.unified_diff, "--- malformed\n")
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        self.assertEqual(bundle.agent_proposal, response)
+        self.assertEqual(bundle.completed_semantic_request_tokens, [response.request_token])
+        self.assertEqual(bundle.manifest.state, "human_required")
+
+    def test_confirmed_format_retry_records_rejected_response_and_uses_fresh_request(self):
+        self.enable_automatic_format_retries()
+
+        class RetryThenSucceedHost(FakeProposalHost):
+            def propose_patch(inner_self, request, read_file=None):
+                response = super().propose_patch(request)
+                if len([item for item in inner_self.requests if hasattr(item, "operation")]) == 1:
+                    response = response.model_copy(update={"unified_diff": "--- malformed\n"})
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        host = RetryThenSucceedHost(self.target)
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+
+        reports = coordinator.execute()
+        self.assertEqual(len(reports), 1)
+        self.assertEqual(self.target.read_text(encoding="utf-8"), "b\n")
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        self.assertEqual(bundle.manifest.state, "verifying")
+        self.assertEqual(len(bundle.automatic_retry_history), 1)
+        retry = bundle.automatic_retry_history[0]
+        self.assertEqual(retry.failure_class, "proposal_format_error")
+        self.assertTrue(retry.usage_complete)
+        self.assertEqual(len(bundle.completed_semantic_request_tokens), 3)
+        self.assertEqual(len(set(bundle.completed_semantic_request_tokens)), 3)
+        self.assertNotEqual(
+            bundle.completed_semantic_request_tokens[0],
+            bundle.completed_semantic_request_tokens[1],
+        )
+        failed_call_root = coordinator.run_root / "semantic-calls" / retry.failed_request_token
+        self.assertTrue((failed_call_root / "request.json").is_file())
+        self.assertTrue((failed_call_root / "response.json").is_file())
+        tampered = bundle.model_dump(mode="json")
+        tampered["automatic_retry_history"][0]["role_call_record_hash"] = {
+            "artifact_type": "role-call-record",
+            "schema_version": "2.0",
+            "algorithm": "sha256",
+            "value": artifact_hash(
+                "role-call-record",
+                "2.0",
+                bundle.role_call_records[-1].model_dump(mode="json"),
+            ),
+        }
+        with self.assertRaises(ValidationError):
+            CoordinatorBundleV2.model_validate(tampered)
+        release_lease(coordinator.lease)
+        coordinator.lease = None
+
+    def test_format_retry_limit_stops_without_an_extra_dispatch(self):
+        self.enable_automatic_format_retries(limit=1)
+
+        class AlwaysMalformedHost(FakeProposalHost):
+            def __init__(inner_self, target):
+                super().__init__(target)
+                inner_self.proposer_calls = 0
+
+            def propose_patch(inner_self, request, read_file=None):
+                inner_self.proposer_calls += 1
+                response = super().propose_patch(request).model_copy(
+                    update={"unified_diff": "--- malformed\n"}
+                )
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        host = AlwaysMalformedHost(self.target)
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        with self.assertRaisesRegex(Exception, "standard unified diff"):
+            coordinator.execute()
+        self.assertEqual(host.proposer_calls, 2)
+        self.assertEqual(self.target.read_text(encoding="utf-8"), "a\n")
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        self.assertEqual(bundle.manifest.state, "human_required")
+        self.assertEqual(len(bundle.automatic_retry_history), 1)
+
+    def test_unbounded_format_retry_stops_at_host_resource_ceiling_before_dispatch(self):
+        self.enable_automatic_format_retries(limit="unbounded")
+
+        async def malformed_run(
+            agent, prompt, *, tool_calls_limit, request_limit, timeout_seconds
+        ):
+            envelope = parse_json_strict(prompt.encode("utf-8"))
+            request = envelope["request"]
+            context = request["context"]
+            operation = request["operation"]
+            return SimpleNamespace(
+                output=AgentPatchProposal(
+                    schema_version="1.0",
+                    request_token=context["request_token"],
+                    operation_id=operation["operation_id"],
+                    attempt_id=context["attempt_id"],
+                    intent_summary="return a deliberately malformed patch",
+                    unified_diff="--- malformed\n",
+                    claimed_created_paths=[],
+                    claimed_modified_paths=[str(self.target)],
+                    claimed_deleted_paths=[],
+                    claimed_effect_ids=["effect-modify", "effect-read"],
+                    evidence=[],
+                    no_other_changes=True,
+                ),
+                usage=SimpleNamespace(
+                    requests=1,
+                    tool_calls=0,
+                    input_tokens=1,
+                    output_tokens=1,
+                ),
+            )
+
+        models.ALLOW_MODEL_REQUESTS = False
+        host = PydanticAIProposalRoleHost(
+            model=FunctionModel(
+                lambda messages, info: ModelResponse(), model_name="proposal-cycle"
+            ),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            observed_provider="test-provider",
+            observed_endpoint="in-memory://proposal-cycle",
+            observed_credential_audience="none:test-only",
+            observed_model_revision="test",
+            now=lambda: "2026-07-28T10:00:00Z",
+        )
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+
+        with patch.object(host, "_run_agent", new=malformed_run):
+            with self.assertRaises(ResourcePause):
+                coordinator.execute()
+
+        self.assertEqual(self.target.read_text(encoding="utf-8"), "a\n")
+        self.assertEqual(len(host.call_records), 2)
+        self.assertTrue(all(item.outcome == "success" for item in host.call_records))
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        self.assertEqual(bundle.manifest.state, "paused_resource")
+        self.assertEqual(len(bundle.automatic_retry_history), 2)
+        self.assertEqual(len(bundle.completed_semantic_request_tokens), 2)
+        self.assertIsNone(bundle.active_semantic_request_token)
+        semantic_calls = list((coordinator.run_root / "semantic-calls").iterdir())
+        self.assertEqual(len(semantic_calls), 3)
+        self.assertEqual(
+            sum((call_root / "response.json").is_file() for call_root in semantic_calls),
+            2,
+        )
+        self.assertFalse((self.root / ".rb-safe-operation" / "execution.lease").exists())
+
+    def test_scope_violating_patch_is_not_automatically_retried(self):
+        self.enable_automatic_format_retries()
+
+        class EscapingPatchHost(FakeProposalHost):
+            def __init__(inner_self, target):
+                super().__init__(target)
+                inner_self.proposer_calls = 0
+
+            def propose_patch(inner_self, request, read_file=None):
+                inner_self.proposer_calls += 1
+                response = super().propose_patch(request).model_copy(update={
+                    "unified_diff": (
+                        "--- a/../outside.txt\n+++ b/../outside.txt\n"
+                        "@@ -1 +1 @@\n-a\n+b\n"
+                    ),
+                })
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        host = EscapingPatchHost(self.target)
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        with self.assertRaisesRegex(Exception, "normalized project-relative"):
+            coordinator.execute()
+        self.assertEqual(host.proposer_calls, 1)
+        self.assertEqual(self.target.read_text(encoding="utf-8"), "a\n")
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        self.assertEqual(bundle.automatic_retry_history, [])
+
+    def test_malformed_diff_with_wider_claims_is_not_a_format_retry(self):
+        self.enable_automatic_format_retries()
+
+        class WiderClaimHost(FakeProposalHost):
+            def __init__(inner_self, target):
+                super().__init__(target)
+                inner_self.proposer_calls = 0
+
+            def propose_patch(inner_self, request, read_file=None):
+                inner_self.proposer_calls += 1
+                response = super().propose_patch(request).model_copy(
+                    update={
+                        "unified_diff": "--- malformed\n",
+                        "claimed_modified_paths": [],
+                        "claimed_created_paths": [str(self.root / "extra.txt")],
+                    }
+                )
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        host = WiderClaimHost(self.target)
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        with self.assertRaisesRegex(Exception, "claimed create action"):
+            coordinator.execute()
+        self.assertEqual(host.proposer_calls, 1)
+        self.assertFalse((self.root / "extra.txt").exists())
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        self.assertEqual(bundle.automatic_retry_history, [])
+
+    def test_reload_continues_from_durable_retry_checkpoint_without_replaying_failed_request(self):
+        self.enable_automatic_format_retries()
+
+        class FirstMalformedHost(FakeProposalHost):
+            def propose_patch(inner_self, request, read_file=None):
+                response = super().propose_patch(request).model_copy(
+                    update={"unified_diff": "--- malformed\n"}
+                )
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        first_host = FirstMalformedHost(self.target)
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=first_host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        original_checkpoint = coordinator._proposal_checkpoint_v2
+
+        def interrupt_after_retry_checkpoint(operation, stage, payload):
+            original_checkpoint(operation, stage, payload)
+            if stage == "automatic_retry_scheduled":
+                raise KeyboardInterrupt("simulated process loss after retry checkpoint")
+
+        coordinator._proposal_checkpoint_v2 = interrupt_after_retry_checkpoint
+        with self.assertRaises(KeyboardInterrupt):
+            coordinator.execute()
+        failed_token = first_host.requests[0].context.request_token
+        release_lease(coordinator.lease)
+        coordinator.lease = None
+
+        class SuccessfulHost(FakeProposalHost):
+            def propose_patch(inner_self, request, read_file=None):
+                response = super().propose_patch(request)
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        resumed_host = SuccessfulHost(self.target)
+        resumed = ExecutionCoordinator.reload(
+            str(self.root),
+            self.plan.run_id,
+            self.capabilities,
+            agent_host=resumed_host,
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        reports = resumed.execute()
+        self.assertEqual(len(reports), 1)
+        self.assertEqual(self.target.read_text(encoding="utf-8"), "b\n")
+        self.assertEqual(len(resumed_host.requests), 2)
+        proposer_request = next(
+            item for item in resumed_host.requests if hasattr(item, "operation")
+        )
+        self.assertNotEqual(proposer_request.context.request_token, failed_token)
+        self.assertEqual(len(resumed.automatic_retry_history), 1)
+        release_lease(resumed.lease)
+        resumed.lease = None
+
+    def test_reload_rejects_changed_automatic_retry_response_evidence(self):
+        self.enable_automatic_format_retries()
+
+        class FirstMalformedHost(FakeProposalHost):
+            def propose_patch(inner_self, request, read_file=None):
+                response = super().propose_patch(request).model_copy(
+                    update={"unified_diff": "--- malformed\n"}
+                )
+                inner_self.call_records.append(successful_proposer_record(request, response))
+                return response
+
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=FirstMalformedHost(self.target),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        original_checkpoint = coordinator._proposal_checkpoint_v2
+
+        def interrupt_after_retry_checkpoint(operation, stage, payload):
+            original_checkpoint(operation, stage, payload)
+            if stage == "automatic_retry_scheduled":
+                raise KeyboardInterrupt("simulated process loss after retry checkpoint")
+
+        coordinator._proposal_checkpoint_v2 = interrupt_after_retry_checkpoint
+        with self.assertRaises(KeyboardInterrupt):
+            coordinator.execute()
+        bundle = CoordinatorBundleV2.model_validate(
+            parse_json_strict(coordinator.bundle_path.read_bytes())
+        )
+        failed_token = bundle.automatic_retry_history[0].failed_request_token
+        response_path = coordinator.run_root / "semantic-calls" / failed_token / "response.json"
+        response_path.write_text("{}\n", encoding="utf-8")
+        release_lease(coordinator.lease)
+        coordinator.lease = None
+
+        with self.assertRaisesRegex(Exception, "automatic retry evidence"):
+            ExecutionCoordinator.reload(
+                str(self.root),
+                self.plan.run_id,
+                self.capabilities,
+                agent_host=FakeProposalHost(self.target),
+                provider_grant=self.provider,
+                run_resource_grant=self.resource,
+                metadata_loader=self.metadata_loader,
+            )
+        self.assertFalse((self.root / ".rb-safe-operation" / "execution.lease").exists())
+
+    def test_reload_accepts_json_line_retry_evidence_using_protocol_envelope_hashes(self):
+        self.enable_automatic_format_retries()
+        self.provider = self.provider.model_copy(update={"adapter": "json_line"})
+        operation = self.plan.operations[0].model_copy(update={
+            "required_adapter": "json_line",
+            "required_assurance_profile": "instruction_only_proposal_host",
+        })
+        self.plan = self.plan.model_copy(update={
+            "operations": [operation],
+            "provider_grant_hash": ref(
+                "provider-grant", "1.0", self.provider.model_dump(mode="json")
+            ),
+        })
+        self.semantic = self.semantic.model_copy(update={
+            "provider_grant_hash": self.plan.provider_grant_hash,
+            "required_role_assurance_profiles": ["instruction_only_proposal_host"],
+        })
+        self.capabilities = default_host_capabilities_v2("json_line")
+        self.assessment = assess_plan(
+            self.plan,
+            self.policy,
+            self.active_policy,
+            self.snapshot,
+            self.capabilities,
+            self.semantic,
+            [],
+            now=datetime(2026, 7, 28, 10, 0, tzinfo=timezone.utc),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+        )
+
+        class JsonLineMalformedHost(FakeProposalHost):
+            def propose_patch(inner_self, request, read_file=None):
+                response = super().propose_patch(request).model_copy(
+                    update={"unified_diff": "--- malformed\n"}
+                )
+                request_envelope = {
+                    "type": "role_request",
+                    "role": "proposer",
+                    "adapter": "json_line",
+                    "payload": request.model_dump(mode="json"),
+                }
+                response_envelope = {
+                    "type": "role_response",
+                    "role": "proposer",
+                    "adapter": "json_line",
+                    "payload": response.model_dump(mode="json"),
+                }
+                request_bytes = canonical_bytes(request_envelope) + b"\n"
+                response_bytes = canonical_bytes(response_envelope)
+                inner_self.call_records.append(RoleCallRecord(
+                    schema_version="2.0",
+                    call_id=f"call-json-line-{request.context.request_token[-12:]}",
+                    role="proposer",
+                    adapter="json_line",
+                    assurance_profile="instruction_only_proposal_host",
+                    provider_grant_hash=request.context.provider_grant_hash,
+                    policy_binding=request.context.policy_binding,
+                    request_hash=hashlib.sha256(request_bytes).hexdigest(),
+                    response_hash=hashlib.sha256(response_bytes).hexdigest(),
+                    outcome="success",
+                    usage_complete=True,
+                    provider="test-provider",
+                    endpoint="in-memory://proposal-cycle",
+                    model="proposal-cycle",
+                    model_revision="test",
+                    requests=1,
+                    tool_calls=0,
+                    input_tokens=1,
+                    output_tokens=1,
+                    request_bytes=len(request_bytes),
+                    response_bytes=len(response_bytes),
+                    elapsed_milliseconds=1,
+                    cost_decimal="0",
+                    cost_provenance="provider_declared_zero",
+                ))
+                return response
+
+        coordinator = ExecutionCoordinator(
+            self.plan,
+            self.assessment,
+            self.policy,
+            self.active_policy,
+            self.capabilities,
+            semantic_proposal=self.semantic,
+            agent_host=JsonLineMalformedHost(self.target),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        original_checkpoint = coordinator._proposal_checkpoint_v2
+
+        def interrupt_after_retry_checkpoint(operation, stage, payload):
+            original_checkpoint(operation, stage, payload)
+            if stage == "automatic_retry_scheduled":
+                raise KeyboardInterrupt("simulated process loss after JSON-line retry checkpoint")
+
+        coordinator._proposal_checkpoint_v2 = interrupt_after_retry_checkpoint
+        with self.assertRaises(KeyboardInterrupt):
+            coordinator.execute()
+        release_lease(coordinator.lease)
+        coordinator.lease = None
+
+        reloaded = ExecutionCoordinator.reload(
+            str(self.root),
+            self.plan.run_id,
+            self.capabilities,
+            agent_host=FakeProposalHost(self.target),
+            provider_grant=self.provider,
+            run_resource_grant=self.resource,
+            metadata_loader=self.metadata_loader,
+        )
+        self.assertEqual(len(reloaded.automatic_retry_history), 1)
+        reloaded.abandon()
 
     def test_direct_host_mutation_is_detectable_by_coordinator_guard(self):
         host = FakeProposalHost(self.target)

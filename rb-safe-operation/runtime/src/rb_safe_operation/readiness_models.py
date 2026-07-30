@@ -173,6 +173,8 @@ class RunPreparationRequest(StrictModel):
     max_output_tokens: int = Field(gt=0)
     max_elapsed_seconds: int = Field(gt=0)
     max_cost_decimal: str
+    automatic_retry_attempt_limit: int | Literal["unbounded"] = 0
+    automatic_retry_classes: list[Literal["proposal_format_error"]] = Field(default_factory=list)
     cost_accounting: Literal["observed", "declared_zero", "unavailable"]
     temperature_decimal: str
     seed: int | None
@@ -193,6 +195,15 @@ class RunPreparationRequest(StrictModel):
             raise ValueError("provider and aggregate model request ceilings must match")
         if self.max_proposer_calls + self.max_assessor_calls > self.max_model_requests:
             raise ValueError("role call ceilings exceed aggregate model request ceiling")
+        if isinstance(self.automatic_retry_attempt_limit, int) and self.automatic_retry_attempt_limit < 0:
+            raise ValueError("automatic retry attempt limit must be non-negative or unbounded")
+        if len(self.automatic_retry_classes) != len(set(self.automatic_retry_classes)):
+            raise ValueError("automatic retry classes must be unique")
+        retries_enabled = self.automatic_retry_attempt_limit == "unbounded" or self.automatic_retry_attempt_limit > 0
+        if retries_enabled != bool(self.automatic_retry_classes):
+            raise ValueError(
+                "automatic retry classes must be present exactly when automatic retries are enabled"
+            )
         required_roles = {"plan_assessor", "proposer", "patch_assessor", "verifier"}
         if set(self.roles) != required_roles or len(self.roles) != len(required_roles):
             raise ValueError("run preparation requires exactly the four owned semantic roles")

@@ -12,6 +12,7 @@ from .models import EvidenceRef, Finding, HashRef
 from .policy_models import ActivePolicyV2
 from .project_policy import LoadedProjectPolicy, evaluate_path, require_path, revalidate_decision
 from .patches import (
+    PatchFormatError,
     PreparedTextPatch,
     capture_file_metadata,
     metadata_fingerprint_hash,
@@ -49,6 +50,19 @@ class ProposalSafetyRejected(ProposalCycleError):
     def __init__(self, message: str, findings: list[Finding] | None = None):
         super().__init__(message)
         self.findings = findings or []
+
+
+class RetryableProposalFormatError(PatchFormatError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        context: ProposalContext,
+        proposal: AgentPatchProposal,
+    ) -> None:
+        super().__init__(message)
+        self.context = context
+        self.proposal = proposal
 
 
 def _ref(artifact_type: str, version: str, payload: object) -> HashRef:
@@ -451,16 +465,82 @@ class ProposalCycleService:
             policy_binding=self.policy_binding,
         )
 
-    def run(
+    def _validate_agent_claim_envelope(
         self,
-        operation_id: str,
+        operation: BoundedAgentTaskV2,
+        agent: AgentPatchProposal,
+    ) -> None:
+        """Reject claimed authority expansion before reading any claimed target."""
+
+        effect_ids = {item.effect_id for item in operation.effects}
+        if set(agent.claimed_effect_ids) != effect_ids:
+            raise ProposalSafetyRejected(
+                "proposal effect claims differ from the assessed effect envelope",
+                [_blocking_finding(
+                    "proposal_effect_mismatch",
+                    "effect_inventory",
+                    "model effect claims differ from the assessed effect envelope",
+                    operation.operation_id,
+                    sorted(effect_ids),
+                )],
+            )
+        roots = {
+            "create": operation.path_contract.create_roots,
+            "modify": operation.path_contract.modify_roots,
+            "delete": operation.path_contract.delete_roots,
+        }
+        claims = {
+            "create": set(agent.claimed_created_paths),
+            "modify": set(agent.claimed_modified_paths),
+            "delete": set(agent.claimed_deleted_paths),
+        }
+        for action, paths in claims.items():
+            if paths and action not in operation.allowed_patch_actions:
+                raise ProposalSafetyRejected(
+                    f"claimed {action} action is outside the assessed patch actions",
+                    [_blocking_finding(
+                        "proposal_action_forbidden",
+                        "operation_contract",
+                        f"claimed {action} is outside the assessed patch actions",
+                        operation.operation_id,
+                        sorted(effect_ids),
+                    )],
+                )
+            for path in paths:
+                decision = evaluate_path(self.loaded_project_policy, path, action)
+                if not decision.allowed:
+                    raise ProposalSafetyRejected(
+                        f"project policy denied claimed {action} path"
+                    )
+                try:
+                    resolve_contained(
+                        path,
+                        roots[action],
+                        operation.path_contract.protected_roots,
+                        mutation=True,
+                    )
+                except Exception as exc:
+                    raise ProposalSafetyRejected(
+                        f"claimed {action} path is outside the assessed roots"
+                    ) from exc
+                if not any(
+                    _path_is_covered(path, effect.targets)
+                    for effect in operation.effects
+                ):
+                    raise ProposalSafetyRejected(
+                        f"claimed {action} path is not covered by an assessed effect"
+                    )
+
+    def _propose_and_prepare(
+        self,
+        operation: BoundedAgentTaskV2,
         *,
-        attempt_id: str = "attempt-initial",
-        repair_attempt_hash: HashRef | None = None,
-        state_guard: Callable[[str], None] | None = None,
-        artifact_checkpoint: Callable[[str, object], None] | None = None,
-    ) -> ProposalCycleArtifacts:
-        operation = self._operation(operation_id)
+        attempt_id: str,
+        repair_attempt_hash: HashRef | None,
+        retry_context: dict[str, object] | None,
+        state_guard: Callable[[str], None] | None,
+        artifact_checkpoint: Callable[[str, object], None] | None,
+    ):
         instructions, inputs, observations, source_metadata = self._read_context(operation)
         evidence = [item for item in self.plan.evidence if item.evidence_id in operation.evidence_ids]
         proposer_payload = {
@@ -470,6 +550,8 @@ class ProposalCycleService:
             "sources": [item.model_dump(mode="json") for item in inputs],
             "attempt_id": attempt_id,
         }
+        if retry_context is not None:
+            proposer_payload["automatic_retry"] = retry_context
         proposer_context = self._context(
             operation,
             role="proposer",
@@ -499,8 +581,14 @@ class ProposalCycleService:
         agent = AgentPatchProposal.model_validate(agent_result.model_dump(mode="json"))
         if state_guard:
             state_guard("after_proposer")
+        if artifact_checkpoint:
+            artifact_checkpoint(
+                "proposer_response_received",
+                (proposer_context, agent, inputs),
+            )
         if agent.operation_id != operation.operation_id or agent.attempt_id != attempt_id:
             raise ProposalSafetyRejected("proposal operation or attempt identity differs")
+        self._validate_agent_claim_envelope(operation, agent)
         drain_reads = getattr(self.role_host, "drain_read_results", None)
         read_results = [] if drain_reads is None else drain_reads(proposer_context.request_token)
         if read_results and not operation.allowed_read_tools:
@@ -565,11 +653,16 @@ class ProposalCycleService:
                     "proposal target lacks a complete exact coordinator-captured preimage"
                 )
             absolute_preimages[path] = raw
-        prepared = prepare_text_patch(
-            agent.unified_diff,
-            Path(operation.path_contract.working_directories[0]),
-            absolute_preimages,
-        )
+        try:
+            prepared = prepare_text_patch(
+                agent.unified_diff,
+                Path(operation.path_contract.working_directories[0]),
+                absolute_preimages,
+            )
+        except PatchFormatError as exc:
+            raise RetryableProposalFormatError(
+                str(exc), context=proposer_context, proposal=agent
+            ) from exc
         target_metadata = {
             path: source_metadata[path]
             for path in set(prepared.modified_paths) | set(prepared.deleted_paths)
@@ -577,6 +670,76 @@ class ProposalCycleService:
         }
         if set(target_metadata) != set(prepared.modified_paths) | set(prepared.deleted_paths):
             raise ProposalSafetyRejected("prepared proposal target metadata is incomplete")
+        return (
+            instructions,
+            inputs,
+            observations,
+            proposer_context,
+            agent,
+            prepared,
+            target_metadata,
+        )
+
+    def run(
+        self,
+        operation_id: str,
+        *,
+        attempt_id: str = "attempt-initial",
+        repair_attempt_hash: HashRef | None = None,
+        state_guard: Callable[[str], None] | None = None,
+        artifact_checkpoint: Callable[[str, object], None] | None = None,
+        automatic_retry_count: int = 0,
+        retry_context: dict[str, object] | None = None,
+    ) -> ProposalCycleArtifacts:
+        operation = self._operation(operation_id)
+        while True:
+            try:
+                (
+                    instructions,
+                    inputs,
+                    observations,
+                    proposer_context,
+                    agent,
+                    prepared,
+                    target_metadata,
+                ) = self._propose_and_prepare(
+                    operation,
+                    attempt_id=attempt_id,
+                    repair_attempt_hash=repair_attempt_hash,
+                    retry_context=retry_context,
+                    state_guard=state_guard,
+                    artifact_checkpoint=artifact_checkpoint,
+                )
+                break
+            except RetryableProposalFormatError as exc:
+                next_retry_index = automatic_retry_count + 1
+                limit = self.resource_grant.automatic_retry_attempt_limit
+                authorised = (
+                    "proposal_format_error" in self.resource_grant.automatic_retry_classes
+                    and (limit == "unbounded" or next_retry_index <= limit)
+                )
+                if not authorised:
+                    raise
+                if artifact_checkpoint is None:
+                    raise ProposalCycleError(
+                        "automatic retry requires a durable coordinator checkpoint"
+                    ) from exc
+                if state_guard:
+                    state_guard("before_automatic_retry")
+                artifact_checkpoint(
+                    "automatic_retry_scheduled",
+                    (exc.context, exc.proposal, next_retry_index, "proposal_format_error"),
+                )
+                automatic_retry_count = next_retry_index
+                retry_context = {
+                    "retry_index": automatic_retry_count,
+                    "failure_class": "proposal_format_error",
+                    "failed_request_token": exc.context.request_token,
+                    "correction": (
+                        "Return a syntactically complete standard unified diff. Keep the same "
+                        "operation, paths, actions, effects, and safety envelope."
+                    ),
+                }
         proposal = BoundedPatchProposal(
             schema_version="2.0",
             proposal_id=f"proposal-{hashlib.sha256(agent.unified_diff.encode()).hexdigest()[:24]}",

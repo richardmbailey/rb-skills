@@ -229,6 +229,53 @@ class ProposalContractTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             ProviderGrant.model_validate(self.provider_grant().model_dump() | {"unexpected": True})
 
+    def test_resource_grant_requires_a_closed_retry_policy(self):
+        base = self.resource_grant().model_dump()
+        enabled = RunResourceGrant.model_validate(
+            base
+            | {
+                "automatic_retry_attempt_limit": "unbounded",
+                "automatic_retry_classes": ["proposal_format_error"],
+            }
+        )
+        self.assertEqual(enabled.automatic_retry_attempt_limit, "unbounded")
+        with self.assertRaises(ValidationError):
+            RunResourceGrant.model_validate(
+                base
+                | {
+                    "automatic_retry_attempt_limit": 1,
+                    "automatic_retry_classes": [],
+                }
+            )
+        with self.assertRaises(ValidationError):
+            RunResourceGrant.model_validate(
+                base
+                | {
+                    "automatic_retry_attempt_limit": 1,
+                    "automatic_retry_classes": [
+                        "proposal_format_error",
+                        "proposal_format_error",
+                    ],
+                }
+            )
+
+    def test_disabled_retry_policy_preserves_legacy_canonical_grant_shape(self):
+        grant = self.resource_grant()
+        dumped = grant.model_dump(mode="json")
+        self.assertNotIn("automatic_retry_attempt_limit", dumped)
+        self.assertNotIn("automatic_retry_classes", dumped)
+        self.assertEqual(RunResourceGrant.model_validate(dumped), grant)
+
+        enabled = RunResourceGrant.model_validate(
+            dumped
+            | {
+                "automatic_retry_attempt_limit": "unbounded",
+                "automatic_retry_classes": ["proposal_format_error"],
+            }
+        ).model_dump(mode="json")
+        self.assertEqual(enabled["automatic_retry_attempt_limit"], "unbounded")
+        self.assertEqual(enabled["automatic_retry_classes"], ["proposal_format_error"])
+
     def test_context_rejects_duplicate_source_observation_identity(self):
         context = self.context()
         with self.assertRaises(ValidationError):
@@ -244,6 +291,10 @@ class ProposalContractTests(unittest.TestCase):
             AgentPatchProposal.model_validate(data)
         with self.assertRaises(ValidationError):
             AgentPatchProposal.model_validate(self.agent_proposal().model_dump() | {"no_other_changes": False})
+        with self.assertRaises(ValidationError):
+            AgentPatchProposal.model_validate(
+                self.agent_proposal().model_dump() | {"unified_diff": "not a unified diff"}
+            )
 
     def test_bounded_proposal_requires_hashes_for_exact_derived_inventory(self):
         self.assertEqual(self.bounded_proposal().modified_paths, ["/project/input.txt"])

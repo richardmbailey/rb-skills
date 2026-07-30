@@ -22,6 +22,10 @@ class PatchContractError(ValueError):
     """The supplied patch cannot be represented by the exact text-patch contract."""
 
 
+class PatchFormatError(PatchContractError):
+    """The proposal uses malformed unified-diff syntax but requests no wider action."""
+
+
 class MetadataContractError(PatchContractError):
     """Target metadata cannot be inspected or represented without hidden effects."""
 
@@ -73,7 +77,7 @@ def inspect_patch_paths(patch: str) -> tuple[set[str], set[str], set[str]]:
     old_paths = re.findall(r"^--- (?:a/)?(.+)$", patch, flags=re.MULTILINE)
     new_paths = re.findall(r"^\+\+\+ (?:b/)?(.+)$", patch, flags=re.MULTILINE)
     if len(old_paths) != len(new_paths) or not old_paths:
-        raise PatchContractError("patch must be a standard unified diff")
+        raise PatchFormatError("patch must be a standard unified diff")
     created: set[str] = set()
     modified: set[str] = set()
     deleted: set[str] = set()
@@ -104,7 +108,7 @@ def prepare_text_patch(patch: str, working_directory: Path, preimages: dict[str,
     """Materialise a supported patch from coordinator-captured bytes without product I/O."""
 
     if "\0" in patch:
-        raise PatchContractError("patch contains a NUL byte")
+        raise PatchFormatError("patch contains a NUL byte")
     created, modified, deleted = inspect_patch_paths(patch)
     cwd = working_directory.resolve(strict=True)
     if not cwd.is_dir():
@@ -124,7 +128,7 @@ def prepare_text_patch(patch: str, working_directory: Path, preimages: dict[str,
             index += 1
             continue
         if not line.startswith("--- ") or index + 1 >= len(lines) or not lines[index + 1].startswith("+++ "):
-            raise PatchContractError("patch contains unsupported metadata or malformed file headers")
+            raise PatchFormatError("patch contains unsupported metadata or malformed file headers")
         old_name = line[4:].strip()
         new_name = lines[index + 1][4:].strip()
         old_relative = None if old_name == "/dev/null" else re.sub(r"^a/", "", old_name)
@@ -162,14 +166,14 @@ def prepare_text_patch(patch: str, working_directory: Path, preimages: dict[str,
                 continue
             match = re.match(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", header)
             if not match:
-                raise PatchContractError("patch contains unsupported metadata or malformed hunk header")
+                raise PatchFormatError("patch contains unsupported metadata or malformed hunk header")
             saw_hunk = True
             old_start = int(match.group(1))
             old_count = int(match.group(2) or "1")
             new_count = int(match.group(4) or "1")
             hunk_source = 0 if old_start == 0 else old_start - 1
             if hunk_source < source_index or hunk_source > len(original_lines):
-                raise PatchContractError("patch hunk source range is invalid or overlaps")
+                raise PatchFormatError("patch hunk source range is invalid or overlaps")
             output.extend(original_lines[source_index:hunk_source])
             source_index = hunk_source
             index += 1
@@ -179,12 +183,12 @@ def prepare_text_patch(patch: str, working_directory: Path, preimages: dict[str,
                 item = lines[index]
                 if item.startswith("\\ No newline at end of file"):
                     if not output:
-                        raise PatchContractError("no-newline marker has no preceding patch line")
+                        raise PatchFormatError("no-newline marker has no preceding patch line")
                     output[-1] = output[-1].rstrip("\r\n")
                     index += 1
                     continue
                 if not item or item[0] not in {" ", "+", "-"}:
-                    raise PatchContractError("patch hunk contains an unsupported line")
+                    raise PatchFormatError("patch hunk contains an unsupported line")
                 content = item[1:]
                 if item[0] in {" ", "-"}:
                     if source_index >= len(original_lines) or original_lines[source_index] != content:
@@ -196,9 +200,9 @@ def prepare_text_patch(patch: str, working_directory: Path, preimages: dict[str,
                     observed_new += 1
                 index += 1
             if observed_old != old_count or observed_new != new_count:
-                raise PatchContractError("patch hunk line counts differ from its header")
+                raise PatchFormatError("patch hunk line counts differ from its header")
         if not saw_hunk:
-            raise PatchContractError("patch file has no hunks")
+            raise PatchFormatError("patch file has no hunks")
         output.extend(original_lines[source_index:])
         candidate = "".join(output).encode("utf-8")
         if action == "delete" and candidate:
@@ -216,7 +220,7 @@ def prepare_text_patch(patch: str, working_directory: Path, preimages: dict[str,
             )
         )
     if not prepared:
-        raise PatchContractError("patch contains no files")
+        raise PatchFormatError("patch contains no files")
     return PreparedTextPatch(
         patch=patch,
         patch_hash=hashlib.sha256(patch.encode("utf-8")).hexdigest(),

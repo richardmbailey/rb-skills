@@ -35,12 +35,14 @@ def build_codex_cli_role_host(
         ),
         runner=runner,
     )
+    timeout_seconds = min(
+        provider_grant.max_seconds,
+        preview.run_resource_grant.max_elapsed_seconds,
+    )
+    transport.validate_identity(timeout_seconds)
     return JsonLineProposalRoleHost(
         transport,
-        timeout_seconds=min(
-            provider_grant.max_seconds,
-            preview.run_resource_grant.max_elapsed_seconds,
-        ),
+        timeout_seconds=timeout_seconds,
         provider_grant=provider_grant,
         run_resource_grant=preview.run_resource_grant,
         now=now,

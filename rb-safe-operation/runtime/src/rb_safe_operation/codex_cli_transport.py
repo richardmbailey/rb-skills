@@ -122,6 +122,9 @@ _DISABLED_CAPABILITIES = (
 _ROLE_CONTRACTS = {
     "proposer": (
         "Copy request_token, operation_id, and attempt_id exactly from the request. "
+        "unified_diff must begin with either '--- ' or 'diff --git '. For every created file, "
+        "use an exact standard section beginning '--- /dev/null', then '+++ b/<normalized-relative-path>', "
+        "then a valid '@@ -0,0 +1,<line-count> @@' hunk whose content lines all begin with '+'. "
         "In unified_diff, every --- and +++ path after a/ or b/ must be a normalized path relative "
         "to the one declared working directory; never put an absolute path in a diff header. "
         "In claimed_created_paths, claimed_modified_paths, and claimed_deleted_paths, use the "
@@ -142,7 +145,13 @@ _ROLE_CONTRACTS = {
         "The nested semantic proposal must cover every required plan evidence item and report every "
         "safety or detrimental-side-effect finding without changing any supplied binding. Set "
         "required_role_assurance_profiles from bounded_agent_task operations only; it is empty for "
-        "an exact-only plan."
+        "an exact-only plan. An operation's allowed_read_tools governs proposer interactive reads. "
+        "Its read_roots must cover every deliberately selected source file supplied by the coordinator, "
+        "as well as any permitted interactive reads. Separated static verification is coordinator-owned: it observes the "
+        "snapshot selected_file_hashes and expected_product_changes under the active project policy, "
+        "and does not require the new product targets to be proposer read roots. Do not report missing "
+        "target-file read authority for a create-only plan whose selected source packet is covered and "
+        "whose verifier can observe its declared postimages."
     ),
     "verifier": (
         "Return only the semantic verification decision. The transport attaches the immutable "
@@ -275,6 +284,16 @@ def _output_schema_for_role(
             ),
             "minItems": len(required_profiles),
             "maxItems": len(required_profiles),
+        }
+    if role in {"plan_assessor", "patch_assessor", "verifier"}:
+        definitions = schema.get("$defs")
+        finding = definitions.get("Finding") if isinstance(definitions, dict) else None
+        finding_properties = finding.get("properties") if isinstance(finding, dict) else None
+        if not isinstance(finding_properties, dict):
+            raise CodexCliProtocolError("semantic output schema lacks its finding definition")
+        finding_properties["finding_provenance"] = {
+            "type": "string",
+            "const": "agent_reported",
         }
     if role in {"proposer", "verifier"}:
         definitions = schema.get("$defs")
@@ -415,6 +434,13 @@ class CodexCliTransport:
         login = login_stdout + login_stderr
         if "Logged in using ChatGPT" not in login.decode("utf-8", errors="replace"):
             raise CodexCliProtocolError("Codex CLI is not authenticated through ChatGPT")
+
+    def validate_identity(self, timeout_seconds: float) -> None:
+        """Validate the fixed executable and login before durable call intent exists."""
+
+        if timeout_seconds <= 0:
+            raise ValueError("Codex CLI timeout must be positive")
+        self._validate_identity(timeout_seconds)
 
     @staticmethod
     def _parse_request(request: bytes) -> tuple[str, dict[str, Any], type[Any]]:

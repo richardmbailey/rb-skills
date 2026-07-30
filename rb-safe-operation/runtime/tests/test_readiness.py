@@ -13,6 +13,8 @@ from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
+from rb_safe_operation.canonical import parse_json_strict
+from rb_safe_operation.proposal_models import RunResourceGrant
 from rb_safe_operation.readiness import (
     CONFIRMATION_PREFIX,
     confirm_run_preparation,
@@ -263,7 +265,34 @@ class RunPreparationTests(unittest.TestCase):
         self.assertEqual(preview.host_capabilities.role_tool_allocation, "framework_enforced")
         self.assertIn("OPENAI_API_KEY", dumped)
         self.assertNotIn("CANARY-SECRET-VALUE", dumped)
-        self.assertTrue(all("finite" in line or "external handle" in line or "not an OS sandbox" in line for line in preview.assurance_statements))
+        self.assertTrue(any("finite" in line for line in preview.assurance_statements))
+        self.assertTrue(any("external handle" in line for line in preview.assurance_statements))
+        self.assertTrue(any("not an OS sandbox" in line for line in preview.assurance_statements))
+        self.assertIn("Automatic retries are disabled.", preview.assurance_statements)
+
+    def test_preview_binds_unbounded_format_retries_to_finite_aggregate_resources(self) -> None:
+        request = self.request(
+            automatic_retry_attempt_limit="unbounded",
+            automatic_retry_classes=["proposal_format_error"],
+        )
+        preview = prepare_run_authority(request)
+        resource = preview.run_resource_grant
+        self.assertEqual(resource.automatic_retry_attempt_limit, "unbounded")
+        self.assertEqual(resource.automatic_retry_classes, ["proposal_format_error"])
+        self.assertEqual(resource.max_model_requests, 8)
+        self.assertIn("bounded by aggregate resources", preview.assurance_statements[-1])
+        statement = preview.exact_confirmation_statement
+        confirmation = RunPreparationConfirmation.from_statement(
+            confirmation_id="confirmation-retry-envelope",
+            preview_hash=preview.confirmation_binding_hash.value,
+            statement=statement,
+            confirmed_at="2026-07-28T10:05:00Z",
+        )
+        paths = confirm_run_preparation(preview, confirmation, statement)
+        persisted = RunResourceGrant.model_validate(
+            parse_json_strict(Path(paths["run_resource_grant"]).read_bytes())
+        )
+        self.assertEqual(persisted, resource)
 
     def test_codex_cli_preparation_uses_the_reviewed_codex_native_profile(self) -> None:
         request = self.request(
@@ -414,6 +443,10 @@ class RunPreparationTests(unittest.TestCase):
             self.request(max_cost_decimal="NaN")
         with self.assertRaises(ValidationError):
             self.request(roles=["proposer"])
+        with self.assertRaises(ValidationError):
+            self.request(automatic_retry_attempt_limit="unbounded")
+        with self.assertRaises(ValidationError):
+            self.request(automatic_retry_classes=["proposal_format_error"])
 
     def test_confirmed_grants_drive_framework_readiness_and_expiry(self) -> None:
         preview = prepare_run_authority(self.request())
@@ -755,6 +788,8 @@ class ReadinessCliContractTests(unittest.TestCase):
             "--max-request-bytes", "200000", "--max-response-bytes", "100000",
             "--max-input-tokens", "50000", "--max-output-tokens", "20000",
             "--max-elapsed-seconds", "600", "--max-cost-decimal", "0.25",
+            "--automatic-retry-attempt-limit", "unbounded",
+            "--automatic-retry-class", "proposal_format_error",
             "--cost-accounting", "observed", "--temperature-decimal", "0",
             "--structured-output-mode", "tool", "--authorization-hash", ZERO,
             "--format", "json",
@@ -764,6 +799,13 @@ class ReadinessCliContractTests(unittest.TestCase):
         self.assertNotIn("CANARY-SECRET-VALUE", result.stdout + result.stderr)
         preview = json.loads(result.stdout)
         self.assertEqual(preview["provider_grant"]["max_calls"], 8)
+        self.assertEqual(
+            preview["run_resource_grant"]["automatic_retry_attempt_limit"], "unbounded"
+        )
+        self.assertEqual(
+            preview["run_resource_grant"]["automatic_retry_classes"],
+            ["proposal_format_error"],
+        )
         preview_path = self.root / "preview.json"
         preview_path.write_text(result.stdout, encoding="utf-8")
 

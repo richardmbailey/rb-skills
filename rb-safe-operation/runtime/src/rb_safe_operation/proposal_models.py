@@ -6,7 +6,7 @@ from pathlib import PurePosixPath
 import re
 from typing import Annotated, Literal, Union
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
 
 from .canonical import artifact_hash, canonical_decimal
 from .models import (
@@ -45,6 +45,7 @@ ProposalAssuranceProfile = Literal[
 ]
 ProposalAdapter = Literal["json_line", "pydantic_ai"]
 ProposalRole = Literal["plan_assessor", "proposer", "patch_assessor", "verifier", "policy_translator"]
+AutomaticRetryClass = Literal["proposal_format_error"]
 
 
 def _unique(values: list[object], field: str) -> None:
@@ -178,7 +179,11 @@ class AgentPatchProposal(StrictModel):
     operation_id: SafeIdentifier
     attempt_id: SafeIdentifier
     intent_summary: str = Field(min_length=1, max_length=2000)
-    unified_diff: str = Field(min_length=1, max_length=2_000_000)
+    unified_diff: str = Field(
+        min_length=1,
+        max_length=2_000_000,
+        pattern=r"^(?:--- |diff --git )",
+    )
     claimed_created_paths: list[str]
     claimed_modified_paths: list[str]
     claimed_deleted_paths: list[str]
@@ -424,6 +429,8 @@ class RunResourceGrant(StrictModel):
     max_response_bytes: int = Field(gt=0)
     max_elapsed_seconds: int = Field(gt=0)
     max_cost_decimal: str
+    automatic_retry_attempt_limit: Union[int, Literal["unbounded"]] = 0
+    automatic_retry_classes: list[AutomaticRetryClass] = Field(default_factory=list)
     replenishes_grant_id: SafeIdentifier | None
     authorization_hash: HashRef
 
@@ -433,8 +440,69 @@ class RunResourceGrant(StrictModel):
             raise ValueError("run resource grant must expire after it is issued")
         canonical_decimal(self.max_cost_decimal)
         _require_ref(self.authorization_hash, "human-authorization", "1.0", "authorization_hash")
+        if isinstance(self.automatic_retry_attempt_limit, int) and self.automatic_retry_attempt_limit < 0:
+            raise ValueError("automatic retry attempt limit must be non-negative or unbounded")
+        _unique(self.automatic_retry_classes, "automatic retry classes")
+        retries_enabled = self.automatic_retry_attempt_limit == "unbounded" or self.automatic_retry_attempt_limit > 0
+        if retries_enabled != bool(self.automatic_retry_classes):
+            raise ValueError(
+                "automatic retry classes must be present exactly when automatic retries are enabled"
+            )
         if self.replenishes_grant_id == self.grant_id:
             raise ValueError("a resource grant cannot replenish itself")
+        return self
+
+    @model_serializer(mode="wrap")
+    def preserve_legacy_disabled_retry_shape(self, handler):
+        """Keep pre-retry schema-1 grants canonically hash-compatible."""
+
+        data = handler(self)
+        if self.automatic_retry_attempt_limit == 0 and not self.automatic_retry_classes:
+            data.pop("automatic_retry_attempt_limit", None)
+            data.pop("automatic_retry_classes", None)
+        return data
+
+
+class AutomaticRetryRecord(StrictModel):
+    schema_version: Literal["1.0"]
+    retry_id: SafeIdentifier
+    retry_index: int = Field(gt=0)
+    role: Literal["proposer"]
+    failure_class: AutomaticRetryClass
+    operation_id: SafeIdentifier
+    operation_attempt_id: SafeIdentifier
+    failed_request_token: SafeIdentifier
+    rejected_response_hash: HashRef
+    role_call_record_hash: HashRef
+    request_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    response_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    resource_grant_hash: HashRef
+    product_state_unchanged: Literal[True]
+    protected_control_state_unchanged: Literal[True]
+    usage_complete: Literal[True]
+    recorded_at: UtcTimestamp
+    policy_binding: PolicyBinding
+
+    @model_validator(mode="after")
+    def retry_authority_bindings(self) -> "AutomaticRetryRecord":
+        _require_ref(
+            self.rejected_response_hash,
+            "agent-patch-proposal",
+            "1.0",
+            "rejected_response_hash",
+        )
+        _require_ref(
+            self.role_call_record_hash,
+            "role-call-record",
+            "2.0",
+            "role_call_record_hash",
+        )
+        _require_ref(
+            self.resource_grant_hash,
+            "run-resource-grant",
+            "1.0",
+            "resource_grant_hash",
+        )
         return self
 
 
@@ -674,6 +742,7 @@ class EventPayloadV2(StrictModel):
     event_type: Literal[
         "execution_started",
         "proposal_requested",
+        "automatic_retry_scheduled",
         "proposal_received",
         "proposal_rejected",
         "proposal_preflight_passed",
@@ -955,6 +1024,7 @@ class CoordinatorBundleV2(StrictModel):
     repair_outcomes: list[RepairOutcomeV2] = Field(default_factory=list)
     proposal_cycle_history: list[ProposalCycleRecord] = Field(default_factory=list)
     role_call_records: list[RoleCallRecord] = Field(default_factory=list)
+    automatic_retry_history: list[AutomaticRetryRecord] = Field(default_factory=list)
     active_semantic_request_token: SafeIdentifier | None = None
     completed_semantic_request_tokens: list[SafeIdentifier] = Field(default_factory=list)
     post_execution_snapshot: RepositorySnapshotV3 | None = None
@@ -1058,6 +1128,7 @@ class CoordinatorBundleV2(StrictModel):
         _unique([item.outcome_id for item in self.repair_outcomes], "repair outcome IDs")
         _unique([item.cycle_id for item in self.proposal_cycle_history], "proposal cycle IDs")
         _unique([item.call_id for item in self.role_call_records], "role call record IDs")
+        _unique([item.retry_id for item in self.automatic_retry_history], "automatic retry record IDs")
         _unique(self.completed_semantic_request_tokens, "completed semantic request tokens")
         if self.active_semantic_request_token in set(self.completed_semantic_request_tokens):
             raise ValueError("active semantic request cannot already be completed")
@@ -1066,6 +1137,52 @@ class CoordinatorBundleV2(StrictModel):
         _unique([item.assessment_id for item in self.patch_assessment_history], "patch assessment history IDs")
         _unique([item.intent_id for item in self.apply_intent_history], "apply intent history IDs")
         _unique([item.grant_id for item in self.resource_grant_history], "resource grant history IDs")
+        completed_tokens = set(self.completed_semantic_request_tokens)
+        call_records_by_hash = {
+            artifact_hash("role-call-record", "2.0", item.model_dump(mode="json")): item
+            for item in self.role_call_records
+        }
+        grants_by_hash = {
+            artifact_hash("run-resource-grant", "1.0", item.model_dump(mode="json")): item
+            for item in self.resource_grant_history
+        }
+        retry_counts: dict[tuple[str, str], int] = {}
+        retried_tokens: set[str] = set()
+        for retry in self.automatic_retry_history:
+            if retry.policy_binding != self.policy_binding:
+                raise ValueError("automatic retry record uses another policy binding")
+            if retry.failed_request_token not in completed_tokens:
+                raise ValueError("automatic retry record names a request that is not durably complete")
+            if retry.failed_request_token in retried_tokens:
+                raise ValueError("a completed request cannot authorise more than one automatic retry")
+            retried_tokens.add(retry.failed_request_token)
+            call_record = call_records_by_hash.get(retry.role_call_record_hash.value)
+            if call_record is None:
+                raise ValueError("automatic retry record lacks its complete role-call record")
+            if (
+                call_record.role != "proposer"
+                or call_record.outcome != "success"
+                or not call_record.usage_complete
+                or call_record.policy_binding != retry.policy_binding
+                or call_record.request_hash != retry.request_sha256
+                or call_record.response_hash != retry.response_sha256
+            ):
+                raise ValueError("automatic retry record is not bound to a complete proposer call")
+            grant = grants_by_hash.get(retry.resource_grant_hash.value)
+            if grant is None:
+                raise ValueError("automatic retry record uses an unauthorised resource grant")
+            if retry.failure_class not in grant.automatic_retry_classes:
+                raise ValueError("automatic retry class is absent from its resource grant")
+            key = (retry.operation_id, retry.operation_attempt_id)
+            expected_index = retry_counts.get(key, 0) + 1
+            if retry.retry_index != expected_index:
+                raise ValueError("automatic retry history is not a continuous per-attempt sequence")
+            retry_counts[key] = expected_index
+            if (
+                grant.automatic_retry_attempt_limit != "unbounded"
+                and retry.retry_index > grant.automatic_retry_attempt_limit
+            ):
+                raise ValueError("automatic retry history exceeds its confirmed attempt limit")
         _unique([
             artifact_hash("human-intervention", "3.0", item.model_dump(mode="json"))
             for item in self.human_interventions

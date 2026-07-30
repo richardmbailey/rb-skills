@@ -716,6 +716,8 @@ def prepare_run_authority(request: RunPreparationRequest) -> RunPreparationPrevi
         max_response_bytes=request.max_response_bytes,
         max_elapsed_seconds=request.max_elapsed_seconds,
         max_cost_decimal=request.max_cost_decimal,
+        automatic_retry_attempt_limit=request.automatic_retry_attempt_limit,
+        automatic_retry_classes=request.automatic_retry_classes,
         replenishes_grant_id=None,
         authorization_hash=request.authorization_hash,
     )
@@ -737,6 +739,11 @@ def prepare_run_authority(request: RunPreparationRequest) -> RunPreparationPrevi
             "The provider and aggregate resource ceilings are finite.",
             "The credential remains an external handle; its value is not persisted.",
             "Framework tool allocation is not an OS sandbox.",
+            (
+                "Automatic retries are disabled."
+                if not resource_grant.automatic_retry_classes
+                else "Automatic retries cover only the confirmed classes and remain bounded by aggregate resources."
+            ),
         ],
     }
     binding = hash_ref("run-preparation-preview-body", body, "1.0")
