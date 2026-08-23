@@ -1,29 +1,79 @@
 ---
 name: "rb-write-skill"
-description: "Use when creating or updating a reusable RB-style Codex or Claude Code skill in the versioned rb-skills repository, including triggers, instructions, metadata, and resources. For behavioural tests of an existing skill, use $rb-create-skill-evals."
+description: "Use when creating or updating an RB-style Codex or Claude Code skill in the rb-skills repository, including triggers, instructions, metadata, and resources. For behavioural tests of an existing skill, use $rb-create-skill-evals."
 ---
 
 # RB Write Skill
 
+Create or update reusable RB skills in the versioned `rb-skills` repository. Treat the repository copy as the source of truth and install from it only after the skill validates.
+
+## Required decisions
+
+Before editing, determine:
+
+- the repeated workflow the skill will support;
+- the conditions under which the skill must be selected;
+- whether invocation is automatic or manual-only;
+- the required inputs, procedure, outputs, and failure behaviour;
+- the target agents: Codex, Claude Code, or both;
+- whether scripts, references, assets, or behavioural evaluations are required.
+
+If a missing decision would change the trigger boundary, required behaviour, permissions, outputs, or failure handling, ask the human before writing the affected rule.
+
 ## Procedure
 
-1. Identify the repeated workflow.
-2. Define when the skill should be used.
-3. Define required inputs.
-4. Define step-by-step procedure.
-5. Define outputs and failure modes.
-6. Save Richard-owned global skills in the versioned `rb-skills` repo first, not directly in an installed agent directory. Prefer `<rb-skills-repo>/<skill_name>/`, where `<rb-skills-repo>` is the clone being edited; if the source repo cannot be found, ask for its path. Use the `rb-` prefix for Richard-owned workflow/support skills unless the human explicitly asks for a general non-RB skill.
-7. Write `SKILL.md` with only `name` and `description` in YAML frontmatter. Make `description` precise enough to trigger the skill before the body is loaded.
-8. Add `agents/openai.yaml` with an `interface:` block containing quoted `display_name`, a 25-64 character `short_description`, and a `default_prompt` that mentions `$<skill_name>`.
-9. Add `scripts/`, `references/`, or `assets/` only when they remove real repeated work. Reference any bundled resource directly from `SKILL.md`.
-10. Install or refresh the skill into the active agent by running the repo sync script from the repo root:
+1. Locate the versioned `rb-skills` repository. If its path cannot be found, ask the human for the path.
+2. Create or update `<rb-skills-repo>/<skill_name>/`. Use the `rb-` prefix for a user-owned workflow or support skill unless the human explicitly requests a general non-RB skill.
+3. Write `SKILL.md`:
+   - include only `name` and `description` in YAML frontmatter;
+   - make `name` identical to the skill directory name;
+   - treat `description` as the selection contract that is available before the body loads;
+   - for automatic invocation, describe the requests that should select the skill and important requests that should not;
+   - for manual-only invocation, begin the description with `Manual invocation only`, name the accepted invocation forms, and state that task content alone must not select the skill;
+   - define required inputs, ordered procedure, outputs, boundaries, and failure behaviour in the body.
+4. After the first complete draft, apply `$rb-simplify-language` to `SKILL.md` and any agent-facing reference text. This user-owned procedure is an explicit instruction to invoke the manual-only language-review skill for the completed draft; the skill must not be selected during initial routing merely because the task is skill authoring. Preserve the intended trigger boundary, requirements, permissions, outputs, rationale, examples, and useful redundancy. If the review exposes a missing decision that would change behaviour, ask the human instead of inventing the answer.
+5. Add `agents/openai.yaml` with an `interface:` block containing:
+   - a quoted `display_name`;
+   - a quoted `short_description` containing 25 to 64 characters;
+   - a quoted `default_prompt` that mentions `$<skill_name>` and preserves the selected invocation mode.
+6. Add `scripts/`, `references/`, or `assets/` only when they eliminate repeated instructions, parsing, validation, or asset recreation. Reference each bundled resource directly from `SKILL.md`.
+7. Add or update behavioural evaluations when the trigger contract or required behaviour changes. Use `$rb-create-skill-evals` for the evaluation workflow.
+8. Install or refresh the skill by running the repository sync script from the repository root:
 
    ```bash
    python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --skills <skill_name>
    ```
 
-   Use `--agent codex` or `--agent claude` when the target agent must be explicit. Use `--replace` only after confirming an existing installed skill folder should be backed up and replaced.
-11. Validate that frontmatter parses, the folder name matches `name`, metadata follows the current schema, no initializer TODOs remain, and the installed path points back to the repo when symlink mode was used.
-12. Tell the human how to invoke the skill directly: `$<skill_name>` in Codex and `/<skill_name>` in Claude Code. Also note that matching requests should trigger the skill automatically after the agent reloads.
-13. Update `$rb-working-diary` with durable design decisions when the skill work is substantial or affects general working practice.
-14. Use a repository-local skills directory only if the human explicitly asks, and explain that Codex and Claude Code discover their configured global/personal skills directories, not arbitrary project-local skill folders unless that agent specifically supports the project-local location being used.
+   If the human names one target agent, add `--agent codex` or `--agent claude`. If both agents are targets, run the command once per agent. Use `--replace` only after confirming that the existing installed skill directory may be backed up and replaced.
+9. Validate each requirement separately:
+   - YAML frontmatter parses;
+   - the directory name equals `name`;
+   - `agents/openai.yaml` follows the current metadata schema;
+   - no initializer placeholder or TODO remains;
+   - each referenced resource exists;
+   - each behavioural-evaluation manifest validates;
+   - each symlink installation resolves to the repository skill directory.
+10. Hand off the result:
+   - report the created or changed files and validation results;
+   - report installation success or the exact failed stage;
+   - tell the human to invoke `$<skill_name>` in Codex or `/<skill_name>` in Claude Code;
+   - for automatic invocation, explain which matching requests should select the skill after reload;
+   - for manual-only invocation, state that the skill remains inactive until the human explicitly invokes it.
+11. Use `$rb-working-diary` when its trigger conditions are met. Record durable design decisions, validation evidence, omitted checks, and residual risks.
+
+## Location boundary
+
+Save user-owned global skills in the versioned `rb-skills` repository first. Do not author the source skill directly in an installed agent directory.
+
+Use a repository-local skills directory only when the human explicitly requests one. Explain that Codex and Claude Code discover their configured global or personal skills directories. They do not discover an arbitrary project-local directory unless that agent supports the selected location.
+
+## Completion check
+
+Before completion, confirm that:
+
+- the description expresses the intended automatic or manual-only trigger boundary;
+- the first complete draft received the required `$rb-simplify-language` review;
+- every required input, action, output, and failure response has an unambiguous owner;
+- bundled resources and evaluations are referenced and valid;
+- installation claims match observed sync results;
+- the handoff does not claim automatic selection for a manual-only skill.

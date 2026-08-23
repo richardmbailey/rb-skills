@@ -194,6 +194,22 @@
     "rationale": "Read-only fixed-root policy explanation is part of policy authoring, not plan assessment or execution."
   },
   {
+    "id": "constrained-policy-tighten-existing",
+    "family": "constrained-execution",
+    "prompt": "Tighten the existing .rb-safe-operation-policy.json so constrained work cannot modify files under secrets/. Show the complete authority-change preview and require confirmation bound to that exact proposal before applying it.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-create-safe-operation-policy"
+    },
+    "forbidden_skills": [
+      "rb-create-low-level-plan",
+      "rb-assess-plan-safety",
+      "rb-safe-operation"
+    ],
+    "critical": true,
+    "rationale": "Tightening the fixed project policy through a proposal-bound confirmation belongs to the policy-authoring workflow."
+  },
+  {
     "id": "constrained-negative-new-top-plan",
     "family": "constrained-execution",
     "prompt": "Create the overall implementation plan for this feature and remind me about the optional higher-assurance route, but leave the route undecided.",

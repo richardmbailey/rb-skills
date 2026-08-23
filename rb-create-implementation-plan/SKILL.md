@@ -5,7 +5,7 @@ description: "Use when an idea or product goal needs a top-level implementation 
 
 # /rb:create-implementation-plan - turn an idea into a practical implementation plan
 
-Use this to create the first top-level plan for a sufficiently understood idea or goal. If material requirements are still unresolved, use `$rb-discuss` first. If a plan, checklist, issue list, or phase already exists and needs execution or progress tracking, use `$rb-execute-plan` instead.
+Use this to create the first top-level plan for a sufficiently understood idea or goal. If the user needs a durable product requirements document before implementation planning, use `$rb-create-prd` first. If material requirements are still unresolved and no PRD was requested, use `$rb-discuss` first. If a plan, checklist, issue list, or phase already exists and needs execution or progress tracking, use `$rb-execute-plan` instead.
 
 ## Procedure
 

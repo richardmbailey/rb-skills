@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Start Project"
-  short_description: "Onboard with testing, CI-equivalent checks, and routing"
-  default_prompt: "Use $rb-start-project to inspect this project, recover its testing conventions and canonical CI-equivalent command, clarify the first task, and route directly to discussion, planning, implementation, diagnosis, or review according to whether material ambiguity remains."
+  short_description: "Onboard and preserve the new-project pipeline"
+  default_prompt: "Use $rb-start-project to inspect this project, establish durable Pipeline State, include PRD creation when required, recover testing and the CI-equivalent gate, and route the project through its next approved workflow."

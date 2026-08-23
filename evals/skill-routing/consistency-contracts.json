@@ -18,7 +18,8 @@
         "An incomplete or uncertain provider call is not replayed",
         "rb-create-safe-operation-policy",
         ".rb-safe-operation-policy.json",
-        "schema-3"
+        "schema-3",
+        "rb-create-prd"
       ],
       "forbidden": [
         "implement changes with focused tests and checks",
@@ -257,12 +258,14 @@
     {"skill": "rb-start-project", "required": ["testing", "CI-equivalent", "route"]},
     {"skill": "rb-continue-project", "required": ["testing", "CI-equivalent", "route"]},
     {"skill": "rb-create-implementation-plan", "required": ["testing architecture", "constrained static-only"]},
+    {"skill": "rb-create-prd", "required": ["product requirements document", "implementation planning", "success measures", "decisions"]},
     {"skill": "rb-execute-plan", "required": ["automated behavioural tests", "CI-equivalent", "static-only"]},
     {"skill": "rb-implement-with-tests", "required": ["automated behavioural tests", "test levels", "CI-equivalent"]},
     {"skill": "rb-tdd-scientific-code", "required": ["test levels", "invariants", "CI-equivalent"]},
     {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
     {"skill": "rb-review-pr-or-diff", "required": ["wrongly levelled", "flaky", "CI"]},
     {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
+    {"skill": "rb-simplify-language", "required": ["Manual invocation only", "explicitly requests", "Claude Code", "agent-facing control text", "any text", "Do not select"]},
     {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported", "proposal"]},
     {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only", "patch"]},
     {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "stop", "proposal"]},
@@ -271,6 +274,21 @@
     {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
   ],
   "json_case_contracts": [
+    {
+      "path": "evals/skill-routing/cases/product-planning.json",
+      "required_ids": [
+        "product-planning-create-prd",
+        "product-planning-revise-prd",
+        "product-planning-review-prd",
+        "product-planning-direct-invocation",
+        "product-planning-implementation-plan",
+        "product-planning-exploration",
+        "product-planning-research-gate",
+        "product-planning-backlog"
+      ],
+      "required_substrings": ["product requirements document", "decision-ready", "implementation plan", "approved"],
+      "forbidden_substrings": []
+    },
     {
       "path": "evals/skill-routing/cases/constrained-execution.json",
       "required_ids": [
@@ -285,13 +303,16 @@
         "constrained-recover-uncertain-role-call",
         "constrained-execute-reject-harmful-proposal",
         "constrained-policy-author-natural-language",
-        "constrained-policy-explain-read-only"
+        "constrained-policy-explain-read-only",
+        "constrained-policy-tighten-existing"
       ],
       "required_substrings": ["static_file_state", "executable_test", "strict diff", "patch assessment", "read-only doctor", "exact confirmation statement", "do not read or write x.txt", ".rb-safe-operation-policy.json"],
       "forbidden_substrings": ["exact read and check actions"]
     }
   ],
   "behavioural_eval_contracts": [
+    {"path": "rb-create-prd/evals/eval-plan.json", "skill": "rb-create-prd", "minimum_cases": 15},
+    {"path": "rb-start-project/evals/eval-plan.json", "skill": "rb-start-project", "minimum_cases": 12},
     {"path": "rb-implement-with-tests/evals/eval-plan.json", "skill": "rb-implement-with-tests", "minimum_cases": 8},
     {"path": "rb-tdd-scientific-code/evals/eval-plan.json", "skill": "rb-tdd-scientific-code", "minimum_cases": 7},
     {"path": "rb-execute-plan/evals/eval-plan.json", "skill": "rb-execute-plan", "minimum_cases": 7},

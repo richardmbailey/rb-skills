@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "skill": "rb-language",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "draft-project-update",
+      "kind": "trigger",
+      "prompt": "Write a short project update from these facts: the pilot began on 4 March, 18 people enrolled, and the result is not yet known.",
+      "should_trigger": true,
+      "success": [{"name": "ordinary drafting triggers", "evaluator": "semantic", "rubric": "Pass if rb-language is selected and the update is direct, preserves the date, count, and unknown result, and invents no opinion or outcome."}]
+    },
+    {
+      "id": "edit-ordinary-email",
+      "kind": "trigger",
+      "prompt": "Edit this ordinary email so it is concise and warm: Certainly! I hope this message finds you well. The meeting starts at 10am on Tuesday.",
+      "should_trigger": true,
+      "success": [{"name": "light editing triggers", "evaluator": "semantic", "rubric": "Pass if rb-language is selected, removes the canned opening, and preserves the meeting time and day."}]
+    },
+    {
+      "id": "draft-social-post",
+      "kind": "trigger",
+      "prompt": "Draft a short factual social post announcing that registration closes Friday. Do not add hype, emojis, or unsupported details.",
+      "should_trigger": true,
+      "success": [{"name": "ordinary public prose triggers", "evaluator": "semantic", "rubric": "Pass if rb-language is selected and the post preserves the Friday deadline without adding claims or decorative material."}]
+    },
+    {
+      "id": "draft-website-copy",
+      "kind": "outcome",
+      "prompt": "Write two plain sentences for a website from these facts: the library opens at 8am, closes at 6pm, and offers wheelchair access through the east entrance.",
+      "should_trigger": true,
+      "success": [{"name": "copy remains factual", "evaluator": "semantic", "rubric": "Pass only if the prose preserves both opening times and the east-entrance accessibility fact without promotional claims or invented facilities."}]
+    },
+    {
+      "id": "preserve-cautious-claim",
+      "kind": "regression",
+      "prompt": "Lightly edit this sentence for clarity: The pilot may have reduced waiting time, although the small sample means the result remains uncertain.",
+      "should_trigger": true,
+      "success": [{"name": "claim strength survives", "evaluator": "semantic", "rubric": "Pass only if the revision preserves possibility rather than certainty, the small sample, and the uncertain result."}]
+    },
+    {
+      "id": "preserve-exact-content",
+      "kind": "regression",
+      "prompt": "Lightly edit the surrounding sentence, but keep `claim_id`, `status`, the command `tool --dry-run`, and the quotation \"No result yet\" exactly unchanged.",
+      "should_trigger": true,
+      "success": [{"name": "protected content remains exact", "evaluator": "semantic", "rubric": "Pass only if all named fields, the command, and the quotation remain exactly unchanged."}]
+    },
+    {
+      "id": "preserve-useful-formatting",
+      "kind": "regression",
+      "prompt": "Lightly edit this Markdown release note without removing its useful structure: ## Changes\n\n- Fixed the login timeout.\n- Added CSV export.",
+      "should_trigger": true,
+      "success": [{"name": "medium controls formatting", "evaluator": "semantic", "rubric": "Pass if the useful heading and list remain and the two changes keep their original meaning."}]
+    },
+    {
+      "id": "substantive-ai-draft-revision",
+      "kind": "trigger",
+      "prompt": "This report was drafted by AI. Revise it thoroughly so it sounds natural while preserving every fact, citation, qualification, and expression of uncertainty.",
+      "should_trigger": false,
+      "success": [{"name": "specialist revision takes precedence", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected as the primary workflow and the request routes to rb-revise-ai-draft."}]
+    },
+    {
+      "id": "explicit-control-text-review",
+      "kind": "trigger",
+      "prompt": "Apply $rb-simplify-language to make these agent tool-selection rules precise and expose missing decision criteria.",
+      "should_trigger": false,
+      "success": [{"name": "manual control-text skill takes precedence", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected as the primary workflow and the explicit rb-simplify-language invocation is followed."}]
+    },
+    {
+      "id": "project-vocabulary-request",
+      "kind": "trigger",
+      "prompt": "Create CONTEXT.md for this modelling project, defining its variables, units, sign conventions, boundary conditions, and overloaded terminology.",
+      "should_trigger": false,
+      "success": [{"name": "project-language skill takes precedence", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected as the primary workflow and the request routes to rb-project-language."}]
+    },
+    {
+      "id": "code-only-request",
+      "kind": "trigger",
+      "prompt": "Implement a Python function that returns the SHA-256 digest of a byte string. Return code only.",
+      "should_trigger": false,
+      "success": [{"name": "does not hijack code-only work", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected for a code-only request."}]
+    },
+    {
+      "id": "literal-translation",
+      "kind": "trigger",
+      "prompt": "Translate this paragraph into English as literally as possible. Do not edit its style.",
+      "should_trigger": false,
+      "success": [{"name": "does not override literal translation", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected because the request explicitly excludes style editing."}]
+    },
+    {
+      "id": "fact-check-only",
+      "kind": "trigger",
+      "prompt": "Check every factual claim and citation in this article. Do not rewrite it.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace verification", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected and no prose revision replaces the requested fact-check."}]
+    },
+    {
+      "id": "specialist-report-request",
+      "kind": "trigger",
+      "prompt": "Analyse this sales dataset and produce an executive report with validated metrics and charts.",
+      "should_trigger": false,
+      "success": [{"name": "does not displace specialist workflow", "evaluator": "semantic", "rubric": "Pass if rb-language is not selected as the primary workflow because the task requires specialist data analysis and reporting."}]
+    },
+    {
+      "id": "direct-invocation",
+      "kind": "trigger",
+      "prompt": "Use $rb-language to draft a short factual announcement from these notes and return only the finished prose.",
+      "should_trigger": true,
+      "success": [{"name": "explicit invocation works", "evaluator": "semantic", "rubric": "Pass if rb-language is selected and the response follows the requested output boundary without inventing content."}]
+    }
+  ]
+}

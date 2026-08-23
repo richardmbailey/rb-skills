@@ -4,12 +4,23 @@ This repository contains reusable skills for Codex and Claude Code. A skill is a
 
 The skills are intended for practical coding, modelling, AI/ML, research, review, and project-continuity work. They provide process guidance rather than a framework that you run directly.
 
+## Latest changes
+
+- Added `$rb-language` for ordinary drafting and light prose editing when no specialist skill owns the task. `$rb-revise-ai-draft` retains responsibility for substantive revision of supplied AI-like prose.
+- Added `$rb-create-prd` for creating, revising, and reviewing decision-ready product requirements before implementation planning.
+- Added `$rb-simplify-language`, a manual-only skill for reducing ambiguity in agent-facing control text or any other text that the user explicitly supplies.
+- Updated `$rb-write-skill` to distinguish automatic and manual-only triggering, cover both Codex and Claude Code conventions, and apply `$rb-simplify-language` after the first complete skill draft.
+- Updated the project lifecycle skills and their behavioural routing contracts so onboarding, continuation, requirements discussion, PRD creation, implementation planning, execution, review, and completion use consistent boundaries.
+- Added `examples/safe-space-invaders`, a dependency-free WebGL game that records where constrained static-file work ends and standard behavioural verification is still required.
+- Qualified the optional Codex-native constrained runtime for static file work, with schema-3 plans, fixed project policies, bounded patch proposals, explicit run authority, and validated rollback. This remains an opt-in, Codex-only route.
+- Licensed the repository under the Mozilla Public License 2.0.
+
 ## Quick Start
 
 Clone the repository to a stable location:
 
 ```bash
-git clone <repo-url> ~/src/rb-skills
+git clone https://github.com/richardmbailey/rb-skills.git ~/src/rb-skills
 cd ~/src/rb-skills
 python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --dry-run
 python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink
@@ -36,6 +47,15 @@ python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink \
 
 Restart Codex after adding, removing, renaming, or substantially changing skills. Claude Code usually detects changes under an existing `~/.claude/skills` directory, but restart it when new skills do not appear.
 
+## Repository layout
+
+- Active skills are the top-level `rb-*` directories that contain a `SKILL.md` file.
+- Cross-skill routing cases and consistency checks live in `evals/skill-routing/`.
+- Worked examples and their verification notes live in `examples/`.
+- Detailed shared guidance and generated explanatory material live in `docs/`.
+- Historical skills live in `retired-skills/` and are excluded from normal installation.
+- `.github/workflows/validate-skills.yml` is the authoritative repository validation workflow.
+
 ## Starting Project Work
 
 Open the target repository and invoke:
@@ -47,11 +67,14 @@ Claude Code: /rb-start-project
 
 `rb-start-project` inspects the repository, discovers its test and CI conventions, asks only for missing decisions, and routes the first task through the narrowest appropriate workflow.
 
+For a project that will continue beyond onboarding, it also records a durable eight-stage pipeline covering research assessment, requirements discussion, PRD creation when required, implementation planning, implementation, review, and completion. `$rb-continue-project` restores that pipeline in later sessions.
+
 The routing rule is:
 
 | Task state | Workflow |
 | --- | --- |
 | Material requirements unresolved | `rb-discuss` |
+| Product or feature needs a durable requirements document | `rb-create-prd` |
 | Sufficiently understood idea needs a top-level plan | `rb-create-implementation-plan` |
 | Existing multi-step plan needs sequencing or status ownership | `rb-execute-plan` |
 | Agreed bounded ordinary change | `rb-implement-with-tests` |
@@ -62,6 +85,8 @@ The routing rule is:
 | Defect review of a diff or pull request | `rb-review-pr-or-diff` |
 
 `rb-discuss` is not a mandatory stage. Agreed work routes directly to planning or implementation.
+
+Requests to create, revise, or review a product requirements document select `$rb-create-prd` automatically. Users can also invoke `$rb-create-prd` in Codex or `/rb-create-prd` in Claude Code.
 
 ## Testing Policy
 
@@ -84,7 +109,108 @@ The skills do not impose a universal coverage percentage. They preserve existing
 
 Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun until green merely to complete a task. Intermittent failures are defects to diagnose.
 
-## Standard and Constrained Execution Routes
+## Skill Reference
+
+| Skill | Use when |
+| --- | --- |
+| `$rb-start-project` | First onboarding of a new or poorly understood project, including testing and CI discovery before routing. |
+| `$rb-continue-project` | Resume a mature project from instructions, diary, handoff, Git state, and preserved testing context. |
+| `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
+| `$rb-create-prd` | Create, revise, or review product requirements, including users, outcomes, scope, success measures, risks, dependencies, and unresolved decisions. |
+| `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan, testing architecture, risks, success criteria, and route choice. |
+| `$rb-execute-plan` | An existing multi-step plan needs phase sequencing, task status, test coverage, CI-equivalent checks, and phase-level verification. |
+| `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
+| `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
+| `$rb-diagnose` | A bug, regression, flaky test, or surprising output needs evidence-led root-cause work before a fix. |
+| `$rb-review-pr-or-diff` | A diff or pull request needs findings-first review, including wrongly levelled, missing, flaky, or weakened tests. |
+| `$rb-explain-codebase` | Neutral orientation to structure, control flow, data flow, dependencies, tests, and change hotspots. |
+| `$rb-architecture-review` | Structural critique of boundaries, coupling, duplication, hidden assumptions, test seams, and refactoring opportunities. |
+| `$rb-multi-agent-systems` | Design or review multiple agents or orchestration, including deterministic runner control and a transition, denial, contract, recovery, end-to-end, and held-out test matrix. |
+| `$rb-language` | Draft or lightly edit ordinary user-facing prose when no specialist skill owns the task. |
+| `$rb-simplify-language` | Only when explicitly invoked, reduce semantic ambiguity in supplied text; intended primarily for agent-facing control text but available for any text. |
+| `$rb-revise-ai-draft` | Revise supplied AI-generated, formulaic, or generic prose into natural language while preserving its meaning, evidence, uncertainty, and citations. |
+| `$rb-project-language` | Capture domain terminology, units, invariants, assumptions, and shared vocabulary. |
+| `$rb-research-question-gate` | Evaluate a scientific, algorithmic, or novelty claim before investing in planning or coding. |
+| `$rb-where-are-we` | Produce a deep evidence-backed HTML project state-of-play report. |
+| `$rb-end-session` | Close or hand off a session with Git state, testing evidence, omitted checks, risks, and next actions. |
+| `$rb-working-diary` | Preserve cumulative decisions, evidence, test/CI status, risks, and next actions across sessions or compaction. |
+| `$rb-explain-diff` | Create a teaching-oriented interactive explanation of a code change. |
+| `$rb-create-skill-evals` | Design behavioural evaluations for agent skills, routing boundaries, outcomes, regressions, and ablations. |
+| `$rb-write-skill` | Create or update a reusable RB-style skill. |
+| `$rb-install-skills` | Install or verify the complete RB setup and project resources. |
+| `$rb-setup-local-agent-skills` | Repair an incomplete, stale, or undiscoverable skill installation. |
+| `$rb-sync-skills-repo` | Synchronise skill folders between this repository and agent skill directories. |
+| `$rb-context-tokens` | Inspect context size or token usage. |
+| `$rb-create-low-level-plan` | **Codex-only.** Compile one statically verifiable constrained phase into a schema-3 plan containing exact actions or proposal-only bounded patch operations, with fixed project-policy, provider, and resource bindings. |
+| `$rb-assess-plan-safety` | **Codex-only.** Assess the unchanged plan envelope, including identity, policy, adapter, grants, evidence, effects, approvals, and static verification limits. |
+| `$rb-safe-operation` | **Codex-only.** Obtain and assess exact bounded diffs, apply accepted bytes through coordinator code, recover from known journalled states, and run separated static verification. |
+| `$rb-create-safe-operation-policy` | **Codex-only.** Translate natural-language path restrictions into a typed fixed-root policy proposal, preview the complete authority change, and persist only after proposal-bound confirmation. |
+
+Wiki-specific operational skills live with the wiki system in [`richardmbailey/rb-wiki`](https://github.com/richardmbailey/rb-wiki). They are not duplicated in this general skill pack.
+
+Retired skills remain under [`retired-skills/`](retired-skills/README.md) for historical reference and are not installed by the normal sync.
+
+## Continuity and Handoff
+
+For long-running work, the diary and handoff should preserve:
+
+- objective and current status;
+- selected test levels and affected boundaries;
+- exact focused, integration, coverage, benchmark, and CI-equivalent commands and outcomes;
+- checks not run and why;
+- flaky-test evidence and unresolved failures;
+- accepted residual regression or scientific risk;
+- current Git state, plan/phase state, and exact next action.
+
+Tests are never reported as passed unless they were run in the current session or clearly documented with date and context in an authoritative handoff.
+
+## Repository Validation
+
+The authoritative CI workflow validates:
+
+- Python compilation and JSON syntax;
+- the complete behavioural-eval manifest structure, including cases, evaluator fields, and duplicate IDs;
+- instruction contracts and cross-file consistency;
+- publication hygiene;
+- the full constrained-runtime test suite, including setup and tamper gates, without skipped tests;
+- runtime schema drift and generated-schema mirrors; and
+- constrained-runtime support under Python 3.10 and 3.12.
+
+Run the standard local checks from the repository root with Python 3.10 or newer:
+
+```bash
+python3 evals/skill-routing/validate_instruction_contracts.py \
+  evals/skill-routing/instruction-contracts.json
+python3 evals/skill-routing/validate_consistency_contracts.py \
+  evals/skill-routing/consistency-contracts.json
+python3 evals/skill-routing/validate_routing_eval.py \
+  evals/skill-routing/eval-plan.json
+for manifest in rb-*/evals/eval-plan.json; do
+  python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest"
+done
+ruby evals/skill-routing/validate_skill_metadata.rb
+python3 evals/skill-routing/validate_publication_hygiene.py
+git diff --check
+```
+
+Runtime, schema, launcher, or cross-cutting constrained-workflow changes also require the full constrained-runtime suite and schema checks from `.github/workflows/validate-skills.yml`. Install its exact locked dependencies as the workflow does. The setup and tamper tests also require an approved wheelhouse through `RB_SAFE_OPERATION_TEST_WHEELHOUSE`; repository CI prepares the reviewed Linux wheelhouse automatically.
+
+Normal constrained operation must use the explicit manifest-pinned setup and launcher described in [`rb-safe-operation/references/runtime-contract.md`](rb-safe-operation/references/runtime-contract.md). It must not use an ambient editable package.
+
+## Updating and Publishing
+
+With a symlink installation:
+
+```bash
+cd ~/src/rb-skills
+git pull
+```
+
+Restart Codex after pulling changes that add, remove, rename, or substantially change skill descriptions. Re-run the sync command when using copy mode.
+
+Before publishing, check that the repository contains no secrets, private identifiers, confidential context, local-only paths, caches, generated temporary outputs, or environment files.
+
+## Safe Execution: Standard and Constrained Routes
 
 A new implementation plan records one of three routes:
 
@@ -182,90 +308,6 @@ The release candidate with runtime source `ecfd1ae5c1d4cae4d086b2ee50704a23da986
 
 Explicit runtime setup retains each complete setup manifest by its content hash before selecting it as current. A rollback is also explicit: `scripts/rollback_runtime.py` accepts one retained manifest hash, revalidates its source checkout, launcher, bootstrap interpreter, installed environment, package, and dependency locks, and only then atomically selects it. The retained source checkout must still exist unchanged. A failed or corrupted rollback leaves the current manifest untouched, and neither setup nor rollback deletes project run records.
 
-## Skill Reference
-
-| Skill | Use when |
-| --- | --- |
-| `$rb-start-project` | First onboarding of a new or poorly understood project, including testing and CI discovery before routing. |
-| `$rb-continue-project` | Resume a mature project from instructions, diary, handoff, Git state, and preserved testing context. |
-| `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
-| `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan, testing architecture, risks, success criteria, and route choice. |
-| `$rb-execute-plan` | An existing multi-step plan needs phase sequencing, task status, test coverage, CI-equivalent checks, and phase-level verification. |
-| `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
-| `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
-| `$rb-diagnose` | A bug, regression, flaky test, or surprising output needs evidence-led root-cause work before a fix. |
-| `$rb-review-pr-or-diff` | A diff or pull request needs findings-first review, including wrongly levelled, missing, flaky, or weakened tests. |
-| `$rb-explain-codebase` | Neutral orientation to structure, control flow, data flow, dependencies, tests, and change hotspots. |
-| `$rb-architecture-review` | Structural critique of boundaries, coupling, duplication, hidden assumptions, test seams, and refactoring opportunities. |
-| `$rb-multi-agent-systems` | Design or review multiple agents or orchestration, including deterministic runner control and a transition, denial, contract, recovery, end-to-end, and held-out test matrix. |
-| `$rb-project-language` | Capture domain terminology, units, invariants, assumptions, and shared vocabulary. |
-| `$rb-research-question-gate` | Evaluate a scientific, algorithmic, or novelty claim before investing in planning or coding. |
-| `$rb-where-are-we` | Produce a deep evidence-backed HTML project state-of-play report. |
-| `$rb-end-session` | Close or hand off a session with Git state, testing evidence, omitted checks, risks, and next actions. |
-| `$rb-working-diary` | Preserve cumulative decisions, evidence, test/CI status, risks, and next actions across sessions or compaction. |
-| `$rb-explain-diff` | Create a teaching-oriented interactive explanation of a code change. |
-| `$rb-create-skill-evals` | Design behavioural evaluations for agent skills, routing boundaries, outcomes, regressions, and ablations. |
-| `$rb-write-skill` | Create or update a reusable RB-style skill. |
-| `$rb-install-skills` | Install or verify the complete RB setup and project resources. |
-| `$rb-setup-local-agent-skills` | Repair an incomplete, stale, or undiscoverable skill installation. |
-| `$rb-sync-skills-repo` | Synchronise skill folders between this repository and agent skill directories. |
-| `$rb-context-tokens` | Inspect context size or token usage. |
-| `$rb-create-low-level-plan` | **Codex-only.** Compile one statically verifiable constrained phase into a schema-3 plan containing exact actions or proposal-only bounded patch operations, with fixed project-policy, provider, and resource bindings. |
-| `$rb-assess-plan-safety` | **Codex-only.** Assess the unchanged plan envelope, including identity, policy, adapter, grants, evidence, effects, approvals, and static verification limits. |
-| `$rb-safe-operation` | **Codex-only.** Obtain and assess exact bounded diffs, apply accepted bytes through coordinator code, recover from known journalled states, and run separated static verification. |
-| `$rb-create-safe-operation-policy` | **Codex-only.** Translate natural-language path restrictions into a typed fixed-root policy proposal, preview the complete authority change, and persist only after proposal-bound confirmation. |
-
-Wiki-specific operational skills live with the wiki system in [`richardmbailey/rb-wiki`](https://github.com/richardmbailey/rb-wiki). They are not duplicated in this general skill pack.
-
-Retired skills remain under [`retired-skills/`](retired-skills/README.md) for historical reference and are not installed by the normal sync.
-
-## Continuity and Handoff
-
-For long-running work, the diary and handoff should preserve:
-
-- objective and current status;
-- selected test levels and affected boundaries;
-- exact focused, integration, coverage, benchmark, and CI-equivalent commands and outcomes;
-- checks not run and why;
-- flaky-test evidence and unresolved failures;
-- accepted residual regression or scientific risk;
-- current Git state, plan/phase state, and exact next action.
-
-Tests are never reported as passed unless they were run in the current session or clearly documented with date and context in an authoritative handoff.
-
-## Repository Validation
-
-The repository CI validates:
-
-- the constrained runtime on Python 3.10 and 3.12;
-- the full runtime unit and integration suite, including setup, manifest, launcher, reuse, and tamper gates on the reviewed Linux wheelhouse;
-- runtime schema drift and byte-identical generated-schema mirrors;
-- instruction contracts;
-- cross-file routing, metadata, documentation, capability, and eval consistency;
-- JSON syntax for active routing and behavioural evaluation plans;
-- the complete behavioural-eval manifest structure, including cases, evaluator fields, and duplicate IDs.
-
-Run the local checks from the repository root with Python 3.10 or newer:
-
-```bash
-python3 evals/skill-routing/validate_instruction_contracts.py \
-  evals/skill-routing/instruction-contracts.json
-python3 evals/skill-routing/validate_consistency_contracts.py \
-  evals/skill-routing/consistency-contracts.json
-for manifest in rb-*/evals/eval-plan.json; do
-  python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest"
-done
-python3 -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
-```
-
-For development tests, install the runtime package and its locked dependency set. Routine skill use must use the manifest-pinned installation described above; it must not import an ambient editable package:
-
-```bash
-python3 -m pip install -e rb-safe-operation/runtime
-```
-
-The setup/manifest/launcher/tamper integration test requires an approved wheelhouse supplied through `RB_SAFE_OPERATION_TEST_WHEELHOUSE`; repository CI provides the reviewed Linux wheelhouse automatically.
-
 ## Licence
 
 Unless a file states otherwise, the source code, skill instructions, documentation, schemas, and examples in this repository are made available under the [Mozilla Public License 2.0](LICENSE).
@@ -273,16 +315,3 @@ Unless a file states otherwise, the source code, skill instructions, documentati
 This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this repository, you can obtain one at <https://mozilla.org/MPL/2.0/>.
 
 Copyright (c) 2026 Richard Bailey.
-
-## Updating and Publishing
-
-With a symlink installation:
-
-```bash
-cd ~/src/rb-skills
-git pull
-```
-
-Restart Codex after pulling changes that add, remove, rename, or substantially change skill descriptions. Re-run the sync command when using copy mode.
-
-Before publishing, check that the repository contains no secrets, private identifiers, confidential context, local-only paths, caches, generated temporary outputs, or environment files.

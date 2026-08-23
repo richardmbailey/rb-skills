@@ -9,7 +9,7 @@ description: "Use when a non-trivial change still has unresolved material requir
 
 Use this when a non-trivial feature or change cannot yet be planned or implemented safely because material requirements remain unresolved.
 
-Do not use it merely because a change is substantial. Once the intended behaviour and acceptance criteria are sufficiently agreed, use `$rb-create-implementation-plan` for a new top-level plan or the appropriate implementation skill for agreed work.
+Do not use it merely because a change is substantial. Once the intended behaviour and acceptance criteria are sufficiently agreed, use `$rb-create-prd` when the user wants a durable product requirements document. Otherwise, use `$rb-create-implementation-plan` for a new top-level plan or the appropriate implementation skill for agreed work.
 
 ## Procedure
 
@@ -22,7 +22,7 @@ Do not use it merely because a change is substantial. Once the intended behaviou
    - Semantic means meaning, intent, relevance, classification, summarisation, ambiguity resolution, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence, and should usually use an LLM-backed path.
 6. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.
 7. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.
-8. Record the agreed requirements, accepted risks, remaining questions, and recommended next workflow. Create a top-level plan only when the human asks for one, using `$rb-create-implementation-plan`.
+8. Record the agreed requirements, accepted risks, remaining questions, and recommended next workflow. Create a PRD only when the human asks for one, using `$rb-create-prd`. Create a top-level plan only when the human asks for one, using `$rb-create-implementation-plan`.
 
 ## Stop condition
 

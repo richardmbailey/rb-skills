@@ -27,6 +27,24 @@
     "rationale": "The whole new project needs onboarding before narrower planning or vocabulary work."
   },
   {
+    "id": "lifecycle-start-product-pipeline",
+    "family": "project-lifecycle",
+    "prompt": "I have an empty repository for a new customer-facing product. Onboard it and preserve the full path through research, requirements, a PRD, implementation planning, delivery, review, and completion without starting those later workflows yet.",
+    "expected": {"outcome": "select", "skill": "rb-start-project"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The project first needs durable pipeline onboarding; naming later stages does not authorise entry into them."
+  },
+  {
+    "id": "lifecycle-start-existing-prd",
+    "family": "project-lifecycle",
+    "prompt": "This newly created repository already contains an approved PRD, but it has no implementation plan, test conventions, project diary, or handoff. Onboard it, recognise the completed product-requirements gate, and identify what comes next.",
+    "expected": {"outcome": "select", "skill": "rb-start-project"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-continue-project"],
+    "critical": true,
+    "rationale": "First onboarding must establish the repository and pipeline state before handing off to planning; it must not recreate an existing approved PRD."
+  },
+  {
     "id": "lifecycle-continue-handoff",
     "family": "project-lifecycle",
     "prompt": "Resume this mature repository from yesterday's handoff and working diary. Check the Git state, tell me the immediate context, and orient before making the next edit.",
@@ -52,6 +70,15 @@
     "forbidden_skills": ["rb-start-project", "rb-execute-plan", "rb-where-are-we"],
     "critical": true,
     "rationale": "Orientation from existing continuity context precedes any plan execution."
+  },
+  {
+    "id": "lifecycle-continue-prd-stage",
+    "family": "project-lifecycle",
+    "prompt": "Resume this established product from its diary. Requirements discussion is complete, the PRD is still a draft, and implementation planning must wait until the PRD is decision-ready. Restore that pipeline state and tell me the next workflow.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-start-project", "rb-create-prd", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "The continuation pass must recover the active PRD gate before it hands off to the PRD workflow."
   },
   {
     "id": "lifecycle-status-html",

@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "skill": "rb-create-prd",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "create-feature-prd",
+      "kind": "outcome",
+      "prompt": "Create a PRD for adding shared family accounts to our budgeting app. Use the attached interviews and analytics, distinguish evidence from assumptions, and make the result ready for implementation planning.",
+      "should_trigger": true,
+      "success": [{"name": "complete decision artifact", "evaluator": "semantic", "rubric": "Pass if the result defines the user problem and evidence, users and outcomes, scope and non-goals, traceable product and quality requirements, success measurement, risks, dependencies, rollout boundaries, and open decisions without turning into an implementation plan."}]
+    },
+    {
+      "id": "natural-product-requirements-request",
+      "kind": "trigger",
+      "prompt": "We need a durable product requirements document for the new team approvals feature before engineering plans it. Please draft it from this brief.",
+      "should_trigger": true,
+      "success": [{"name": "automatic PRD selection", "evaluator": "semantic", "rubric": "Pass if rb-create-prd is selected even though the user did not use the skill name, because the requested artifact is explicitly a product requirements document."}]
+    },
+    {
+      "id": "explicit-invocation",
+      "kind": "trigger",
+      "prompt": "Use $rb-create-prd to turn these approved product decisions into a PRD.",
+      "should_trigger": true,
+      "success": [{"name": "direct invocation works", "evaluator": "semantic", "rubric": "Pass if rb-create-prd is selected and produces the requested PRD workflow."}]
+    },
+    {
+      "id": "revise-existing-prd",
+      "kind": "outcome",
+      "prompt": "Revise this existing PRD after the scope decision changed. Preserve stable requirement IDs, mark superseded decisions, update affected acceptance evidence, and leave unrelated approved content intact.",
+      "should_trigger": true,
+      "success": [{"name": "revision preserves traceability", "evaluator": "semantic", "rubric": "Pass if the existing PRD is revised rather than replaced blindly, stable IDs and unaffected decisions are preserved, the changed scope is propagated, and the decision history or source is visible."}]
+    },
+    {
+      "id": "review-readiness-only",
+      "kind": "outcome",
+      "prompt": "Review this PRD for decision readiness. Do not edit it. Report only gaps that would force engineering to guess product behaviour, permissions, data policy, success thresholds, or launch scope.",
+      "should_trigger": true,
+      "success": [{"name": "audit remains read-only", "evaluator": "semantic", "rubric": "Pass if findings are prioritised, tied to product decisions or evidence, and no file or PRD content is rewritten because the user requested review only."}]
+    },
+    {
+      "id": "sparse-brief-no-invention",
+      "kind": "regression",
+      "prompt": "Write a PRD for a notifications feature. I have not decided channels, timing, opt-out rules, success targets, or launch regions.",
+      "should_trigger": true,
+      "success": [{"name": "missing decisions stay visible", "evaluator": "semantic", "rubric": "Pass only if the agent does not invent channels, schedules, consent rules, metric thresholds, or regions. It must ask for blocking decisions or produce a clearly provisional draft with owned open questions or TBDs."}]
+    },
+    {
+      "id": "evidence-vs-solution",
+      "kind": "regression",
+      "prompt": "Create a PRD from this brief: 'Users need a chatbot because support tickets are high.' The evidence establishes slow resolution and repeated questions but does not establish that a chatbot is the right solution.",
+      "should_trigger": true,
+      "success": [{"name": "problem is not disguised solution", "evaluator": "semantic", "rubric": "Pass if the PRD records the supported user problem and desired outcome, labels the chatbot as a proposed solution or assumption, and does not claim evidence that the brief does not contain."}]
+    },
+    {
+      "id": "measurable-success-without-fabrication",
+      "kind": "regression",
+      "prompt": "Draft the success-measure section of this PRD. We know task completion and support demand matter, but we have no baseline or approved target yet.",
+      "should_trigger": true,
+      "success": [{"name": "measurement is operational but honest", "evaluator": "semantic", "rubric": "Pass if metrics, sources, windows, segmentation, and owners are specified or requested, while baselines and targets remain unknown or open rather than being fabricated."}]
+    },
+    {
+      "id": "quality-requirements-are-selective",
+      "kind": "outcome",
+      "prompt": "Create a PRD for exporting medical appointment summaries. Cover the quality and policy requirements that affect product acceptance, launch, operation, or risk, but do not fill the document with irrelevant boilerplate.",
+      "should_trigger": true,
+      "success": [{"name": "relevant quality boundaries are covered", "evaluator": "semantic", "rubric": "Pass if privacy, security, accessibility, data handling, audit, reliability, recovery, and relevant policy questions are considered in relation to this product, with unsupported obligations or thresholds left unresolved. Fail if every generic category receives boilerplate regardless of relevance."}]
+    },
+    {
+      "id": "ai-product-requirements",
+      "kind": "outcome",
+      "prompt": "Use $rb-create-prd for an AI assistant that drafts replies to customer complaints. Include product-level requirements for evaluation populations, uncertainty, human oversight, unsafe outputs, abuse, monitoring, fallback, and suspension authority.",
+      "should_trigger": true,
+      "success": [{"name": "AI product risks become requirements", "evaluator": "semantic", "rubric": "Pass if the PRD turns the supplied AI concerns into product requirements, acceptance evidence, guardrails, owners, and open decisions without selecting a model or prescribing implementation architecture."}]
+    },
+    {
+      "id": "user-stories-not-mechanical",
+      "kind": "regression",
+      "prompt": "Create a PRD for an administrator audit-log feature. Use user stories only where they help communicate a need; do not mechanically rewrite every requirement as 'As a... I want...'.",
+      "should_trigger": true,
+      "success": [{"name": "needs and requirements remain distinct", "evaluator": "semantic", "rubric": "Pass if user needs, journeys, product requirements, and acceptance evidence are expressed in forms suited to each purpose. The response must not force all content into a user-story template."}]
+    },
+    {
+      "id": "implementation-boundary",
+      "kind": "regression",
+      "prompt": "Create the PRD for offline document editing. I need the product decisions and constraints settled, but do not choose frameworks, design the sync algorithm, estimate tasks, or create the implementation plan.",
+      "should_trigger": true,
+      "success": [{"name": "PRD does not become technical plan", "evaluator": "semantic", "rubric": "Pass if the result defines user-visible offline behaviour, conflict and recovery expectations, compatibility constraints, acceptance evidence, and risks without selecting frameworks, designing internals, estimating work, or creating phases."}]
+    },
+    {
+      "id": "existing-template-preserved",
+      "kind": "outcome",
+      "prompt": "Create the PRD in this repository using its existing product template. Preserve that structure, but add any missing section needed to expose material product decisions.",
+      "should_trigger": true,
+      "success": [{"name": "project convention and completeness coexist", "evaluator": "semantic", "rubric": "Pass if the repository template is inspected and preserved where possible, with only justified additions for missing material decisions. Fail if a generic template replaces it without analysis."}]
+    },
+    {
+      "id": "approved-status-not-invented",
+      "kind": "regression",
+      "prompt": "Finish this PRD and mark it approved. No product owner or governance record has approved it yet.",
+      "should_trigger": true,
+      "success": [{"name": "approval authority is respected", "evaluator": "semantic", "rubric": "Pass only if the agent refuses to claim approval, uses draft or decision-ready as supported, and names the human or governance approval still required."}]
+    },
+    {
+      "id": "implementation-plan-not-prd",
+      "kind": "trigger",
+      "prompt": "The PRD is approved. Create the top-level implementation plan with phases, architecture decisions, test strategy, risks, and validation gates.",
+      "should_trigger": false,
+      "success": [{"name": "routes downstream", "evaluator": "semantic", "rubric": "Pass if rb-create-prd is not selected and the request routes to rb-create-implementation-plan."}]
+    },
+    {
+      "id": "unstructured-product-discussion",
+      "kind": "trigger",
+      "prompt": "Help me think through whether this small feature is worthwhile and what users might expect. I do not need a document yet.",
+      "should_trigger": false,
+      "success": [{"name": "does not force a PRD", "evaluator": "semantic", "rubric": "Pass if rb-create-prd is not selected. The request is exploratory discussion without a durable PRD deliverable."}]
+    },
+    {
+      "id": "research-premise-first",
+      "kind": "trigger",
+      "prompt": "Before we write requirements, determine whether our untested algorithmic idea can actually produce the claimed scientific result and whether the question is worth pursuing.",
+      "should_trigger": false,
+      "success": [{"name": "research gate precedes PRD", "evaluator": "semantic", "rubric": "Pass if rb-create-prd is not selected and the request routes to rb-research-question-gate."}]
+    },
+    {
+      "id": "backlog-tickets-only",
+      "kind": "trigger",
+      "prompt": "The requirements and implementation plan are complete. Break Phase 1 into Jira-sized engineering tickets with estimates and owners.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace delivery planning", "evaluator": "semantic", "rubric": "Pass if rb-create-prd is not selected because the requested artifact is a delivery backlog after requirements and planning are complete."}]
+    }
+  ]
+}

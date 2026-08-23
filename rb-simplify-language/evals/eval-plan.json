@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "skill": "rb-simplify-language",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "rewrite-vague-system-rule",
+      "kind": "trigger",
+      "prompt": "Apply $rb-simplify-language to rewrite this system instruction so an agent has a clear operational decision: 'When appropriate, consider checking the database before answering, although you may answer directly when the information seems sufficiently reliable.'",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "vague rule becomes an explicit decision boundary",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is selected and the revision identifies the condition for querying, the required action, and the restriction on answering from memory without inventing a reliability threshold not supported by the prompt."
+        }
+      ]
+    },
+    {
+      "id": "audit-tool-description",
+      "kind": "trigger",
+      "prompt": "Use $rb-simplify-language to audit this agent tool description for ambiguous selection boundaries and rewrite it if the intended rule is recoverable: '`lookup_customer` can be useful when additional information about a customer might help you complete the task.'",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "tool boundary is made auditable",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response identifies that 'can be useful', 'additional information', and 'might help' do not define an operational boundary. It may propose a conditional form, but it must flag any criterion that cannot be recovered rather than present an invented boundary as authoritative."
+        }
+      ]
+    },
+    {
+      "id": "state-transition-control-text",
+      "kind": "outcome",
+      "prompt": "Apply $rb-simplify-language to turn this workflow prose into precise agent-facing transition rules: 'After evaluating the candidate answer, proceed to revision if necessary; otherwise the answer may be returned.' The evaluator checks acceptance criteria; the runner owns state changes.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "actors and transitions are explicit",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the evaluator is responsible for checking criteria, the runner is responsible for state changes, failure of one or more criteria leads to a revision state, and passing all criteria leads to a complete or return state."
+        }
+      ]
+    },
+    {
+      "id": "agent-handoff-protocol",
+      "kind": "outcome",
+      "prompt": "Apply $rb-simplify-language to replace this free-form critic handoff with a controlled result format that preserves the claim, support status, evidence, and requested next action. Explain what happens when a required field is missing.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "handoff has stable fields and failure behaviour",
+          "evaluator": "semantic",
+          "rubric": "Pass if the result defines canonical fields for claim, status, evidence, and action; gives bounded status values or definitions; and states visible validation or escalation behaviour for missing required fields."
+        }
+      ]
+    },
+    {
+      "id": "review-skill-procedure",
+      "kind": "trigger",
+      "prompt": "Apply $rb-simplify-language to review only the wording of this existing SKILL.md procedure for hidden actors, conditions after actions, vague qualifiers, and conflicting modal terms. Do not redesign or reinstall the skill.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "wording audit stays within scope",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is selected for the control-text audit and the response does not broaden the task into skill scaffolding, installation, or architecture redesign."
+        }
+      ]
+    },
+    {
+      "id": "preserve-rationale-and-examples",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language to make these agent instructions less ambiguous. Keep any rationale and examples that help the model apply the rules reliably; I do not want a minimum-word-count rewrite.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "clarity does not become destructive compression",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response separates operative rules from rationale and examples where useful, preserves supporting context that constrains interpretation, and does not impose a fixed sentence or word limit."
+        }
+      ]
+    },
+    {
+      "id": "do-not-invent-recent-threshold",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language to rewrite this rule precisely: 'Use web search for recent information.' No definition of recent is available in the surrounding instructions.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "missing product decision remains visible",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response identifies 'recent' as an unresolved decision criterion and does not invent a number of days, months, or years as if it came from the source. A clearly labelled illustrative option is acceptable only if it is not presented as the final rule."
+        }
+      ]
+    },
+    {
+      "id": "modal-semantics-preserved",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language to audit these rules: 'The reviewer should block publication when secrets are present. The reviewer may block publication for style concerns. The reviewer must normally allow publication after lint passes.' Identify and repair any requirement-strength or precedence problems without changing policy silently.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "modal conflicts are exposed",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response identifies the dangerous weakness of 'should' for secrets and the conflict between lint success and other blocking conditions. It must request or clearly flag the needed policy decision instead of silently changing permissions or precedence."
+        }
+      ]
+    },
+    {
+      "id": "schema-and-semantics-separated",
+      "kind": "outcome",
+      "prompt": "Apply $rb-simplify-language to improve this evaluator contract. The response has fixed fields `claim_id`, `status`, and `reason`, but deciding whether the evidence is relevant requires semantic judgement. Make both parts explicit.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "stable syntax and semantic judgement use different controls",
+          "evaluator": "semantic",
+          "rubric": "Pass if fixed fields and allowed values are assigned to a typed or deterministically validated structure, while evidence relevance remains a bounded semantic criterion with validation, examples, or visible uncertainty rather than a keyword or regex substitute."
+        }
+      ]
+    },
+    {
+      "id": "canonical-terms-with-distinct-concepts",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language to standardise this agent protocol. It uses 'task' and 'job' for the same queued unit, but 'operation' means an externally visible side effect. Keep distinct concepts distinct.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "terminology is canonical without semantic collapse",
+          "evaluator": "semantic",
+          "rubric": "Pass if one canonical name is chosen for the queued unit and 'operation' remains separate because it has a different meaning. The response must not replace all three terms mechanically."
+        }
+      ]
+    },
+    {
+      "id": "ordinary-user-facing-prose",
+      "kind": "trigger",
+      "prompt": "Rewrite this welcome email so it sounds warm and natural for new customers while preserving every date and factual claim.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not control ordinary prose",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is not selected. This is ordinary user-facing prose revision and may route to rb-revise-ai-draft when its trigger conditions are met."
+        }
+      ]
+    },
+    {
+      "id": "create-complete-skill",
+      "kind": "trigger",
+      "prompt": "Create a new reusable RB skill with SKILL.md, openai.yaml, bundled references, installation, and behavioural evaluations.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not replace skill authoring",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is not selected during initial routing because the complete authoring request belongs to rb-write-skill. After the first complete draft, rb-write-skill may explicitly invoke rb-simplify-language for its required language-review step."
+        }
+      ]
+    },
+    {
+      "id": "design-multi-agent-runner",
+      "kind": "trigger",
+      "prompt": "Design the architecture for a multi-agent research system, including runner ownership, tool permissions, retries, checkpoints, state transitions, and evaluation.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not replace architecture design",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is not the primary skill and the request routes to rb-multi-agent-systems."
+        }
+      ]
+    },
+    {
+      "id": "proofread-api-documentation",
+      "kind": "trigger",
+      "prompt": "Correct spelling, punctuation, and grammar in this API guide. Do not change its instructions, terminology, or structure.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "does not hijack proofreading",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is not selected and the response stays within the requested proofreading scope."
+        }
+      ]
+    },
+    {
+      "id": "review-signals-not-banned-words",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language to lint these agent instructions for words such as 'appropriate', 'relevant', and 'normally'. Some uses have local definitions. Report only real ambiguity and do not apply a banned-word replacement list.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "semantic review governs diagnostic signals",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response treats the named words as review signals, preserves locally defined or domain-meaningful uses, and avoids mechanical deletion, regex-only judgement, or invented replacements."
+        }
+      ]
+    },
+    {
+      "id": "claude-code-manual-invocation",
+      "kind": "trigger",
+      "prompt": "In Claude Code, apply /rb-simplify-language to this prompt and make its tool-selection boundary explicit.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "Claude Code invocation is supported",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is selected because the user explicitly invoked the Claude Code command form."
+        }
+      ]
+    },
+    {
+      "id": "uninvoked-system-rule",
+      "kind": "trigger",
+      "prompt": "Rewrite this system instruction so an agent has a clear operational decision and visible failure behaviour.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "in-scope content does not auto-trigger",
+          "evaluator": "semantic",
+          "rubric": "Pass only if rb-simplify-language is not selected. The task content is relevant, but the user did not explicitly invoke the manual-only skill."
+        }
+      ]
+    },
+    {
+      "id": "uninvoked-tool-description",
+      "kind": "trigger",
+      "prompt": "Audit this agent tool description for ambiguous selection boundaries, hidden actors, and conflicting modal terms.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "tool wording alone does not trigger",
+          "evaluator": "semantic",
+          "rubric": "Pass only if rb-simplify-language is not selected because the user did not name or invoke it."
+        }
+      ]
+    },
+    {
+      "id": "uninvoked-state-transition",
+      "kind": "trigger",
+      "prompt": "Convert this workflow prose into explicit state-transition rules with canonical state names and validation-failure behaviour.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "workflow wording alone does not trigger",
+          "evaluator": "semantic",
+          "rubric": "Pass only if rb-simplify-language remains inactive because no explicit manual invocation is present."
+        }
+      ]
+    },
+    {
+      "id": "explicit-ordinary-prose",
+      "kind": "outcome",
+      "prompt": "Apply $rb-simplify-language to this report paragraph. Reduce ambiguity while preserving its natural prose form, cautious claim strength, and intended audience: 'The pilot may have improved response times, although the small sample and incomplete follow-up mean that the result should be treated cautiously.'",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "explicit invocation works for ordinary prose",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-simplify-language is selected, the paragraph remains natural report prose, and the revision preserves possibility rather than certainty, the small sample, incomplete follow-up, and required caution. It must not convert the paragraph into a control protocol."
+        }
+      ]
+    }
+  ]
+}

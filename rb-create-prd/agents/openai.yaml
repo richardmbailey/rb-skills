@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Create PRD"
+  short_description: "Create decision-ready product requirements"
+  default_prompt: "Use $rb-create-prd to create, revise, or review a product requirements document before implementation planning, including requirements, success measures, risks, and decisions."

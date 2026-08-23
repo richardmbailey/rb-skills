@@ -162,6 +162,69 @@
     "rationale": "The colloquial request still clearly asks for faithful revision of generic AI-like prose."
   },
   {
+    "id": "understanding-simplify-language-system-rules",
+    "family": "understanding-review",
+    "prompt": "Apply $rb-simplify-language to these system instructions so each tool-selection decision has an explicit actor, observable condition, required action, prohibition, and failure path. Preserve the rationale separately from the operative rules.",
+    "expected": {"outcome": "select", "skill": "rb-simplify-language"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-write-skill", "rb-multi-agent-systems"],
+    "critical": true,
+    "rationale": "The user explicitly invokes the manual-only controlled-instruction skill."
+  },
+  {
+    "id": "understanding-simplify-language-tool-boundary",
+    "family": "understanding-review",
+    "prompt": "Use $rb-simplify-language to audit this tool description for vague qualifiers, hidden actors, conflicting modal terms, and conditions that cannot be observed. Propose precise wording, but flag any missing policy decision instead of inventing it.",
+    "expected": {"outcome": "select", "skill": "rb-simplify-language"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-write-skill", "rb-architecture-review"],
+    "critical": true,
+    "rationale": "The user explicitly invokes the manual-only controlled-instruction skill."
+  },
+  {
+    "id": "understanding-simplify-language-transition",
+    "family": "understanding-review",
+    "prompt": "Apply $rb-simplify-language to convert this evaluator and runner prose into precise state-transition instructions with canonical state names, explicit precedence, and visible behaviour for failed validation.",
+    "expected": {"outcome": "select", "skill": "rb-simplify-language"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-revise-ai-draft", "rb-execute-plan"],
+    "critical": true,
+    "rationale": "The user explicitly invokes the manual-only controlled-instruction skill."
+  },
+  {
+    "id": "understanding-simplify-language-explicit-ordinary-prose",
+    "family": "understanding-review",
+    "prompt": "Apply $rb-simplify-language to this report paragraph. Reduce semantic ambiguity, but preserve its natural prose form, cautious claim strength, and intended audience.",
+    "expected": {"outcome": "select", "skill": "rb-simplify-language"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-write-skill"],
+    "critical": true,
+    "rationale": "Explicit invocation permits the manual-only skill to operate on non-agent-facing text."
+  },
+  {
+    "id": "understanding-simplify-language-uninvoked-system-rules",
+    "family": "understanding-review",
+    "prompt": "Rewrite these system instructions so each tool-selection decision has an explicit actor, observable condition, required action, prohibition, and failure path.",
+    "expected": {"outcome": "no_skill"},
+    "forbidden_skills": ["rb-simplify-language"],
+    "critical": true,
+    "rationale": "The content is in scope, but the user did not explicitly invoke the manual-only skill."
+  },
+  {
+    "id": "understanding-simplify-language-uninvoked-tool-boundary",
+    "family": "understanding-review",
+    "prompt": "Audit this tool description for vague qualifiers, hidden actors, conflicting modal terms, and conditions that cannot be observed.",
+    "expected": {"outcome": "no_skill"},
+    "forbidden_skills": ["rb-simplify-language"],
+    "critical": true,
+    "rationale": "A relevant task must not auto-trigger the explicitly invoked skill."
+  },
+  {
+    "id": "understanding-simplify-language-uninvoked-transition",
+    "family": "understanding-review",
+    "prompt": "Convert this evaluator and runner prose into precise state-transition instructions with canonical state names and visible behaviour for failed validation.",
+    "expected": {"outcome": "no_skill"},
+    "forbidden_skills": ["rb-simplify-language"],
+    "critical": true,
+    "rationale": "The skill remains inactive because the user did not invoke it by name."
+  },
+  {
     "id": "understanding-ambiguous-review",
     "family": "understanding-review",
     "prompt": "Can you look over these changes?",

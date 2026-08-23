@@ -9,6 +9,8 @@
     "cases/understanding-review.json",
     "cases/skill-management.json",
     "cases/context-research-architecture.json",
+    "cases/product-planning.json",
+    "cases/language.json",
     "cases/constrained-execution.json"
   ],
   "cases": [

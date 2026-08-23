@@ -7,6 +7,8 @@ description: "Use when revising supplied AI-generated, formulaic, or generic pro
 
 Revise prose so it states the author's meaning clearly in language suited to its context. Do not invent personality or replace one formulaic style with another.
 
+Use this skill as the primary workflow when the human supplies AI-generated, formulaic, or generic prose for substantive revision. `$rb-language` covers ordinary drafting and light editing; it must not replace this skill's fidelity checks.
+
 ## Required input
 
 Require source text. Use these when the human provides them:

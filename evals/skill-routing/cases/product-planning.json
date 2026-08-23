@@ -1,0 +1,74 @@
+[
+  {
+    "id": "product-planning-create-prd",
+    "family": "product-planning",
+    "prompt": "Create a product requirements document for shared workspaces from the supplied research and business constraints. Make users, outcomes, scope, requirements, success measures, dependencies, risks, and open decisions explicit before implementation planning.",
+    "expected": {"outcome": "select", "skill": "rb-create-prd"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-discuss", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The requested durable artifact is a PRD, not an implementation plan."
+  },
+  {
+    "id": "product-planning-revise-prd",
+    "family": "product-planning",
+    "prompt": "Revise our existing PRD after the product owner changed the launch scope. Preserve stable requirement IDs and decision history, and update affected acceptance evidence and risks.",
+    "expected": {"outcome": "select", "skill": "rb-create-prd"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-create-implementation-plan", "rb-review-pr-or-diff"],
+    "critical": true,
+    "rationale": "The task changes product requirements and traceability rather than only editing prose."
+  },
+  {
+    "id": "product-planning-review-prd",
+    "family": "product-planning",
+    "prompt": "Review this PRD for decision-ready status without editing it. Identify any gap that would force engineering to guess product behaviour, permissions, data policy, success thresholds, or launch scope.",
+    "expected": {"outcome": "select", "skill": "rb-create-prd"},
+    "forbidden_skills": ["rb-review-pr-or-diff", "rb-architecture-review", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "This is a product-requirements readiness review, not a code or architecture review."
+  },
+  {
+    "id": "product-planning-direct-invocation",
+    "family": "product-planning",
+    "prompt": "Use $rb-create-prd to turn these approved product decisions into a concise PRD before implementation planning.",
+    "expected": {"outcome": "select", "skill": "rb-create-prd"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-discuss"],
+    "critical": true,
+    "rationale": "The user directly invoked the automatic PRD skill."
+  },
+  {
+    "id": "product-planning-implementation-plan",
+    "family": "product-planning",
+    "prompt": "The PRD is approved. Create the top-level implementation plan with phases, testing architecture, risks, validation gates, and route choice.",
+    "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
+    "forbidden_skills": ["rb-create-prd", "rb-discuss", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "Approved requirements are an input to implementation planning, so the PRD workflow is complete."
+  },
+  {
+    "id": "product-planning-exploration",
+    "family": "product-planning",
+    "prompt": "Help me think through whether this feature is worth doing and what behaviour users might expect. I do not need a document yet.",
+    "expected": {"outcome": "select", "skill": "rb-discuss"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "The user wants requirements discussion and explicitly does not want a durable PRD."
+  },
+  {
+    "id": "product-planning-research-gate",
+    "family": "product-planning",
+    "prompt": "Before we write product requirements, evaluate whether the untested algorithmic idea can produce the claimed scientific result and whether the research question is worth pursuing.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-discuss"],
+    "critical": true,
+    "rationale": "The scientific premise must be evaluated before credible product requirements can be written."
+  },
+  {
+    "id": "product-planning-backlog",
+    "family": "product-planning",
+    "prompt": "The product requirements document and implementation plan are approved. Break the first phase into engineering backlog tickets with estimates and owners.",
+    "expected": {"outcome": "no_skill"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "Backlog decomposition after requirements and planning is not PRD creation or implementation planning."
+  }
+]

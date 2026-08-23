@@ -45,20 +45,33 @@ Use this when the human wants continuity from durable project context rather tha
    - fixture, service, secret, container, hardware, network, or test-data requirements;
    - known flaky or quarantined tests;
    - checks last run, their dates/context, omitted checks, and residual regression risk.
-7. Summarise before editing:
+7. Recover `Pipeline State` when the project began through `$rb-start-project`:
+   - current pipeline stage;
+   - canonical stage status;
+   - completed and `not required` gates with their evidence or reasons;
+   - PRD applicability, status, and path;
+   - active lifecycle artifacts and approval status;
+   - blocking decisions and owners;
+   - next gate, recommended skill, and expected successor.
+   If the record is absent or stale, reconstruct only what repository and diary evidence supports. Mark every reconstructed or uncertain field.
+8. Summarise before editing:
    - what the project is;
    - what prior sessions appear to have been doing;
    - current git/worktree state;
    - relevant test levels, commands, and CI-equivalent gate;
    - unresolved questions, blockers, risks, assumptions, and stale evidence;
+   - recovered pipeline stage, completed gates, active artifact, and next gate;
    - recommended next action and matching RB workflow skill.
-8. Stop and ask for approval before code edits, destructive commands, dependency changes, migrations, or broad refactors.
+9. Stop and ask for approval before code edits, destructive commands, dependency changes, migrations, broad refactors, or entry into a pipeline workflow that the recorded autonomy decision did not authorise explicitly.
 
 ## Routing
 
 Use the same routing rule as `$rb-start-project`:
 
+- If a research, scientific, modelling, algorithmic, or novelty premise must be assessed before product requirements are credible, recommend `$rb-research-question-gate`.
 - If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved, recommend `$rb-discuss`.
+- If the project needs a durable PRD or an existing PRD must become decision-ready, recommend `$rb-create-prd`.
+- If the requirements are sufficiently understood and a new top-level implementation plan is needed, recommend `$rb-create-implementation-plan`.
 - If an existing multi-step implementation plan or phase checklist must be continued, refined, or tracked, recommend `$rb-execute-plan`.
 - If one bounded ordinary change is already agreed and does not need plan-state ownership, recommend `$rb-implement-with-tests` directly.
 - If an agreed change is scientific, numerical, modelling, simulation, stochastic, or domain-sensitive, recommend `$rb-tdd-scientific-code` directly.
@@ -69,6 +82,8 @@ Use the same routing rule as `$rb-start-project`:
 - If the user explicitly authorises the next workflow, continue with the selected skill.
 
 Do not insert `$rb-discuss` merely because a change is substantial. Use it only when material ambiguity remains.
+
+Before entering the selected workflow, update `Pipeline State` with its canonical stage and status, the exact approved transition, the exit evidence needed from that workflow, and the expected successor. Before a cross-session handoff or stage change, persist the updated record through `$rb-working-diary`.
 
 ## Required Behaviour
 
@@ -95,6 +110,9 @@ Provide a concise continuity brief:
 - Coverage / fixtures / environment:
 - Checks last run and omissions:
 - Open questions / risks:
+- Pipeline stage / status / completed evidence:
+- PRD status / active artifact:
+- Next gate / expected successor:
 - Recommended next step:
 ```
 

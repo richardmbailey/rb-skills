@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "skill": "rb-start-project",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "greenfield-product-pipeline",
+      "kind": "outcome",
+      "prompt": "Use $rb-start-project for this empty repository. We are building a new customer-facing scheduling product and have no research assessment, PRD, implementation plan, or test setup yet. Guide me through the new-project pipeline.",
+      "should_trigger": true,
+      "success": [{"name": "pipeline includes PRD and later stages", "evaluator": "semantic", "rubric": "Pass if onboarding establishes Pipeline State, treats research and requirements as gates to consider, requires a decision-ready PRD for the new product, shows implementation planning, implementation, review, and completion as later stages, and asks only the next targeted question rather than pretending every stage is complete."}]
+    },
+    {
+      "id": "natural-first-onboarding",
+      "kind": "trigger",
+      "prompt": "I have just created a repository for a new service. Inspect it, help establish how we will work, and keep track of the path from discovery to requirements and delivery.",
+      "should_trigger": true,
+      "success": [{"name": "automatic onboarding selection", "evaluator": "semantic", "rubric": "Pass if rb-start-project is selected for first onboarding even without direct invocation."}]
+    },
+    {
+      "id": "unfamiliar-inherited-no-handoff",
+      "kind": "trigger",
+      "prompt": "This is my first look at an inherited repository. There is no handoff or project diary. Onboard me, recover its conventions, and determine the correct next lifecycle stage before edits.",
+      "should_trigger": true,
+      "success": [{"name": "first onboarding remains start-project", "evaluator": "semantic", "rubric": "Pass if rb-start-project is selected rather than rb-continue-project, because no durable continuation context exists."}]
+    },
+    {
+      "id": "research-gate-before-prd",
+      "kind": "outcome",
+      "prompt": "Start a new product project whose value depends on an untested algorithmic claim. We eventually need a PRD and implementation plan, but the claim may be infeasible.",
+      "should_trigger": true,
+      "success": [{"name": "premise is assessed before requirements", "evaluator": "semantic", "rubric": "Pass if Pipeline State puts the research-premise stage before PRD creation, recommends rb-research-question-gate as the next workflow, and retains PRD and planning as later expected stages rather than losing them."}]
+    },
+    {
+      "id": "prd-stage-required",
+      "kind": "outcome",
+      "prompt": "Onboard this new customer portal project. Product behaviour, permissions, data policy, success measures, and rollout still need durable agreement across product and engineering.",
+      "should_trigger": true,
+      "success": [{"name": "PRD is a required pipeline stage", "evaluator": "semantic", "rubric": "Pass if Stage 4 is required or in progress, rb-create-prd is the expected workflow after any blocking discovery decisions, and implementation planning is not started before the PRD is decision-ready."}]
+    },
+    {
+      "id": "existing-prd-skips-creation",
+      "kind": "outcome",
+      "prompt": "Use $rb-start-project. This new repository already has an authoritative, approved PRD covering users, behaviour, data policy, success measures, and rollout. There is no implementation plan yet.",
+      "should_trigger": true,
+      "success": [{"name": "existing evidence advances the pipeline", "evaluator": "semantic", "rubric": "Pass if the PRD stage is recorded as satisfied with the artifact and approval evidence, the next workflow is rb-create-implementation-plan, and the agent does not recreate the PRD or repeat completed discovery without cause."}]
+    },
+    {
+      "id": "narrow-maintenance-no-prd",
+      "kind": "regression",
+      "prompt": "Use $rb-start-project for this small internal library. The first task is a narrow dependency-maintenance update with agreed behaviour and no product deliverable.",
+      "should_trigger": true,
+      "success": [{"name": "PRD is considered but not forced", "evaluator": "semantic", "rubric": "Pass if the PRD stage is explicitly not_required with the reason that no product requirements artifact is needed, while testing, implementation, review, and completion stages remain visible."}]
+    },
+    {
+      "id": "one-question-at-a-time",
+      "kind": "regression",
+      "prompt": "Use $rb-start-project. This repository is empty and I have only said that I want to build a useful web service.",
+      "should_trigger": true,
+      "success": [{"name": "onboarding is proactive without interrogation dump", "evaluator": "semantic", "rubric": "Pass if the response explains the immediate pipeline context, asks one highest-value question, waits for the answer, and does not issue the complete onboarding questionnaire or invent users and requirements."}]
+    },
+    {
+      "id": "pipeline-state-schema",
+      "kind": "outcome",
+      "prompt": "Use $rb-start-project and prepare the handoff after onboarding. This product needs a PRD next and will continue in another session.",
+      "should_trigger": true,
+      "success": [{"name": "durable pipeline record is complete", "evaluator": "semantic", "rubric": "Pass if the handoff records the canonical current stage and status, completed and not-required stages with evidence or reasons, active artifact and PRD state, blocking decisions and owners, approved transition, next gate, recommended workflow, and expected successor, and persists it through rb-working-diary."}]
+    },
+    {
+      "id": "transition-authority-bounded",
+      "kind": "regression",
+      "prompt": "Use $rb-start-project. You may proceed from onboarding into PRD creation without asking again, but you do not have approval to begin implementation planning or code.",
+      "should_trigger": true,
+      "success": [{"name": "approval applies only to the named transition", "evaluator": "semantic", "rubric": "Pass if Pipeline State records only the onboarding-to-PRD transition as approved and the workflow stops for new approval before implementation planning or implementation."}]
+    },
+    {
+      "id": "no-code-during-onboarding",
+      "kind": "regression",
+      "prompt": "Use $rb-start-project for this new application and start coding immediately while you ask the setup questions.",
+      "should_trigger": true,
+      "success": [{"name": "onboarding remains read-only", "evaluator": "semantic", "rubric": "Pass if the agent inspects and onboards without writing product code, then requests the appropriate workflow transition and authority."}]
+    },
+    {
+      "id": "resume-pipeline-next-session",
+      "kind": "outcome",
+      "prompt": "Use $rb-start-project to hand off a product after its PRD became decision-ready. Make sure tomorrow's session does not restart discovery or forget that implementation planning is next.",
+      "should_trigger": true,
+      "success": [{"name": "continuation pointer preserves lifecycle", "evaluator": "semantic", "rubric": "Pass if the durable Pipeline State marks the PRD stage complete with evidence, names implementation planning and rb-create-implementation-plan as next, gives its exit evidence and expected successor, and tells rb-continue-project how to restore it."}]
+    },
+    {
+      "id": "mature-project-with-diary",
+      "kind": "trigger",
+      "prompt": "Resume this mature project from its existing diary, handoff, active PRD, and implementation-plan status.",
+      "should_trigger": false,
+      "success": [{"name": "continuation owns mature state", "evaluator": "semantic", "rubric": "Pass if rb-start-project is not selected and the request routes to rb-continue-project."}]
+    },
+    {
+      "id": "codebase-tour-only",
+      "kind": "trigger",
+      "prompt": "Explain this repository's components, request flow, dependencies, and change hotspots. I do not want project onboarding or lifecycle planning.",
+      "should_trigger": false,
+      "success": [{"name": "focused explanation does not trigger onboarding", "evaluator": "semantic", "rubric": "Pass if rb-start-project is not selected and the request routes to rb-explain-codebase."}]
+    },
+    {
+      "id": "approved-bounded-change",
+      "kind": "trigger",
+      "prompt": "The repository context and requirements are established. Implement this one agreed parser fix with a regression test and CI-equivalent checks.",
+      "should_trigger": false,
+      "success": [{"name": "existing bounded work bypasses onboarding", "evaluator": "semantic", "rubric": "Pass if rb-start-project is not selected and the request routes to rb-implement-with-tests."}]
+    },
+    {
+      "id": "status-report-only",
+      "kind": "trigger",
+      "prompt": "Create a deep HTML state-of-play report for this established project, covering goals, phase progress, code health, risks, and next steps.",
+      "should_trigger": false,
+      "success": [{"name": "status artifact does not restart project", "evaluator": "semantic", "rubric": "Pass if rb-start-project is not selected and the request routes to rb-where-are-we."}]
+    }
+  ]
+}

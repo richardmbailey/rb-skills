@@ -1,0 +1,56 @@
+[
+  {
+    "id": "language-draft-factual-update",
+    "family": "language",
+    "prompt": "Draft a short project update from these facts: the pilot began on 4 March, 18 people enrolled, and the result is not yet known. Keep it direct and natural.",
+    "expected": {"outcome": "select", "skill": "rb-language"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-simplify-language", "rb-project-language"],
+    "critical": true,
+    "rationale": "The user requests new prose and no more specific substantive workflow owns the task."
+  },
+  {
+    "id": "language-edit-chatbot-email",
+    "family": "language",
+    "prompt": "Edit this email so it is concise and warm. Remove the canned chatbot opening, but preserve the meeting time and day exactly.",
+    "expected": {"outcome": "select", "skill": "rb-language"},
+    "forbidden_skills": ["rb-simplify-language", "rb-project-language", "rb-write-skill"],
+    "critical": true,
+    "rationale": "The task is ordinary prose editing for natural style rather than controlled instruction review or skill authoring."
+  },
+  {
+    "id": "language-write-social-announcement",
+    "family": "language",
+    "prompt": "Write a short factual social post announcing that registration closes Friday. Do not add hype, emojis, or unsupported details.",
+    "expected": {"outcome": "select", "skill": "rb-language"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-simplify-language", "rb-project-language"],
+    "critical": true,
+    "rationale": "The request is ordinary public-facing prose and no specialist workflow owns it."
+  },
+  {
+    "id": "language-defer-substantive-ai-revision",
+    "family": "language",
+    "prompt": "This report was drafted by AI. Revise it thoroughly so it sounds natural while preserving every fact, citation, qualification, and expression of uncertainty.",
+    "expected": {"outcome": "select", "skill": "rb-revise-ai-draft"},
+    "forbidden_skills": ["rb-language", "rb-simplify-language", "rb-project-language"],
+    "critical": true,
+    "rationale": "Substantive revision of a supplied AI draft belongs to the specialist fidelity workflow."
+  },
+  {
+    "id": "language-defer-explicit-control-text",
+    "family": "language",
+    "prompt": "Apply $rb-simplify-language to make these agent tool-selection rules precise and expose missing decision criteria.",
+    "expected": {"outcome": "select", "skill": "rb-simplify-language"},
+    "forbidden_skills": ["rb-language", "rb-revise-ai-draft", "rb-project-language"],
+    "critical": true,
+    "rationale": "The human explicitly invoked the manual control-text workflow."
+  },
+  {
+    "id": "language-defer-project-vocabulary",
+    "family": "language",
+    "prompt": "Create CONTEXT.md for this modelling project, defining variables, units, sign conventions, boundary conditions, and overloaded terminology.",
+    "expected": {"outcome": "select", "skill": "rb-project-language"},
+    "forbidden_skills": ["rb-language", "rb-revise-ai-draft", "rb-simplify-language"],
+    "critical": true,
+    "rationale": "The requested artifact is project vocabulary and domain context rather than ordinary prose."
+  }
+]

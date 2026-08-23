@@ -3,7 +3,7 @@ name: "rb-project-language"
 description: "Use when a project needs shared vocabulary or CONTEXT.md updated with domain terms, acronyms, units, invariants, assumptions, or modelling concepts. Do not use for general repository orientation without a terminology or domain-context need."
 ---
 
-# /rb:language — build project vocabulary and context
+# RB Project Language
 
 ## Purpose
 

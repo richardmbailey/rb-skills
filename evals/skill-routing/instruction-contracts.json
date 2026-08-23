@@ -5,9 +5,16 @@
       "path": "rb-start-project/SKILL.md",
       "required": [
         "Do not write product code during onboarding.",
-        "ask for explicit approval",
+        "obtain explicit approval",
+        "## New Project Pipeline",
+        "Give each stage one status: `not_started`, `in_progress`, `blocked`, `complete`, or `not_required`.",
+        "Set Stage 4 to `in_progress`",
+        "## Pipeline State Record",
+        "Do not rely on conversation memory as the only pipeline record.",
+        "Approval for one workflow does not authorise later workflows.",
         "## Workflow Routing",
         "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved | `$rb-discuss` |",
+        "| The product or feature needs a durable requirements document before implementation planning | `$rb-create-prd` |",
         "After implementation, require a review+fix cycle",
         "canonical CI-equivalent local command",
         "coverage thresholds",
@@ -22,6 +29,11 @@
       "required": [
         "Recover the testing context established by prior work",
         "canonical CI-equivalent command",
+        "Recover `Pipeline State`",
+        "PRD applicability, status, and path",
+        "recommend `$rb-create-prd`",
+        "recommend `$rb-create-implementation-plan`",
+        "Before entering the selected workflow, update `Pipeline State`",
         "If one bounded ordinary change is already agreed",
         "recommend `$rb-implement-with-tests` directly",
         "Do not insert `$rb-discuss` merely because a change is substantial."
@@ -187,6 +199,7 @@
         "decisions that materially affect behaviour",
         "Ask one targeted question at a time",
         "Do not start coding until material ambiguity is resolved",
+        "$rb-create-prd",
         "$rb-create-implementation-plan"
       ],
       "forbidden": ["Produce a short implementation plan", "Restate the requested change"],
@@ -197,6 +210,7 @@
       "path": "rb-create-implementation-plan/SKILL.md",
       "required": [
         "Produce the durable top-level plan",
+        "If the user needs a durable product requirements document before implementation planning, use `$rb-create-prd` first.",
         "assets/IMPLEMENTATION_PLAN.md",
         "Route an approved plan to `$rb-execute-plan`",
         "Present exactly these plan-wide choices",
@@ -207,6 +221,27 @@
       ],
       "forbidden": ["Restate the idea.", "Ask clarifying questions if needed."],
       "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-create-prd/SKILL.md",
+      "required": [
+        "A decision is material when",
+        "Do not invent missing product decisions",
+        "stable ID, priority, rationale, source, and observable acceptance evidence",
+        "Set status to `decision-ready` only when",
+        "Set status to `approved` only when",
+        "references/prd-structure.md",
+        "$rb-discuss",
+        "$rb-research-question-gate",
+        "$rb-create-implementation-plan",
+        "Do not create backlog tickets, detailed architecture, task estimates, or code"
+      ],
+      "forbidden": [
+        "mark it approved automatically",
+        "invent a reasonable target"
+      ],
+      "max_occurrences": {"## Workflow": 1, "## Completion check": 1},
       "max_lines": 500
     },
     {
@@ -361,6 +396,71 @@
       ],
       "forbidden": [],
       "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-write-skill/SKILL.md",
+      "required": [
+        "whether invocation is automatic or manual-only",
+        "Treat the repository copy as the source of truth",
+        "treat `description` as the selection contract",
+        "for automatic invocation",
+        "for manual-only invocation",
+        "begin the description with `Manual invocation only`",
+        "task content alone must not select the skill",
+        "Use the `rb-` prefix for a user-owned workflow or support skill",
+        "Save user-owned global skills in the versioned `rb-skills` repository first.",
+        "Use `$rb-create-skill-evals` for the evaluation workflow.",
+        "After the first complete draft, apply `$rb-simplify-language`",
+        "This user-owned procedure is an explicit instruction to invoke the manual-only language-review skill",
+        "must not be selected during initial routing merely because the task is skill authoring",
+        "If both agents are targets, run the command once per agent.",
+        "Use `--replace` only after confirming",
+        "Validate each requirement separately",
+        "for manual-only invocation, state that the skill remains inactive",
+        "Do not author the source skill directly in an installed agent directory.",
+        "the handoff does not claim automatic selection for a manual-only skill"
+      ],
+      "forbidden": [
+        "Richard-owned",
+        "Also note that matching requests should trigger the skill automatically after the agent reloads."
+      ],
+      "max_occurrences": {"## Procedure": 1, "## Completion check": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-simplify-language/SKILL.md",
+      "required": [
+        "Manual invocation only.",
+        "Apply this skill only when the human explicitly invokes it by name.",
+        "Codex: `$rb-simplify-language`",
+        "Claude Code: `/rb-simplify-language`",
+        "Do not select or apply this skill automatically",
+        "is not an invocation unless the human also asks to apply its method",
+        "The intended use is agent-facing control text",
+        "the human may also invoke it for any other supplied text",
+        "Preserve the text's natural form.",
+        "Do not convert ordinary prose into a control protocol unless the human asks",
+        "apply it only to the text within that broader workflow",
+        "reduce semantic ambiguity while preserving that text's purpose, genre, voice, rationale, examples, and useful redundancy.",
+        "does not claim ASD-STE100 compliance",
+        "If a missing criterion would materially change behaviour, do not invent it.",
+        "put the condition before the action",
+        "Use one name for each tool, state, role, object, and action",
+        "deterministic structure or syntax belongs in a schema",
+        "semantic judgement needs a bounded natural-language criterion",
+        "review signals, not banned words",
+        "Do not impose a fixed sentence-length limit.",
+        "Do not force natural user dialogue",
+        "rules remain distinct from rationale and examples",
+        "references/simplified-language-patterns.md"
+      ],
+      "forbidden": [
+        "matching requests should trigger the skill automatically",
+        "Always use sentences of 20 words or fewer",
+        "Delete every vague word"
+      ],
+      "max_occurrences": {"## Method": 1},
       "max_lines": 500
     },
     {

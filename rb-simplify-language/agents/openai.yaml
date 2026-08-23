@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Simplify Language"
+  short_description: "Manually apply controlled instruction review"
+  default_prompt: "Manual invocation only. Use $rb-simplify-language in Codex, or /rb-simplify-language in Claude Code, only when the human explicitly requests it. It is intended primarily for agent-facing control text but may be applied to any text the human supplies. Do not select it automatically."
