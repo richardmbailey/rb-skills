@@ -265,7 +265,10 @@
     {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
     {"skill": "rb-review-pr-or-diff", "required": ["wrongly levelled", "flaky", "CI"]},
     {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
+    {"skill": "rb-language", "required": ["ordinary user-facing prose", "draft or lightly edit", "more specific skill", "substantive revision", "$rb-revise-ai-draft"]},
+    {"skill": "rb-revise-ai-draft", "required": ["substantive revision", "supplied AI-like draft", "preserve its meaning", "detector evasion", "$rb-language"]},
     {"skill": "rb-simplify-language", "required": ["Manual invocation only", "explicitly requests", "Claude Code", "agent-facing control text", "any text", "Do not select"]},
+    {"skill": "rb-project-language", "required": ["shared project vocabulary", "CONTEXT.md", "domain terms", "general repository orientation", "do not expand terminology work into orchestration design"]},
     {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported", "proposal"]},
     {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only", "patch"]},
     {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "stop", "proposal"]},
@@ -274,6 +277,21 @@
     {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
   ],
   "json_case_contracts": [
+    {
+      "path": "evals/skill-routing/cases/language.json",
+      "required_ids": [
+        "language-draft-factual-update",
+        "language-edit-chatbot-email",
+        "language-light-edit-ai-labelled-sentence",
+        "language-defer-substantive-ai-revision",
+        "language-defer-explicit-control-text",
+        "language-defer-project-vocabulary",
+        "language-project-vocabulary-with-light-wording",
+        "language-multi-agent-vocabulary-only"
+      ],
+      "required_substrings": ["Lightly edit", "substantive", "CONTEXT.md", "Do not redesign the orchestration architecture"],
+      "forbidden_substrings": []
+    },
     {
       "path": "evals/skill-routing/cases/product-planning.json",
       "required_ids": [
@@ -311,6 +329,10 @@
     }
   ],
   "behavioural_eval_contracts": [
+    {"path": "rb-language/evals/eval-plan.json", "skill": "rb-language", "minimum_cases": 16},
+    {"path": "rb-revise-ai-draft/evals/eval-plan.json", "skill": "rb-revise-ai-draft", "minimum_cases": 20},
+    {"path": "rb-simplify-language/evals/eval-plan.json", "skill": "rb-simplify-language", "minimum_cases": 21},
+    {"path": "rb-project-language/evals/eval-plan.json", "skill": "rb-project-language", "minimum_cases": 14},
     {"path": "rb-create-prd/evals/eval-plan.json", "skill": "rb-create-prd", "minimum_cases": 15},
     {"path": "rb-start-project/evals/eval-plan.json", "skill": "rb-start-project", "minimum_cases": 12},
     {"path": "rb-implement-with-tests/evals/eval-plan.json", "skill": "rb-implement-with-tests", "minimum_cases": 8},

@@ -1,6 +1,6 @@
 ---
 name: "rb-revise-ai-draft"
-description: "Use when revising supplied AI-generated, formulaic, or generic prose into plain, natural writing while preserving meaning, evidence, uncertainty, and authorial voice. Do not use for detector evasion."
+description: "Use for substantive revision of supplied AI-generated, formulaic, or generic prose while preserving meaning, evidence, uncertainty, and voice. For light editing, use $rb-language. Never use for detector evasion."
 ---
 
 # RB Revise AI Draft

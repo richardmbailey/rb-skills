@@ -263,6 +263,19 @@
           "rubric": "Pass if rb-simplify-language is selected, the paragraph remains natural report prose, and the revision preserves possibility rather than certainty, the small sample, incomplete follow-up, and required caution. It must not convert the paragraph into a control protocol."
         }
       ]
+    },
+    {
+      "id": "explicit-with-substantive-ai-revision",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language while substantively revising this AI-generated report so it reads naturally. Preserve every fact, citation, qualification, and expression of uncertainty.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "manual method composes with specialist revision",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the explicit rb-simplify-language invocation is honoured within the broader task while rb-revise-ai-draft remains the primary workflow. The result must preserve the report's natural form and all facts, citations, qualifications, and uncertainty rather than converting it into control text."
+        }
+      ]
     }
   ]
 }

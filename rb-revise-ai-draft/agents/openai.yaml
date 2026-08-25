@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Revise AI Draft"
-  short_description: "Revise AI drafts into plain, faithful prose"
-  default_prompt: "Use $rb-revise-ai-draft to revise this supplied draft into plain, natural prose with no slogan-like or marketing-style language while preserving its meaning, evidence, uncertainty, and authorial voice."
+  short_description: "Substantively revise AI-like prose"
+  default_prompt: "Use $rb-revise-ai-draft for substantive revision of this supplied AI-like draft. Make it plain and natural, remove slogan-like or marketing-style language, and preserve its meaning, evidence, uncertainty, and authorial voice. For light editing, use $rb-language. Do not use this skill for detector evasion."

@@ -18,6 +18,15 @@
     "rationale": "The task is ordinary prose editing for natural style rather than controlled instruction review or skill authoring."
   },
   {
+    "id": "language-light-edit-ai-labelled-sentence",
+    "family": "language",
+    "prompt": "Lightly edit this AI-generated sentence for clarity. Keep its factual claim and uncertainty unchanged, and do not rewrite the surrounding document.",
+    "expected": {"outcome": "select", "skill": "rb-language"},
+    "forbidden_skills": ["rb-revise-ai-draft", "rb-simplify-language", "rb-project-language"],
+    "critical": true,
+    "rationale": "The requested edit is explicitly local and does not require the specialist claim-by-claim substantive revision workflow."
+  },
+  {
     "id": "language-write-social-announcement",
     "family": "language",
     "prompt": "Write a short factual social post announcing that registration closes Friday. Do not add hype, emojis, or unsupported details.",
@@ -52,5 +61,23 @@
     "forbidden_skills": ["rb-language", "rb-revise-ai-draft", "rb-simplify-language"],
     "critical": true,
     "rationale": "The requested artifact is project vocabulary and domain context rather than ordinary prose."
+  },
+  {
+    "id": "language-project-vocabulary-with-light-wording",
+    "family": "language",
+    "prompt": "Update CONTEXT.md with authoritative definitions for our variables, units, invariants, and overloaded terms, and lightly improve the wording of those definitions.",
+    "expected": {"outcome": "select", "skill": "rb-project-language"},
+    "forbidden_skills": ["rb-language", "rb-revise-ai-draft", "rb-simplify-language"],
+    "critical": true,
+    "rationale": "The vocabulary artifact remains the primary responsibility even though local prose editing is part of the work."
+  },
+  {
+    "id": "language-multi-agent-vocabulary-only",
+    "family": "language",
+    "prompt": "Document the established names and meanings of our agents, tools, handoff states, and result fields in CONTEXT.md. Do not redesign the orchestration architecture.",
+    "expected": {"outcome": "select", "skill": "rb-project-language"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-language", "rb-simplify-language"],
+    "critical": true,
+    "rationale": "Established multi-agent terminology belongs to project language; the presence of several agents does not itself require architecture work."
   }
 ]

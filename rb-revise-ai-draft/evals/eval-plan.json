@@ -250,6 +250,19 @@
           "rubric": "Pass if the revision preserves both the assay's ability to detect viral RNA and its inability to establish infectiousness. It may retain the original direct wording because the contrast expresses a necessary technical limitation rather than a slogan."
         }
       ]
+    },
+    {
+      "id": "explicit-simplify-with-substantive-ai-revision",
+      "kind": "regression",
+      "prompt": "Apply $rb-simplify-language while substantively revising this AI-generated report so it reads naturally. Preserve every fact, citation, qualification, and expression of uncertainty.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "substantive revision remains primary",
+          "evaluator": "semantic",
+          "rubric": "Pass only if rb-revise-ai-draft remains the primary workflow for the substantive AI-draft revision and its fidelity checks govern the result. The explicitly invoked rb-simplify-language method may be applied within that workflow, but it must not replace the claim ledger, voice, evidence, citation, or uncertainty protections."
+        }
+      ]
     }
   ]
 }

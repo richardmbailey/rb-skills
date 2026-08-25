@@ -429,6 +429,38 @@
       "max_lines": 500
     },
     {
+      "path": "rb-language/SKILL.md",
+      "required": [
+        "This is a task skill, not a global formatting layer.",
+        "Light editing changes local wording, tone, clarity, or length without requiring a claim-by-claim audit.",
+        "the human supplies AI-generated, formulaic, or generic prose for substantive revision; use `$rb-revise-ai-draft`",
+        "the human explicitly invokes `$rb-simplify-language`",
+        "the task creates or updates project vocabulary or `CONTEXT.md`; use `$rb-project-language`",
+        "another skill's description matches the requested artifact, analysis, or workflow more specifically"
+      ],
+      "forbidden": [
+        "Apply automatically as a style layer",
+        "Use for every response"
+      ],
+      "max_occurrences": {"## Selection boundary": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-project-language/SKILL.md",
+      "required": [
+        "build or update `CONTEXT.md`",
+        "shared vocabulary and domain-context artifact",
+        "it does not design or review an orchestration architecture",
+        "Do not select `$rb-multi-agent-systems` merely because the project has multiple agents.",
+        "Use `$rb-multi-agent-systems` when the human also asks to design, review, or debug the orchestration architecture."
+      ],
+      "forbidden": [
+        "If the project includes multiple LLM agents, also use `$rb-multi-agent-systems`"
+      ],
+      "max_occurrences": {"## Procedure": 1},
+      "max_lines": 500
+    },
+    {
       "path": "rb-simplify-language/SKILL.md",
       "required": [
         "Manual invocation only.",
@@ -466,6 +498,8 @@
     {
       "path": "rb-revise-ai-draft/SKILL.md",
       "required": [
+        "Use for substantive revision of supplied AI-generated, formulaic, or generic prose",
+        "`$rb-language` covers ordinary drafting and light editing",
         "Do not add facts, examples, statistics, sources, quotations, experiences, feelings, beliefs, or opinions.",
         "Preserve claim strength.",
         "diagnostic cues, not banned forms",

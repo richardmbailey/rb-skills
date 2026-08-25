@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Project Language"
   short_description: "Build project vocabulary and context"
-  default_prompt: "Use $rb-project-language to build or update project vocabulary and CONTEXT.md."
+  default_prompt: "Use $rb-project-language to build or update shared project vocabulary, domain terms, and CONTEXT.md. Record established multi-agent terminology when relevant, but do not expand terminology work into orchestration design unless the human requests it. Do not use this skill for general repository orientation."

@@ -19,6 +19,13 @@
       "success": [{"name": "light editing triggers", "evaluator": "semantic", "rubric": "Pass if rb-language is selected, removes the canned opening, and preserves the meeting time and day."}]
     },
     {
+      "id": "light-edit-ai-labelled-sentence",
+      "kind": "regression",
+      "prompt": "Lightly edit this AI-generated sentence for clarity without rewriting the surrounding document: The pilot may reduce waiting time, although the small sample means the result remains uncertain.",
+      "should_trigger": true,
+      "success": [{"name": "light scope controls routing", "evaluator": "semantic", "rubric": "Pass only if rb-language is selected for the explicitly local edit, the result remains a possibility rather than a certainty, and the small-sample uncertainty survives. The AI-generated label alone must not force the substantive revision workflow."}]
+    },
+    {
       "id": "draft-social-post",
       "kind": "trigger",
       "prompt": "Draft a short factual social post announcing that registration closes Friday. Do not add hype, emojis, or unsupported details.",

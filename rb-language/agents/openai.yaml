@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Language"
   short_description: "Draft and lightly edit ordinary prose"
-  default_prompt: "Use $rb-language to draft or lightly edit this ordinary user-facing prose. Preserve its facts, meaning, exact content, and intended tone, and defer to a more specific skill when one owns the task."
+  default_prompt: "Use $rb-language to draft or lightly edit this ordinary user-facing prose. Preserve its facts, meaning, exact content, and intended tone. Defer to a more specific skill when one owns the task, and use $rb-revise-ai-draft for substantive revision of supplied AI-like prose."

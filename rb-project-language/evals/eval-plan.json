@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "skill": "rb-project-language",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "build-project-glossary",
+      "kind": "trigger",
+      "prompt": "Build a shared project glossary and update CONTEXT.md with our domain terms, acronyms, units, invariants, and assumptions.",
+      "should_trigger": true,
+      "success": [{"name": "vocabulary request triggers", "evaluator": "semantic", "rubric": "Pass if rb-project-language is selected and the work is framed as a shared vocabulary and CONTEXT.md task."}]
+    },
+    {
+      "id": "document-scientific-variables",
+      "kind": "trigger",
+      "prompt": "Document each model variable, its units and dimensions, sign conventions, boundary conditions, and conservation assumptions in CONTEXT.md.",
+      "should_trigger": true,
+      "success": [{"name": "scientific context triggers", "evaluator": "semantic", "rubric": "Pass if rb-project-language is selected for terminology and scientific context rather than scientific implementation."}]
+    },
+    {
+      "id": "resolve-overloaded-terms",
+      "kind": "trigger",
+      "prompt": "Contributors use 'run', 'trial', and 'experiment' inconsistently. Establish authoritative definitions and important distinctions in the project context file.",
+      "should_trigger": true,
+      "success": [{"name": "terminology conflict triggers", "evaluator": "semantic", "rubric": "Pass if rb-project-language is selected and the response treats the problem as shared project vocabulary."}]
+    },
+    {
+      "id": "capture-established-agent-vocabulary",
+      "kind": "regression",
+      "prompt": "Update CONTEXT.md with the established names and meanings of our planner, reviewer, runner, handoff states, tool boundaries, and result fields. Do not redesign the multi-agent architecture.",
+      "should_trigger": true,
+      "success": [{"name": "multi-agent vocabulary stays terminology-only", "evaluator": "semantic", "rubric": "Pass only if rb-project-language remains the primary workflow, records established terminology, and does not select rb-multi-agent-systems or redesign orchestration merely because several agents exist."}]
+    },
+    {
+      "id": "do-not-invent-domain-definition",
+      "kind": "regression",
+      "prompt": "Create CONTEXT.md, but the source uses 'validated result' in two incompatible ways and does not define which meaning is authoritative.",
+      "should_trigger": true,
+      "success": [{"name": "important ambiguity remains visible", "evaluator": "semantic", "rubric": "Pass if rb-project-language identifies the conflicting meanings and asks one focused question or marks the definition unresolved instead of inventing an authoritative meaning."}]
+    },
+    {
+      "id": "preserve-provenance-and-invariants",
+      "kind": "outcome",
+      "prompt": "Draft the project context from the supplied documentation. Preserve the stated SI units, north-positive sign convention, fixed random seed policy, mass-balance invariant, and source provenance exactly.",
+      "should_trigger": true,
+      "success": [{"name": "domain constraints are preserved", "evaluator": "semantic", "rubric": "Pass only if the context preserves every named unit, convention, seed policy, invariant, and provenance statement without adding unsupported definitions."}]
+    },
+    {
+      "id": "general-codebase-orientation",
+      "kind": "trigger",
+      "prompt": "Explain this repository's structure, control flow, dependencies, tests, and main change hotspots.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace codebase orientation", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected because the request is general repository orientation without a terminology artifact."}]
+    },
+    {
+      "id": "new-project-onboarding",
+      "kind": "trigger",
+      "prompt": "Help me start this new project by establishing its goal, constraints, repository context, tests, CI, and the correct implementation workflow.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace onboarding", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected as the primary workflow and the request routes to rb-start-project."}]
+    },
+    {
+      "id": "design-multi-agent-architecture",
+      "kind": "trigger",
+      "prompt": "Design a multi-agent orchestration architecture with runner-owned transitions, tool permissions, retries, checkpoints, state persistence, and evaluation.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace architecture design", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected as the primary workflow and the request routes to rb-multi-agent-systems."}]
+    },
+    {
+      "id": "ordinary-prose-edit",
+      "kind": "trigger",
+      "prompt": "Lightly edit this customer email so it is concise and warm while preserving the meeting date and time.",
+      "should_trigger": false,
+      "success": [{"name": "does not edit ordinary prose", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected because no shared vocabulary or CONTEXT.md work is requested."}]
+    },
+    {
+      "id": "explicit-control-language-review",
+      "kind": "trigger",
+      "prompt": "Apply $rb-simplify-language to make these agent tool-selection rules precise and expose missing decision criteria.",
+      "should_trigger": false,
+      "success": [{"name": "manual control-text skill takes precedence", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected and the explicit rb-simplify-language invocation is followed."}]
+    },
+    {
+      "id": "continuity-diary-request",
+      "kind": "trigger",
+      "prompt": "Record today's decisions, completed checks, unresolved risks, Git state, and next actions so another session can continue the work.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace continuity record", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected because the request is for durable work status rather than vocabulary."}]
+    },
+    {
+      "id": "scientific-implementation",
+      "kind": "trigger",
+      "prompt": "Implement the sediment-flux calculation with explicit SI units, conservation checks, benchmark values, and numerical tolerances.",
+      "should_trigger": false,
+      "success": [{"name": "does not replace scientific implementation", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected as the primary workflow and the task routes to the scientific implementation skill."}]
+    },
+    {
+      "id": "ambiguous-document-for-later",
+      "kind": "trigger",
+      "prompt": "Please document what we know about this project for later.",
+      "should_trigger": false,
+      "success": [{"name": "ambiguous documentation does not over-trigger", "evaluator": "semantic", "rubric": "Pass if rb-project-language is not selected without clarification because the user may want vocabulary, status, a diary, or a handoff."}]
+    }
+  ]
+}
