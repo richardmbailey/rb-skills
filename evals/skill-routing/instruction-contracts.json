@@ -106,7 +106,10 @@
         "A bug fix must normally include an automated regression test",
         "do not rerun until green",
         "why existing tests did not catch the defect",
-        "Do not delete, skip, quarantine, weaken, or repeatedly rerun a failing test"
+        "Do not delete, skip, quarantine, weaken, or repeatedly rerun a failing test",
+        "Do not create or edit that test during diagnosis-only work",
+        "Do not edit implementation or tests during diagnosis-only work",
+        "Do not write diary entries for an isolated one-turn diagnosis"
       ],
       "forbidden": [],
       "max_occurrences": {},
@@ -139,16 +142,28 @@
         "references/framework-selection.md",
         "current official documentation",
         "maximum model calls, tool calls, retries, wall-clock time, spend",
-        "## Required Test Matrix",
-        "state-machine unit tests for every legal transition",
-        "held-out agent evals",
-        "checkpoint, crash-recovery, replay, and event-log consistency tests"
+        "Do not select this skill for a single-agent system",
+        "references/test-and-review-checklists.md"
       ],
       "forbidden": [
         "FastMCP", "LiteLLM", "LangGraph", "Temporal", "DBOS", "Restate", "LlamaIndex",
         "Langfuse", "Logfire", "Outlines", "DSPy", "OpenAI Agents SDK"
       ],
-      "max_occurrences": {"## Review checklist": 1, "## Required Test Matrix": 1},
+      "max_occurrences": {"## Modes": 1, "## Completion material": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-multi-agent-systems/references/test-and-review-checklists.md",
+      "required": [
+        "## Required test matrix",
+        "state-machine unit tests for every legal transition",
+        "held-out agent evals",
+        "checkpoint, crash-recovery, replay, and event-log consistency tests",
+        "## Review checklist",
+        "## Output fields"
+      ],
+      "forbidden": [],
+      "max_occurrences": {"## Required test matrix": 1, "## Review checklist": 1, "## Output fields": 1},
       "max_lines": 500
     },
     {
@@ -408,6 +423,7 @@
         "for manual-only invocation",
         "begin the description with `Manual invocation only`",
         "task content alone must not select the skill",
+        "policy.allow_implicit_invocation: false",
         "Use the `rb-` prefix for a user-owned workflow or support skill",
         "Save user-owned global skills in the versioned `rb-skills` repository first.",
         "Use `$rb-create-skill-evals` for the evaluation workflow.",

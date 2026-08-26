@@ -2,6 +2,14 @@
   "schema_version": 1,
   "file_contracts": [
     {
+      "path": "rb-simplify-language/agents/openai.yaml",
+      "required": [
+        "allow_implicit_invocation: false",
+        "Do not select it automatically"
+      ],
+      "forbidden": ["allow_implicit_invocation: true"]
+    },
+    {
       "path": "README.md",
       "required": [
         "automated behavioural tests",
@@ -329,6 +337,9 @@
     }
   ],
   "behavioural_eval_contracts": [
+    {"path": "rb-diagnose/evals/eval-plan.json", "skill": "rb-diagnose", "minimum_cases": 3},
+    {"path": "rb-architecture-review/evals/eval-plan.json", "skill": "rb-architecture-review", "minimum_cases": 3},
+    {"path": "rb-multi-agent-systems/evals/eval-plan.json", "skill": "rb-multi-agent-systems", "minimum_cases": 3},
     {"path": "rb-language/evals/eval-plan.json", "skill": "rb-language", "minimum_cases": 16},
     {"path": "rb-revise-ai-draft/evals/eval-plan.json", "skill": "rb-revise-ai-draft", "minimum_cases": 20},
     {"path": "rb-simplify-language/evals/eval-plan.json", "skill": "rb-simplify-language", "minimum_cases": 21},

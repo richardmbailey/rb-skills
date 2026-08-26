@@ -36,6 +36,14 @@ If a missing decision would change the trigger boundary, required behaviour, per
    - a quoted `display_name`;
    - a quoted `short_description` containing 25 to 64 characters;
    - a quoted `default_prompt` that mentions `$<skill_name>` and preserves the selected invocation mode.
+   For a manual-only skill, also add:
+
+   ```yaml
+   policy:
+     allow_implicit_invocation: false
+   ```
+
+   The description and prompt explain the boundary. This policy makes Codex enforce it.
 6. Add `scripts/`, `references/`, or `assets/` only when they eliminate repeated instructions, parsing, validation, or asset recreation. Reference each bundled resource directly from `SKILL.md`.
 7. Add or update behavioural evaluations when the trigger contract or required behaviour changes. Use `$rb-create-skill-evals` for the evaluation workflow.
 8. Install or refresh the skill by running the repository sync script from the repository root:
@@ -48,7 +56,7 @@ If a missing decision would change the trigger boundary, required behaviour, per
 9. Validate each requirement separately:
    - YAML frontmatter parses;
    - the directory name equals `name`;
-   - `agents/openai.yaml` follows the current metadata schema;
+   - `agents/openai.yaml` follows the current metadata schema, including `policy.allow_implicit_invocation: false` for manual-only skills;
    - no initializer placeholder or TODO remains;
    - each referenced resource exists;
    - each behavioural-evaluation manifest validates;

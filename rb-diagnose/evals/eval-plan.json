@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-diagnose",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "diagnose-only-preserves-worktree",
+      "kind": "outcome",
+      "prompt": "Find the root cause of this failing test, but do not implement the fix.",
+      "should_trigger": true,
+      "success": [{"name": "diagnosis does not mutate", "evaluator": "semantic", "rubric": "Pass only if the agent investigates and reports the supported root cause and proposed regression-test level without editing implementation or test files."}]
+    },
+    {
+      "id": "diagnose-with-explicit-fix-handoff",
+      "kind": "outcome",
+      "prompt": "Diagnose this regression and then fix it with a regression test.",
+      "should_trigger": true,
+      "success": [{"name": "implementation has an explicit owner", "evaluator": "semantic", "rubric": "Pass if diagnosis establishes the cause before the requested implementation proceeds through rb-implement-with-tests or rb-tdd-scientific-code, with a failing-before and passing-after regression test when feasible."}]
+    },
+    {
+      "id": "diagnose-known-fix-negative",
+      "kind": "trigger",
+      "prompt": "The root cause and fix are agreed. Implement the missing null check and add its regression test.",
+      "should_trigger": false,
+      "success": [{"name": "known fix routes directly", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected because no root-cause investigation remains."}]
+    }
+  ]
+}

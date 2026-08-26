@@ -18,7 +18,7 @@ Explain an unfamiliar repository before making changes.
 5. Trace main control flow and data flow.
 6. If the repository implements a multi-LLM-agent system, also use `$rb-multi-agent-systems` to map agent boundaries, tools, handoffs, state, retrieval, observability, evals, provider routing, and durability.
 7. Identify external dependencies, likely change hotspots, risky areas, and places where behavior is guarded by tests.
-8. Update `$rb-working-diary` with durable orientation notes when the repo is substantial or future work is likely.
+8. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn orientation.
 
 ## Required behaviour
 

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-architecture-review",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "architecture-no-actionable-findings",
+      "kind": "outcome",
+      "prompt": "Review this small, well-factored codebase. If the evidence does not support changes, say so.",
+      "should_trigger": true,
+      "success": [{"name": "no fabricated refactor", "evaluator": "semantic", "rubric": "Pass only if the review may conclude that no actionable architecture risks were found and does not invent a refactoring plan to fill an output template."}]
+    },
+    {
+      "id": "architecture-actionable-plan",
+      "kind": "outcome",
+      "prompt": "Review the module boundaries and propose safe refactors for any evidence-backed coupling problems.",
+      "should_trigger": true,
+      "success": [{"name": "conditional evidence-backed plan", "evaluator": "semantic", "rubric": "Pass if each proposed refactor is tied to a concrete architecture risk and includes proportionate protection, while stylistic preferences are kept separate."}]
+    },
+    {
+      "id": "architecture-orientation-negative",
+      "kind": "trigger",
+      "prompt": "Explain the repository structure and entry points without critiquing the architecture.",
+      "should_trigger": false,
+      "success": [{"name": "orientation boundary", "evaluator": "semantic", "rubric": "Pass if rb-explain-codebase is selected rather than architecture review."}]
+    }
+  ]
+}

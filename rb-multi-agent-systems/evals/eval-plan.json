@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-multi-agent-systems",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "multi-agent-orchestration-trigger",
+      "kind": "trigger",
+      "prompt": "Design a runner that coordinates three LLM agents with handoffs, shared state, retries, and approval gates.",
+      "should_trigger": true,
+      "success": [{"name": "multi-agent route", "evaluator": "semantic", "rubric": "Pass if rb-multi-agent-systems is selected and the runner owns transitions, permissions, budgets, and recovery."}]
+    },
+    {
+      "id": "single-agent-mcp-negative",
+      "kind": "trigger",
+      "prompt": "Add one MCP tool to my existing single-agent assistant.",
+      "should_trigger": false,
+      "success": [{"name": "single-agent MCP exclusion", "evaluator": "semantic", "rubric": "Pass only if rb-multi-agent-systems is not selected merely because a single agent uses MCP."}]
+    },
+    {
+      "id": "single-agent-retrieval-negative",
+      "kind": "trigger",
+      "prompt": "Improve retrieval and structured citations for one LLM agent; there is no delegation or orchestration layer.",
+      "should_trigger": false,
+      "success": [{"name": "single-agent retrieval exclusion", "evaluator": "semantic", "rubric": "Pass only if rb-multi-agent-systems is not selected merely because one agent uses retrieval and structured output."}]
+    }
+  ]
+}

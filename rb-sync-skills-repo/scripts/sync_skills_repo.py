@@ -53,10 +53,7 @@ class Destination:
 
 
 def codex_dest() -> Path:
-    codex_home = os.environ.get("CODEX_HOME")
-    if codex_home:
-        return Path(codex_home).expanduser() / "skills"
-    return Path.home() / ".codex" / "skills"
+    return Path.home() / ".agents" / "skills"
 
 
 def claude_dest() -> Path:
@@ -77,18 +74,17 @@ def default_dest(agent: str) -> Destination:
     if agent == "claude":
         return Destination(claude_dest(), "claude", "forced with --agent claude")
 
-    codex_home = os.environ.get("CODEX_HOME")
-    if codex_home:
-        return Destination(codex_dest(), "codex", "CODEX_HOME is set")
+    if os.environ.get("CODEX_HOME"):
+        return Destination(codex_dest(), "codex", "CODEX_HOME indicates Codex is configured")
 
     codex_path = Path.home() / ".codex"
     if codex_path.exists():
-        return Destination(codex_path / "skills", "codex", "~/.codex exists")
+        return Destination(codex_dest(), "codex", "~/.codex indicates Codex is configured")
 
     if looks_like_claude_code():
         return Destination(claude_dest(), "claude", "Claude Code was detected")
 
-    return Destination(codex_path / "skills", "codex", "default fallback")
+    return Destination(codex_dest(), "codex", "default fallback")
 
 
 def parse_frontmatter_name(skill_md: Path) -> str | None:
@@ -269,7 +265,7 @@ def main(argv: list[str] | None = None) -> int:
         if destination.agent == "claude":
             print("Done. Claude Code should pick up edits live when ~/.claude/skills is already watched; restart Claude Code if the skills directory was newly created.")
         elif destination.agent == "codex":
-            print("Done. Restart Codex to pick up newly installed or updated skills.")
+            print("Done. Codex detects skill changes automatically; restart only if the skills do not appear.")
         else:
             print("Done. Restart or reload the target agent if newly installed skills are not visible.")
     return 0

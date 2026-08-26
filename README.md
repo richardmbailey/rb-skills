@@ -28,7 +28,8 @@ python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink
 
 The sync script selects a destination automatically:
 
-- Codex: `${CODEX_HOME:-$HOME/.codex}/skills`
+- Codex user scope: `$HOME/.agents/skills`
+- Codex repository scope: `.agents/skills` from the repository root, when explicitly selected
 - Claude Code: `$HOME/.claude/skills`
 
 Force an agent destination with:
@@ -45,7 +46,7 @@ python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink \
   --skills rb-start-project rb-diagnose rb-implement-with-tests
 ```
 
-Restart Codex after adding, removing, renaming, or substantially changing skills. Claude Code usually detects changes under an existing `~/.claude/skills` directory, but restart it when new skills do not appear.
+Codex detects skill changes automatically. Restart only when a new or changed skill does not appear. Claude Code usually detects changes under an existing `~/.claude/skills` directory, but restart it when new skills do not appear.
 
 ## Repository layout
 
@@ -206,7 +207,7 @@ cd ~/src/rb-skills
 git pull
 ```
 
-Restart Codex after pulling changes that add, remove, rename, or substantially change skill descriptions. Re-run the sync command when using copy mode.
+Codex normally detects pulled skill changes automatically. Restart only when a change does not appear. Re-run the sync command when using copy mode.
 
 Before publishing, check that the repository contains no secrets, private identifiers, confidential context, local-only paths, caches, generated temporary outputs, or environment files.
 

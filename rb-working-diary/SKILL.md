@@ -12,19 +12,19 @@ Use this skill to preserve operational memory across compaction and future sessi
 Use the Codex diary root:
 
 ```text
-${CODEX_HOME:-~/.codex}/diary/
+${CODEX_HOME:-$HOME/.codex}/diary/
 ```
 
 The global index is:
 
 ```text
-${CODEX_HOME:-~/.codex}/diary/diary.md
+${CODEX_HOME:-$HOME/.codex}/diary/diary.md
 ```
 
 Project notes live under:
 
 ```text
-${CODEX_HOME:-~/.codex}/diary/diary_<project-slug>/
+${CODEX_HOME:-$HOME/.codex}/diary/diary_<project-slug>/
 ```
 
 Use lowercase ASCII slugs, replacing non-alphanumeric runs with hyphens.
@@ -90,7 +90,7 @@ For an implementation plan using the optional constrained route, also record:
 
 Never copy secrets, raw sensitive output, or planner/executor private reasoning into the diary. A resume pointer does not authorise execution: `$rb-safe-operation` must revalidate the complete bundle, lease, approvals, capabilities, instructions, and repository snapshot.
 
-For a constrained run, the canonical `${CODEX_HOME:-~/.codex}/diary/` is external control-plane continuity state. It may be updated from the coordinator's terminal stdout handoff after the final product snapshot, with the enforcement limitations and provenance stated accurately. Do not create or change a repository-local diary or progress file after that snapshot unless the change was an explicit assessed product operation.
+For a constrained run, the canonical `${CODEX_HOME:-$HOME/.codex}/diary/` is external control-plane continuity state. It may be updated from the coordinator's terminal stdout handoff after the final product snapshot, with the enforcement limitations and provenance stated accurately. Do not create or change a repository-local diary or progress file after that snapshot unless the change was an explicit assessed product operation.
 
 Do not store secrets, credentials, private tokens, or large raw logs. Link to files or summarise outputs instead.
 

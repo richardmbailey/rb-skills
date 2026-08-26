@@ -9,7 +9,7 @@ description: Use when copying, symlinking, cloning, updating, publishing, or oth
 
 Use this skill to bootstrap or update agent skills from a versioned repository. Prefer a local clone as the source of truth, then symlink selected skill folders into the discoverable skills directory; use copy mode when the user wants a standalone install.
 
-By default, the bundled script chooses the destination automatically: use Codex first when `$CODEX_HOME` or `~/.codex` exists, otherwise use Claude Code's personal skills directory when Claude Code is detected.
+By default, the bundled script chooses the destination automatically: use Codex's user skills directory when Codex configuration is present, otherwise use Claude Code's personal skills directory when Claude Code is detected. If neither agent is detected, default to Codex.
 
 Bundled script: `scripts/sync_skills_repo.py`.
 
@@ -39,7 +39,7 @@ python3 /path/to/skills-repo/rb-sync-skills-repo/scripts/sync_skills_repo.py /pa
 
 Use `--agent codex` or `--agent claude` to force a target agent. Use `--dest /path/to/skills` for an explicit destination. Use `--mode copy` if the cloned repo should not remain present. Use `--skills name-a name-b` to install a subset. Use `--replace` only after confirming existing destination folders should be moved to timestamped backups.
 
-5. Tell the user to restart Codex so newly installed or updated Codex skills are rediscovered. For Claude Code, edits under an already-watched `~/.claude/skills` directory are usually detected live; restart Claude Code if the top-level skills directory was newly created.
+5. Codex detects skill changes automatically. Ask the user to restart only when a new or changed skill does not appear. For Claude Code, edits under an already-watched `~/.claude/skills` directory are usually detected live; restart Claude Code if the top-level skills directory was newly created.
 
 ## Script Usage
 
@@ -49,7 +49,7 @@ python3 scripts/sync_skills_repo.py SOURCE [--agent auto|codex|claude] [--dest D
 
 Defaults:
 - `--agent auto` tries Codex first, then Claude Code.
-- Codex destination is `$CODEX_HOME/skills` when set, otherwise `~/.codex/skills`.
+- Codex user destination is `$HOME/.agents/skills`. Use repository-local `.agents/skills` only when the user explicitly requests repository-scoped installation.
 - Claude Code destination is `~/.claude/skills`.
 - `--mode symlink` links each installed skill back to the clone.
 - Existing destinations are skipped unless `--replace` is set.

@@ -11,7 +11,7 @@ Use this skill when the RB workflow setup itself may be missing, stale, or confu
 
 ## Procedure
 
-1. Confirm the active agent and skills path. For Codex, default to `$CODEX_HOME/skills`, or `~/.codex/skills` when `CODEX_HOME` is unset. For Claude Code, use `~/.claude/skills`.
+1. Confirm the active agent and skills path. For Codex user skills, use `$HOME/.agents/skills`. For repository-scoped Codex skills, use `.agents/skills` from the repository root. For Claude Code, use `~/.claude/skills`.
 2. Locate the versioned flat `rb-skills` source repo when possible. Prefer `RB_AGENT_SKILLS_PACK`, the current directory or its parents, a sibling `rb-skills` directory, or symlink targets from installed RB skills. If only a legacy `_rb-agent-skills` pack is available, read `references/legacy-pack.md` and use that compatibility path.
 3. Check that the expected global `rb-*` skills exist, especially `$rb-start-project`, `$rb-working-diary`, `$rb-discuss`, `$rb-implement-with-tests`, `$rb-diagnose`, `$rb-project-language`, and `$rb-review-pr-or-diff`.
 4. If the current flat `rb-skills` source repo is available, run or recommend:
@@ -26,7 +26,7 @@ Use this skill when the RB workflow setup itself may be missing, stale, or confu
 8. Look for `CONTEXT.md`. If it exists, read it. If not, note the missing project context and propose creating it.
 9. Identify likely entry points, tests, docs, scripts, notebooks, and configuration files.
 10. Identify how to run tests or checks.
-11. Use `$rb-working-diary`: check `${CODEX_HOME:-~/.codex}/diary/diary.md` for an existing entry matching the current project path.
+11. Use `$rb-working-diary`: check `${CODEX_HOME:-$HOME/.codex}/diary/diary.md` for an existing entry matching the current project path.
 12. Recommend `$rb-start-project` in Codex or `/rb-start-project` in Claude Code for normal onboarding once setup is healthy.
 
 ## Required behaviour

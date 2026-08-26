@@ -36,7 +36,7 @@ Review changes for actionable defects, regressions, missing or inadequate tests,
    - important integration paths are not represented only by isolated mocks.
 9. Check correctness, architecture, naming, maintainability, performance, security/privacy, data migrations, numerical stability, units, reproducibility, compatibility, coverage of changed branches, CI-equivalent checks, and failure modes.
 10. Separate definite issues from uncertainties. Do not present speculation as a finding; put uncertain points under questions or residual risk.
-11. Update `$rb-working-diary` with durable findings and unresolved risks when the review is substantial or likely to continue.
+11. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn review.
 12. Recommend concrete fixes for each finding, but do not apply them unless asked.
 
 ## Required Behaviour

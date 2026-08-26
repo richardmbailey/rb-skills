@@ -75,7 +75,7 @@ Use these fields consistently:
 ## Repository Inspection
 
 1. Read `AGENTS.md` if present.
-2. Use `$rb-working-diary`: check `${CODEX_HOME:-~/.codex}/diary/diary.md` for an existing entry matching the current project path.
+2. Use `$rb-working-diary`: check `${CODEX_HOME:-$HOME/.codex}/diary/diary.md` for an existing entry matching the current project path.
 3. Check whether `.rb-agent/` project resources exist.
 4. Inspect top-level files and obvious build, test, coverage, lint, typing, formatting, packaging, pre-commit, and CI workflow files.
 5. Read `README.md`, `CONTEXT.md`, and relevant docs if present. Look for product briefs, research, PRDs, roadmaps, architecture decisions, implementation plans, issue trackers, and handoff records that establish a completed pipeline gate.

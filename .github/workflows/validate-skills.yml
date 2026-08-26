@@ -102,6 +102,22 @@ jobs:
             fi
           } 2>&1 | tee validation-output/eval-manifests.txt
 
+      - name: Run skill regression tests
+        id: skill_regressions
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m unittest discover -s evals/skill-routing/tests -p 'test_*.py' \
+            2>&1 | tee validation-output/skill-regressions.txt
+
+      - name: Validate skill metadata
+        id: metadata
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ruby evals/skill-routing/validate_skill_metadata.rb \
+            2>&1 | tee validation-output/skill-metadata.txt
+
       - name: Validate instruction contracts
         id: instructions
         continue-on-error: true
@@ -169,6 +185,8 @@ jobs:
             "${{ steps.compile.outcome }}"
             "${{ steps.json.outcome }}"
             "${{ steps.evals.outcome }}"
+            "${{ steps.skill_regressions.outcome }}"
+            "${{ steps.metadata.outcome }}"
             "${{ steps.instructions.outcome }}"
             "${{ steps.consistency.outcome }}"
             "${{ steps.publication.outcome }}"

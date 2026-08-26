@@ -19,7 +19,7 @@ This is the setup entrypoint for new projects when the human wants global skills
   - the current flat `rb-skills` repo layout, where skill folders live directly at repo root and global install uses `rb-sync-skills-repo/scripts/sync_skills_repo.py`;
   - the legacy `_rb-agent-skills` layout, where skills live under `skills/` and project resources are installed by root `scripts/` helpers.
 - Agent destination. Default `--agent auto` installs to Codex first when present, otherwise Claude Code. Use `--agent codex` or `--agent claude` to force the global skills target.
-- Optional tool files: install `CODEX.md`, `CLAUDE.md`, or Cursor rules only when the human asks.
+- Optional tool files: install `CLAUDE.md` or Cursor rules only when the human asks. Codex project instructions belong in `AGENTS.md`; `CODEX.md` is ignored unless the user has configured it as a fallback filename.
 - Replacement flags: `--force` replaces managed project resource files only. `--replace-skills` backs up and replaces existing installed global skill folders during flat-pack sync.
 
 ## Procedure
@@ -28,13 +28,13 @@ This is the setup entrypoint for new projects when the human wants global skills
 2. Run the bundled script:
 
    ```bash
-   python3 "${CODEX_HOME:-$HOME/.codex}/skills/rb-install-skills/scripts/install_skills.py" --target "$PWD"
+   python3 "$HOME/.agents/skills/rb-install-skills/scripts/install_skills.py" --target "$PWD"
    ```
 
    If the script cannot find the source pack, pass it explicitly or set `RB_AGENT_SKILLS_PACK`:
 
    ```bash
-   python3 "${CODEX_HOME:-$HOME/.codex}/skills/rb-install-skills/scripts/install_skills.py" --target "$PWD" --pack-root /path/to/rb-skills
+   python3 "$HOME/.agents/skills/rb-install-skills/scripts/install_skills.py" --target "$PWD" --pack-root /path/to/rb-skills
    ```
 
    If working from this flat repo before the skill is installed globally, run:
@@ -44,9 +44,9 @@ This is the setup entrypoint for new projects when the human wants global skills
    ```
 
 3. If the active agent target is not the default, add `--agent codex` or `--agent claude`.
-4. If the human asks for optional tool files, add `--codex`, `--claude`, or `--cursor`. If existing managed project resource files should be overwritten, add `--force`. If existing installed global skill folders should be backed up and replaced, add `--replace-skills` only after confirming that is intended.
+4. If the human asks for optional tool files, add `--claude` or `--cursor`. `AGENTS.md` is installed without an extra flag. If existing managed project resource files should be overwritten, add `--force`. If existing installed global skill folders should be backed up and replaced, add `--replace-skills` only after confirming that is intended.
 5. Read the script output. It should:
-   - install or verify global skills under Codex's skills directory or Claude Code's `~/.claude/skills`;
+   - install or verify global skills under Codex's `$HOME/.agents/skills` or Claude Code's `~/.claude/skills`;
    - for the flat repo layout, install skills by symlink using `$rb-sync-skills-repo`'s bundled script;
    - for the flat repo layout, create minimal `AGENTS.md` and `CONTEXT.md` project resources when missing;
    - for the legacy layout, use the legacy project-resource installer;

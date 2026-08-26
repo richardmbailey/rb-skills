@@ -72,6 +72,13 @@ Dir.glob(File.join(repo, "rb-*", "SKILL.md")).sort.each do |skill_file|
   if prompt.is_a?(String) && !prompt.include?("$#{skill_dir}")
     errors << "#{agent_file}: default_prompt must mention $#{skill_dir}"
   end
+
+  if description.start_with?("Manual invocation only")
+    policy = agent.is_a?(Hash) ? agent["policy"] : nil
+    unless policy.is_a?(Hash) && policy["allow_implicit_invocation"] == false
+      errors << "#{agent_file}: allow_implicit_invocation must be false for a manual-only skill"
+    end
+  end
 end
 
 total_words = word_counts.values.sum

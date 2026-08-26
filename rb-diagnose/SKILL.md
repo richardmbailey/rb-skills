@@ -25,12 +25,12 @@ Use this for bugs, regressions, surprising outputs, failing tests, or flaky test
 9. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` when localising failures across agents, tools, state, retrieval, provider routing, budgets, or recovery.
 10. Test hypotheses one at a time. Use the smallest discriminating experiment rather than changing several variables together.
 11. For intermittent failures, do not rerun until green. Preserve the failing seed, ordering, timing, concurrency, environment, and output; determine whether the issue is race-dependent, state-leaking, statistically unstable, resource-dependent, or externally caused.
-12. Update `$rb-working-diary` with repro details, hypotheses tested, findings, and remaining risks when the diagnosis is non-trivial.
+12. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn diagnosis.
 13. Propose a fix only after evidence supports it.
-14. A bug fix must normally include an automated regression test that fails against the defective behaviour and passes after the fix. Add it before or alongside the fix at the test level where the regression escaped: unit, integration, contract, migration, workflow, stochastic, or end-to-end.
+14. A bug fix must normally include an automated regression test that fails against the defective behaviour and passes after the fix. Specify the test level where the regression escaped: unit, integration, contract, migration, workflow, stochastic, or end-to-end. Do not create or edit that test during diagnosis-only work.
 15. If automated regression coverage is genuinely infeasible, document the technical reason, define the best executable or manual check, and state the remaining regression risk. Do not silently substitute a lint, build, import, or smoke check for behavioural coverage.
 16. If the human asks for implementation, use `$rb-implement-with-tests` or `$rb-tdd-scientific-code` for the fix path after diagnosis.
-17. Explain the root cause, why the regression escaped existing coverage, and which test now prevents recurrence.
+17. Explain the root cause, why the regression escaped existing coverage, and which regression test should prevent recurrence. Report its result only when implementation was requested.
 
 ## Required Behaviour
 
@@ -40,6 +40,7 @@ Use this for bugs, regressions, surprising outputs, failing tests, or flaky test
 - Do not delete, skip, quarantine, weaken, or repeatedly rerun a failing test merely to obtain a green result.
 - Do not weaken assertions, expected errors, tolerances, seeds, coverage thresholds, or fixtures unless evidence shows the prior expectation was wrong.
 - Do not make unrelated refactors while diagnosing.
+- Do not edit implementation or tests during diagnosis-only work. Make those changes only when the human asks for a fix and the implementation skill owns the change.
 - Preserve user changes in the worktree.
 - Do not "fix" semantic text failures by adding more regex layers unless the task is truly syntax-bound. Prefer LLM comprehension of text in all but the most simple predictable cases.
 

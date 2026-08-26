@@ -1,13 +1,19 @@
 ---
 name: rb-multi-agent-systems
-description: Use when designing, reviewing, or debugging a system with multiple LLM agents or orchestration layers, including agent boundaries, tool permissions, handoffs, shared state, routing, failure containment, observability, testing, evaluation, budgets, and durability. Do not use for a single ordinary LLM call.
+description: Use when designing, reviewing, or debugging systems with multiple LLM agents, agent-to-agent delegation, or orchestration layers. Covers boundaries, handoffs, state, permissions, failure containment, testing, budgets, and durability. Do not use merely because one agent uses tools, MCP, retrieval, or structured output.
 ---
 
 # /rb:multi-agent-systems - design multi-LLM-agent systems
 
 ## Purpose
 
-Use this when shaping, reviewing, or diagnosing systems with multiple LLM agents, agent tools, MCP servers, structured outputs, retrieval, long-running workflows, provider routing, or production observability needs.
+Use this when shaping, reviewing, or diagnosing systems with multiple LLM agents, agent-to-agent delegation, or an orchestration layer that coordinates agent work. Do not select this skill for a single-agent system merely because that agent uses tools, MCP, retrieval, structured outputs, provider routing, durable execution, or observability. Use the skill that owns that component instead.
+
+## Modes
+
+- For design, follow the workflow and produce only the sections needed for the requested design decision.
+- For review, assess the existing architecture against the relevant rules without forcing a replacement design.
+- For diagnosis, localise the failure across agents, runner state, handoffs, permissions, budgets, or recovery. Do not broaden the task into a full architecture review.
 
 ## Core stance
 
@@ -106,7 +112,7 @@ Keep application workflow state distinct from delegated A2A task state. A remote
    - retrieval-heavy vs tool/workflow-heavy
    - single-provider vs real multi-provider routing
    - hosted/cloud models vs local/open models needing constrained decoding
-2. Decide the capability scaling shape before choosing frameworks:
+2. Decide the capability scaling shape before choosing frameworks: deterministic tool vs embedded capability vs split agent vs orchestration layer.
    - Prefer deterministic code or a typed tool when the operation has stable inputs/outputs, does not require judgment, can be unit-tested conventionally, and does not need conversation state.
    - For text operations, treat structure and semantics separately: parse stable syntax deterministically, but use an LLM-backed capability when the task depends on meaning, intent, relevance, classification, summarisation, ambiguity resolution, rubric judgment, natural-language extraction, entity/claim matching, or semantic equivalence.
    - Do not let a "deterministic tool" become a pile of complex regexes, keyword lists, or fuzzy string heuristics that are really attempting semantic understanding.
@@ -174,86 +180,8 @@ Keep application workflow state distinct from delegated A2A task state. A remote
    - Centralize routing policy, keys, logging, budgets, fallback behaviour, and reproducibility when multiple providers are a real requirement.
 13. Add prompt/program optimisation only when there are examples and metrics:
    - Optimize only bounded repeatable subtasks with representative examples, measurable outcomes, and held-out evaluation.
-14. Update `$rb-working-diary` with durable architecture decisions, rejected alternatives, testing/eval commitments, observability commitments, and open risks when the work is substantial.
+14. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Record durable architecture decisions, rejected alternatives, testing/eval commitments, observability commitments, and open risks. Do not write diary entries for an isolated one-turn review or diagnosis.
 
-## Required Test Matrix
+## Completion material
 
-For a non-trivial runner or multi-agent workflow, explicitly include the applicable rows below:
-
-- state-machine unit tests for every legal transition and every illegal-transition rejection
-- terminal, cancellation, timeout, retry, and budget-exhaustion tests
-- structured-output schema success and failure tests
-- authentication, authorization, approval, and just-in-time capability-allocation denial tests
-- tool allow-list and side-effect/idempotency tests
-- deterministic runner tests using agent stubs and tool doubles
-- integration tests for agent-runtime, MCP, persistence, queues, files, databases, and external-service boundaries
-- A2A contract tests for task creation, status mapping, artifacts, input requests, cancellation, failure, and duplicate suppression
-- checkpoint, crash-recovery, replay, and event-log consistency tests
-- retrieval provenance, access-control, stale-data, and answer-grounding tests where retrieval is used
-- held-out agent evals with repeated trials for semantic quality, tool selection, refusal/escalation, adversarial inputs, and distribution shift
-- end-to-end tests for critical user workflows and high-consequence side effects
-- observability assertions confirming traces and events contain required identities, decisions, denials, costs, and error states without leaking secrets
-
-## Review checklist
-
-- Is there one primary agent runtime?
-- Is the agent-runtime choice separate from the communication-protocol choice?
-- For owned Python agents, is PydanticAI used or explicitly rejected for a concrete reason?
-- Has each new capability been classified as deterministic code/tool, embedded capability, split agent, or orchestration concern?
-- Could the required workflow control be expressed by a state machine or extended state machine without dynamic orchestration?
-- For text-heavy capabilities, is semantic understanding handled by an LLM-backed path rather than brittle regex/string heuristics?
-- Is control flow owned by deterministic runner code rather than an LLM?
-- Are workflow states, legal transitions, terminal states, and invalid-transition behaviour explicit and tested?
-- Are agent-requested actions and transitions treated as proposals rather than authoritative commands?
-- Are authentication, authorization, and capability allocation separated and covered by denial tests?
-- Are tools allocated just in time according to state, role, caller identity, and task policy?
-- Is each communication boundary explicitly classified as direct runtime call, in-memory transport, or A2A?
-- Is A2A limited to boundaries where independent deployment, ownership, opacity, or interoperability justifies it?
-- Has A2A been avoided for ordinary calls between owned in-process agents?
-- Are A2A agent-and-skill allow-lists distinct from MCP server, tool, resource, and prompt allow-lists?
-- Are discovery results filtered before agents see or invoke them?
-- Are deterministic MCP calls runner-controlled and judgement-dependent calls represented as validated proposals?
-- Are remote A2A task states mapped explicitly into local workflow transitions and contract-tested?
-- Are agent responsibilities, contracts, state ownership, and handoffs explicit?
-- Is each agent's context and tool surface bounded enough that tool choice remains reliable?
-- Could any agent be replaced by deterministic code or a typed tool?
-- Are structured outputs enforced and tested, including malformed outputs?
-- Are tool permissions, side effects, approval points, and idempotency clear and tested?
-- Are quality gates applied before authoritative state changes and external side effects?
-- Can one bad premise poison downstream work, and if so where is the validation gate and its negative test?
-- Are sub-agent outputs treated with provenance/confidence rather than blindly becoming shared truth?
-- As complexity and autonomy increase, are validation, limits, permissions, human checkpoints, testing, and auditability strengthened, with logging treated as evidence rather than a control?
-- Is there an append-only event log as well as a current-state snapshot?
-- Can execution resume safely from a checkpoint without repeating side effects or duplicating delegated tasks, and has that been tested?
-- Are deterministic tests, integration/contract tests, held-out evals, and end-to-end checks all present where applicable?
-- Are traces and evals present before non-trivial behaviour ships?
-- Is retrieval scoped to data plumbing rather than becoming accidental architecture?
-- Is provider routing a real need, with cost and fallback behaviour defined?
-- Are cost, latency, and reliability impacts estimated before adding new model calls, agents, or tools?
-- Is fallback behavior explicit, tested, and user-visible rather than silently hiding failures?
-- Is durable orchestration used only where state, retries, resumability, or scheduling justify it?
-- Are OpenTelemetry/export needs captured for portability?
-
-## Output
-
-When applying this skill, produce:
-
-- recommended architecture and primary stack, including whether it preserves or changes the existing stack
-- alternatives rejected and why
-- workflow-control choice: state machine vs extended state machine vs dynamic stateful orchestration
-- capability scaling decision table: deterministic tool vs embedded capability vs split agent vs orchestration layer
-- text-operation classification where relevant: deterministic structure parsing vs semantic LLM judgment
-- runner responsibility map and explicit control-flow ownership
-- workflow state and legal-transition map, including terminal and recovery states
-- agent-runtime and communication-protocol decision, including where PydanticAI and A2A each apply
-- authentication, authorization, and just-in-time capability-allocation plan
-- communication-boundary map classifying direct runtime calls, in-memory transports, and A2A boundaries
-- separate A2A agent-and-skill and MCP capability allow-lists
-- agent and tool boundary map
-- structured-output contracts, including proposed actions and transitions where relevant
-- state, durability, checkpoint, retry, and failure-containment plan
-- high-risk assumptions, quality gates, and human approval points
-- retrieval plan if relevant
-- required deterministic test, integration/contract test, recovery test, held-out eval, and end-to-end matrix
-- append-only event-log, observability, tracing, eval, cost, and reproducibility plan
-- immediate implementation slice and validation checks
+Read `references/test-and-review-checklists.md` only when the task needs a formal architecture review, a complete testing strategy, or a detailed implementation-plan handoff. It contains the full review checklist, the required test matrix for a non-trivial runner, and the available output fields. Select only the rows and fields that apply; do not manufacture components, risks, or deliverables to complete the template.

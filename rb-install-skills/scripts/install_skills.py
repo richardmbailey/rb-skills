@@ -23,6 +23,10 @@ class SkillsDestination:
 
 
 def codex_skills_dest() -> Path:
+    return Path.home() / ".agents" / "skills"
+
+
+def legacy_codex_skills_dest() -> Path:
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
         return Path(codex_home).expanduser() / "skills"
@@ -39,14 +43,13 @@ def default_skills_destination(agent: str = "auto") -> SkillsDestination:
     if agent == "claude":
         return SkillsDestination(claude_skills_dest(), "claude")
 
-    codex_path = Path.home() / ".codex"
-    if codex_path.exists():
-        return SkillsDestination(codex_path / "skills", "codex")
+    if os.environ.get("CODEX_HOME") or (Path.home() / ".codex").exists():
+        return SkillsDestination(codex_skills_dest(), "codex")
 
     if looks_like_claude_code():
         return SkillsDestination(claude_skills_dest(), "claude")
 
-    return SkillsDestination(codex_path / "skills", "codex")
+    return SkillsDestination(codex_skills_dest(), "codex")
 
 
 def default_skills_dest(agent: str = "auto") -> Path:
@@ -76,7 +79,7 @@ def is_active_agent_skills_dir(path: Path) -> bool:
                 return True
         except OSError:
             pass
-    return path.name == "skills" and path.parent.name in {".codex", ".claude"}
+    return path.name == "skills" and path.parent.name in {".agents", ".codex", ".claude"}
 
 
 def is_flat_skills_repo(path: Path) -> bool:
@@ -117,10 +120,10 @@ def add_pack_searches(candidates: list[Path], base: Path) -> None:
 
 def agent_skill_dirs(agent: str = "auto") -> list[Path]:
     if agent == "codex":
-        return [codex_skills_dest()]
+        return [codex_skills_dest(), legacy_codex_skills_dest()]
     if agent == "claude":
         return [claude_skills_dest()]
-    return [codex_skills_dest(), claude_skills_dest()]
+    return [codex_skills_dest(), legacy_codex_skills_dest(), claude_skills_dest()]
 
 
 def add_global_skill_link_candidates(candidates: list[Path], agent: str = "auto") -> None:
@@ -196,7 +199,7 @@ def write_project_file(path: Path, content: str, force: bool) -> str:
     return f"{action} {path}"
 
 
-def install_flat_project_resources(target: Path, force: bool, codex: bool, claude: bool, cursor: bool) -> list[str]:
+def install_flat_project_resources(target: Path, force: bool, claude: bool, cursor: bool) -> list[str]:
     agent_instructions = """# Agent Instructions
 
 - Use installed RB agent skills when the task matches their descriptions.
@@ -228,8 +231,6 @@ Use this file to capture project-specific context during start-project onboardin
         write_project_file(target / "CONTEXT.md", project_context, force),
     ]
 
-    if codex:
-        results.append(write_project_file(target / "CODEX.md", agent_instructions, force))
     if claude:
         results.append(write_project_file(target / "CLAUDE.md", agent_instructions, force))
     if cursor:
@@ -282,8 +283,6 @@ def run_legacy_install_skills(pack_root: Path, target: Path, args: argparse.Name
     install_local = [sys.executable, "scripts/install_local_pack.py", "--target", str(target)]
     if args.force:
         install_local.append("--force")
-    if args.codex:
-        install_local.append("--codex")
     if args.claude:
         install_local.append("--claude")
     if args.cursor:
@@ -305,7 +304,7 @@ def run_flat_install_skills(pack_root: Path, target: Path, args: argparse.Namesp
     audit_flat_visibility(pack_root, destination)
 
     print("Project resources:")
-    for result in install_flat_project_resources(target, args.force, args.codex, args.claude, args.cursor):
+    for result in install_flat_project_resources(target, args.force, args.claude, args.cursor):
         print(f"- {result}")
 
 
@@ -325,7 +324,6 @@ def main() -> int:
         action="store_true",
         help="Back up and replace existing global skill folders during flat-pack sync.",
     )
-    parser.add_argument("--codex", action="store_true", help="Install CODEX.md into the target repository.")
     parser.add_argument("--claude", action="store_true", help="Install CLAUDE.md into the target repository.")
     parser.add_argument("--cursor", action="store_true", help="Install Cursor rule file into the target repository.")
     args = parser.parse_args()

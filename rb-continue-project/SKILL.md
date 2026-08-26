@@ -24,7 +24,7 @@ Use this when the human wants continuity from durable project context rather tha
    - `AGENTS.md` when present;
    - tool-specific instructions only when relevant to the current session.
 3. Use `$rb-working-diary`:
-   - read `${CODEX_HOME:-~/.codex}/diary/diary.md`;
+   - read `${CODEX_HOME:-$HOME/.codex}/diary/diary.md`;
    - match the current project by absolute path first, then by project name;
    - if a project diary exists, read `handoff.md` first when present, then recent `working-diary.md`;
    - read `decisions.md`, `open-questions.md`, or `investigations.md` only when the current task needs them.
