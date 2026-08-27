@@ -72,7 +72,8 @@ Use the same routing rule as `$rb-start-project`:
 - If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved, recommend `$rb-discuss`.
 - If the project needs a durable PRD or an existing PRD must become decision-ready, recommend `$rb-create-prd`.
 - If the requirements are sufficiently understood and a new top-level implementation plan is needed, recommend `$rb-create-implementation-plan`.
-- If an existing multi-step implementation plan or phase checklist must be continued, refined, or tracked, recommend `$rb-execute-plan`.
+- If an existing multi-step implementation plan or phase checklist should be followed linearly, recommend `$rb-execute-plan`.
+- If an existing plan should be delivered through repeated PRD-aligned review, evidence-backed plan adaptation, and bounded sprints, recommend `$rb-sprint`.
 - If one bounded ordinary change is already agreed and does not need plan-state ownership, recommend `$rb-implement-with-tests` directly.
 - If an agreed change is scientific, numerical, modelling, simulation, stochastic, or domain-sensitive, recommend `$rb-tdd-scientific-code` directly.
 - If the next step is a bug, regression, failing or flaky test, or surprising output with an unknown cause, recommend `$rb-diagnose`.

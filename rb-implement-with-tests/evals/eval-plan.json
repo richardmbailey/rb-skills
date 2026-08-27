@@ -59,6 +59,13 @@
       "prompt": "Continue Phase 3 of the implementation plan, update every task status, and decide whether the phase exit criteria are met.",
       "should_trigger": false,
       "success": [{"name": "plan ownership boundary", "evaluator": "semantic", "rubric": "Pass if rb-execute-plan is selected because sequencing, status and phase verification are requested."}]
+    },
+    {
+      "id": "implement-sprint-owner-negative",
+      "kind": "trigger",
+      "prompt": "Use the approved PRD to reassess the remaining implementation plan, revise it from the last increment's evidence, select the next sprint, and own its status through verification.",
+      "should_trigger": false,
+      "success": [{"name": "adaptive plan ownership boundary", "evaluator": "semantic", "rubric": "Pass if rb-sprint is selected because the request owns recurring PRD reconciliation, plan adaptation, sprint selection, and status."}]
     }
   ]
 }

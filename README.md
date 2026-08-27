@@ -6,6 +6,7 @@ The skills are intended for practical coding, modelling, AI/ML, research, review
 
 ## Latest changes
 
+- Added `$rb-sprint` for adaptive implementation: reconcile each bounded delivery increment with the authoritative PRD, preserve the current plan by default, and permit only the smallest evidence-backed plan change that passes its fail-closed gate. `$rb-execute-plan` remains the linear plan-execution workflow.
 - Added `$rb-language` for ordinary drafting and light prose editing when no specialist skill owns the task. `$rb-revise-ai-draft` retains responsibility for substantive revision of supplied AI-like prose.
 - Added `$rb-create-prd` for creating, revising, and reviewing decision-ready product requirements before implementation planning.
 - Added `$rb-simplify-language`, a manual-only skill for reducing ambiguity in agent-facing control text or any other text that the user explicitly supplies.
@@ -77,7 +78,8 @@ The routing rule is:
 | Material requirements unresolved | `rb-discuss` |
 | Product or feature needs a durable requirements document | `rb-create-prd` |
 | Sufficiently understood idea needs a top-level plan | `rb-create-implementation-plan` |
-| Existing multi-step plan needs sequencing or status ownership | `rb-execute-plan` |
+| Existing multi-step plan should be followed linearly | `rb-execute-plan` |
+| Existing plan needs PRD-aligned sprint review and evidence-driven replanning | `rb-sprint` |
 | Agreed bounded ordinary change | `rb-implement-with-tests` |
 | Agreed scientific, numerical, modelling, simulation, stochastic, or domain-sensitive change | `rb-tdd-scientific-code` |
 | Unknown bug, regression, failing test, flaky test, or surprising output | `rb-diagnose` |
@@ -88,6 +90,40 @@ The routing rule is:
 `rb-discuss` is not a mandatory stage. Agreed work routes directly to planning or implementation.
 
 Requests to create, revise, or review a product requirements document select `$rb-create-prd` automatically. Users can also invoke `$rb-create-prd` in Codex or `/rb-create-prd` in Claude Code.
+
+## Linear and Adaptive Plan Delivery
+
+After a top-level implementation plan is approved, choose the delivery workflow from the amount of expected discovery:
+
+- Use `$rb-execute-plan` when the approved plan should be followed linearly through its phases and verification gates.
+- Use `$rb-sprint` when implementation evidence may require changes to the remaining plan between bounded delivery increments.
+
+`$rb-sprint` requires an authoritative PRD or equivalent requirements artifact and an existing implementation plan. The requirements remain authoritative. The plan is a technical strategy that may change only when the evidence shows that preserving it would create a specific delivery problem.
+
+The normal sprint transition does not change the plan:
+
+```text
+review -- NO_CHANGE ------------------------> sprint_ready -> building -> verifying -> review
+   |
+   +-- REPLAN -----------------------------> replan -> sprint_ready
+   +-- AWAITING_HUMAN_DECISION ------------> stop for an authorised decision
+   +-- BLOCKED ----------------------------> stop until the named condition changes
+   +-- all completion conditions satisfied -> complete
+```
+
+Every review starts with `NO_CHANGE`. The gate may return `REPLAN` only when its record establishes all of the following:
+
+- the exact implementation-plan state under review;
+- new externally grounded evidence, such as a test, review, experiment, repository observation, operational observation, or explicit human statement;
+- the exact task, phase, assumption, dependency, constraint, risk, or verification item affected by that evidence;
+- how the evidence contradicts, invalidates, blocks, already satisfies, or makes that item obsolete;
+- the concrete problem that preserving the item would cause;
+- why a local execution refinement cannot solve the problem and why the proposed plan delta is the smallest adequate response;
+- authority for the change and every affected verification, rollout, or rollback commitment.
+
+Agent preference, reflection, novelty, generic best practice, stylistic consistency, an equally viable alternative, or a speculative future risk does not justify replanning. If the evidence is missing or ambiguous, the agent must not edit the plan. It returns `NO_CHANGE` when the current plan remains supported, `AWAITING_HUMAN_DECISION` for governed technical or product decisions, or `BLOCKED` when affected work cannot safely continue. The same evidence against the same plan state must produce the same result unless new evidence or the plan state changes.
+
+Local implementation details may change under `NO_CHANGE` when they do not alter the plan, product behaviour, contracts, dependencies, risk, or acceptance evidence. A real plan edit requires `REPLAN`. Every accepted delta is recorded in the plan change log without erasing completed or verified history.
 
 ## Testing Policy
 
@@ -119,7 +155,8 @@ Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun u
 | `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
 | `$rb-create-prd` | Create, revise, or review product requirements, including users, outcomes, scope, success measures, risks, dependencies, and unresolved decisions. |
 | `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan, testing architecture, risks, success criteria, and route choice. |
-| `$rb-execute-plan` | An existing multi-step plan needs phase sequencing, task status, test coverage, CI-equivalent checks, and phase-level verification. |
+| `$rb-execute-plan` | An existing multi-step plan should be followed linearly through phase sequencing, task status, test coverage, CI-equivalent checks, and verification. |
+| `$rb-sprint` | An existing plan needs bounded PRD-aligned sprints; it preserves the plan by default and permits only the smallest authorised delta that passes the evidence gate. |
 | `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
 | `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
 | `$rb-diagnose` | A bug, regression, flaky test, or surprising output needs evidence-led root-cause work before a fix. |
@@ -215,7 +252,7 @@ Before publishing, check that the repository contains no secrets, private identi
 
 A new implementation plan records one of three routes:
 
-- `standard`: normal tested implementation through `rb-execute-plan`, `rb-implement-with-tests`, and `rb-tdd-scientific-code`;
+- `standard`: normal tested implementation through linear `rb-execute-plan` or adaptive `rb-sprint`, with task delivery through `rb-implement-with-tests` and `rb-tdd-scientific-code`;
 - `constrained`: a Codex-only, first-release static-only workflow for exact read/patch operations and statically observable acceptance criteria;
 - `undecided`: preserve the choice and do not enter the constrained pipeline.
 
@@ -232,7 +269,7 @@ In practical terms, runtime-dependent phases must use the standard route in the 
 The constrained route processes one approved phase at a time:
 
 ```text
-rb-execute-plan
+rb-execute-plan or rb-sprint
   -> rb-create-low-level-plan
   -> rb-assess-plan-safety
   -> rb-safe-operation

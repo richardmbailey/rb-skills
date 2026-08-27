@@ -19,7 +19,7 @@
       "family": "planning-delivery",
       "prompt": "I want to add project exports, but I have not decided the file format, whether old clients must still work, or what should happen to partial exports. Help me work out the change before we code.",
       "expected": {"outcome": "select", "skill": "rb-discuss"},
-      "forbidden_skills": ["rb-create-implementation-plan", "rb-execute-plan", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-create-implementation-plan", "rb-execute-plan", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "Material behaviour and compatibility questions are unresolved."
     },
@@ -28,7 +28,7 @@
       "family": "planning-delivery",
       "prompt": "Before implementing caching, can we decide the invalidation rules, stale-data behaviour, and acceptable consistency trade-offs?",
       "expected": {"outcome": "select", "skill": "rb-discuss"},
-      "forbidden_skills": ["rb-create-implementation-plan", "rb-execute-plan", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-create-implementation-plan", "rb-execute-plan", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "The request is requirements discussion, not plan production or implementation."
     },
@@ -37,7 +37,7 @@
       "family": "planning-delivery",
       "prompt": "We need a bulk-delete API. Please help settle permissions, partial failure semantics, idempotency, and the response contract first.",
       "expected": {"outcome": "select", "skill": "rb-discuss"},
-      "forbidden_skills": ["rb-execute-plan", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-execute-plan", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "The user explicitly wants ambiguity resolved before implementation."
     },
@@ -46,7 +46,7 @@
       "family": "planning-delivery",
       "prompt": "Turn my rough idea for an offline mode into a practical implementation plan with phases, risks, success criteria, and validation.",
       "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
-      "forbidden_skills": ["rb-discuss", "rb-execute-plan"],
+      "forbidden_skills": ["rb-discuss", "rb-execute-plan", "rb-sprint"],
       "critical": true,
       "rationale": "A rough idea needs a top-level implementation plan."
     },
@@ -55,7 +55,7 @@
       "family": "planning-delivery",
       "prompt": "I have an early idea for a customer usage dashboard. Please produce the overall engineering plan, including constraints, milestones, risks, and how we will know it works.",
       "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
-      "forbidden_skills": ["rb-execute-plan", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-execute-plan", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "The user requests the top-level plan, not granular execution."
     },
@@ -64,7 +64,7 @@
       "family": "planning-delivery",
       "prompt": "Draft an implementation plan for moving this service from local files to PostgreSQL. Include non-goals, phased rollout, rollback, tests, and operational risks.",
       "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
-      "forbidden_skills": ["rb-discuss", "rb-execute-plan", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-discuss", "rb-execute-plan", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "The deliverable is a complete top-level plan."
     },
@@ -73,7 +73,7 @@
       "family": "planning-delivery",
       "prompt": "Use the existing implementation plan in docs/plan.md and work through Phase 2, updating its task statuses only after implementation and verification.",
       "expected": {"outcome": "select", "skill": "rb-execute-plan"},
-      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "An existing plan must be executed with verification gates."
     },
@@ -82,7 +82,7 @@
       "family": "planning-delivery",
       "prompt": "Review this existing phase checklist, make the tasks executable and verifiable, and identify anything preventing us from marking the phase complete.",
       "expected": {"outcome": "select", "skill": "rb-execute-plan"},
-      "forbidden_skills": ["rb-create-implementation-plan", "rb-implement-with-tests", "rb-review-pr-or-diff"],
+      "forbidden_skills": ["rb-create-implementation-plan", "rb-sprint", "rb-implement-with-tests", "rb-review-pr-or-diff"],
       "critical": true,
       "rationale": "The request refines and verifies an existing phase plan."
     },
@@ -91,7 +91,7 @@
       "family": "planning-delivery",
       "prompt": "Continue the approved plan from the first unchecked task. Implement each item, run its check, and keep the phase file current.",
       "expected": {"outcome": "select", "skill": "rb-execute-plan"},
-      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-continue-project", "rb-implement-with-tests"],
+      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-continue-project", "rb-sprint", "rb-implement-with-tests"],
       "critical": true,
       "rationale": "The user asks to execute an already approved task sequence."
     },
@@ -100,16 +100,52 @@
       "family": "planning-delivery",
       "prompt": "Continue the existing implementation plan at Phase 2 task 3. Implement it, update its planned, implemented, and verified status from evidence, and then reassess the phase exit criteria.",
       "expected": {"outcome": "select", "skill": "rb-execute-plan"},
-      "forbidden_skills": ["rb-create-implementation-plan", "rb-implement-with-tests", "rb-review-pr-or-diff"],
+      "forbidden_skills": ["rb-create-implementation-plan", "rb-sprint", "rb-implement-with-tests", "rb-review-pr-or-diff"],
       "critical": true,
       "rationale": "Even though one task is named, the request owns plan status and phase exit criteria, so plan orchestration is primary."
+    },
+    {
+      "id": "planning-sprint-adaptive-delivery",
+      "family": "planning-delivery",
+      "prompt": "Use the approved PRD and implementation plan to run the next bounded sprint. After verification, compare what we learned with the PRD, revise remaining plan work when the evidence justifies it, and choose the next checkpoint.",
+      "expected": {"outcome": "select", "skill": "rb-sprint"},
+      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-implement-with-tests"],
+      "critical": true,
+      "rationale": "The request explicitly requires the recurring PRD-aligned adaptive delivery loop."
+    },
+    {
+      "id": "planning-sprint-new-evidence",
+      "family": "planning-delivery",
+      "prompt": "Our last build increment disproved a technical assumption in Phase 3. Reconcile the evidence with the approved requirements, refactor the remaining plan without changing product scope, and deliver the next tested sprint.",
+      "expected": {"outcome": "select", "skill": "rb-sprint"},
+      "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-execute-plan", "rb-implement-with-tests"],
+      "critical": true,
+      "rationale": "An existing plan needs evidence-backed adaptation within stable product requirements."
+    },
+    {
+      "id": "planning-sprint-direct-invocation",
+      "family": "planning-delivery",
+      "prompt": "Use $rb-sprint with the existing PRD and plan. Build one vertical increment, verify it, record any justified plan delta, and stop at the sprint review checkpoint.",
+      "expected": {"outcome": "select", "skill": "rb-sprint"},
+      "forbidden_skills": ["rb-create-implementation-plan", "rb-execute-plan", "rb-implement-with-tests"],
+      "critical": true,
+      "rationale": "The user directly invokes the adaptive sprint workflow."
+    },
+    {
+      "id": "planning-sprint-product-decision",
+      "family": "planning-delivery",
+      "prompt": "During this adaptive sprint, implementation evidence suggests changing an approved user permission. Reconcile the finding with the PRD and decide whether implementation may continue.",
+      "expected": {"outcome": "select", "skill": "rb-sprint"},
+      "forbidden_skills": ["rb-create-prd", "rb-execute-plan", "rb-implement-with-tests"],
+      "critical": true,
+      "rationale": "The sprint owner must classify the finding as a governed product decision and stop before handing off to PRD revision."
     },
     {
       "id": "planning-implement-clear-endpoint",
       "family": "planning-delivery",
       "prompt": "Implement the agreed /health/details endpoint exactly as specified in issue 42, add focused tests, run the API checks, and review the final diff.",
       "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
-      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan"],
+      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-sprint"],
       "critical": true,
       "rationale": "Requirements are agreed and ordinary software implementation is requested."
     },
@@ -118,7 +154,7 @@
       "family": "planning-delivery",
       "prompt": "Refactor the parser behind the existing interface, preserve behaviour, add the missing regression tests, and run the configured checks.",
       "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
-      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-tdd-scientific-code"],
+      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-sprint", "rb-tdd-scientific-code"],
       "critical": true,
       "rationale": "This is a clear ordinary refactor with tests."
     },
@@ -127,7 +163,7 @@
       "family": "planning-delivery",
       "prompt": "We have confirmed the bug is caused by the missing timezone normalization. Implement the agreed fix and its regression test.",
       "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
-      "forbidden_skills": ["rb-diagnose", "rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-tdd-scientific-code"],
+      "forbidden_skills": ["rb-diagnose", "rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-sprint", "rb-tdd-scientific-code"],
       "critical": true,
       "rationale": "Diagnosis is complete and the fix is agreed."
     },
@@ -136,7 +172,7 @@
       "family": "planning-delivery",
       "prompt": "Implement only the already-selected parser-cache task from Phase 2 with focused tests. Do not resequence, edit, or mark the broader plan; report the check evidence back to the plan owner.",
       "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
-      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-tdd-scientific-code"],
+      "forbidden_skills": ["rb-discuss", "rb-create-implementation-plan", "rb-execute-plan", "rb-sprint", "rb-tdd-scientific-code"],
       "critical": true,
       "rationale": "The task is already selected and the request explicitly excludes plan-state ownership, so the bounded implementation workflow is primary."
     },
@@ -154,7 +190,7 @@
       "family": "planning-delivery",
       "prompt": "Implement the new stochastic transition rule test-first, preserving reproducibility across seeds and checking distribution-level behaviour.",
       "expected": {"outcome": "select", "skill": "rb-tdd-scientific-code"},
-      "forbidden_skills": ["rb-implement-with-tests", "rb-diagnose", "rb-execute-plan"],
+      "forbidden_skills": ["rb-implement-with-tests", "rb-diagnose", "rb-execute-plan", "rb-sprint"],
       "critical": true,
       "rationale": "Stochastic correctness and reproducibility make this scientific TDD work."
     },
@@ -172,7 +208,7 @@
       "family": "planning-delivery",
       "prompt": "Help me with a new sharing feature.",
       "expected": {"outcome": "clarify"},
-      "forbidden_skills": ["rb-implement-with-tests", "rb-execute-plan"],
+      "forbidden_skills": ["rb-implement-with-tests", "rb-execute-plan", "rb-sprint"],
       "critical": true,
       "rationale": "There is not enough information to know whether the user wants discussion, planning, or implementation."
     },
@@ -190,7 +226,7 @@
       "family": "planning-delivery",
       "prompt": "Review the existing implementation plan for missing verification steps and make its phase checklist executable.",
       "expected": {"outcome": "select", "skill": "rb-execute-plan"},
-      "forbidden_skills": ["rb-create-implementation-plan", "rb-review-pr-or-diff"],
+      "forbidden_skills": ["rb-create-implementation-plan", "rb-sprint", "rb-review-pr-or-diff"],
       "critical": true,
       "rationale": "The object being reviewed is an existing implementation plan, not a code diff."
     }

@@ -44,7 +44,7 @@ Use this pipeline to keep a new project moving. Give each stage one status: `not
 | 3. Requirements discussion | Material behaviour, interfaces, permissions, data rules, failure handling, and acceptance decisions are resolved or recorded as accepted risks, or this gate is `not required`. | `$rb-discuss` when material ambiguity remains. |
 | 4. Product requirements | A PRD is `decision-ready`, or the PRD gate is `not required` with a recorded reason. | `$rb-create-prd` when the gate applies. |
 | 5. Implementation planning | A top-level plan exists, its route is recorded, and the human has approved it for execution, or a plan is `not required` for one bounded agreed change. | `$rb-create-implementation-plan` or the bounded implementation skill. |
-| 6. Implementation | The agreed change or all approved phases are implemented with the selected test levels and recorded evidence. | `$rb-execute-plan`, `$rb-implement-with-tests`, or `$rb-tdd-scientific-code`. |
+| 6. Implementation | The agreed change or all approved phases are implemented with the selected test levels and recorded evidence. | `$rb-execute-plan`, `$rb-sprint`, `$rb-implement-with-tests`, or `$rb-tdd-scientific-code`. |
 | 7. Review and release readiness | Review findings are resolved or accepted, affected checks and the CI-equivalent gate are recorded, and rollout or handoff conditions are satisfied. | Inline review+fix or `$rb-review-pr-or-diff`. |
 | 8. Completion or continuation | The outcome, residual risks, artifact locations, pipeline state, and exact next action are durable. | `$rb-end-session`, `$rb-working-diary`, or normal completion. |
 
@@ -127,7 +127,8 @@ Route to the narrowest next workflow supported by the first task:
 | The product or feature needs a durable requirements document before implementation planning | `$rb-create-prd` |
 | A PRD or equivalent requirements artifact is decision-ready and needs its first top-level implementation plan | `$rb-create-implementation-plan` |
 | A sufficiently understood idea needs its first top-level plan | `$rb-create-implementation-plan` |
-| An existing multi-step plan or phase checklist needs sequencing, status tracking, or phase-level verification | `$rb-execute-plan` |
+| An existing multi-step plan should be followed linearly with task status and phase-level verification | `$rb-execute-plan` |
+| An existing plan should use repeated PRD-aligned delivery increments with evidence-driven replanning | `$rb-sprint` |
 | One bounded ordinary product change is agreed and ready to implement without plan-state ownership | `$rb-implement-with-tests` |
 | Scientific, numerical, modelling, simulation, or domain-sensitive work is agreed | `$rb-tdd-scientific-code` |
 | A bug, regression, failing test, flaky test, or surprising output has an unknown cause | `$rb-diagnose` |
@@ -169,6 +170,7 @@ Ask the handoff question for the route actually selected:
 - agreed bounded ordinary change: `Proceed into implementation with tests now?`
 - agreed scientific or modelling change: `Proceed into scientific TDD now?`
 - existing implementation plan: `Proceed into verified plan execution now?`
+- adaptive implementation plan: `Proceed into PRD-aligned sprint delivery now?`
 - new top-level planning: `Proceed into implementation planning now?`
 - unknown-cause bug or flaky test: `Proceed into diagnosis now?`
 

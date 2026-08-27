@@ -40,7 +40,7 @@
     "family": "product-planning",
     "prompt": "The PRD is approved. Create the top-level implementation plan with phases, testing architecture, risks, validation gates, and route choice.",
     "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
-    "forbidden_skills": ["rb-create-prd", "rb-discuss", "rb-implement-with-tests"],
+    "forbidden_skills": ["rb-create-prd", "rb-discuss", "rb-sprint", "rb-implement-with-tests"],
     "critical": true,
     "rationale": "Approved requirements are an input to implementation planning, so the PRD workflow is complete."
   },
@@ -49,7 +49,7 @@
     "family": "product-planning",
     "prompt": "Help me think through whether this feature is worth doing and what behaviour users might expect. I do not need a document yet.",
     "expected": {"outcome": "select", "skill": "rb-discuss"},
-    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan"],
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-sprint"],
     "critical": true,
     "rationale": "The user wants requirements discussion and explicitly does not want a durable PRD."
   },

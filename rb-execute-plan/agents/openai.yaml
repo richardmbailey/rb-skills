@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Execute Plan"
-  short_description: "Coordinate tested and verified implementation phases"
-  default_prompt: "Use $rb-execute-plan to coordinate this existing implementation phase through automated behavioural tests selected by failure boundary, phase integration and CI-equivalent gates, final review+fix, and evidence-backed verified completion. Use the constrained static-only route only for criteria typed and observable as static_file_state."
+  short_description: "Execute approved phases linearly with verification"
+  default_prompt: "Use $rb-execute-plan to follow this approved implementation plan linearly through automated behavioural tests selected by failure boundary, phase integration and CI-equivalent gates, final review+fix, and evidence-backed verified completion. Stop and recommend $rb-sprint if evidence requires recurring PRD reconciliation or adaptive replanning. Use the constrained static-only route only for criteria typed and observable as static_file_state."

@@ -27,7 +27,8 @@
         "rb-create-safe-operation-policy",
         ".rb-safe-operation-policy.json",
         "schema-3",
-        "rb-create-prd"
+        "rb-create-prd",
+        "rb-sprint"
       ],
       "forbidden": [
         "implement changes with focused tests and checks",
@@ -180,7 +181,8 @@
       "required": [
         "If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved",
         "If one bounded ordinary change is already agreed",
-        "canonical CI-equivalent command"
+        "canonical CI-equivalent command",
+        "recommend `$rb-sprint`"
       ],
       "forbidden": [
         "recommend `$rb-discuss` before `$rb-implement-with-tests`",
@@ -192,7 +194,8 @@
       "required": [
         "| One bounded ordinary product change is agreed",
         "| Scientific, numerical, modelling, simulation, or domain-sensitive work is agreed",
-        "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved"
+        "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved",
+        "| An existing plan should use repeated PRD-aligned delivery increments with evidence-driven replanning | `$rb-sprint` |"
       ],
       "forbidden": ["For feature work, ask:"]
     },
@@ -268,6 +271,7 @@
     {"skill": "rb-create-implementation-plan", "required": ["testing architecture", "constrained static-only"]},
     {"skill": "rb-create-prd", "required": ["product requirements document", "implementation planning", "success measures", "decisions"]},
     {"skill": "rb-execute-plan", "required": ["automated behavioural tests", "CI-equivalent", "static-only"]},
+    {"skill": "rb-sprint", "required": ["adaptive", "PRD", "automated behavioural tests", "CI-equivalent"]},
     {"skill": "rb-implement-with-tests", "required": ["automated behavioural tests", "test levels", "CI-equivalent"]},
     {"skill": "rb-tdd-scientific-code", "required": ["test levels", "invariants", "CI-equivalent"]},
     {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
@@ -349,6 +353,7 @@
     {"path": "rb-implement-with-tests/evals/eval-plan.json", "skill": "rb-implement-with-tests", "minimum_cases": 8},
     {"path": "rb-tdd-scientific-code/evals/eval-plan.json", "skill": "rb-tdd-scientific-code", "minimum_cases": 7},
     {"path": "rb-execute-plan/evals/eval-plan.json", "skill": "rb-execute-plan", "minimum_cases": 7},
+    {"path": "rb-sprint/evals/eval-plan.json", "skill": "rb-sprint", "minimum_cases": 10},
     {"path": "rb-create-low-level-plan/evals/eval-plan.json", "skill": "rb-create-low-level-plan", "minimum_cases": 10},
     {"path": "rb-assess-plan-safety/evals/eval-plan.json", "skill": "rb-assess-plan-safety", "minimum_cases": 12},
     {"path": "rb-safe-operation/evals/eval-plan.json", "skill": "rb-safe-operation", "minimum_cases": 11},

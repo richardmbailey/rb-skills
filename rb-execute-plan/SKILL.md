@@ -1,6 +1,6 @@
 ---
 name: "rb-execute-plan"
-description: "Use when an existing multi-step implementation plan or phase checklist must be refined, sequenced, tracked, or carried through verified phase work. Own plan state, testing strategy, CI-equivalent checks, and verification gates; use $rb-implement-with-tests for one bounded ordinary code change."
+description: "Use to execute an existing plan linearly with task status, behavioural tests, CI-equivalent checks, and verified phases. Use $rb-sprint for recurring PRD alignment and replanning."
 ---
 
 # RB Execute Plan
@@ -8,6 +8,8 @@ description: "Use when an existing multi-step implementation plan or phase check
 Use this skill to own sequencing, phase artifacts, status, testing strategy, and verification for an existing multi-step plan. It is the orchestration layer around implementation work.
 
 Use `$rb-create-implementation-plan` first when the human has a rough idea, feature request, or product goal and needs the top-level plan. Use `$rb-execute-plan` when an existing plan or phase checklist needs sequencing, refinement, progress tracking, or phase-level verification. For one bounded ordinary code change that does not require plan-state ownership, use `$rb-implement-with-tests` directly.
+
+Use `$rb-sprint` instead when the human wants repeated build and review cycles that compare implementation evidence with an authoritative PRD or equivalent requirements artifact and may restructure remaining plan work. This skill may make an existing phase checklist executable before implementation, but it does not own recurring PRD reconciliation or adaptive replanning between delivery increments.
 
 While executing a plan, use `$rb-implement-with-tests` for each selected ordinary software task and `$rb-tdd-scientific-code` for each selected scientific, numerical, modelling, simulation, or domain-sensitive task. `$rb-execute-plan` remains responsible for selecting tasks, preserving dependencies, ensuring the test levels collectively cover the phase, updating plan status from evidence, and deciding whether phase exit criteria are satisfied.
 
@@ -24,6 +26,13 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
 - Preserve the repository's existing language, framework, validation, test, coverage, CI, and deployment conventions unless there is a clear reason to change them.
 - For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to choose the simplest sufficient control model and resolve agent boundaries, tools, handoffs, state, failure containment, observability, evaluation, budgets, durability, and the orchestration test matrix.
 - For text-processing work, separate deterministic handling of stable structure from LLM-backed judgement about natural-language meaning.
+
+## Linear Execution Boundary
+
+- Follow the approved phase order and remaining task sequence unless a dependency or executable verification requirement makes the next task impossible. Record any necessary local ordering correction.
+- Do not routinely reassess the PRD, restructure remaining phases, or replace the technical strategy during execution.
+- If implementation evidence shows that the approved plan is no longer credible, stop affected work and report the evidence, affected tasks, requirements, tests, and risks. Use `$rb-sprint` only when the human wants to enter the adaptive workflow.
+- Do not use a local task refinement to change product behaviour, scope, acceptance evidence, permissions, data policy, architecture commitments, migrations, compatibility, rollout, or accepted risk.
 
 ## Optional Constrained Route
 

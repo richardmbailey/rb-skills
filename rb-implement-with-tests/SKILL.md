@@ -1,6 +1,6 @@
 ---
 name: "rb-implement-with-tests"
-description: "Use for one bounded ordinary software or product change after requirements are clear, with automated behavioural tests by default, appropriate test-level selection, executable checks, and a final review+fix loop. Do not own multi-phase planning or plan-status tracking; use $rb-execute-plan for that."
+description: "Use for one bounded agreed change with automated behavioural tests, suitable test levels, executable checks, and review. For plan ownership, use $rb-execute-plan or $rb-sprint."
 ---
 
 # /rb:implement - implement with tests
@@ -9,11 +9,11 @@ description: "Use for one bounded ordinary software or product change after requ
 
 Implement one agreed ordinary change in small verified increments. This skill owns the detailed code, test, and task-level review loop; it does not sequence multi-phase work or maintain plan-wide status.
 
-Use `$rb-discuss` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-execute-plan` when the user asks to refine, sequence, continue, or track an existing implementation plan or phase. When `$rb-execute-plan` selects one ordinary task, use this skill to implement that task and return evidence; the plan owner updates `[ ]`, `[x]`, and `[v]` status. Use `$rb-tdd-scientific-code` instead when the selected change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
+Use `$rb-discuss` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-execute-plan` when the user asks to follow, sequence, continue, or track an existing plan linearly. Use `$rb-sprint` when plan-state ownership includes recurring PRD reconciliation and evidence-driven changes to remaining work. When either plan owner selects one ordinary task, use this skill to implement that task and return evidence; the plan owner updates `[ ]`, `[x]`, and `[v]` status. Use `$rb-tdd-scientific-code` instead when the selected change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
 
 ## Procedure
 
-1. Confirm the one agreed requirement, selected plan task, or issue. If the request contains several tasks that need sequencing or requires plan-state tracking, route to `$rb-execute-plan` before editing.
+1. Confirm the one agreed requirement, selected plan task, or issue. If the request contains several tasks that need sequencing or requires plan-state tracking, route to `$rb-execute-plan` for linear delivery or `$rb-sprint` for adaptive delivery before editing.
 2. Read `AGENTS.md`, `CONTEXT.md`, relevant docs, surrounding code, existing tests, coverage configuration, and canonical CI or pre-commit commands that define local conventions.
 3. Check current worktree state. Preserve user changes and avoid touching unrelated files.
 4. Identify the smallest useful behaviour to change and the plausible ways it could fail, including invalid inputs, boundary values, permission or policy denial, missing dependencies, external-service failure, timeout, partial failure, duplicate requests, idempotency, concurrency, rollback, and corrupted responses where relevant.
@@ -56,7 +56,7 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 ## Required Behaviour
 
 - Do not skip clarification when behaviour is still ambiguous.
-- Do not create, resequence, or mark a multi-phase plan complete. Return implementation and verification evidence to `$rb-execute-plan` when it owns the surrounding plan.
+- Do not create, resequence, or mark a multi-phase plan complete. Return implementation and verification evidence to `$rb-execute-plan` or `$rb-sprint` when it owns the surrounding plan.
 - Do not claim success without running or explicitly naming the automated test and CI-equivalent check that could not be run.
 - Keep edits scoped to the requested behaviour unless a wider change is necessary and explained.
 - Do not introduce dependencies, migrations, destructive operations, secret handling changes, or broad architecture changes without explicit approval.

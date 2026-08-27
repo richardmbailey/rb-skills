@@ -67,7 +67,7 @@
     "family": "project-lifecycle",
     "prompt": "Continue work on this mature repo from the latest handoff. First reconcile the diary and Git status, then summarize what is safe to do next.",
     "expected": {"outcome": "select", "skill": "rb-continue-project"},
-    "forbidden_skills": ["rb-start-project", "rb-execute-plan", "rb-where-are-we"],
+    "forbidden_skills": ["rb-start-project", "rb-execute-plan", "rb-sprint", "rb-where-are-we"],
     "critical": true,
     "rationale": "Orientation from existing continuity context precedes any plan execution."
   },

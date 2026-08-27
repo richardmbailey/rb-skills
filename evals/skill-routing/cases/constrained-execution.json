@@ -214,7 +214,7 @@
     "family": "constrained-execution",
     "prompt": "Create the overall implementation plan for this feature and remind me about the optional higher-assurance route, but leave the route undecided.",
     "expected": {"outcome": "select", "skill": "rb-create-implementation-plan"},
-    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation"],
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation", "rb-sprint"],
     "critical": true,
     "rationale": "Initial planning and the optional reminder do not trigger constrained compilation."
   },
@@ -223,7 +223,7 @@
     "family": "constrained-execution",
     "prompt": "The plan records Execution Route: standard. Continue the next unchecked phase with automated behavioural tests and the normal verified implementation workflow.",
     "expected": {"outcome": "select", "skill": "rb-execute-plan"},
-    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation"],
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation", "rb-sprint"],
     "critical": true,
     "rationale": "The standard route remains ordinary tested plan execution."
   },
@@ -232,7 +232,7 @@
     "family": "constrained-execution",
     "prompt": "Implement this already agreed one-file parser fix with the appropriate automated regression and integration coverage, run the CI-equivalent checks, and review the final diff. There is no multi-phase plan or constrained assessment.",
     "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
-    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation", "rb-execute-plan"],
+    "forbidden_skills": ["rb-create-low-level-plan", "rb-assess-plan-safety", "rb-safe-operation", "rb-execute-plan", "rb-sprint"],
     "critical": true,
     "rationale": "A normal bounded implementation does not enter the optional static-only pipeline."
   }

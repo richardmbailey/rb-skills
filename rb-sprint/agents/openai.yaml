@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Sprint"
+  short_description: "Run adaptive PRD-aligned implementation sprints"
+  default_prompt: "Use $rb-sprint to reconcile this existing implementation plan and current evidence with the authoritative PRD. Preserve the plan by default and change it only when the fail-closed plan-change gate proves a minimal authorised delta is necessary. Deliver one bounded sprint with automated behavioural tests and CI-equivalent checks, then return an auditable review checkpoint."

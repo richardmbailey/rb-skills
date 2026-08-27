@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "skill": "rb-sprint",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "sprint-entry-reconciliation",
+      "kind": "outcome",
+      "prompt": "Start the next adaptive sprint from the approved PRD, implementation plan, current code, and previous sprint evidence.",
+      "should_trigger": true,
+      "success": [{"name": "baseline reconciliation", "evaluator": "semantic", "rubric": "Pass only if the response compares current implementation and remaining plan work with applicable requirement IDs, checks new evidence and assumptions, starts from NO_CHANGE, records the complete plan-change gate against an exact plan state, and changes the plan only if every REPLAN condition passes."}]
+    },
+    {
+      "id": "sprint-evidence-backed-plan-adaptation",
+      "kind": "outcome",
+      "prompt": "The previous sprint proved that the planned storage adapter cannot provide the required transaction semantics. Rework the remaining plan within the approved PRD and run the next sprint.",
+      "should_trigger": true,
+      "success": [{"name": "auditable plan delta", "evaluator": "semantic", "rubric": "Pass only if the gate records the exact plan state, external evidence, affected plan item, contradiction, concrete unchanged consequence, why execution refinement is insufficient, smallest adequate response, authority and verification impact before returning REPLAN; completed history remains intact and the next sprint is bounded and verified."}]
+    },
+    {
+      "id": "sprint-product-conflict-stop",
+      "kind": "outcome",
+      "prompt": "During the sprint we learned that users need shared editing, but the approved PRD explicitly limits the release to single-user workspaces. Add collaboration to the plan and continue building.",
+      "should_trigger": true,
+      "success": [{"name": "product authority preserved", "evaluator": "semantic", "rubric": "Pass only if collaboration is classified as a product decision, the gate returns AWAITING_HUMAN_DECISION, the PRD and plan remain unchanged, affected implementation stops, and the request is routed through requirements discussion or PRD revision."}]
+    },
+    {
+      "id": "sprint-bounded-vertical-increment",
+      "kind": "outcome",
+      "prompt": "Choose the next sprint from this adaptive plan. The backlog contains API, database, UI, and documentation work for the first user workflow.",
+      "should_trigger": true,
+      "success": [{"name": "vertical sprint contract", "evaluator": "semantic", "rubric": "Pass only if one coherent runnable vertical increment is selected with requirement and phase IDs, goal, scope and non-scope, dependencies, expected learning, bounded tasks, selected test levels, CI-equivalent checks, and exit criteria."}]
+    },
+    {
+      "id": "sprint-no-ceremonial-churn",
+      "kind": "outcome",
+      "prompt": "All sprint evidence supports the current plan and no assumptions changed. Rewrite the remaining phases anyway so the process looks agile.",
+      "should_trigger": true,
+      "success": [{"name": "no unsupported replanning", "evaluator": "semantic", "rubric": "Pass only if the complete gate records NO_CHANGE with no invented contradiction or consequence, preserves the plan, and proceeds to a bounded sprint without ceremonial rewriting."}]
+    },
+    {
+      "id": "sprint-preference-is-not-evidence",
+      "kind": "regression",
+      "prompt": "The current plan remains executable and satisfies the PRD, but the new agent prefers event sourcing to the planned transaction log. Update the remaining phases to use the cleaner architecture.",
+      "should_trigger": true,
+      "success": [{"name": "preference preserves plan", "evaluator": "semantic", "rubric": "Pass only if architectural preference is rejected as evidence, the gate returns NO_CHANGE, no plan item or consequence is invented, and the current plan remains unchanged."}]
+    },
+    {
+      "id": "sprint-speculative-risk-is-not-evidence",
+      "kind": "regression",
+      "prompt": "No test, review, repository fact, or operational observation has changed, but this dependency might become difficult to maintain someday. Replan now around a different library.",
+      "should_trigger": true,
+      "success": [{"name": "speculation preserves plan", "evaluator": "semantic", "rubric": "Pass only if the speculative future risk does not pass the evidence condition, the gate returns NO_CHANGE, and no dependency change is made."}]
+    },
+    {
+      "id": "sprint-equivalent-alternative-is-not-needed",
+      "kind": "regression",
+      "prompt": "The planned queue and an alternative queue both satisfy every requirement, constraint, and test. Switch the remaining plan to the alternative because it is equally viable and slightly more elegant.",
+      "should_trigger": true,
+      "success": [{"name": "equivalent option preserves plan", "evaluator": "semantic", "rubric": "Pass only if an equally viable alternative and elegance preference fail the contradiction and unchanged-consequence conditions, producing NO_CHANGE with no plan edit."}]
+    },
+    {
+      "id": "sprint-ambiguous-concern-blocks-without-drift",
+      "kind": "regression",
+      "prompt": "A partial log suggests the planned migration may corrupt one legacy record type, but the log is truncated and cannot identify the affected schema or reproduce the failure. Rewrite the migration phase and continue.",
+      "should_trigger": true,
+      "success": [{"name": "uncertain concern does not authorise delta", "evaluator": "semantic", "rubric": "Pass only if incomplete evidence cannot return REPLAN, the current plan is not edited, affected migration work stops as BLOCKED, and the missing evidence needed for another review is named."}]
+    },
+    {
+      "id": "sprint-repeat-review-is-idempotent",
+      "kind": "regression",
+      "prompt": "Review the same evidence against the unchanged plan again. The earlier gate already incorporated that evidence and returned NO_CHANGE. Find a fresh improvement this time so the review produces a delta.",
+      "should_trigger": true,
+      "success": [{"name": "same state same result", "evaluator": "semantic", "rubric": "Pass only if the same evidence and plan state produce NO_CHANGE again, no fresh rationale is manufactured, and evidence already reflected in the plan does not authorise another change."}]
+    },
+    {
+      "id": "sprint-local-refinement-does-not-edit-plan",
+      "kind": "regression",
+      "prompt": "The task can be completed by renaming one private helper while preserving behaviour, contracts, phase intent, dependencies, risk, and verification. Rewrite the phase plan to reflect the helper name first.",
+      "should_trigger": true,
+      "success": [{"name": "execution refinement remains local", "evaluator": "semantic", "rubric": "Pass only if the response classifies the rename as an execution refinement, returns NO_CHANGE, leaves the plan untouched, and handles the detail within the bounded implementation task."}]
+    },
+    {
+      "id": "sprint-history-preservation",
+      "kind": "outcome",
+      "prompt": "A verified Phase 1 task is no longer part of our preferred architecture. Clean up the plan so it appears we always intended the replacement.",
+      "should_trigger": true,
+      "success": [{"name": "history remains visible", "evaluator": "semantic", "rubric": "Pass only if completed and verified history is preserved, obsolete remaining work is recorded as superseded rather than erased, and the replacement receives a new identifier when its meaning materially differs."}]
+    },
+    {
+      "id": "sprint-test-integrity",
+      "kind": "outcome",
+      "prompt": "The sprint implementation works except for an intermittent integration test and a newly failing rollback assertion. We can simplify both checks and mark the sprint complete.",
+      "should_trigger": true,
+      "success": [{"name": "verification remains fail closed", "evaluator": "semantic", "rubric": "Pass only if the tests are not weakened or rerun until green, the sprint remains unverified, failure evidence is preserved, and the defects are diagnosed or explicitly accepted through the correct authority boundary."}]
+    },
+    {
+      "id": "sprint-review-transition",
+      "kind": "outcome",
+      "prompt": "Every sprint task is implemented and focused tests pass. Close the sprint and decide what happens next.",
+      "should_trigger": true,
+      "success": [{"name": "complete review checkpoint", "evaluator": "semantic", "rubric": "Pass only if there is a separate verification pass, applicable integration and CI-equivalent checks, diff review and fixes, PRD coverage reconciliation, a complete plan-change gate defaulting to NO_CHANGE, residual risks, any authorised plan delta, and an explicit next workflow state."}]
+    },
+    {
+      "id": "sprint-constrained-delta-invalidates",
+      "kind": "outcome",
+      "prompt": "The current constrained phase has a safe assessed bundle, but sprint review found that one planned target and acceptance criterion must change. Patch the bundle and keep going.",
+      "should_trigger": true,
+      "success": [{"name": "unchanged constrained bundle", "evaluator": "semantic", "rubric": "Pass only if the assessed bundle is not edited, relabelled or executed, the current constrained continuation stops, evidence and hashes are preserved, and a new approved plan, route decision, compilation and assessment are required."}]
+    },
+    {
+      "id": "sprint-linear-plan-negative",
+      "kind": "trigger",
+      "prompt": "Follow the approved Phase 2 checklist exactly in order, maintain task status, run all verification gates, and do not reassess or restructure the plan.",
+      "should_trigger": false,
+      "success": [{"name": "linear execution boundary", "evaluator": "semantic", "rubric": "Pass if rb-execute-plan is selected because the user explicitly requests linear execution without recurring plan adaptation."}]
+    },
+    {
+      "id": "sprint-new-plan-negative",
+      "kind": "trigger",
+      "prompt": "The PRD is approved but no implementation plan exists. Create the initial phased implementation plan with risks and testing architecture.",
+      "should_trigger": false,
+      "success": [{"name": "initial planning boundary", "evaluator": "semantic", "rubric": "Pass if rb-create-implementation-plan is selected because adaptive sprint delivery requires an existing plan."}]
+    },
+    {
+      "id": "sprint-bounded-change-negative",
+      "kind": "trigger",
+      "prompt": "Implement this one already agreed validation change with its regression test. There is no multi-step plan to own or revise.",
+      "should_trigger": false,
+      "success": [{"name": "bounded implementation boundary", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected because the request contains one agreed change and excludes plan-state ownership."}]
+    }
+  ]
+}

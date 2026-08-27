@@ -59,6 +59,13 @@
       "prompt": "Implement only the already-selected parser task. Do not update or own the broader plan; return test evidence to the plan owner.",
       "should_trigger": false,
       "success": [{"name": "bounded implementation boundary", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected because plan state and phase exit criteria are explicitly excluded."}]
+    },
+    {
+      "id": "execute-adaptive-sprint-negative",
+      "kind": "trigger",
+      "prompt": "Run repeated sprints against the approved PRD. After each increment, evaluate new evidence, revise the remaining implementation plan when justified, and then choose the next sprint.",
+      "should_trigger": false,
+      "success": [{"name": "adaptive workflow boundary", "evaluator": "semantic", "rubric": "Pass if rb-sprint is selected because the request requires recurring PRD reconciliation and evidence-driven replanning rather than linear execution."}]
     }
   ]
 }

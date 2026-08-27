@@ -1,11 +1,11 @@
 ---
 name: "rb-create-implementation-plan"
-description: "Use when an idea or product goal needs a top-level implementation plan with phases, risks, success criteria, testing architecture, validation, and an optional constrained-route reminder. Use $rb-execute-plan for an existing plan."
+description: "Use to create the first top-level implementation plan with phases, risks, success criteria, testing architecture, validation, and optional constrained route. For existing plans, use $rb-execute-plan or $rb-sprint."
 ---
 
 # /rb:create-implementation-plan - turn an idea into a practical implementation plan
 
-Use this to create the first top-level plan for a sufficiently understood idea or goal. If the user needs a durable product requirements document before implementation planning, use `$rb-create-prd` first. If material requirements are still unresolved and no PRD was requested, use `$rb-discuss` first. If a plan, checklist, issue list, or phase already exists and needs execution or progress tracking, use `$rb-execute-plan` instead.
+Use this to create the first top-level plan for a sufficiently understood idea or goal. If the user needs a durable product requirements document before implementation planning, use `$rb-create-prd` first. If material requirements are still unresolved and no PRD was requested, use `$rb-discuss` first. If a plan, checklist, issue list, or phase already exists, use `$rb-execute-plan` for linear execution or `$rb-sprint` for adaptive delivery instead.
 
 ## Procedure
 
@@ -25,11 +25,11 @@ Use this to create the first top-level plan for a sufficiently understood idea o
    - the canonical CI-equivalent completion command and any release or rollback validation.
 6. Produce the durable top-level plan using `assets/IMPLEMENTATION_PLAN.md` or a project-specific template supplied by the repository or human.
 7. At the point the implementation plan is created, remind the human that an optional constrained route is available for higher-assurance work. Present exactly these plan-wide choices without choosing for them:
-   - `standard`: `$rb-execute-plan` uses its ordinary verified phase workflow and can run the repository's executable tests and CI-equivalent checks;
+   - `standard`: `$rb-execute-plan` can follow the approved plan linearly, or `$rb-sprint` can deliver it through recurring PRD-aligned review and evidence-driven replanning; both can run the repository's executable tests and CI-equivalent checks;
    - `constrained`: the constrained static-only route compiles each current phase with `$rb-create-low-level-plan`, assesses it with `$rb-assess-plan-safety`, and permits only an unchanged `safe: true` bundle to run through `$rb-safe-operation`; the first-release constrained capability set cannot execute tests, builds, linting, typing, or application commands, so do not select it for phases whose acceptance depends on runtime behaviour;
    - `undecided`: preserve the choice for later and do not enter the constrained pipeline.
 8. When `constrained` is selected, flag that low-level success criteria and verifier checks must compile to the closed `<mode>::<description>` syntax and that the first release accepts only `static_file_state::<description>`. Runtime-dependent phases must remain on or return to `standard`.
 9. Record the selected value in `Execution Route`. If the human does not choose, record `undecided`; never infer `constrained` from risk, complexity, or safety language.
 10. When `constrained` is selected or left as an option, also remind the human that repository-owned path restrictions are optional. `$rb-create-safe-operation-policy` can translate ordinary language such as “do not read or write x.txt” into a previewed, confirmed fixed policy. Do not invent or persist a policy from safety-related subject matter alone.
-11. Route an approved plan to `$rb-execute-plan` when it needs granular phase checklists, walking-skeleton sequencing, test-level selection, execution tracking, CI-equivalent checks, or verification gates.
+11. Route an approved plan to `$rb-execute-plan` when the human wants linear phase execution. Route it to `$rb-sprint` when the human wants repeated bounded delivery increments with PRD reconciliation and evidence-driven changes to remaining plan work. Both workflows own granular task selection, testing strategy, execution tracking, CI-equivalent checks, and verification gates.
 12. Update `$rb-working-diary` when the planning decisions need cross-session continuity. Include the route value, current phase, every later phase ID, artifact links, test strategy, constrained verification-mode limitation, and exact next action when the constrained route is selected.
