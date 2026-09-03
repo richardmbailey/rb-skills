@@ -7,12 +7,24 @@ description: "Use to create the first top-level implementation plan with phases,
 
 Use this to create the first top-level plan for a sufficiently understood idea or goal. If the user needs a durable product requirements document before implementation planning, use `$rb-create-prd` first. If material requirements are still unresolved and no PRD was requested, use `$rb-discuss` first. If a plan, checklist, issue list, or phase already exists, use `$rb-execute-plan` for linear execution or `$rb-sprint` for adaptive delivery instead.
 
+## Task Status Convention
+
+Every implementation plan created by this skill must use these exact task states:
+
+- `[ ]` planned
+- `[x]` implemented
+- `[v]` verified
+
+Prefix every actionable implementation task in every phase with one of these states. Set newly planned work to `[ ]`. Do not mark new work `[x]` or `[v]` merely because the plan describes it. Use `[x]` only for work that is already implemented and has supporting evidence. Use `[v]` only for work that has satisfied the selected delivery workflow's verification gate. `$rb-execute-plan` also requires a favourable independent sub-agent review before `[v]`.
+
+Include the three-state legend in the generated plan. Apply the convention when using the bundled template, a project-specific template, or a human-supplied template. Headings, goals, non-goals, explanatory notes, risks, and success criteria do not need task states unless they are also actionable implementation tasks.
+
 ## Procedure
 
 1. Read `CONTEXT.md`, relevant requirements, architecture notes, tests, coverage configuration, CI or pre-commit workflows, and existing plans when present. Note missing context that affects the plan.
 2. Confirm only decisions that materially change scope, users, constraints, compatibility, rollout, validation, testing, or success criteria; ask one question at a time when user input is required.
 3. For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to choose the simplest sufficient control model and define agent and tool boundaries, state, handoffs, failure containment, observability, evaluation, budgets, durability, and the required orchestration test matrix before choosing phases.
-4. Define goals, non-goals, users, requirements, constraints, assumptions, risks, success criteria, implementation phases, rollout or rollback where relevant, and validation.
+4. Define goals, non-goals, users, requirements, constraints, assumptions, risks, success criteria, implementation phases, rollout or rollback where relevant, and validation. Give every phase a goal, dependencies, a status-marked task list, verification checks, and exit criteria.
 5. Define the testing architecture at the top level before implementation details harden:
    - unit or property tests for local logic and invariants;
    - component and integration boundaries such as databases, files, queues, networks, frameworks, solvers, and external services;
@@ -23,7 +35,7 @@ Use this to create the first top-level plan for a sufficiently understood idea o
    - fixture and test-data strategy, including trusted provenance and secret-free representative data;
    - coverage expectations based on changed behaviours and existing project thresholds rather than a new arbitrary percentage;
    - the canonical CI-equivalent completion command and any release or rollback validation.
-6. Produce the durable top-level plan using `assets/IMPLEMENTATION_PLAN.md` or a project-specific template supplied by the repository or human.
+6. Produce the durable top-level plan using `assets/IMPLEMENTATION_PLAN.md` or a project-specific template supplied by the repository or human. Include the three-state legend and prefix every actionable implementation task with `[ ]`, `[x]`, or `[v]`; do not emit an unmarked implementation task list.
 7. At the point the implementation plan is created, remind the human that an optional constrained route is available for higher-assurance work. Present exactly these plan-wide choices without choosing for them:
    - `standard`: `$rb-execute-plan` can follow the approved plan linearly, or `$rb-sprint` can deliver it through recurring PRD-aligned review and evidence-driven replanning; both can run the repository's executable tests and CI-equivalent checks;
    - `constrained`: the constrained static-only route compiles each current phase with `$rb-create-low-level-plan`, assesses it with `$rb-assess-plan-safety`, and permits only an unchanged `safe: true` bundle to run through `$rb-safe-operation`; the first-release constrained capability set cannot execute tests, builds, linting, typing, or application commands, so do not select it for phases whose acceptance depends on runtime behaviour;
@@ -33,3 +45,13 @@ Use this to create the first top-level plan for a sufficiently understood idea o
 10. When `constrained` is selected or left as an option, also remind the human that repository-owned path restrictions are optional. `$rb-create-safe-operation-policy` can translate ordinary language such as “do not read or write x.txt” into a previewed, confirmed fixed policy. Do not invent or persist a policy from safety-related subject matter alone.
 11. Route an approved plan to `$rb-execute-plan` when the human wants linear phase execution. Route it to `$rb-sprint` when the human wants repeated bounded delivery increments with PRD reconciliation and evidence-driven changes to remaining plan work. Both workflows own granular task selection, testing strategy, execution tracking, CI-equivalent checks, and verification gates.
 12. Update `$rb-working-diary` when the planning decisions need cross-session continuity. Include the route value, current phase, every later phase ID, artifact links, test strategy, constrained verification-mode limitation, and exact next action when the constrained route is selected.
+
+## Completion Check
+
+Before handing off a newly created plan, confirm that:
+
+- the plan contains the exact `[ ]` planned, `[x]` implemented, and `[v]` verified legend;
+- every actionable implementation task in every phase has exactly one state marker;
+- every newly planned task is `[ ]`;
+- any carried-forward `[x]` or `[v]` state cites the evidence that justifies it;
+- the plan names the delivery workflow that owns later state transitions and verification.

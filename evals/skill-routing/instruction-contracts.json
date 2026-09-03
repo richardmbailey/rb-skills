@@ -53,6 +53,10 @@
         "`[ ]` planned",
         "`[x]` implemented",
         "`[v]` verified",
+        "Execute under the `standard` route unless the human explicitly specifies another route",
+        "an independent sub-agent returns a favourable verdict for that task",
+        "require a new constrained compile, assessment, and safe-operation cycle",
+        "return that task to `[x]`",
         "Prefer a walking-skeleton approach",
         "complete the phase-level integration, CI-equivalent, and review+fix gates below",
         "use `$rb-multi-agent-systems`",
@@ -264,6 +268,11 @@
       "path": "rb-create-implementation-plan/SKILL.md",
       "required": [
         "Produce the durable top-level plan",
+        "Every implementation plan created by this skill must use these exact task states",
+        "`[ ]` planned",
+        "`[x]` implemented",
+        "`[v]` verified",
+        "every actionable implementation task in every phase has exactly one state marker",
         "If the user needs a durable product requirements document before implementation planning, use `$rb-create-prd` first.",
         "assets/IMPLEMENTATION_PLAN.md",
         "Route an approved plan to `$rb-execute-plan`",
@@ -302,6 +311,10 @@
     {
       "path": "rb-create-implementation-plan/assets/IMPLEMENTATION_PLAN.md",
       "required": [
+        "`[ ]` planned",
+        "`[x]` implemented",
+        "`[v]` verified",
+        "Prefix every actionable implementation task",
         "## Testing Strategy",
         "### Unit and Property Tests",
         "### Component and Integration Tests",

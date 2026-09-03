@@ -1,6 +1,6 @@
 ---
 name: "rb-execute-plan"
-description: "Use to execute an existing plan linearly with task status, behavioural tests, CI-equivalent checks, and verified phases. Use $rb-sprint for recurring PRD alignment and replanning."
+description: "Use for linear execution of existing plans under standard conditions by default, with automated behavioural tests, independent sub-agent review, CI-equivalent checks, and verified tasks. Use $rb-sprint for recurring PRD alignment or replanning."
 ---
 
 # RB Execute Plan
@@ -15,6 +15,7 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
 
 ## Core Defaults
 
+- Execute under the `standard` route unless the human explicitly specifies another route in the current request or the approved plan. Treat a missing or `undecided` route as `standard`. Never infer `constrained` from risk, complexity, or safety language.
 - Prefer a walking-skeleton approach: build the thinnest runnable vertical slice first, then deepen it.
 - Prefer vertical slices over horizontal/layer-first phases.
 - Keep plan orchestration separate from task implementation. This skill selects tasks, supplies their scope and checks, records returned evidence, and maintains phase state; the selected implementation skill owns the detailed edit, test, and task-level review loop.
@@ -36,7 +37,7 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
 
 ## Optional Constrained Route
 
-- Read the plan's `Execution Route` before phase work. A missing route behaves as `standard` for existing plans; `undecided` requires one bounded human choice before product execution; never select `constrained` implicitly.
+- Read the plan's `Execution Route` before phase work. Use `standard` when the route is missing or `undecided`. Use another route only when the human explicitly specifies it in the current request or the approved plan; never select `constrained` implicitly.
 - Keep the ordinary procedure in this skill for `standard` plans.
 - The first-release constrained route cannot execute unit tests, integration tests, builds, linting, type checking, application commands, or other behavioural checks because `exec_argv` and `check` are unavailable. Do not choose or continue the constrained route for a phase whose acceptance depends on executing code. Use `standard`, narrow the phase to criteria fully verifiable by static file-state inspection, or stop until reviewed command capability exists.
 - File inspection, hashes, and agent-reported reasoning do not constitute behavioural test evidence. A constrained phase must not be marked `[v]` for runtime behaviour based only on source inspection.
@@ -47,9 +48,10 @@ While executing a plan, use `$rb-implement-with-tests` for each selected ordinar
   2. invoke `$rb-assess-plan-safety` in a fresh context;
   3. stop for human intervention on `safe: false`; a rejected artifact cannot be relabelled;
   4. hand only an unchanged exact `safe: true` bundle to `$rb-safe-operation`;
-  5. accept phase completion only when `$rb-safe-operation` reaches `verified` from coordinator-observed product state plus context-separated agent verifier evidence, and only when every criterion is typed `static_file_state` and genuinely static under the supported capability set; on the current host the separation is instruction-only, not host-proven independence.
+  5. accept phase completion only when `$rb-safe-operation` reaches `verified` from coordinator-observed product state plus context-separated agent verifier evidence, every task receives a favourable review verdict from an independent sub-agent, and every criterion is typed `static_file_state` and genuinely static under the supported capability set; on the current host the separation is instruction-only, not host-proven independence.
+- After the coordinator reaches `verified`, record each implemented task as `[x]` in the external diary overlay pending independent review. If the reviewer returns an adverse verdict, keep the affected tasks at `[x]`, checkpoint the findings and evidence, and require a new constrained compile, assessment, and safe-operation cycle for any corrective mutation. Do not route a constrained finding through the standard implementation workflow. Record each task as `[v]` only after it has a favourable independent sub-agent verdict.
 - Stop after the current constrained phase. Use the coordinator stdout handoff for route, run/phase identity, artifact hashes and locations, lifecycle state, event head, verification modes, every remaining phase ID, enforcement limitations, and exact next action. Write that checkpoint to the canonical external `${CODEX_HOME:-$HOME/.codex}/diary/` with `$rb-working-diary`; this is control-plane continuity state. Never mutate a project-local diary or progress file after verification unless it was an assessed product operation.
-- On the constrained route, treat the external diary checkpoint as the authoritative phase-status overlay: record the completed phase as `[v]` only after the coordinator reaches `verified`, while leaving the repository plan unchanged. The next phase is the first ID in the verified handoff's ordered `remaining_phase_ids`, cross-checked against the unchanged authoritative plan. Do not infer constrained progress from stale repository checkboxes or make an unassessed post-verification checklist edit.
+- On the constrained route, treat the external diary checkpoint as the authoritative phase-status overlay. Record the completed phase as `[v]` only after every task in that overlay is `[v]`. Leave the repository plan unchanged. The next phase is the first ID in the verified handoff's ordered `remaining_phase_ids`, cross-checked against the unchanged authoritative plan. Do not infer constrained progress from stale repository checkboxes or make an unassessed post-verification checklist edit.
 - Leaving the constrained pipeline requires an explicit human choice recorded by `$rb-working-diary` in the canonical external `${CODEX_HOME:-$HOME/.codex}/diary/` checkpoint, including the rejected run/bundle hash, `leave_constrained_pipeline`, the resulting route, and the exact next action. This first-release record is instruction-only continuity evidence, not a runtime-authenticated or resumable `HumanIntervention` artifact. It does not make a rejected assessment executable; subsequent standard execution is a separately authorised workflow choice.
 
 ## Phase Checklist Convention
@@ -64,13 +66,15 @@ Rules:
 
 1. Mark a task `[x]` only after completing the implementation work.
 2. After all tasks in the phase are `[x]`, run a second verification pass over every task.
-3. Mark a standard-route task `[v]` only after confirming its behaviour with the appropriate automated test level and recording the evidence.
-4. If automated testing is genuinely infeasible, document why, define the best executable or manual check, state the residual regression risk, and obtain explicit acceptance before marking `[v]`.
-5. A lint, import, build, smoke check, source inspection, or successful command does not replace behavioural coverage when a plausible regression could otherwise escape.
-6. Do not declare the phase complete until every task is `[v]`, the phase-level integration and CI-equivalent checks pass, and the phase completion review+fix cycle is done.
-7. For multi-phase work, create a separate implementation file for each phase.
-8. Keep the main implementation plan as an overview; put the granular task list, verification notes, and phase-specific test plan in the phase file.
-9. Granular tasks should be small enough that completion and verification are unambiguous.
+3. Mark a task `[v]` only after the required verification evidence is recorded and an independent sub-agent returns a favourable verdict for that task. The reviewer must not have implemented the task.
+4. For a standard-route task, the required verification evidence is confirmation of its behaviour at the appropriate automated test level.
+5. If automated testing is genuinely infeasible, document why, define the best executable or manual check, state the residual regression risk, and obtain explicit acceptance before requesting independent review or marking `[v]`.
+6. A lint, import, build, smoke check, source inspection, or successful command does not replace behavioural coverage when a plausible regression could otherwise escape.
+7. If an independent reviewer is unavailable, returns an adverse verdict, or cannot assess the evidence, keep the task at `[x]` and report the blocker. Do not substitute self-review for the independent verdict.
+8. Do not declare the phase complete until every task is `[v]`, the phase-level integration and CI-equivalent checks pass, and the phase completion review+fix cycle is done.
+9. For multi-phase work, create a separate implementation file for each phase.
+10. Keep the main implementation plan as an overview; put the granular task list, verification notes, and phase-specific test plan in the phase file.
+11. Granular tasks should be small enough that completion and verification are unambiguous.
 
 ## Phase Planning Requirements
 
@@ -111,22 +115,27 @@ When executing a phase:
 3. Supply the selected workflow with the task's goal, scope, non-scope, relevant context, changed behaviours, likely failure modes, required test levels, coverage expectations, and CI-equivalent checks. Ask it to implement only that selected task and return its evidence.
 4. Update the task from `[ ]` to `[x]` only after the implementation workflow reports that the requested change is complete.
 5. Record focused automated-test evidence, negative or boundary coverage, and checks not run, but leave the completed task `[x]` while other phase tasks remain `[ ]`.
-6. When every task is `[x]`, run a second verification pass over every task. Confirm or rerun the recorded automated tests, add missing integration or contract coverage, record the evidence, and then update each verified task from `[x]` to `[v]`.
-7. Treat flaky tests as defects. Do not rerun until green, skip, quarantine, weaken assertions, or lower thresholds merely to complete the phase; preserve failure seeds, ordering, timing, environment, and outputs for diagnosis.
-8. Report any task that cannot be implemented or verified, including the diagnostic, retained status, and next fix.
-9. After every task is `[v]`, complete the phase-level integration, CI-equivalent, and review+fix gates below and record their outcome in the phase notes.
+6. When every task is `[x]`, run a second verification pass over every task. Confirm or rerun the recorded automated tests, add missing integration or contract coverage, and record the evidence. Keep each task at `[x]` pending independent review.
+7. Spawn a fresh independent sub-agent that did not implement any reviewed task. Give it the task requirements, scoped diff or changed files, test changes, verification evidence, and known limitations. Require an explicit favourable or adverse verdict for each task, with actionable findings and evidence.
+8. Update a task from `[x]` to `[v]` only after its verification evidence is complete and the independent sub-agent returns a favourable verdict for that task. One reviewer may assess several tasks, but it must return a separate verdict for each task.
+9. On the standard route, if the reviewer returns an adverse verdict, route in-scope findings back through the task's implementation workflow, rerun affected checks, and request another independent review. On the constrained route, use the new constrained-cycle rule above. Keep the task at `[x]` until the verdict is favourable. If review cannot run, keep the task at `[x]` and report the blocker.
+10. Treat flaky tests as defects. Do not rerun until green, skip, quarantine, weaken assertions, or lower thresholds merely to complete the phase; preserve failure seeds, ordering, timing, environment, and outputs for diagnosis.
+11. Report any task that cannot be implemented or verified, including the diagnostic, retained status, and next fix.
+12. After every task is `[v]`, complete the phase-level integration, CI-equivalent, and review+fix gates below and record their outcome in the phase notes.
 
 ## Phase Completion Review
 
 Before marking a standard-route phase complete:
 
 - Treat this as a phase-level integration review in addition to the task-level review performed by the implementation skill.
+- This phase-level review does not replace the independent sub-agent verdict required before each task can move from `[x]` to `[v]`.
 - Run the closest available repository CI-equivalent command: configured tests, linting, formatting, typing, build/package, pre-commit, migration, and critical workflow checks. If the full suite is impractical, run the largest relevant affordable subset and record exactly what was omitted and why.
 - Review the implemented change for bugs, regressions, missing or wrongly levelled tests, architecture drift, hidden fallback behaviour, test weakening, flaky tests, coverage gaps, documentation gaps, and unresolved plan assumptions.
 - Confirm that important component boundaries and user workflows are tested, not merely that isolated units pass.
 - Use `$rb-review-pr-or-diff` for substantial, high-risk, or cross-cutting diffs; for small phases, perform the same review discipline inline.
 - Fix actionable findings before completion whenever they are in scope.
 - Rerun focused, failure-path, integration, coverage, and CI-equivalent checks affected by the fixes.
+- If a phase-level fix changes a task that is already `[v]`, return that task to `[x]`, rerun its affected verification evidence, and obtain a new favourable verdict from an independent sub-agent before restoring `[v]`.
 - Record any deferred finding, skipped check, or accepted residual risk in the phase notes and final output.
 
 ## Review Requirements
@@ -152,6 +161,7 @@ When reviewing an existing implementation plan:
 - selected task-level implementation workflow and evidence returned;
 - changed behaviours, failure modes, selected test levels, and coverage strategy;
 - task status updates using `[ ]`, `[x]`, and `[v]` when executing a phase;
+- independent sub-agent verdicts for each task, including findings, fixes, and repeated-review outcomes;
 - focused, integration, contract, end-to-end, coverage, and CI-equivalent evidence as applicable;
 - review+fix findings, fixes applied, checks rerun, and accepted residual risks;
 - stack/dependency assumptions and which are existing vs proposed;

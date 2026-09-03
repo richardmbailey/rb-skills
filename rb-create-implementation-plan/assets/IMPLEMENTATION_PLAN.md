@@ -34,7 +34,32 @@ The first-release constrained runtime accepts only `static_file_state::<descript
 
 ## Proposed Approach
 
+## Task Status Convention
+
+- `[ ]` planned
+- `[x]` implemented
+- `[v]` verified
+
+Prefix every actionable implementation task in every phase with exactly one state marker. Set newly planned work to `[ ]`. Use `[x]` only when implementation evidence already exists. Use `[v]` only when the selected delivery workflow's verification gate has passed. For linear execution with `$rb-execute-plan`, `[v]` also requires a favourable independent sub-agent review.
+
 ## Implementation Phases
+
+Use this structure for every phase:
+
+### Phase N: Phase Name
+
+**Goal:**
+
+**Dependencies:**
+
+**Tasks:**
+
+- [ ] First actionable implementation task
+- [ ] Next actionable implementation task
+
+**Verification:**
+
+**Exit criteria:**
 
 ## Testing Strategy
 

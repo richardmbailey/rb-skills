@@ -154,8 +154,8 @@ Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun u
 | `$rb-continue-project` | Resume a mature project from instructions, diary, handoff, Git state, and preserved testing context. |
 | `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
 | `$rb-create-prd` | Create, revise, or review product requirements, including users, outcomes, scope, success measures, risks, dependencies, and unresolved decisions. |
-| `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan, testing architecture, risks, success criteria, and route choice. |
-| `$rb-execute-plan` | An existing multi-step plan should be followed linearly through phase sequencing, task status, test coverage, CI-equivalent checks, and verification. |
+| `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan with `[ ]`, `[x]`, and `[v]` task states, testing architecture, risks, success criteria, and route choice. |
+| `$rb-execute-plan` | An existing multi-step plan should be followed linearly under standard conditions by default, with `[ ]`, `[x]`, and `[v]` task status, test coverage, independent sub-agent review before `[v]`, CI-equivalent checks, and verification. |
 | `$rb-sprint` | An existing plan needs bounded PRD-aligned sprints; it preserves the plan by default and permits only the smallest authorised delta that passes the evidence gate. |
 | `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
 | `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
@@ -263,6 +263,8 @@ The agent never selects `constrained` automatically.
 Use the standard route for ordinary software behaviour, scientific code, refactors, migrations, integrations, and any phase requiring tests, builds, linting, type checking, application startup, browser automation, benchmarks, network activity, or runtime observation.
 
 In practical terms, runtime-dependent phases must use the standard route in the first release.
+
+`$rb-execute-plan` defaults to `standard` when the route is missing or `undecided`. It uses another route only when the human explicitly specifies that route in the current request or the approved plan.
 
 ### Constrained Static-Only Route
 

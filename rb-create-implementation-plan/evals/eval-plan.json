@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "skill": "rb-create-implementation-plan",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "plan-new-feature-status-system",
+      "kind": "outcome",
+      "prompt": "Create the first implementation plan for this sufficiently understood feature, including three delivery phases.",
+      "should_trigger": true,
+      "success": [{"name": "all phase tasks use three-state system", "evaluator": "semantic", "rubric": "Pass only if the plan includes the exact [ ] planned, [x] implemented, and [v] verified legend; every actionable implementation task in every phase has exactly one marker; and every new task starts [ ]."}]
+    },
+    {
+      "id": "plan-human-template-status-system",
+      "kind": "outcome",
+      "prompt": "Create the implementation plan using our supplied project template. Its phase sections currently use ordinary bullet lists.",
+      "should_trigger": true,
+      "success": [{"name": "human template gains status system", "evaluator": "semantic", "rubric": "Pass only if the supplied structure is preserved where compatible, the three-state legend is added, and every actionable phase task is converted to exactly one [ ], [x], or [v] marker."}]
+    },
+    {
+      "id": "plan-single-phase-status-system",
+      "kind": "outcome",
+      "prompt": "Create a top-level implementation plan with one phase for this small but multi-task migration.",
+      "should_trigger": true,
+      "success": [{"name": "single phase still uses status markers", "evaluator": "semantic", "rubric": "Pass only if the plan includes all three state definitions and every actionable migration task starts [ ]; a one-phase plan is not exempt."}]
+    },
+    {
+      "id": "plan-no-premature-completion",
+      "kind": "outcome",
+      "prompt": "Write the implementation plan and mark the straightforward tasks implemented or verified because their solution is obvious.",
+      "should_trigger": true,
+      "success": [{"name": "new work remains planned", "evaluator": "semantic", "rubric": "Pass only if new work is marked [ ] rather than [x] or [v], and the response explains that a plan description is not implementation or verification evidence."}]
+    },
+    {
+      "id": "plan-carried-forward-evidence",
+      "kind": "outcome",
+      "prompt": "Create the first durable plan around this partially implemented prototype. Some work may already exist.",
+      "should_trigger": true,
+      "success": [{"name": "existing status requires evidence", "evaluator": "semantic", "rubric": "Pass only if every task has one of the three markers, new or uncertain work is [ ], and any [x] or [v] carried forward from existing work cites supporting implementation or verification evidence."}]
+    },
+    {
+      "id": "plan-explanatory-sections-not-checkboxes",
+      "kind": "outcome",
+      "prompt": "Create a plan with goals, non-goals, risks, success criteria, and phased implementation tasks.",
+      "should_trigger": true,
+      "success": [{"name": "status markers apply to tasks", "evaluator": "semantic", "rubric": "Pass only if every actionable implementation task uses the three-state system without mechanically turning explanatory goals, non-goals, risks, or success criteria into task checkboxes unless they are genuinely actionable tasks."}]
+    },
+    {
+      "id": "plan-linear-verification-meaning",
+      "kind": "outcome",
+      "prompt": "Create the plan for later linear execution with rb-execute-plan and define what its task states mean.",
+      "should_trigger": true,
+      "success": [{"name": "linear verified state names independent gate", "evaluator": "semantic", "rubric": "Pass only if [v] is reserved for the delivery workflow's passed verification gate and the plan states that rb-execute-plan additionally requires favourable independent sub-agent review before [v]."}]
+    },
+    {
+      "id": "plan-constrained-status-system",
+      "kind": "outcome",
+      "prompt": "Create a statically verifiable implementation plan and present constrained as an optional route.",
+      "should_trigger": true,
+      "success": [{"name": "constrained option retains task states", "evaluator": "semantic", "rubric": "Pass only if every actionable task still uses [ ], [x], or [v]; all new tasks start [ ]; and the constrained-route explanation does not replace the task-status convention."}]
+    },
+    {
+      "id": "existing-plan-negative",
+      "kind": "trigger",
+      "prompt": "Continue this existing approved plan, implement the next unchecked task, and update its status.",
+      "should_trigger": false,
+      "success": [{"name": "existing plan routes to execution", "evaluator": "semantic", "rubric": "Pass if rb-execute-plan is selected because the request is to execute and update an existing plan rather than create its first top-level implementation plan."}]
+    },
+    {
+      "id": "unresolved-requirements-negative",
+      "kind": "trigger",
+      "prompt": "We have not decided who can access the feature, what data it may retain, or what failure behaviour users should see. Create an implementation plan now.",
+      "should_trigger": false,
+      "success": [{"name": "material ambiguity routes to discussion", "evaluator": "semantic", "rubric": "Pass if rb-discuss is selected before implementation planning because unresolved permissions, data rules, and failure behaviour would materially change the plan."}]
+    }
+  ]
+}
