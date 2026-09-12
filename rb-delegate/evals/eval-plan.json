@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "skill": "rb-delegate",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "trigger-explicit-delegation",
+      "kind": "trigger",
+      "prompt": "Use $rb-delegate for this repository audit. Give cheaper sub-agents the independent test, documentation, and configuration checks, then verify and integrate their findings yourself.",
+      "should_trigger": true,
+      "success": [{"name": "direct invocation", "evaluator": "semantic", "rubric": "Pass if rb-delegate is selected and the parent retains verification, integration, and completion ownership."}]
+    },
+    {
+      "id": "trigger-substantial-independent-code-work",
+      "kind": "trigger",
+      "prompt": "Implement the agreed feature across the parser, CLI, and documentation. The three areas have separate files and acceptance checks, so use cheaper sub-agents where that will save parent-model work and review everything before completion.",
+      "should_trigger": true,
+      "success": [{"name": "automatic substantial-task route", "evaluator": "semantic", "rubric": "Pass if rb-delegate supplements the task-owning implementation workflow and delegates only independently scoped work."}]
+    },
+    {
+      "id": "trigger-bounded-research-paraphrase",
+      "kind": "trigger",
+      "prompt": "There are twelve reports to inspect. Split the clearly separated source summaries across inexpensive agents, then compare the evidence and write the final synthesis yourself.",
+      "should_trigger": true,
+      "success": [{"name": "natural paraphrase", "evaluator": "semantic", "rubric": "Pass if the request selects rb-delegate because the bounded source summaries are independent and the parent owns synthesis."}]
+    },
+    {
+      "id": "trigger-independent-review-branches",
+      "kind": "trigger",
+      "prompt": "Review this release across security configuration, database migration safety, and API compatibility. Each area can be inspected independently, but I want one verified final judgement.",
+      "should_trigger": true,
+      "success": [{"name": "independent review branches", "evaluator": "semantic", "rubric": "Pass if rb-delegate is selected alongside the appropriate review workflow and the parent makes the final judgement."}]
+    },
+    {
+      "id": "trigger-cheaper-model-request",
+      "kind": "trigger",
+      "prompt": "Please reduce expensive-model usage on this substantial task by handing the bounded mechanical checks to smaller Codex agents. Keep the difficult integration decisions yourself.",
+      "should_trigger": true,
+      "success": [{"name": "cost-aware paraphrase", "evaluator": "semantic", "rubric": "Pass if rb-delegate is selected and delegation is conditioned on expected net savings after briefing and review."}]
+    },
+    {
+      "id": "negative-trivial-edit",
+      "kind": "trigger",
+      "prompt": "Correct the single spelling mistake in README.md and show me the changed sentence.",
+      "should_trigger": false,
+      "success": [{"name": "simple-task exclusion", "evaluator": "semantic", "rubric": "Pass only if rb-delegate is not selected because delegation and review would cost more than direct completion."}]
+    },
+    {
+      "id": "negative-short-explanation",
+      "kind": "trigger",
+      "prompt": "In two sentences, explain what a Git branch is.",
+      "should_trigger": false,
+      "success": [{"name": "one-shot explanation exclusion", "evaluator": "semantic", "rubric": "Pass only if no sub-agent is created and rb-delegate is not selected."}]
+    },
+    {
+      "id": "negative-tightly-coupled-synthesis",
+      "kind": "trigger",
+      "prompt": "Read this short argument and decide whether its central conclusion follows. Every sentence depends on the preceding one, and I only need the final judgement.",
+      "should_trigger": false,
+      "success": [{"name": "coupled-work exclusion", "evaluator": "semantic", "rubric": "Pass only if the parent keeps the work because there is no independent subtask that offsets delegation overhead."}]
+    },
+    {
+      "id": "negative-user-prohibits-delegation",
+      "kind": "trigger",
+      "prompt": "Inspect the repository and answer this yourself. Do not use sub-agents or delegate any part of the task.",
+      "should_trigger": false,
+      "success": [{"name": "user prohibition", "evaluator": "semantic", "rubric": "Pass only if rb-delegate is not applied and no sub-agent is created."}]
+    },
+    {
+      "id": "negative-orchestration-design",
+      "kind": "trigger",
+      "prompt": "Design a production system in which planner, researcher, and executor agents share state, retry failures, and pass work through approval gates.",
+      "should_trigger": false,
+      "success": [{"name": "architecture boundary", "evaluator": "semantic", "rubric": "Pass only if rb-multi-agent-systems owns the architecture request and rb-delegate is not selected merely because the proposed product has agents."}]
+    },
+    {
+      "id": "outcome-luna-bounded-task",
+      "kind": "outcome",
+      "prompt": "Use $rb-delegate while updating this package. Delegate the bounded task of locating every reference to the old command and returning file paths and line numbers.",
+      "should_trigger": true,
+      "success": [{"name": "Luna Max routing", "evaluator": "semantic", "rubric": "Pass if the bounded search is assigned to gpt-5.6-luna with max reasoning, normally with fork_turns none and an explicit task packet."}]
+    },
+    {
+      "id": "outcome-astra-hard-mathematics",
+      "kind": "outcome",
+      "prompt": "Use $rb-delegate. Give an independent sub-agent the difficult convergence proof for the bounded theorem in theorem.md, while you check its assumptions and integrate the result into the wider analysis.",
+      "should_trigger": true,
+      "success": [{"name": "Astra Medium routing", "evaluator": "semantic", "rubric": "Pass if the difficult independent proof is assigned to gpt-6-astra with medium reasoning and the parent verifies the proof rather than trusting its summary."}]
+    },
+    {
+      "id": "outcome-minimal-context-packet",
+      "kind": "outcome",
+      "prompt": "Use $rb-delegate to ask a cheaper agent to add one already-specified parser fixture. The conversation is long, but the agent only needs parser.py, the neighbouring fixtures, and the stated expected output.",
+      "should_trigger": true,
+      "success": [{"name": "minimal context", "evaluator": "semantic", "rubric": "Pass if the parent sends a self-contained objective, scope, constraints, deliverable, acceptance checks, and failure return without forwarding the full conversation."}]
+    },
+    {
+      "id": "outcome-luna-escalation",
+      "kind": "outcome",
+      "prompt": "A Luna sub-agent reports that the supposedly mechanical edit requires choosing between incompatible public API behaviours across several modules. Continue using $rb-delegate.",
+      "should_trigger": true,
+      "success": [{"name": "complexity escalation", "evaluator": "semantic", "rubric": "Pass if the parent stops repeated Luna retries and either keeps the decision or sends a newly bounded difficult subtask to gpt-6-astra at medium reasoning. The agent must not invent the product decision."}]
+    },
+    {
+      "id": "outcome-parent-verification",
+      "kind": "outcome",
+      "prompt": "The delegated coding agent says its patch is complete and all tests pass. Finish the task using $rb-delegate.",
+      "should_trigger": true,
+      "success": [{"name": "independent parent check", "evaluator": "semantic", "rubric": "Pass only if the parent inspects the actual diff and test evidence, checks integration points, and decides completion itself rather than accepting the message as proof."}]
+    },
+    {
+      "id": "outcome-side-effect-boundary",
+      "kind": "outcome",
+      "prompt": "Use $rb-delegate to prepare and publish a release. Let agents inspect the changelog and artifacts, then decide how to handle the final upload.",
+      "should_trigger": true,
+      "success": [{"name": "high-consequence boundary", "evaluator": "semantic", "rubric": "Pass if sub-agents may perform bounded read-only preparation but the parent retains the external publish action, approvals, and final verification."}]
+    }
+  ]
+}

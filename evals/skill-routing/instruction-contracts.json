@@ -171,6 +171,28 @@
       "max_lines": 500
     },
     {
+      "path": "rb-delegate/SKILL.md",
+      "required": [
+        "substantial Codex tasks",
+        "supplements the skill that owns the task",
+        "gpt-5.6-luna",
+        "reasoning_effort: max",
+        "gpt-6-astra",
+        "reasoning_effort: medium",
+        "fork_turns: \"none\"",
+        "not to create further sub-agents",
+        "The parent may mark the task complete only after",
+        "Do not claim a saving merely because a smaller model was used",
+        "use `$rb-multi-agent-systems`"
+      ],
+      "forbidden": [
+        "Use `fork_turns: \"all\"` for routine bounded delegation.",
+        "automatically trust"
+      ],
+      "max_occurrences": {"## Selection boundary": 1, "## Completion": 1},
+      "max_lines": 500
+    },
+    {
       "path": "rb-multi-agent-systems/SKILL.md",
       "required": [
         "deterministic tool vs embedded capability vs split agent vs orchestration layer",

@@ -108,6 +108,21 @@ environment is an unrun check, not a pass.
   Logging and tracing provide visibility and evidence; they do not enforce
   safety.
 
+## Cost-Aware Sub-Agent Delegation
+
+- For a substantial Codex task with bounded, independently verifiable subtasks,
+  use `$rb-delegate` alongside the skill that owns the task.
+- Use `gpt-5.6-luna` with maximum reasoning for well-defined discrete work that
+  needs limited judgement. Use `gpt-6-astra` with medium reasoning for an
+  independently scoped subtask that needs difficult reasoning or synthesis.
+- Keep simple work, tightly coupled work, final synthesis, cross-cutting
+  decisions, integration, and completion judgement with the parent agent.
+- Give each sub-agent the minimum self-contained context. The parent must inspect
+  the returned artifact and evidence, run or review the relevant checks, and
+  decide whether the user's task is complete.
+- Do not use `$rb-delegate` to design or review a multi-agent product. Use
+  `$rb-multi-agent-systems` for that architecture work.
+
 ## Local State And Publishing
 
 - Preserve unrelated working-tree changes and stage only the intended scope.

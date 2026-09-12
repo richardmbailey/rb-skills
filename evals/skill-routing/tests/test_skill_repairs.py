@@ -115,6 +115,44 @@ class ManualInvocationMetadataTests(unittest.TestCase):
             result = self.run_validator(root)
             self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_aggregate_description_budget_allows_one_more_40_word_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            description = " ".join(["word"] * 40)
+            for index in range(27):
+                name = f"rb-auto-{index}"
+                skill = root / name
+                (skill / "agents").mkdir(parents=True)
+                (skill / "SKILL.md").write_text(
+                    "---\n"
+                    f"name: {name}\n"
+                    f"description: {description}\n"
+                    "---\n\n# Automatic\n",
+                    encoding="utf-8",
+                )
+                (skill / "agents/openai.yaml").write_text(
+                    "interface:\n"
+                    "  display_name: \"Automatic\"\n"
+                    "  short_description: \"Run the automatic metadata test workflow\"\n"
+                    f"  default_prompt: \"Use ${name} for this test.\"\n",
+                    encoding="utf-8",
+                )
+
+            result = self.run_validator(root)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            first_skill = root / "rb-auto-0" / "SKILL.md"
+            first_skill.write_text(
+                first_skill.read_text(encoding="utf-8").replace(
+                    f"description: {description}\n",
+                    f"description: {description} extra\n",
+                ),
+                encoding="utf-8",
+            )
+            result = self.run_validator(root)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("exceed the 1080-word budget", result.stderr)
+
 
 class InstructionBoundaryTests(unittest.TestCase):
     def read(self, relative_path: str) -> str:

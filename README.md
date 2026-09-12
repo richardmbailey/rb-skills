@@ -6,6 +6,7 @@ The skills are intended for practical coding, modelling, AI/ML, research, review
 
 ## Latest changes
 
+- Added `$rb-delegate` for cost-aware Codex execution: delegate bounded, independently verifiable work to cheaper sub-agents while the parent retains integration, verification, and completion judgement.
 - Added `$rb-sprint` for adaptive implementation: reconcile each bounded delivery increment with the authoritative PRD, preserve the current plan by default, and permit only the smallest evidence-backed plan change that passes its fail-closed gate. `$rb-execute-plan` remains the linear plan-execution workflow.
 - Added `$rb-language` for ordinary drafting and light prose editing when no specialist skill owns the task. `$rb-revise-ai-draft` retains responsibility for substantive revision of supplied AI-like prose.
 - Added `$rb-create-prd` for creating, revising, and reviewing decision-ready product requirements before implementation planning.
@@ -146,6 +147,20 @@ The skills do not impose a universal coverage percentage. They preserve existing
 
 Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun until green merely to complete a task. Intermittent failures are defects to diagnose.
 
+## Cost-Aware Delegation
+
+`$rb-delegate` may be selected automatically alongside the skill that owns a substantial Codex task. It applies only when a subtask has a bounded objective and context, produces an independently verifiable result, and is expected to save more work than briefing and review will add. Users may also invoke it directly in Codex.
+
+The default model routing is:
+
+| Subtask | Model |
+| --- | --- |
+| Well-defined, discrete work with limited judgement | `gpt-5.6-luna` with maximum reasoning |
+| Independently scoped difficult mathematics, synthesis, coding, review, or investigation | `gpt-6-astra` with medium reasoning |
+| Final synthesis, cross-cutting decisions, integration, and completion judgement | Parent agent |
+
+The parent sends the minimum self-contained context, checks the returned artifact and evidence, runs or reviews the relevant verification, and alone decides whether the user's task is complete. The skill does not apply to simple work whose delegation overhead would exceed its benefit. It is Codex-only and does not design multi-agent products; use `$rb-multi-agent-systems` for orchestration architecture.
+
 ## Skill Reference
 
 | Skill | Use when |
@@ -163,6 +178,7 @@ Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun u
 | `$rb-review-pr-or-diff` | A diff or pull request needs findings-first review, including wrongly levelled, missing, flaky, or weakened tests. |
 | `$rb-explain-codebase` | Neutral orientation to structure, control flow, data flow, dependencies, tests, and change hotspots. |
 | `$rb-architecture-review` | Structural critique of boundaries, coupling, duplication, hidden assumptions, test seams, and refactoring opportunities. |
+| `$rb-delegate` | **Codex-only.** Reduce expensive parent-model work on substantial tasks by delegating bounded, independently verifiable subtasks while retaining parent verification and completion ownership. |
 | `$rb-multi-agent-systems` | Design or review multiple agents or orchestration, including deterministic runner control and a transition, denial, contract, recovery, end-to-end, and held-out test matrix. |
 | `$rb-language` | Draft or lightly edit ordinary user-facing prose when no specialist skill owns the task. |
 | `$rb-simplify-language` | Only when explicitly invoked, reduce semantic ambiguity in supplied text; intended primarily for agent-facing control text but available for any text. |

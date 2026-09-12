@@ -28,13 +28,29 @@
         ".rb-safe-operation-policy.json",
         "schema-3",
         "rb-create-prd",
-        "rb-sprint"
+        "rb-sprint",
+        "## Cost-Aware Delegation",
+        "`gpt-5.6-luna` with maximum reasoning",
+        "`gpt-6-astra` with medium reasoning",
+        "use `$rb-multi-agent-systems` for orchestration architecture"
       ],
       "forbidden": [
         "implement changes with focused tests and checks",
         "Then let the agent route through `$rb-discuss` and `$rb-create-implementation-plan`",
         "implements them in a roughly deterministic manner"
       ]
+    },
+    {
+      "path": "AGENTS.md",
+      "required": [
+        "## Cost-Aware Sub-Agent Delegation",
+        "use `$rb-delegate` alongside the skill that owns the task",
+        "`gpt-5.6-luna` with maximum reasoning",
+        "`gpt-6-astra` with medium reasoning",
+        "decide whether the user's task is complete",
+        "`$rb-multi-agent-systems` for that architecture work"
+      ],
+      "forbidden": []
     },
     {
       "path": "docs/safe-operation-process.html",
@@ -276,6 +292,7 @@
     {"skill": "rb-tdd-scientific-code", "required": ["test levels", "invariants", "CI-equivalent"]},
     {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
     {"skill": "rb-review-pr-or-diff", "required": ["wrongly levelled", "flaky", "CI"]},
+    {"skill": "rb-delegate", "required": ["substantial Codex tasks", "bounded", "independently verifiable", "completion judgement"]},
     {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
     {"skill": "rb-language", "required": ["ordinary user-facing prose", "draft or lightly edit", "more specific skill", "substantive revision", "$rb-revise-ai-draft"]},
     {"skill": "rb-revise-ai-draft", "required": ["substantive revision", "supplied AI-like draft", "preserve its meaning", "detector evasion", "$rb-language"]},
@@ -289,6 +306,19 @@
     {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
   ],
   "json_case_contracts": [
+    {
+      "path": "evals/skill-routing/cases/delegation.json",
+      "required_ids": [
+        "delegation-direct-invocation",
+        "delegation-cost-aware-paraphrase",
+        "delegation-bounded-review-branches",
+        "delegation-simple-task-negative",
+        "delegation-user-opt-out",
+        "delegation-architecture-negative"
+      ],
+      "required_substrings": ["$rb-delegate", "cheaper Codex sub-agents", "Do not use any sub-agents", "multi-agent orchestration layer"],
+      "forbidden_substrings": []
+    },
     {
       "path": "evals/skill-routing/cases/language.json",
       "required_ids": [
@@ -343,6 +373,7 @@
   "behavioural_eval_contracts": [
     {"path": "rb-diagnose/evals/eval-plan.json", "skill": "rb-diagnose", "minimum_cases": 3},
     {"path": "rb-architecture-review/evals/eval-plan.json", "skill": "rb-architecture-review", "minimum_cases": 3},
+    {"path": "rb-delegate/evals/eval-plan.json", "skill": "rb-delegate", "minimum_cases": 16},
     {"path": "rb-multi-agent-systems/evals/eval-plan.json", "skill": "rb-multi-agent-systems", "minimum_cases": 3},
     {"path": "rb-language/evals/eval-plan.json", "skill": "rb-language", "minimum_cases": 16},
     {"path": "rb-revise-ai-draft/evals/eval-plan.json", "skill": "rb-revise-ai-draft", "minimum_cases": 20},

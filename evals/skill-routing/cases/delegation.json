@@ -1,0 +1,56 @@
+[
+  {
+    "id": "delegation-direct-invocation",
+    "family": "delegation",
+    "prompt": "Use $rb-delegate to split this substantial repository audit into independent bounded checks for tests, documentation, and configuration, then verify and integrate the results yourself.",
+    "expected": {"outcome": "select", "skill": "rb-delegate"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-architecture-review"],
+    "critical": true,
+    "rationale": "The user directly invokes cost-aware execution delegation rather than requesting an orchestration architecture."
+  },
+  {
+    "id": "delegation-cost-aware-paraphrase",
+    "family": "delegation",
+    "prompt": "For this substantial task, hand clearly separable mechanical checks to cheaper Codex sub-agents, give them only the context they need, and retain final verification yourself.",
+    "expected": {"outcome": "select", "skill": "rb-delegate"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "The request is to delegate current-session execution economically, not to measure tokens or design an agent system."
+  },
+  {
+    "id": "delegation-bounded-review-branches",
+    "family": "delegation",
+    "prompt": "Delegate the independent configuration, documentation, and test-suite inspections to less expensive sub-agents. Check their evidence yourself and give me one final release-readiness decision.",
+    "expected": {"outcome": "select", "skill": "rb-delegate"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "The user requests several bounded execution delegations while reserving final synthesis and completion judgement for the parent."
+  },
+  {
+    "id": "delegation-simple-task-negative",
+    "family": "delegation",
+    "prompt": "Lightly edit this one sentence so it reads more naturally: We was pleased with the result.",
+    "expected": {"outcome": "select", "skill": "rb-language"},
+    "forbidden_skills": ["rb-delegate", "rb-revise-ai-draft"],
+    "critical": true,
+    "rationale": "A tiny one-step edit should remain with the parent because delegation would add more work than it saves."
+  },
+  {
+    "id": "delegation-user-opt-out",
+    "family": "delegation",
+    "prompt": "Explain the structure and main control flow of this repository yourself. Do not use any sub-agents.",
+    "expected": {"outcome": "select", "skill": "rb-explain-codebase"},
+    "forbidden_skills": ["rb-delegate", "rb-multi-agent-systems"],
+    "critical": true,
+    "rationale": "The user explicitly prohibits delegation, while repository orientation still has a clear owning skill."
+  },
+  {
+    "id": "delegation-architecture-negative",
+    "family": "delegation",
+    "prompt": "Design a multi-agent orchestration layer with planner and executor roles, durable shared state, transition validation, retries, budgets, and approval gates.",
+    "expected": {"outcome": "select", "skill": "rb-multi-agent-systems"},
+    "forbidden_skills": ["rb-delegate", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "Designing a multi-agent product belongs to the architecture skill, not the current-session delegation skill."
+  }
+]

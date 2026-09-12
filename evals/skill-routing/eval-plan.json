@@ -11,7 +11,8 @@
     "cases/context-research-architecture.json",
     "cases/product-planning.json",
     "cases/language.json",
-    "cases/constrained-execution.json"
+    "cases/constrained-execution.json",
+    "cases/delegation.json"
   ],
   "cases": [
     {
