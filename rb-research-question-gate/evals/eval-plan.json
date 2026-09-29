@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "skill": "rb-research-question-gate",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "replication-fidelity-objective-proceeds",
+      "kind": "regression",
+      "prompt": "Evaluate a proposed replication of an established method. The contribution is fidelity checking and a stated teaching or application objective; it makes no novelty claim. The nearest prior is expected, and I explicitly authorise the work to proceed to a research design after the gate.",
+      "should_trigger": true,
+      "success": [{"name": "replication is judged on its stated purpose", "evaluator": "semantic", "rubric": "Pass only if the response treats replication as a valid contribution type, evaluates fidelity, controls, and the stated objective, does not reject it merely because the method is already known, and does not invent a novelty claim. If the fidelity and objective criteria pass, the gate may proceed to the requested research-design phase while preserving the phase boundary against unapproved coding."}]
+    },
+    {
+      "id": "unsupported-novelty-duplicate-stops",
+      "kind": "regression",
+      "prompt": "Evaluate a proposal that claims a novel training mechanism. A primary source shows the same signal, actuator, regime, and claimed distinction; the proposal supplies no surviving operational difference. Decide whether it may proceed.",
+      "should_trigger": true,
+      "success": [{"name": "direct novelty duplicate stops", "evaluator": "semantic", "rubric": "Pass only if the response applies the novelty stop criterion to the claimed contribution, records the direct duplicate and collapsed distinction, and returns Stop or requires an authorised reframing before PRD, implementation planning, or code."}]
+    }
+  ]
+}

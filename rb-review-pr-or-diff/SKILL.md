@@ -15,11 +15,7 @@ Review changes for actionable defects, regressions, missing or inadequate tests,
 2. Read relevant surrounding code, tests, coverage configuration, CI workflows, migrations, and public interfaces touched by the change.
 3. Read `AGENTS.md` and `CONTEXT.md` when present and relevant, especially for domain logic, scientific assumptions, deployment, testing conventions, or project-specific rules.
 4. If the diff affects multiple LLM agents, an agentic workflow, or an orchestration layer, also use `$rb-multi-agent-systems` to review whether the control model is the simplest sufficient architecture, along with agent boundaries, tool permissions, handoffs, state, structured outputs, tracing, evals, retrieval, provider routing, durability, and the required test matrix.
-5. For text-handling changes, check whether the code separates deterministic structure parsing from semantic understanding:
-   - Deterministic parsing is appropriate for stable syntax, exact delimiters, structured formats, known IDs, file paths, URLs, logs, or protocol fields.
-   - LLM calls are appropriate when correctness depends on meaning, intent, relevance, classification, summarisation, ambiguity resolution, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence.
-   - Flag elaborate regexes, keyword lists, fuzzy string scoring, or brittle heuristics when they are standing in for semantic judgment.
-   - Check that LLM-backed semantic paths have typed outputs, validation, failure handling, deterministic fixtures, and held-out evals where practical.
+5. For text-handling changes, check that stable syntax uses structured parsing and semantic tasks use a method validated against representative meaning-dependent cases. Flag brittle heuristics when concrete failures or unsupported assumptions threaten correctness. Do not require an LLM solely because another validated semantic method was used. Check model-backed paths for typed outputs, validation, failure handling, and held-out evals where practical.
 6. Review the testing strategy against the likely regression boundary:
    - unit or property tests for local logic and invariants;
    - integration tests for database, filesystem, network, queue, framework, solver, process, or service boundaries;
@@ -34,7 +30,7 @@ Review changes for actionable defects, regressions, missing or inadequate tests,
    - no repeated rerun-until-green treatment of an intermittent failure;
    - mocks do not bypass the behaviour supposedly under test;
    - important integration paths are not represented only by isolated mocks.
-9. Check correctness, architecture, naming, maintainability, performance, security/privacy, data migrations, numerical stability, units, reproducibility, compatibility, coverage of changed branches, CI-equivalent checks, and failure modes.
+9. Inspect the risks exposed by the diff. Expand into architecture, security, migrations, numerical behaviour, performance, or other concerns only when the changed behaviour creates that failure boundary. Run a focused discriminating check when it can resolve a material uncertainty; do not repeat an unchanged full suite solely to perform a review.
 10. Separate definite issues from uncertainties. Do not present speculation as a finding; put uncertain points under questions or residual risk.
 11. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn review.
 12. Recommend concrete fixes for each finding, but do not apply them unless asked.
@@ -47,13 +43,13 @@ Review changes for actionable defects, regressions, missing or inadequate tests,
 - Flag missing or wrongly levelled tests when a plausible regression could escape, including failures at component boundaries rather than demanding tests ritualistically.
 - Flag test deletion, weakening, flaky rerun-until-green behaviour, unjustified threshold reductions, and mock-only coverage of critical boundaries as correctness risks.
 - Do not impose a universal numerical coverage target where the project has none; assess changed behaviours, branches, existing thresholds, and diff coverage where available.
-- Treat over-regexed semantic text handling as a correctness/design risk, not as a style preference.
+- Judge findings by observable impact and evidence, not by whether the author followed this skill's preferred procedure.
 - Say clearly when no actionable issues are found.
 - Include checks not run and residual risks.
 
 ## Output
 
-Use this shape:
+Use this shape for a substantial review. For a small review, report the supported findings and verification limits concisely; omit empty sections. Do not manufacture a finding to fill the template.
 
 ```markdown
 ## Findings

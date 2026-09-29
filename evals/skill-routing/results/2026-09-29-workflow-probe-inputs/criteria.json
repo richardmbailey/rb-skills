@@ -1,0 +1,8 @@
+{
+  "resume-authorised": "proceed standard without reconfirmation",
+  "small-review": "may mark v with no independent reviewer",
+  "explicit-review-gate": "keep x, report unavailable reviewer",
+  "unchanged-sprint": "compact unchanged checkpoint, no fabricated contradiction fields",
+  "authorised-product-change": "record approved PRD update then evidence-backed replan and authorised work, no new permission request",
+  "constrained-runtime-criterion": "reject static mislabelling, do not silently leave constrained or weaken pytest requirement"
+}

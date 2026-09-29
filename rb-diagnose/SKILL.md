@@ -18,18 +18,15 @@ Use this for bugs, regressions, surprising outputs, failing tests, or flaky test
 5. Capture the failing output, input, environment, seed/configuration, execution order, timing, platform, and affected version or commit when relevant.
 6. Localise the failure by reading surrounding code, tests, recent changes, logs, configuration, and integration boundaries.
 7. Form hypotheses.
-8. For text-handling failures, test whether the bug comes from using deterministic string parsing for a semantic natural-language task:
-   - Deterministic parsing is plausible for stable syntax, exact delimiters, structured formats, known IDs, URLs, logs, or protocol fields.
-   - Semantic understanding likely needs an LLM when the failure involves meaning, intent, relevance, classification, summarisation, ambiguous wording, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence.
-   - Treat brittle regexes, keyword lists, and fuzzy string scoring as suspects. This approach should only be used to infer meaning in very simple predictable cases, never for free unstructured text.
+8. For text-handling failures, distinguish a parsing defect from a failure to understand meaning. Use structured parsers for stable syntax. For semantic work, examine the actual errors and acceptance criteria before choosing an LLM, an existing classifier, or another validated semantic method. Do not extend brittle keyword or regex heuristics to hide those errors.
 9. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` when localising failures across agents, tools, state, retrieval, provider routing, budgets, or recovery.
 10. Test hypotheses one at a time. Use the smallest discriminating experiment rather than changing several variables together.
 11. For intermittent failures, do not rerun until green. Preserve the failing seed, ordering, timing, concurrency, environment, and output; determine whether the issue is race-dependent, state-leaking, statistically unstable, resource-dependent, or externally caused.
 12. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn diagnosis.
-13. Propose a fix only after evidence supports it.
+13. Propose a fix only after evidence supports it. If the cause remains uncertain, state the leading hypotheses and next discriminating check; do not fill the output with an invented root cause.
 14. A bug fix must normally include an automated regression test that fails against the defective behaviour and passes after the fix. Specify the test level where the regression escaped: unit, integration, contract, migration, workflow, stochastic, or end-to-end. Do not create or edit that test during diagnosis-only work.
 15. If automated regression coverage is genuinely infeasible, document the technical reason, define the best executable or manual check, and state the remaining regression risk. Do not silently substitute a lint, build, import, or smoke check for behavioural coverage.
-16. If the human asks for implementation, use `$rb-implement-with-tests` or `$rb-tdd-scientific-code` for the fix path after diagnosis.
+16. If the human asks for implementation, use `$rb-implement-with-tests` or `$rb-tdd-scientific-code` for the fix path after diagnosis. An existing request to diagnose and fix authorises this transition; do not ask again solely because the skill changes.
 17. Explain the root cause, why the regression escaped existing coverage, and which regression test should prevent recurrence. Report its result only when implementation was requested.
 
 ## Required Behaviour
@@ -42,7 +39,7 @@ Use this for bugs, regressions, surprising outputs, failing tests, or flaky test
 - Do not make unrelated refactors while diagnosing.
 - Do not edit implementation or tests during diagnosis-only work. Make those changes only when the human asks for a fix and the implementation skill owns the change.
 - Preserve user changes in the worktree.
-- Do not "fix" semantic text failures by adding more regex layers unless the task is truly syntax-bound. Prefer LLM comprehension of text in all but the most simple predictable cases.
+- Select the smallest experiment that distinguishes the remaining explanations. Stop investigating once the evidence supports the requested decision; expand only if the fix or its regression test exposes a new uncertainty.
 
 ## Output
 

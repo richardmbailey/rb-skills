@@ -15,14 +15,14 @@ Every implementation plan created by this skill must use these exact task states
 - `[x]` implemented
 - `[v]` verified
 
-Prefix every actionable implementation task in every phase with one of these states. Set newly planned work to `[ ]`. Do not mark new work `[x]` or `[v]` merely because the plan describes it. Use `[x]` only for work that is already implemented and has supporting evidence. Use `[v]` only for work that has satisfied the selected delivery workflow's verification gate. `$rb-execute-plan` also requires a favourable independent sub-agent review before `[v]`.
+Prefix every actionable implementation task in every phase with one of these states. Set newly planned work to `[ ]`. Do not mark new work `[x]` or `[v]` merely because the plan describes it. Use `[x]` only for work that is already implemented and has supporting evidence. Use `[v]` only for work that has satisfied the selected delivery workflow's verification gate. Record whether independent review is required by the selected workflow, the change's risk, or an existing project gate.
 
 Include the three-state legend in the generated plan. Apply the convention when using the bundled template, a project-specific template, or a human-supplied template. Headings, goals, non-goals, explanatory notes, risks, and success criteria do not need task states unless they are also actionable implementation tasks.
 
 ## Procedure
 
 1. Read `CONTEXT.md`, relevant requirements, architecture notes, tests, coverage configuration, CI or pre-commit workflows, and existing plans when present. Note missing context that affects the plan.
-2. Confirm only decisions that materially change scope, users, constraints, compatibility, rollout, validation, testing, or success criteria; ask one question at a time when user input is required.
+2. Resolve only missing decisions that materially change scope, users, constraints, compatibility, rollout, validation, testing, or success criteria. Use known answers and existing authority; bundle independent questions when that reduces delay.
 3. For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to choose the simplest sufficient control model and define agent and tool boundaries, state, handoffs, failure containment, observability, evaluation, budgets, durability, and the required orchestration test matrix before choosing phases.
 4. Define goals, non-goals, users, requirements, constraints, assumptions, risks, success criteria, implementation phases, rollout or rollback where relevant, and validation. Give every phase a goal, dependencies, a status-marked task list, verification checks, and exit criteria.
 5. Define the testing architecture at the top level before implementation details harden:
@@ -35,16 +35,13 @@ Include the three-state legend in the generated plan. Apply the convention when 
    - fixture and test-data strategy, including trusted provenance and secret-free representative data;
    - coverage expectations based on changed behaviours and existing project thresholds rather than a new arbitrary percentage;
    - the canonical CI-equivalent completion command and any release or rollback validation.
-6. Produce the durable top-level plan using `assets/IMPLEMENTATION_PLAN.md` or a project-specific template supplied by the repository or human. Include the three-state legend and prefix every actionable implementation task with `[ ]`, `[x]`, or `[v]`; do not emit an unmarked implementation task list.
-7. At the point the implementation plan is created, remind the human that an optional constrained route is available for higher-assurance work. Present exactly these plan-wide choices without choosing for them:
-   - `standard`: `$rb-execute-plan` can follow the approved plan linearly, or `$rb-sprint` can deliver it through recurring PRD-aligned review and evidence-driven replanning; both can run the repository's executable tests and CI-equivalent checks;
-   - `constrained`: the constrained static-only route compiles each current phase with `$rb-create-low-level-plan`, assesses it with `$rb-assess-plan-safety`, and permits only an unchanged `safe: true` bundle to run through `$rb-safe-operation`; the first-release constrained capability set cannot execute tests, builds, linting, typing, or application commands, so do not select it for phases whose acceptance depends on runtime behaviour;
-   - `undecided`: preserve the choice for later and do not enter the constrained pipeline.
-8. When `constrained` is selected, flag that low-level success criteria and verifier checks must compile to the closed `<mode>::<description>` syntax and that the first release accepts only `static_file_state::<description>`. Runtime-dependent phases must remain on or return to `standard`.
-9. Record the selected value in `Execution Route`. If the human does not choose, record `undecided`; never infer `constrained` from risk, complexity, or safety language.
-10. When `constrained` is selected or left as an option, also remind the human that repository-owned path restrictions are optional. `$rb-create-safe-operation-policy` can translate ordinary language such as “do not read or write x.txt” into a previewed, confirmed fixed policy. Do not invent or persist a policy from safety-related subject matter alone.
-11. Route an approved plan to `$rb-execute-plan` when the human wants linear phase execution. Route it to `$rb-sprint` when the human wants repeated bounded delivery increments with PRD reconciliation and evidence-driven changes to remaining plan work. Both workflows own granular task selection, testing strategy, execution tracking, CI-equivalent checks, and verification gates.
-12. Update `$rb-working-diary` when the planning decisions need cross-session continuity. Include the route value, current phase, every later phase ID, artifact links, test strategy, constrained verification-mode limitation, and exact next action when the constrained route is selected.
+6. Produce the durable top-level plan using `assets/IMPLEMENTATION_PLAN.md` or a project-specific template supplied by the repository or human. Include the three-state legend and prefix every actionable implementation task with `[ ]`, `[x]`, or `[v]`; do not emit an unmarked implementation task list. Omit irrelevant template sections and reuse existing requirements and test records by reference.
+7. Record `Execution Route: standard` unless the human explicitly selects `constrained` or asks to leave the route `undecided`. A missing or `undecided` route uses standard execution. Do not interrupt ordinary planning to present an unused specialist route; never infer `constrained` from risk or safety language.
+8. Only when constrained execution is requested or being compared, read `references/constrained-route.md`. It describes the constrained static-only route, its optional path policy, and why it cannot execute tests, builds, linting, typing, or application commands.
+9. Route an approved plan to `$rb-execute-plan` when the human wants linear phase execution. Route it to `$rb-sprint` when the human wants repeated bounded delivery increments with PRD reconciliation and evidence-driven changes to remaining plan work. Both workflows own granular task selection, testing strategy, execution tracking, CI-equivalent checks, and verification gates.
+10. Update `$rb-working-diary` when the planning decisions need cross-session continuity. Include the route value, current phase, every later phase ID, artifact links, test strategy, constrained verification-mode limitation, and exact next action when the constrained route is selected.
+
+Continue into already-authorised execution after the plan is ready. Ask for approval only when required by an explicit review gate or a material decision beyond the existing request.
 
 ## Completion Check
 

@@ -18,6 +18,8 @@ Turn the user's ordinary-language restrictions into a typed proposal, show the e
 
 ## Procedure
 
+For an explanation-only request, use `policy-explain` and report the current rules and limits, then stop. Do not create a proposal, request confirmation, or run `policy-apply`. For an authorised policy change, follow the complete procedure below; its exact confirmation requirement remains mandatory.
+
 1. Resolve the authoritative project root and invoke the manifest-pinned runtime as specified in [policy-authoring-contract.md](references/policy-authoring-contract.md). Use `policy-explain` to load the fixed file or canonical absence identity before inspecting other project content.
 2. Restate the proposed interpretation using exact project-relative POSIX paths. Resolve material ambiguity with the human before creating a proposal. Examples requiring clarification include whether “touch” includes reads, whether a directory rule is recursive, or which of two similarly named paths is meant.
 3. Produce one strict `ProjectPolicyProposal` schema 1.0. Preserve every existing policy field and stable rule ID whose authorization meaning is unchanged. Reasons are explanatory text only and cannot grant authority.

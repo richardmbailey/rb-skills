@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "skill": "rb-delegate",
+  "conditions": [
+    "with_skill",
+    "without_skill"
+  ],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "model-not-chosen",
+      "kind": "regression",
+      "prompt": "Split these two independent review tasks between subagents. I have not chosen a subagent model.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "model-not-chosen",
+          "evaluator": "semantic",
+          "rubric": "Ask the user for a model or explicit inheritance, do not dispatch before the answer, and continue independent parent work where useful."
+        }
+      ]
+    },
+    {
+      "id": "reuse-choice",
+      "kind": "regression",
+      "prompt": "For this task I already selected model Acme-Model-42 for every reviewer. Dispatch the next independent review.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "reuse-choice",
+          "evaluator": "semantic",
+          "rubric": "Reuse the exact supplied model if available without asking again. Do not replace it with a built-in model name."
+        }
+      ]
+    },
+    {
+      "id": "explicit-inheritance",
+      "kind": "regression",
+      "prompt": "Use this chat model for all subagents in this task. Review the two independent modules.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "explicit-inheritance",
+          "evaluator": "semantic",
+          "rubric": "Use explicit inheritance, preserve scoped packets and parent validation; do not ask a redundant model question."
+        }
+      ]
+    },
+    {
+      "id": "unavailable-model",
+      "kind": "regression",
+      "prompt": "My chosen model is unavailable in the native subagent tool. What should happen next?",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "unavailable-model",
+          "evaluator": "semantic",
+          "rubric": "Explain the unavailable choice and obtain a concrete new choice or parent-work permission; do not select a specific alternative on behalf of the user. Preserve mandatory independent review."
+        }
+      ]
+    },
+    {
+      "id": "no-beneficial-delegation",
+      "kind": "regression",
+      "prompt": "Fix this single typo; assess delegation if useful. No subagent model is selected.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "no-beneficial-delegation",
+          "evaluator": "semantic",
+          "rubric": "Complete directly without a model question or unnecessary subagent."
+        }
+      ]
+    },
+    {
+      "id": "independent-gate",
+      "kind": "regression",
+      "prompt": "I selected inheritance for reviewers. The approved gate requires independent review but the Agent tool is unavailable; implementation and tests are complete.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "independent-gate",
+          "evaluator": "semantic",
+          "rubric": "Keep implemented status and report review blocker; parent self-review does not satisfy the required independent gate."
+        }
+      ]
+    },
+    {
+      "id": "choice-scope",
+      "kind": "regression",
+      "prompt": "A previous task used model Acme-Model-42. No standing preference was given. Start unrelated delegated work.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "choice-scope",
+          "evaluator": "semantic",
+          "rubric": "Ask for this task model; do not silently extend the prior task choice."
+        }
+      ]
+    },
+    {
+      "id": "no-technology-price-claim",
+      "kind": "regression",
+      "prompt": "Use my selected available model Acme-Model-42 for the bounded audit. Is it cheaper than the parent?",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "no-technology-price-claim",
+          "evaluator": "semantic",
+          "rubric": "Do not infer price or total savings from the name; use available measured data or state unknown."
+        }
+      ]
+    }
+  ]
+}

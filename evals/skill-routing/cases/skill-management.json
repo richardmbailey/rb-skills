@@ -135,6 +135,33 @@
     "rationale": "The full end-to-end setup belongs to installation."
   },
   {
+    "id": "skillmgmt-install-verification-only",
+    "family": "skill-management",
+    "prompt": "Verify the full RB installation, global skill visibility, AGENTS.md, CONTEXT.md, and discovery for this repository. This is verification-only; do not begin onboarding after the checks succeed.",
+    "expected": {"outcome": "select", "skill": "rb-install-skills"},
+    "forbidden_skills": ["rb-start-project", "rb-sync-skills-repo", "rb-setup-local-agent-skills"],
+    "critical": true,
+    "rationale": "Installation owns the complete visibility check, but verification-only scope stops before onboarding."
+  },
+  {
+    "id": "skillmgmt-setup-verification-only",
+    "family": "skill-management",
+    "prompt": "Verify and diagnose this existing RB setup with a sync dry-run and discovery checks. Report stale or missing resources without installing, editing product code, or starting onboarding.",
+    "expected": {"outcome": "select", "skill": "rb-setup-local-agent-skills"},
+    "forbidden_skills": ["rb-sync-skills-repo", "rb-install-skills", "rb-start-project"],
+    "critical": true,
+    "rationale": "An existing setup diagnosis remains within the setup-repair workflow and its verification boundary."
+  },
+  {
+    "id": "skillmgmt-sync-verification-only",
+    "family": "skill-management",
+    "prompt": "Run a dry-run to verify what syncing this local skills repository into Codex would do. Inspect destinations and conflicts, then stop without installing or replacing anything.",
+    "expected": {"outcome": "select", "skill": "rb-sync-skills-repo"},
+    "forbidden_skills": ["rb-install-skills", "rb-setup-local-agent-skills", "rb-write-skill"],
+    "critical": true,
+    "rationale": "The explicit dry-run and stop boundary belongs to repository synchronization."
+  },
+  {
     "id": "skillmgmt-ambiguous-fix-skills",
     "family": "skill-management",
     "prompt": "Please fix my agent skills.",

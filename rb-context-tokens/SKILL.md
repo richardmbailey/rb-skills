@@ -13,7 +13,7 @@ Use this skill when the human asks how many tokens the current Codex chat window
 
 ## Procedure
 
-1. Run the bundled reporter:
+1. Resolve the reporter relative to this skill directory first; use the installed path below only as a fallback. Run it once for the selected session:
 
    ```bash
    python3 "$HOME/.agents/skills/rb-context-tokens/scripts/report_context_tokens.py"
@@ -29,7 +29,7 @@ Use this skill when the human asks how many tokens the current Codex chat window
    - `scripts/report_context_tokens.py` relative to this skill directory
    - `rb-context-tokens/scripts/report_context_tokens.py` from the Codex skills directory
    - `$HOME/.agents/skills/rb-context-tokens/scripts/report_context_tokens.py`
-3. By default the reporter finds the newest user `~/.codex/sessions/**/*.jsonl` file by modification time and uses the latest `token_count` event in it.
+3. By default the reporter finds the newest user `~/.codex/sessions/**/*.jsonl` file by modification time and uses the latest `token_count` event in it. Newest does not prove it is the active chat when several sessions run. Use an explicit session path when the current session identity is available; otherwise report the selection method and do not claim an unverified file belongs to this chat.
 4. If the human gives a specific session file, pass it explicitly:
 
    ```bash

@@ -24,9 +24,9 @@ Use this skill when the RB workflow setup itself may be missing, stale, or confu
 6. Read `AGENTS.md` if present; otherwise note the absence and continue.
 7. Check whether `.rb-agent/` exists. It should contain project resources such as prompts, templates, and workflows, not skills.
 8. Look for `CONTEXT.md`. If it exists, read it. If not, note the missing project context and propose creating it.
-9. Identify likely entry points, tests, docs, scripts, notebooks, and configuration files.
-10. Identify how to run tests or checks.
-11. Use `$rb-working-diary`: check `${CODEX_HOME:-$HOME/.codex}/diary/diary.md` for an existing entry matching the current project path.
+9. Inspect entry points and project resources only as far as needed to diagnose the reported setup problem; do not turn a discovery repair into full repository onboarding.
+10. Run the relevant visibility or setup check and report its exact result.
+11. Use `$rb-working-diary` only when prior setup state is needed; check `${CODEX_HOME:-$HOME/.codex}/diary/diary.md` for the matching project rather than loading unrelated history.
 12. Recommend `$rb-start-project` in Codex or `/rb-start-project` in Claude Code for normal onboarding once setup is healthy.
 
 ## Required behaviour

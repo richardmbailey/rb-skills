@@ -32,11 +32,11 @@ Use this skill to close one working session cleanly and prepare a new agent/sess
    - `.rb-agent/templates/AGENT_BRIEF.md` as a template when present.
 4. Use `$rb-working-diary` for durable continuity when the session had meaningful investigation, decisions, unresolved risks, or compaction-prone context. Update `handoff.md` and, when helpful, `working-diary.md`.
 5. Provide a paste-ready prompt for the next session.
-6. If the user explicitly asks to end/archive the thread, use the available thread archive tool after the handoff is complete; in Codex desktop, prefer `set_thread_archived` over raw archive directives.
+6. Archive the chat only when the user explicitly requests archival. Ending a work session or preparing a handoff alone does not imply archival. In Codex desktop, use `set_thread_archived` when available.
 
 ## Handoff Brief Shape
 
-Use this structure unless the project already has a stronger convention:
+Use this structure unless the project already has a stronger convention. Omit empty sections and link evidence already recorded in a plan or diary. Create one canonical handoff and link it from other continuity records rather than copying the same brief into several files:
 
 ```markdown
 # RB End Session Brief

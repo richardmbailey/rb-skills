@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-write-skill",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "write-skill-postdraft-language-review",
+      "kind": "outcome",
+      "prompt": "Create this reusable RB skill. After the first complete draft of SKILL.md, explicitly invoke the authorised rb-simplify-language post-draft review while preserving the skill's trigger boundary, permissions, examples, and rationale.",
+      "should_trigger": true,
+      "success": [{"name": "postdraft review is explicit and scoped", "evaluator": "semantic", "rubric": "Pass only if rb-write-skill owns initial authoring, the completed draft receives the explicitly authorised rb-simplify-language review, and that scoped handoff does not make the manual-only language skill implicitly selectable for other skill-authoring or control-text requests."}]
+    },
+    {
+      "id": "write-skill-does-not-auto-simplify",
+      "kind": "regression",
+      "prompt": "Update an existing RB skill's trigger, procedure, metadata, and evaluations. Do not apply rb-simplify-language merely because the task concerns agent-facing control text; perform its post-draft review only when that procedure explicitly invokes it.",
+      "should_trigger": true,
+      "success": [{"name": "manual language boundary remains closed", "evaluator": "semantic", "rubric": "Pass only if rb-write-skill remains the primary workflow, the ordinary authoring request does not automatically select rb-simplify-language, and the post-draft exception is treated as a deliberate explicit invocation after a complete draft."}]
+    },
+    {
+      "id": "write-skill-sync-negative",
+      "kind": "trigger",
+      "prompt": "Synchronise the already-authored skills from this repository into Codex using a dry-run first.",
+      "should_trigger": false,
+      "success": [{"name": "synchronisation is separate", "evaluator": "semantic", "rubric": "Pass if rb-write-skill is not selected and the request routes to rb-sync-skills-repo."}]
+    }
+  ]
+}

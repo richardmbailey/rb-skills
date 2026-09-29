@@ -31,6 +31,7 @@ If a missing decision would change the trigger boundary, required behaviour, per
    - for automatic invocation, describe the requests that should select the skill and important requests that should not;
    - for manual-only invocation, begin the description with `Manual invocation only`, name the accepted invocation forms, and state that task content alone must not select the skill;
    - define required inputs, ordered procedure, outputs, boundaries, and failure behaviour in the body.
+   Keep the core focused on decisions the agent must make. Load specialist detail through conditional references, and leave deterministic enforcement to scripts and schemas. Recognise existing user authority, scale checks to the failure boundary, and avoid repeated inventories or mandatory empty output fields.
 4. After the first complete draft, apply `$rb-simplify-language` to `SKILL.md` and any agent-facing reference text. This user-owned procedure is an explicit instruction to invoke the manual-only language-review skill for the completed draft; the skill must not be selected during initial routing merely because the task is skill authoring. Preserve the intended trigger boundary, requirements, permissions, outputs, rationale, examples, and useful redundancy. If the review exposes a missing decision that would change behaviour, ask the human instead of inventing the answer.
 5. Add `agents/openai.yaml` with an `interface:` block containing:
    - a quoted `display_name`;
@@ -46,7 +47,8 @@ If a missing decision would change the trigger boundary, required behaviour, per
    The description and prompt explain the boundary. This policy makes Codex enforce it.
 6. Add `scripts/`, `references/`, or `assets/` only when they eliminate repeated instructions, parsing, validation, or asset recreation. Reference each bundled resource directly from `SKILL.md`.
 7. Add or update behavioural evaluations when the trigger contract or required behaviour changes. Use `$rb-create-skill-evals` for the evaluation workflow.
-8. Install or refresh the skill by running the repository sync script from the repository root:
+   Update adjacent routing cases, metadata, documentation, and instruction/consistency contracts when their promises change. Preserve unchanged safeguards; explain intentional contract changes rather than removing a failed assertion to obtain a pass. Distinguish completed behavioural trials from manifests that only validate.
+8. After validation, install or refresh the skill through the repository sync script. First run the matching `--dry-run` and inspect destination conflicts. An existing symlink to this source already exposes its changes; do not replace it unnecessarily. For an installation or refresh that is needed, run from the repository root:
 
    ```bash
    python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --skills <skill_name>
@@ -67,6 +69,7 @@ If a missing decision would change the trigger boundary, required behaviour, per
    - tell the human to invoke `$<skill_name>` in Codex or `/<skill_name>` in Claude Code;
    - for automatic invocation, explain which matching requests should select the skill after reload;
    - for manual-only invocation, state that the skill remains inactive until the human explicitly invokes it.
+   Keep the handoff proportional: for an edit, report the material behaviour change, verification evidence, and limitations rather than repeating installation instructions that did not change.
 11. Use `$rb-working-diary` when its trigger conditions are met. Record durable design decisions, validation evidence, omitted checks, and residual risks.
 
 ## Location boundary

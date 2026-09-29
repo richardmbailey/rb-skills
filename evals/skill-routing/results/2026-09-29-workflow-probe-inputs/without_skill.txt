@@ -1,0 +1,30 @@
+These are independent workflow decision scenarios, not requests to edit a repository. For each scenario return JSON with id, next_action, needs_user_input, and record. Give concise operational decisions, not private reasoning. Do not use tools except to read this packet. Do not inspect repository instructions, other packets, rubrics or prior outputs.
+
+
+SCENARIOS
+[
+  {
+    "id": "resume-authorised",
+    "request": "Resume Phase 2 and implement the agreed null check. The handoff already authorises implementation; requirements and acceptance tests are clear. Execution Route is undecided. State the immediate next action and whether to ask me a question."
+  },
+  {
+    "id": "small-review",
+    "request": "A standard-route phase changes one private helper in one module. Its behavioural tests and relevant CI checks passed on the final code, inline review found no issue, and there is no independent-review requirement in the approved plan or repository. No sub-agent is available. Can its task move from implemented [x] to verified [v]? State any remaining gate."
+  },
+  {
+    "id": "explicit-review-gate",
+    "request": "A database migration has passing tests, but the approved project gate explicitly requires independent review, which is unavailable. What status and next action should be recorded?"
+  },
+  {
+    "id": "unchanged-sprint",
+    "request": "The sprint review checked plan revision p7 and final tests t9. All evidence supports the existing plan; no assumptions changed. The next authorised increment is task T4. Give the checkpoint record and next action."
+  },
+  {
+    "id": "authorised-product-change",
+    "request": "I am the recorded product owner. I now approve replacing the single-user restriction with shared editing, and authorise updating the PRD, adapting the plan, and implementing it. The repository has no additional approval gate. All permission, data, compatibility, and acceptance decisions are supplied and settled. How should the next sprint proceed?"
+  },
+  {
+    "id": "constrained-runtime-criterion",
+    "request": "The selected route is constrained. The phase requires pytest to pass as an acceptance criterion. Can we compile it as static_file_state and proceed? What is the next action?"
+  }
+]

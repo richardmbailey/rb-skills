@@ -2,9 +2,15 @@
 
 This repository contains reusable skills for Codex and Claude Code. A skill is a versioned directory containing a `SKILL.md` workflow and, where useful, model-facing metadata, scripts, references, assets, and behavioural evaluations.
 
+Most workflows can be used in either agent, but the whole pack is not interchangeable. See [Claude Code compatibility](#claude-code-compatibility) before installing into Claude Code.
+
 The skills are intended for practical coding, modelling, AI/ML, research, review, and project-continuity work. They provide process guidance rather than a framework that you run directly.
 
 ## Latest changes
+
+- Added a separate Claude profile with generated skill copies, native manual-only controls, and user-selected subagent models. Codex skill sources and model defaults are unchanged.
+
+- Simplified the active skills: recognise existing authority, use proportionate standard-route review, keep unchanged sprint checkpoints compact, and load specialist constrained/runtime detail through references. Exact constrained-runtime gates remain unchanged.
 
 - Added `$rb-delegate` for cost-aware Codex execution: delegate bounded, independently verifiable work to cheaper sub-agents while the parent retains integration, verification, and completion judgement.
 - Added `$rb-sprint` for adaptive implementation: reconcile each bounded delivery increment with the authoritative PRD, preserve the current plan by default, and permit only the smallest evidence-backed plan change that passes its fail-closed gate. `$rb-execute-plan` remains the linear plan-execution workflow.
@@ -38,8 +44,9 @@ Force an agent destination with:
 
 ```bash
 python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --agent codex
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --agent claude
 ```
+
+For Claude Code, `--agent claude` uses the separate profile described below. It generates adapted copies and excludes unsupported skills; the Codex installation path is unchanged.
 
 Install selected skills with:
 
@@ -49,6 +56,35 @@ python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink \
 ```
 
 Codex detects skill changes automatically. Restart only when a new or changed skill does not appear. Claude Code usually detects changes under an existing `~/.claude/skills` directory, but restart it when new skills do not appear.
+
+## Claude Code compatibility
+
+The Claude profile installs **29 skills**: 28 derived from the shared procedures plus a Claude-specific `rb-delegate`. It excludes the Codex token reporter and the four constrained-runtime/policy skills. Codex continues using the original top-level sources, metadata, model defaults, and symlink installation.
+
+From the repository root, preview and install:
+
+```bash
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --agent claude --dry-run
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --agent claude
+python3 platforms/claude/install.py . --check
+```
+
+Claude receives generated copies even if `--mode symlink` was requested. Re-run the command after pulling source updates. Unmodified generated copies refresh automatically; locally edited copies or pre-existing links require an explicit `--replace`, which preserves backups. Review the dry-run first. Unsupported legacy skill directories cause a visible failure rather than being silently deleted. Use `--skills` for a subset and pass the same selection to `--check`.
+
+For full project setup, including a `CLAUDE.md` import of shared `AGENTS.md` when missing:
+
+```bash
+python3 rb-install-skills/scripts/install_skills.py --agent claude \
+  --pack-root "$PWD" --target /path/to/project
+```
+
+Existing project instructions are preserved. This repository includes its own [CLAUDE.md](CLAUDE.md) bridge. Use `/rb-name` in Claude when shared instructions say `$rb-name`; the generated edition supplies host-specific setup, continuity, and review rules without changing literal code or runtime commands.
+
+Claude delegation asks which model to use before dispatch unless the user has already selected one for the task. Explicit inheritance is supported; there is no hard-coded Claude model or silent fallback. Required independent-review gates still apply.
+
+The generated `rb-simplify-language` has Claude-native manual-only frontmatter. The authoring workflow uses a bundled copy of its review method for its explicitly authorised post-draft step, so it does not need to enable automatic invocation. [Claude invocation controls](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill).
+
+See the [compatibility and maintenance guide](docs/claude-code-compatibility.md) for the profile, exclusions, refresh behaviour, validation evidence, and remaining live-Claude test limitation.
 
 ## Repository layout
 
@@ -99,7 +135,7 @@ After a top-level implementation plan is approved, choose the delivery workflow 
 - Use `$rb-execute-plan` when the approved plan should be followed linearly through its phases and verification gates.
 - Use `$rb-sprint` when implementation evidence may require changes to the remaining plan between bounded delivery increments.
 
-`$rb-sprint` requires an authoritative PRD or equivalent requirements artifact and an existing implementation plan. The requirements remain authoritative. The plan is a technical strategy that may change only when the evidence shows that preserving it would create a specific delivery problem.
+`$rb-sprint` requires an authoritative PRD or equivalent requirements artifact and an existing implementation plan. The requirements remain authoritative until an authorised human changes them. Record such a decision before adapting the plan; do not ask for the same approval again. The plan is a technical strategy that may change only when the evidence shows that preserving it would create a specific delivery problem.
 
 The normal sprint transition does not change the plan:
 
@@ -112,7 +148,7 @@ review -- NO_CHANGE ------------------------> sprint_ready -> building -> verify
    +-- all completion conditions satisfied -> complete
 ```
 
-Every review starts with `NO_CHANGE`. The gate may return `REPLAN` only when its record establishes all of the following:
+Every review starts with `NO_CHANGE`. An unchanged plan needs only its revision/checkpoint, the evidence checked, and next increment. Proposed changes and unresolved decisions use the full gate record. The gate may return `REPLAN` only when its record establishes all of the following:
 
 - the exact implementation-plan state under review;
 - new externally grounded evidence, such as a test, review, experiment, repository observation, operational observation, or explicit human statement;
@@ -170,7 +206,7 @@ The parent sends the minimum self-contained context, checks the returned artifac
 | `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
 | `$rb-create-prd` | Create, revise, or review product requirements, including users, outcomes, scope, success measures, risks, dependencies, and unresolved decisions. |
 | `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan with `[ ]`, `[x]`, and `[v]` task states, testing architecture, risks, success criteria, and route choice. |
-| `$rb-execute-plan` | An existing multi-step plan should be followed linearly under standard conditions by default, with `[ ]`, `[x]`, and `[v]` task status, test coverage, independent sub-agent review before `[v]`, CI-equivalent checks, and verification. |
+| `$rb-execute-plan` | An existing multi-step plan should be followed linearly under standard conditions by default, with `[ ]`, `[x]`, and `[v]` task status, test coverage, independent sub-agent review for substantial/high-risk/cross-cutting work or explicit gates before `[v]`, CI-equivalent checks, and verification. |
 | `$rb-sprint` | An existing plan needs bounded PRD-aligned sprints; it preserves the plan by default and permits only the smallest authorised delta that passes the evidence gate. |
 | `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
 | `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
@@ -260,7 +296,7 @@ cd ~/src/rb-skills
 git pull
 ```
 
-Codex normally detects pulled skill changes automatically. Restart only when a change does not appear. Re-run the sync command when using copy mode.
+Codex normally detects pulled skill changes automatically. Restart only when a change does not appear. Re-run the sync command when using copy mode or the generated Claude profile.
 
 Before publishing, check that the repository contains no secrets, private identifiers, confidential context, local-only paths, caches, generated temporary outputs, or environment files.
 
@@ -270,9 +306,9 @@ A new implementation plan records one of three routes:
 
 - `standard`: normal tested implementation through linear `rb-execute-plan` or adaptive `rb-sprint`, with task delivery through `rb-implement-with-tests` and `rb-tdd-scientific-code`;
 - `constrained`: a Codex-only, first-release static-only workflow for exact read/patch operations and statically observable acceptance criteria;
-- `undecided`: preserve the choice and do not enter the constrained pipeline.
+- `undecided`: preserve a deferred choice and do not enter the constrained pipeline; ordinary work still defaults to standard execution.
 
-The agent never selects `constrained` automatically.
+The agent never selects `constrained` automatically. Ordinary planning does not require a route-selection question; explain the specialist route only when requested or compared.
 
 ### Standard Route
 
@@ -280,7 +316,7 @@ Use the standard route for ordinary software behaviour, scientific code, refacto
 
 In practical terms, runtime-dependent phases must use the standard route in the first release.
 
-`$rb-execute-plan` defaults to `standard` when the route is missing or `undecided`. It uses another route only when the human explicitly specifies that route in the current request or the approved plan.
+Both `$rb-execute-plan` and `$rb-sprint` default to `standard` when the route is missing or `undecided`. They use another route only when the human explicitly specifies that route in the current request or the approved plan.
 
 ### Constrained Static-Only Route
 

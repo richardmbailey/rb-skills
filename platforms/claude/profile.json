@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "portable_skills": [
+    "rb-architecture-review",
+    "rb-continue-project",
+    "rb-create-implementation-plan",
+    "rb-create-prd",
+    "rb-create-skill-evals",
+    "rb-diagnose",
+    "rb-discuss",
+    "rb-end-session",
+    "rb-execute-plan",
+    "rb-explain-codebase",
+    "rb-explain-diff",
+    "rb-implement-with-tests",
+    "rb-install-skills",
+    "rb-language",
+    "rb-multi-agent-systems",
+    "rb-project-language",
+    "rb-research-question-gate",
+    "rb-review-pr-or-diff",
+    "rb-revise-ai-draft",
+    "rb-setup-local-agent-skills",
+    "rb-simplify-language",
+    "rb-sprint",
+    "rb-start-project",
+    "rb-sync-skills-repo",
+    "rb-tdd-scientific-code",
+    "rb-where-are-we",
+    "rb-working-diary",
+    "rb-write-skill"
+  ],
+  "overrides": {
+    "rb-delegate": "skills/rb-delegate"
+  },
+  "excluded_skills": [
+    "rb-context-tokens",
+    "rb-create-low-level-plan",
+    "rb-assess-plan-safety",
+    "rb-safe-operation",
+    "rb-create-safe-operation-policy"
+  ],
+  "manual_only": [
+    "rb-simplify-language"
+  ]
+}

@@ -7,6 +7,8 @@ description: "Use when the user wants a teaching-oriented, interactive HTML expl
 
 Create a durable, beginner-friendly explanation of a specified code change as one interactive HTML page. Explain the plain-language idea before introducing technical details.
 
+Use this complete artifact workflow only when an interactive teaching explanation is requested. A quick question about a changed line does not require HTML or a quiz. Within the artifact, scale background and examples to the change while preserving the required structure below.
+
 ## Establish the change scope
 
 1. Read repository instructions such as `AGENTS.md`, `CONTEXT.md`, and relevant README files.

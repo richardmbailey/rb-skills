@@ -1,0 +1,309 @@
+{
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "max",
+  "evaluation_type": "workflow_decision_probes",
+  "trials": [
+    {
+      "condition": "with_skill",
+      "trial": 1,
+      "response": [
+        {
+          "id": "resume-authorised",
+          "next_action": "Treat the undecided route as standard, prepare Phase 2, and invoke rb-implement-with-tests for the agreed null check and acceptance tests.",
+          "needs_user_input": false,
+          "record": "The handoff authorises implementation and the requirements and acceptance tests are clear."
+        },
+        {
+          "id": "small-review",
+          "next_action": "Mark the task [v], then complete any remaining phase-level exit or integration gates.",
+          "needs_user_input": false,
+          "record": "Behavioural tests, relevant CI checks, and inline review passed; no independent-review gate applies. No task-level gate remains."
+        },
+        {
+          "id": "explicit-review-gate",
+          "next_action": "Keep the migration task at [x] and record a blocker; obtain the required independent review before marking it [v].",
+          "needs_user_input": false,
+          "record": "Independent review is mandatory but unavailable. Do not waive or replace the approved gate."
+        },
+        {
+          "id": "unchanged-sprint",
+          "next_action": "Keep the existing plan and start the next authorised increment, task T4.",
+          "needs_user_input": false,
+          "record": "PLAN_CHANGE_GATE: NO_CHANGE; PLAN_STATE: p7; EVIDENCE: sprint review and final tests t9; assumptions unchanged; next state: sprint_ready for T4."
+        },
+        {
+          "id": "authorised-product-change",
+          "next_action": "Record shared editing in the authoritative PRD, adapt the implementation plan, and begin the next sprint under the supplied permission, data, compatibility, and acceptance decisions.",
+          "needs_user_input": false,
+          "record": "The recorded product owner explicitly authorises the product decision, PRD update, plan adaptation, and implementation; no additional approval gate applies."
+        },
+        {
+          "id": "constrained-runtime-criterion",
+          "next_action": "Stop before compilation; request an explicit switch to the standard route or a revised phase whose criteria are genuinely static, recording the constrained-pipeline exit if switching.",
+          "needs_user_input": true,
+          "record": "Pytest is runtime-dependent and cannot be compiled as static_file_state. Do not relabel the criterion or proceed with constrained execution."
+        }
+      ]
+    },
+    {
+      "condition": "with_skill",
+      "trial": 2,
+      "response": [
+        {
+          "id": "resume-authorised",
+          "next_action": "Treat the undecided route as standard, prepare Phase 2 from the authorised handoff, then invoke rb-implement-with-tests for the null check and run its acceptance tests.",
+          "needs_user_input": false,
+          "record": "Implementation is authorised; the route defaults to standard."
+        },
+        {
+          "id": "small-review",
+          "next_action": "Mark the task [v] and continue the phase completion checks.",
+          "needs_user_input": false,
+          "record": "Task-level behavioural evidence, CI checks, and inline review are complete. No independent-review gate remains; phase-level integration, review, and CI exit criteria still apply."
+        },
+        {
+          "id": "explicit-review-gate",
+          "next_action": "Keep the migration task at [x], record verification as blocked by the explicit independent-review gate, and obtain that review before marking [v].",
+          "needs_user_input": false,
+          "record": "Passing tests do not satisfy the required independent review; do not lower or bypass the gate."
+        },
+        {
+          "id": "unchanged-sprint",
+          "next_action": "Record NO_CHANGE for plan revision p7 with tests t9, enter sprint_ready, and prepare authorised task T4.",
+          "needs_user_input": false,
+          "record": "PLAN_CHANGE_GATE: NO_CHANGE; PLAN_STATE: p7; EVIDENCE: final tests t9 and sprint review support the existing plan; no assumptions changed."
+        },
+        {
+          "id": "authorised-product-change",
+          "next_action": "Update the authoritative PRD with shared editing, record the authorised product decision, adapt the implementation plan, then enter sprint_ready and implement the resulting tasks.",
+          "needs_user_input": false,
+          "record": "The product decision and implementation authority are supplied; all permission, data, compatibility, and acceptance decisions are settled."
+        },
+        {
+          "id": "constrained-runtime-criterion",
+          "next_action": "Do not compile or proceed under constrained execution; request an explicit route choice to use standard execution or revise the phase to static-only acceptance.",
+          "needs_user_input": true,
+          "record": "pytest is a runtime behavioural criterion and cannot be represented as static_file_state in the constrained route."
+        }
+      ]
+    },
+    {
+      "condition": "with_skill",
+      "trial": 3,
+      "response": [
+        {
+          "id": "resume-authorised",
+          "next_action": "Treat the undecided route as standard, prepare Phase 2, then implement the agreed null check with focused behavioural tests.",
+          "needs_user_input": false,
+          "record": {
+            "route": "standard",
+            "authority": "handoff authorises implementation",
+            "status": "proceed"
+          }
+        },
+        {
+          "id": "small-review",
+          "next_action": "Move the task from [x] to [v].",
+          "needs_user_input": false,
+          "record": {
+            "status": "[v]",
+            "review": "inline review sufficient",
+            "remaining_gate": "phase completion still requires any other tasks and exit criteria"
+          }
+        },
+        {
+          "id": "explicit-review-gate",
+          "next_action": "Keep the migration task at [x] and obtain the required independent review before verification.",
+          "needs_user_input": false,
+          "record": {
+            "status": "[x]",
+            "blocker": "required independent review unavailable"
+          }
+        },
+        {
+          "id": "unchanged-sprint",
+          "next_action": "Preserve plan revision p7 and begin the next authorised increment, task T4.",
+          "needs_user_input": false,
+          "record": {
+            "plan_change_gate": "NO_CHANGE",
+            "plan_state": "p7",
+            "evidence": "sprint review and final tests t9",
+            "next_task": "T4"
+          }
+        },
+        {
+          "id": "authorised-product-change",
+          "next_action": "Update the PRD to record shared editing, adapt the implementation plan and acceptance evidence, then enter the replanned sprint and implement it.",
+          "needs_user_input": false,
+          "record": {
+            "change_class": "product_decision",
+            "authority": "explicit product-owner approval",
+            "plan_change_gate": "REPLAN",
+            "required_order": "PRD update before plan adaptation"
+          }
+        },
+        {
+          "id": "constrained-runtime-criterion",
+          "next_action": "Stop the constrained route for this phase and obtain a route decision: use standard execution or narrow the phase to genuinely static criteria.",
+          "needs_user_input": true,
+          "record": {
+            "status": "blocked",
+            "reason": "pytest acceptance requires runtime execution, which constrained mode cannot perform",
+            "compile": "do not compile as static_file_state"
+          }
+        }
+      ]
+    },
+    {
+      "condition": "without_skill",
+      "trial": 1,
+      "response": [
+        {
+          "id": "resume-authorised",
+          "next_action": "Select the standard execution route and begin the authorised implementation.",
+          "needs_user_input": false,
+          "record": "Implementation is authorised; requirements and acceptance tests are settled."
+        },
+        {
+          "id": "small-review",
+          "next_action": "Move the task from implemented [x] to verified [v].",
+          "needs_user_input": false,
+          "record": "Behavioural tests, relevant CI checks, and inline review passed; no independent-review gate remains."
+        },
+        {
+          "id": "explicit-review-gate",
+          "next_action": "Keep the migration at implemented [x] and obtain the required independent review before verification.",
+          "needs_user_input": false,
+          "record": "Verification is blocked by the explicit independent-review gate despite passing tests."
+        },
+        {
+          "id": "unchanged-sprint",
+          "next_action": "Start the next authorised increment, task T4, under the existing plan.",
+          "needs_user_input": false,
+          "record": "Checkpoint: plan revision p7 and final tests t9 reviewed; evidence supports the existing plan and assumptions are unchanged."
+        },
+        {
+          "id": "authorised-product-change",
+          "next_action": "Update the PRD, adapt the implementation plan, and execute the first shared-editing increment with its acceptance checks.",
+          "needs_user_input": false,
+          "record": "The product owner authorised the requirement change, plan adaptation, and implementation; all decisions and gates are settled."
+        },
+        {
+          "id": "constrained-runtime-criterion",
+          "next_action": "Stop under the constrained route and request authorisation to use a route that can run pytest, or revise the acceptance criterion through an approved plan change.",
+          "needs_user_input": true,
+          "record": "static_file_state cannot establish a pytest result; the constrained route cannot satisfy this acceptance criterion."
+        }
+      ]
+    },
+    {
+      "condition": "without_skill",
+      "trial": 2,
+      "response": [
+        {
+          "id": "resume-authorised",
+          "next_action": "Use the standard execution route and begin implementing the agreed null check in Phase 2.",
+          "needs_user_input": false,
+          "record": {
+            "route": "standard",
+            "status": "authorised to implement"
+          }
+        },
+        {
+          "id": "small-review",
+          "next_action": "Move the task from implemented [x] to verified [v].",
+          "needs_user_input": false,
+          "record": {
+            "evidence": [
+              "behavioural tests passed",
+              "relevant CI checks passed",
+              "inline review found no issue"
+            ],
+            "remaining_gate": null
+          }
+        },
+        {
+          "id": "explicit-review-gate",
+          "next_action": "Stop at the review gate and obtain the required independent review, or receive an explicitly authorised gate change.",
+          "needs_user_input": true,
+          "record": {
+            "status": "implemented [x], not verified [v]",
+            "blocker": "required independent review unavailable"
+          }
+        },
+        {
+          "id": "unchanged-sprint",
+          "next_action": "Begin the next authorised increment, task T4.",
+          "needs_user_input": false,
+          "record": {
+            "plan_revision": "p7",
+            "final_tests": "t9",
+            "assumptions_changed": false,
+            "decision": "continue with existing plan"
+          }
+        },
+        {
+          "id": "authorised-product-change",
+          "next_action": "Revise the PRD for shared editing, adapt the implementation plan, and start the authorised implementation increment in the next sprint.",
+          "needs_user_input": false,
+          "record": {
+            "product_change": "replace single-user restriction with shared editing",
+            "authority": "product owner approval recorded",
+            "approval_gate": null
+          }
+        },
+        {
+          "id": "constrained-runtime-criterion",
+          "next_action": "Do not proceed on the constrained route; request or select the standard route, unless the acceptance criterion is explicitly changed.",
+          "needs_user_input": true,
+          "record": {
+            "status": "blocked",
+            "reason": "constrained runtime cannot run pytest and static_file_state cannot prove the required acceptance criterion"
+          }
+        }
+      ]
+    },
+    {
+      "condition": "without_skill",
+      "trial": 3,
+      "response": [
+        {
+          "id": "resume-authorised",
+          "next_action": "Select the standard execution route and begin implementing the agreed null check.",
+          "needs_user_input": false,
+          "record": "Handoff authorises implementation; requirements and acceptance tests are settled."
+        },
+        {
+          "id": "small-review",
+          "next_action": "Advance the task from implemented [x] to verified [v].",
+          "needs_user_input": false,
+          "record": "Behavioural tests, relevant CI checks, and inline review passed; no independent-review gate remains."
+        },
+        {
+          "id": "explicit-review-gate",
+          "next_action": "Obtain the required independent review before advancing verification.",
+          "needs_user_input": false,
+          "record": "Keep status at implemented [x]; verification is pending because the explicit independent-review gate is unmet."
+        },
+        {
+          "id": "unchanged-sprint",
+          "next_action": "Start the next authorised increment, task T4.",
+          "needs_user_input": false,
+          "record": "Checkpoint: plan revision p7 and final tests t9 checked; evidence supports the plan and assumptions are unchanged."
+        },
+        {
+          "id": "authorised-product-change",
+          "next_action": "Record the approval, update the PRD, adapt the implementation plan and acceptance criteria, then implement shared editing in the next sprint.",
+          "needs_user_input": false,
+          "record": "Product owner approval authorises the scope change and implementation; all permission, data, compatibility, and acceptance decisions are settled."
+        },
+        {
+          "id": "constrained-runtime-criterion",
+          "next_action": "Stop constrained execution and request a route change to one that can run pytest, or an explicitly approved change to the acceptance criterion.",
+          "needs_user_input": true,
+          "record": "A static_file_state check cannot establish pytest success; the constrained route cannot satisfy this phase gate."
+        }
+      ]
+    }
+  ]
+}

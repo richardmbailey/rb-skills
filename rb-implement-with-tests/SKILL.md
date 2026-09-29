@@ -13,16 +13,11 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 
 ## Procedure
 
-1. Confirm the one agreed requirement, selected plan task, or issue. If the request contains several tasks that need sequencing or requires plan-state tracking, route to `$rb-execute-plan` for linear delivery or `$rb-sprint` for adaptive delivery before editing.
+1. Establish the agreed requirement from the current request and project context. Do not ask the human to reconfirm a clear instruction. Route to `$rb-execute-plan` or `$rb-sprint` only when the work needs plan-wide sequencing or status ownership; several related edits can still be one bounded change.
 2. Read `AGENTS.md`, `CONTEXT.md`, relevant docs, surrounding code, existing tests, coverage configuration, and canonical CI or pre-commit commands that define local conventions.
 3. Check current worktree state. Preserve user changes and avoid touching unrelated files.
 4. Identify the smallest useful behaviour to change and the plausible ways it could fail, including invalid inputs, boundary values, permission or policy denial, missing dependencies, external-service failure, timeout, partial failure, duplicate requests, idempotency, concurrency, rollback, and corrupted responses where relevant.
-5. If the change handles text, classify the text operation before designing the code:
-   - Use deterministic parsing for syntax-bound tasks with stable structure, such as JSON/YAML/XML/CSV parsing, frontmatter fields, exact delimiters, known IDs, line-oriented logs, file paths, URLs, or protocol formats.
-   - Use structured parsers or existing libraries for structured formats before considering regex.
-   - Invoke an LLM for semantic tasks that require meaning, intent, relevance, classification, summarisation, ambiguity resolution, rubric judgment, natural-language extraction, entity/claim matching, or deciding whether two differently worded passages mean the same thing.
-   - Do not replace semantic understanding with elaborate regexes, keyword lists, brittle heuristics, or ad hoc string scoring unless the human explicitly accepts that limitation.
-   - When using an LLM, keep deterministic pre/post-processing around it: bounded input selection, typed output schema, validation, retries/fallbacks, fixtures/evals where practical, and visible failure if the LLM path is unavailable.
+5. For text processing, use structured parsers for stable syntax. When correctness depends on meaning, use an LLM or an existing semantic method whose measured behaviour meets the requirement. Do not substitute elaborate regexes or brittle keyword heuristics for semantic understanding. For model-backed paths, bound the inputs, validate typed outputs, test representative errors, and make failure visible. Respect any explicit project choice of technology.
 6. Select the test level from the changed behaviour and likely failure boundary:
    - unit or property tests for pure logic, local transformations, branching, and invariants;
    - component or integration tests for database, filesystem, network, queue, process, framework, or service boundaries;
@@ -30,7 +25,7 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
    - migration tests for existing data, upgrade paths, rollback, and partial failure;
    - end-to-end or workflow tests for critical multi-component user paths;
    - smoke, performance, security, or concurrency tests when those risks are material.
-7. Add or update an automated test that exercises the changed behaviour by default. Include at least one relevant negative, boundary, or failure-path case when the change adds a decision, validation rule, external interaction, or side effect. If an automated test is genuinely infeasible, document why, define the best executable or manual verification before editing, and state the regression risk that remains.
+7. Add or update an automated test that exercises the changed behaviour by default. Include at least one relevant negative, boundary, or failure-path case when the change adds a decision, validation rule, external interaction, or side effect. Reuse existing coverage when it already discriminates the change. For prose, formatting, or another change without executable behaviour, use the relevant artifact check rather than inventing a behavioural test. If needed behavioural automation is infeasible, document why, define the best executable or manual verification before editing, and state the remaining regression risk.
 8. Run the focused test or baseline check before editing when possible. For bug fixes, preserve evidence that the regression test fails against the defective behaviour.
 9. Implement the smallest change that should pass the test, following existing patterns and helper APIs.
 10. Run the focused test again and confirm the intended failure path as well as the happy path where relevant.
@@ -39,7 +34,7 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 13. Refactor only while keeping checks green and only within the requested scope.
 14. Update `$rb-working-diary` only when the implementation is long-running, context-heavy, or part of accumulated project work that needs cross-session continuity.
 15. Repeat in small increments until the requested change is complete.
-16. Run the closest available repository CI-equivalent command before completion: the configured test/lint/type/build/pre-commit workflow, or the largest relevant affordable subset when the full suite is impractical. Record exactly what was omitted and why.
+16. Run the closest available repository CI-equivalent command before completion, or the largest relevant affordable subset when the full suite is impractical. Record omitted checks and why. Reuse passing evidence for unchanged code and environment; rerun when later edits or unresolved failures could invalidate it.
 17. Run a final review over the diff, tests, docs, and behaviour. Use `$rb-review-pr-or-diff` for substantial, risky, or cross-cutting changes; for small changes, perform the same review discipline inline.
 18. Fix actionable review findings, rerun the relevant focused, failure-path, broader, and CI-equivalent checks, and re-review when findings were material.
 19. Do not call the implementation complete until no blocking review findings remain, or the human explicitly accepts the residual risk.
@@ -55,23 +50,15 @@ Use `$rb-discuss` first when material behaviour, interface, edge cases, compatib
 
 ## Required Behaviour
 
-- Do not skip clarification when behaviour is still ambiguous.
+- Ask only about unresolved decisions that materially change behaviour, scope, compatibility, authority, or acceptance. Infer routine implementation details from the repository.
 - Do not create, resequence, or mark a multi-phase plan complete. Return implementation and verification evidence to `$rb-execute-plan` or `$rb-sprint` when it owns the surrounding plan.
 - Do not claim success without running or explicitly naming the automated test and CI-equivalent check that could not be run.
 - Keep edits scoped to the requested behaviour unless a wider change is necessary and explained.
 - Do not introduce dependencies, migrations, destructive operations, secret handling changes, or broad architecture changes without explicit approval.
 - Do not rewrite working user changes; work with them or ask if they block the task.
 - Prefer the repository's existing style, tests, frameworks, and abstractions over new patterns.
-- For text-heavy code, keep a clear boundary between deterministic structure handling and semantic LLM judgment.
-- Do not build complex regex/string heuristics for tasks whose acceptance criteria depend on understanding the text.
 - Do not skip the final review+fix loop unless the human explicitly asks to stop before review.
 
 ## Output
 
-- the selected task or requirement completed and what changed
-- changed behaviour, plausible failure modes, and selected test level
-- automated tests added or updated, including negative or boundary coverage
-- focused, broader, coverage, and CI-equivalent checks run with exact outcomes
-- review+fix findings, fixes applied, and checks rerun
-- checks not run, why they were not run, and the resulting regression risk
-- residual risks or follow-up work
+Report the changed behaviour, relevant test and CI-equivalent outcomes, material review findings, and remaining risks. Name omitted checks and their consequences. Scale the explanation to the change; do not repeat an unchanged test inventory or emit empty sections.

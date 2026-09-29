@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-end-session",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "end-session-no-implicit-archival",
+      "kind": "regression",
+      "prompt": "Prepare a durable handoff for this session with decisions, checks, unfinished work, risks, and exact next steps. Ending the work session does not mean that the Codex chat should be archived.",
+      "should_trigger": true,
+      "success": [{"name": "handoff does not archive implicitly", "evaluator": "semantic", "rubric": "Pass only if the response creates or updates the requested handoff evidence, reports the current Git and verification state honestly, and leaves chat archival untouched because the user did not explicitly request archival."}]
+    },
+    {
+      "id": "end-session-explicit-archival",
+      "kind": "outcome",
+      "prompt": "Prepare the durable handoff and archive this Codex chat after the handoff is complete.",
+      "should_trigger": true,
+      "success": [{"name": "explicit archival is honoured", "evaluator": "semantic", "rubric": "Pass if the handoff is prepared first and the chat is archived only because the user explicitly requested archival, with the handoff reporting any uncommitted work and checks accurately."}]
+    },
+    {
+      "id": "end-session-status-report-negative",
+      "kind": "trigger",
+      "prompt": "Create a deep HTML state-of-play report for this established project, including goals, phase progress, code health, risks, recent changes, and next steps.",
+      "should_trigger": false,
+      "success": [{"name": "status report is not session closure", "evaluator": "semantic", "rubric": "Pass if rb-end-session is not selected and the request routes to rb-where-are-we."}]
+    }
+  ]
+}

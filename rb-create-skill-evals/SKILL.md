@@ -48,6 +48,10 @@ Each case must state what success means. Avoid cases that pass whether or not th
 
 Judge the completed result first. Skill invocation and tool traces are diagnostic signals, not substitutes for a correct outcome. Do not require one exact reasoning path unless the path itself is a safety or compliance requirement.
 
+For coding outcomes, supply a concrete repository fixture and executable acceptance checks where practical. A rubric that rewards saying which tests should run is a decision probe, not evidence of completed implementation. Include small tasks that can expose unnecessary questions, artifacts, or review loops, as well as difficult tasks where guidance should help.
+
+Specify the decision-maker's authority in permission cases. Distinguish missing approval from approval already supplied by the current request. Do not reward asking again when the necessary decision has already been made.
+
 ## Choose evaluators
 
 Use the least subjective evaluator that can measure the real requirement:
@@ -115,6 +119,7 @@ python3 <this-skill-directory>/scripts/validate_eval_manifest.py <target-skill-d
 2. Prevent access to earlier outputs, conversations, expected answers, and hidden evaluator data.
 3. Run at least three trials for important nondeterministic cases; use five or six when reliability is central.
 4. Run both `with_skill` and `without_skill` conditions unless the user asks only for trigger diagnostics. Keep prompts, fixtures, model, harness, limits, and validators matched.
+   When evaluating a revision, also compare the old and revised skill under the same conditions. Keep repository instructions constant and prevent the no-skill condition from loading copies of the skill through another path. Record unavoidable contamination and do not attribute its effects to the skill.
 5. Test every deployment-relevant model and harness, but do not create a costly matrix with tools nobody uses.
 6. Capture outcome, validator results, skill invocation when observable, duration, model, harness, token usage when available, and errors.
 7. Keep raw results separate from interpretation. Never replace a failed run with a successful rerun without recording both.
@@ -131,9 +136,12 @@ Report at least:
 - false-positive and false-negative trigger cases;
 - cost or latency changes when available;
 - failures caused by the skill, including stale or conflicting instructions;
+- unnecessary clarification turns, artifacts, scope expansion, and human review effort;
 - evaluator limitations and uncertain judgments.
 
 Do not call a skill helpful merely because a with-skill run passed. It must outperform, stabilize, constrain, or otherwise improve the matched baseline. Do not recommend retirement from a single successful no-skill run.
+
+Report structural checks, routing trials, decision probes, and completed-task evaluations separately. Updating an obsolete rubric is legitimate only when an authorised requirement changed; preserve the old expectation and explain the reason. Never rewrite an expected answer merely to make a failed trial pass.
 
 ## Improve only with permission
 

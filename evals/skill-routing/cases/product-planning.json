@@ -63,6 +63,24 @@
     "rationale": "The scientific premise must be evaluated before credible product requirements can be written."
   },
   {
+    "id": "product-planning-replication-fidelity",
+    "family": "product-planning",
+    "prompt": "Evaluate a replication of an established method for fidelity and a teaching or application objective before writing requirements. The known prior is expected and there is no novelty claim.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "Replication purpose is assessed by the research gate and is not rejected merely because prior work exists."
+  },
+  {
+    "id": "product-planning-direct-novelty-duplicate",
+    "family": "product-planning",
+    "prompt": "Before planning this claimed novel method, audit the primary source that appears to match its signal, actuator, regime, and claimed distinction.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "Novelty duplication is a research-gate question before product planning."
+  },
+  {
     "id": "product-planning-backlog",
     "family": "product-planning",
     "prompt": "The product requirements document and implementation plan are approved. Break the first phase into engineering backlog tickets with estimates and owners.",

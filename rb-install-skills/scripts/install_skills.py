@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -135,6 +136,14 @@ def add_global_skill_link_candidates(candidates: list[Path], agent: str = "auto"
         except OSError:
             continue
         for child in children:
+            if agent == "claude" and child.is_dir() and not child.is_symlink():
+                try:
+                    marker = json.loads((child / ".rb-claude-install.json").read_text(encoding="utf-8"))
+                    source = marker.get("source") if isinstance(marker, dict) else None
+                    if isinstance(source, str) and Path(source).is_absolute():
+                        add_candidate(candidates, Path(source))
+                except (OSError, ValueError):
+                    pass
             if not child.is_symlink():
                 continue
             try:
@@ -232,7 +241,17 @@ Use this file to capture project-specific context during start-project onboardin
     ]
 
     if claude:
-        results.append(write_project_file(target / "CLAUDE.md", agent_instructions, force))
+        claude_instructions = """@AGENTS.md
+
+# Claude Code host guidance
+
+- Use the generated Claude editions of the RB skills and `/rb-name` invocations.
+- Use standard execution; the constrained runtime and Codex token reporter remain Codex-only.
+- For subagents, use the Claude rb-delegate procedure. Ask the user which model to use unless an applicable user choice already exists; reuse it within that task. Do not apply Codex model defaults.
+- Preserve required independent review and behavioural testing gates.
+- Share the existing canonical RB diary; do not create a second history or change CODEX_HOME to a Claude directory.
+"""
+        results.append(write_project_file(target / "CLAUDE.md", claude_instructions, force))
     if cursor:
         cursor_rule = """---
 description: RB agent workflow guidance
@@ -247,6 +266,10 @@ Use the installed RB agent skills for matching workflows. Start normal onboardin
 
 
 def audit_flat_visibility(pack_root: Path, destination: SkillsDestination) -> None:
+    if destination.agent == "claude":
+        run([sys.executable, str(pack_root / "platforms/claude/install.py"),
+             str(pack_root), "--dest", str(destination.path), "--check"], pack_root)
+        return
     skills = discover_flat_skills(pack_root)
     dest = destination.path
     missing: list[str] = []
@@ -304,7 +327,9 @@ def run_flat_install_skills(pack_root: Path, target: Path, args: argparse.Namesp
     audit_flat_visibility(pack_root, destination)
 
     print("Project resources:")
-    for result in install_flat_project_resources(target, args.force, args.claude, args.cursor):
+    for result in install_flat_project_resources(
+        target, args.force, args.claude or destination.agent == "claude", args.cursor
+    ):
         print(f"- {result}")
 
 

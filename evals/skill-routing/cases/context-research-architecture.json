@@ -99,6 +99,15 @@
     "rationale": "The narrow token-count request has a unique owner, so no negative sentence is required beyond 'Use only'."
   },
   {
+    "id": "context-tokens-newest-session-uncertain",
+    "family": "context-research-architecture",
+    "prompt": "Report the current Codex context usage. Several session files exist and the newest by modification time may be another chat; use the current session identity when available and state uncertainty otherwise.",
+    "expected": {"outcome": "select", "skill": "rb-context-tokens"},
+    "forbidden_skills": ["rb-working-diary", "rb-where-are-we", "rb-end-session"],
+    "critical": true,
+    "rationale": "Measured token reporting owns the session-selection uncertainty."
+  },
+  {
     "id": "context-multi-agent-boundaries",
     "family": "context-research-architecture",
     "prompt": "Design a system with a planner agent, retrieval agent, and execution agent. Define their boundaries, tool permissions, handoffs, shared state, budgets, observability, evaluation, and failure containment.",
@@ -153,6 +162,24 @@
     "rationale": "The explicit phase boundary is research evaluation before product work."
   },
   {
+    "id": "context-research-replication-purpose",
+    "family": "context-research-architecture",
+    "prompt": "Evaluate a replication of an established method for fidelity and a teaching or application objective. The nearest prior is expected, there is no novelty claim, and I explicitly authorise proceeding to the research design if those criteria pass.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The research gate must assess the stated replication purpose rather than reject it as a novelty duplicate."
+  },
+  {
+    "id": "context-research-unsupported-novelty-duplicate",
+    "family": "context-research-architecture",
+    "prompt": "Evaluate a claimed novel method when a primary source shows the same signal, actuator, regime, and claimed distinction. There is no surviving operational difference.",
+    "expected": {"outcome": "select", "skill": "rb-research-question-gate"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "A direct duplicate is a research-gate stop condition for a novelty claim."
+  },
+  {
     "id": "context-single-llm-implement",
     "family": "context-research-architecture",
     "prompt": "The requirements are agreed: add one LLM summarization call to this endpoint, validate its structured response, and cover success and unavailable-model behaviour with focused product tests.",
@@ -160,6 +187,15 @@
     "forbidden_skills": ["rb-multi-agent-systems", "rb-create-skill-evals", "rb-tdd-scientific-code"],
     "critical": true,
     "rationale": "A single ordinary model call with clear requirements is product implementation, not multi-agent architecture."
+  },
+  {
+    "id": "context-existing-semantic-classifier-implement",
+    "family": "context-research-architecture",
+    "prompt": "Implement the agreed text-routing change with the repository's existing semantic classifier. Its measured behaviour already meets the acceptance requirement, so do not add an LLM call or a keyword heuristic; test representative meanings and failure behaviour.",
+    "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-create-skill-evals", "rb-tdd-scientific-code"],
+    "critical": true,
+    "rationale": "A validated semantic library is sufficient for an ordinary bounded implementation and does not imply LLM orchestration."
   },
   {
     "id": "context-single-llm-discuss",

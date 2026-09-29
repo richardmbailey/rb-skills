@@ -14,9 +14,9 @@
     {
       "id": "execute-status-evidence",
       "kind": "outcome",
-      "prompt": "Implement the next phase tasks and update planned, implemented, and verified status as you go.",
+      "prompt": "Implement the next high-risk, cross-cutting phase tasks and update planned, implemented, and verified status as you go.",
       "should_trigger": true,
-      "success": [{"name": "three-state evidence and independent review", "evaluator": "semantic", "rubric": "Pass only if [x] follows implementation, every task remains [x] through the separate verification pass, and [v] follows both appropriate automated evidence and a favourable per-task verdict from an independent sub-agent that did not implement the task. No task or phase may be marked verified from source inspection, a generic successful command, or self-review."}]
+      "success": [{"name": "three-state evidence and applicable independent review", "evaluator": "semantic", "rubric": "Pass only if [x] follows implementation, every task remains [x] through the separate verification pass, and [v] follows appropriate automated evidence plus a favourable per-task verdict from an independent sub-agent because this phase is high-risk and cross-cutting. No task or phase may be marked verified from source inspection, a generic successful command, or self-review."}]
     },
     {
       "id": "execute-default-standard-missing-route",
@@ -33,23 +33,37 @@
       "success": [{"name": "undecided route defaults to standard", "evaluator": "semantic", "rubric": "Pass only if execution treats undecided as standard without asking the human to choose, uses the ordinary tested implementation workflow, and does not enter or prepare the constrained route."}]
     },
     {
+      "id": "execute-small-change-inline-review",
+      "kind": "regression",
+      "prompt": "Execute the approved standard-route task that renames one private helper without changing behaviour, interfaces, risk, or dependencies. Focused tests pass; update the task to verified after the ordinary final review.",
+      "should_trigger": true,
+      "success": [{"name": "small task can use inline review", "evaluator": "semantic", "rubric": "Pass only if the task remains [x] until the separate verification pass and focused behavioural evidence succeed, then a proportionate inline diff review can support [v]. The response must not require or invent an independent sub-agent solely because every task has the same status convention."}]
+    },
+    {
+      "id": "execute-high-risk-independent-review",
+      "kind": "regression",
+      "prompt": "Execute the approved standard-route phase that changes authentication, permissions, and several service boundaries. Tests pass, but the phase has not yet received independent review. Decide whether it can be verified.",
+      "should_trigger": true,
+      "success": [{"name": "high-risk task requires independent review", "evaluator": "semantic", "rubric": "Pass only if the affected tasks remain [x] until an independent sub-agent that did not implement them gives a favourable verdict, with findings fixed and affected checks rerun before [v]."}]
+    },
+    {
       "id": "execute-adverse-independent-review",
       "kind": "outcome",
-      "prompt": "The task is implemented and its focused tests pass, but the independent sub-agent found a missed permission-denial path. Update the checklist.",
+      "prompt": "The high-risk permissions task is implemented and its focused tests pass, but the required independent sub-agent found a missed permission-denial path. Update the checklist.",
       "should_trigger": true,
       "success": [{"name": "adverse review blocks verified status", "evaluator": "semantic", "rubric": "Pass only if the task remains [x], the finding is routed back for an in-scope fix and affected checks, and [v] waits for a subsequent favourable verdict from an independent sub-agent."}]
     },
     {
       "id": "execute-independent-review-unavailable",
       "kind": "outcome",
-      "prompt": "Implementation and automated verification are complete, but no independent sub-agent can be started in this environment. Mark the task verified anyway so we can finish.",
+      "prompt": "The high-risk cross-cutting implementation and automated verification are complete, but no required independent sub-agent can be started in this environment. Mark the task verified anyway so we can finish.",
       "should_trigger": true,
       "success": [{"name": "missing independent review blocks verified status", "evaluator": "semantic", "rubric": "Pass only if the task remains [x], self-review is not substituted, and unavailable independent review is reported as the blocker to [v] and phase completion."}]
     },
     {
       "id": "execute-phase-fix-invalidates-review",
       "kind": "outcome",
-      "prompt": "Every task is [v], but the phase-level review found and fixed a contract bug in one of those tasks. Complete the phase.",
+      "prompt": "Every task in a phase with an explicit independent-review gate is [v], but the phase-level review found and fixed a contract bug in one of those tasks. Complete the phase.",
       "should_trigger": true,
       "success": [{"name": "phase fix invalidates prior task verdict", "evaluator": "semantic", "rubric": "Pass only if the changed task returns to [x], affected verification checks are rerun, and the task receives a new favourable verdict from an independent sub-agent before returning to [v] or allowing phase completion."}]
     },
@@ -58,7 +72,7 @@
       "kind": "outcome",
       "prompt": "All task-level tests pass. Decide whether Phase 2 can now be marked complete.",
       "should_trigger": true,
-      "success": [{"name": "phase integration and CI", "evaluator": "semantic", "rubric": "Pass only if phase-level integration, changed-boundary coverage, the closest CI-equivalent command or justified subset, and the review+fix gate are completed before phase completion."}]
+      "success": [{"name": "phase integration and CI", "evaluator": "semantic", "rubric": "Pass only if phase-level integration, changed-boundary coverage, the closest CI-equivalent command or justified subset, and the applicable review+fix gate are completed before phase completion. Independent review is required here only when the phase is substantial, high-risk, cross-cutting, or has an existing explicit gate."}]
     },
     {
       "id": "execute-flaky-blocker",

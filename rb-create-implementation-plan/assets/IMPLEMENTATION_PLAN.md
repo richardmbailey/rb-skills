@@ -6,19 +6,9 @@
 
 ## Execution Route
 
-`standard` | `constrained` | `undecided`
+`standard` by default. Record `constrained` only when explicitly selected, or `undecided` when the human defers the choice; `undecided` does not block standard execution.
 
-The constrained route is optional. In the first release it is Codex-only and compiles, assesses, executes, and verifies one phase at a time with context separation that is instruction-only rather than host-proven. Its current capability set cannot execute tests, builds, linting, typing, or application commands. Do not select it automatically or use it for phases whose acceptance depends on runtime behaviour.
-
-The fixed project policy is also optional. If repository-owned path restrictions are wanted, use `$rb-create-safe-operation-policy` to translate the human's ordinary-language rules into a deterministic preview and proposal-bound confirmation. Do not invent a policy merely because a plan concerns safety or sensitive work.
-
-For every constrained phase, write each success criterion and verifier check using the closed form:
-
-```text
-<mode>::<description>
-```
-
-The first-release constrained runtime accepts only `static_file_state::<description>`. Untyped strings and the modes `executable_test`, `runtime_observation`, and `external_observation` fail deterministic preflight and require the standard route.
+Only for an explicitly selected constrained phase: read the planning skill's `references/constrained-route.md` and use `static_file_state::<description>` for every acceptance criterion. Do not include constrained-runtime mechanics in a standard plan.
 
 ## Goals
 
@@ -40,7 +30,7 @@ The first-release constrained runtime accepts only `static_file_state::<descript
 - `[x]` implemented
 - `[v]` verified
 
-Prefix every actionable implementation task in every phase with exactly one state marker. Set newly planned work to `[ ]`. Use `[x]` only when implementation evidence already exists. Use `[v]` only when the selected delivery workflow's verification gate has passed. For linear execution with `$rb-execute-plan`, `[v]` also requires a favourable independent sub-agent review.
+Prefix every actionable implementation task in every phase with exactly one state marker. Set newly planned work to `[ ]`. Use `[x]` only when implementation evidence already exists. Use `[v]` only when the selected delivery workflow's verification gate has passed. Record required independent review according to the delivery workflow, material risk, and existing project gates.
 
 ## Implementation Phases
 
@@ -62,6 +52,8 @@ Use this structure for every phase:
 **Exit criteria:**
 
 ## Testing Strategy
+
+Keep the applicable sections below and omit the rest. Link existing test plans rather than copying them.
 
 ### Unit and Property Tests
 

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "skill": "rb-setup-local-agent-skills",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "setup-verification-only-dry-run",
+      "kind": "regression",
+      "prompt": "Verify and diagnose this existing RB setup. Run the sync script in dry-run mode, inspect discovery and project resources, and report what is stale or missing. Do not install, edit code, or run normal onboarding.",
+      "should_trigger": true,
+      "success": [{"name": "setup repair remains verification-only", "evaluator": "semantic", "rubric": "Pass only if the response uses the read-only or dry-run checks, reports exact source, global skill, project-resource, and discovery state, does not write product code or destructive state, and does not turn setup diagnosis into onboarding."}]
+    },
+    {
+      "id": "setup-repair-authorised-missing-resource",
+      "kind": "outcome",
+      "prompt": "The existing RB setup is incomplete because CONTEXT.md is missing. Verify the source and installed links, then repair the missing project resource without starting unrelated onboarding.",
+      "should_trigger": true,
+      "success": [{"name": "setup repair is scoped", "evaluator": "semantic", "rubric": "Pass if the workflow verifies the source and discovery state, repairs only the authorised setup resource, reports the exact result, and does not edit product code or begin a full project interview."}]
+    }
+  ]
+}

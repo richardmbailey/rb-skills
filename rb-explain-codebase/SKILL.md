@@ -15,7 +15,7 @@ Explain an unfamiliar repository before making changes.
 2. Inspect top-level files and directories.
 3. Identify package managers, build systems, runtimes, test frameworks, and common commands.
 4. Map important modules and public entry points.
-5. Trace main control flow and data flow.
+5. Trace one representative request or operation from entry point to output, including important state changes and failure paths. Expand to other flows only when they change the explanation.
 6. If the repository implements a multi-LLM-agent system, also use `$rb-multi-agent-systems` to map agent boundaries, tools, handoffs, state, retrieval, observability, evals, provider routing, and durability.
 7. Identify external dependencies, likely change hotspots, risky areas, and places where behavior is guarded by tests.
 8. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn orientation.
@@ -25,6 +25,7 @@ Explain an unfamiliar repository before making changes.
 - Do not edit code during orientation unless the human explicitly asks.
 - Do not pretend uncertain architecture is known; mark unknowns clearly.
 - Prefer concrete file and symbol references over broad summaries.
+- Scale the map to the user's question. A module-level explanation does not require a repository-wide inventory, and an orientation does not require a redesign proposal.
 
 ## Output
 

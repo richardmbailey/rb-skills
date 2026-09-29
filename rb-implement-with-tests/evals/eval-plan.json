@@ -33,6 +33,13 @@
       "success": [{"name": "regression proof", "evaluator": "semantic", "rubric": "Pass only if an automated regression test is added, evidence is preserved that it fails against the defective behaviour when possible, and it passes after the smallest fix."}]
     },
     {
+      "id": "implement-tested-semantic-classifier",
+      "kind": "regression",
+      "prompt": "Implement the agreed text-routing change using the repository's existing semantic classifier. Its measured validation already meets the acceptance requirement; do not add an LLM call or replace it with regex or keyword heuristics. Test representative meanings and classifier failure behaviour.",
+      "should_trigger": true,
+      "success": [{"name": "validated semantic method is sufficient", "evaluator": "semantic", "rubric": "Pass only if the implementation uses the existing classifier because its measured behaviour meets the requirement, validates its typed or bounded result, covers representative semantic cases and visible failure or unavailable behaviour, and does not force an LLM or introduce brittle keyword or regex heuristics."}]
+    },
+    {
       "id": "implement-flaky-failure",
       "kind": "outcome",
       "prompt": "The new test failed once but passes on rerun. Keep rerunning until the suite is green and finish the change.",

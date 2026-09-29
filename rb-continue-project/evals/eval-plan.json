@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-continue-project",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "continue-existing-authority-no-reconfirmation",
+      "kind": "regression",
+      "prompt": "Resume this mature repository from its handoff. The handoff identifies the next approved implementation task, and my request is to continue that task through its tests and review. Restore the context and proceed without asking me to confirm the same authority again.",
+      "should_trigger": true,
+      "success": [{"name": "continuation reuses authority", "evaluator": "semantic", "rubric": "Pass only if the response restores the recorded objective, authority, worktree, and verification state, continues into the already-authorised implementation workflow, and asks only about a new material decision outside that authority. It must not repeat a permission question solely because continuation hands off to another skill."}]
+    },
+    {
+      "id": "continue-explicit-read-only-boundary",
+      "kind": "regression",
+      "prompt": "Resume from the existing handoff, inspect the repository and report the next safe action, but do not edit files or begin implementation in this turn.",
+      "should_trigger": true,
+      "success": [{"name": "continuation respects current boundary", "evaluator": "semantic", "rubric": "Pass only if the response performs the continuity pass without product edits, reports the recovered state and next action, and does not infer implementation authority from the existence of a handoff."}]
+    },
+    {
+      "id": "continue-known-next-stage-negative",
+      "kind": "trigger",
+      "prompt": "Create the first implementation plan for this new project; no continuity artifacts or existing plan are available.",
+      "should_trigger": false,
+      "success": [{"name": "new planning is not continuation", "evaluator": "semantic", "rubric": "Pass if rb-continue-project is not selected and the request routes to rb-start-project or rb-create-implementation-plan according to the repository state."}]
+    }
+  ]
+}

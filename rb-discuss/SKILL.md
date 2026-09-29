@@ -15,14 +15,12 @@ Do not use it merely because a change is substantial. Once the intended behaviou
 
 1. Read `CONTEXT.md` if present, plus relevant ADRs, README files, docs, and tests. If `CONTEXT.md` is missing, note that and continue.
 2. Separate what is already agreed from decisions that materially affect behaviour, interfaces, data, compatibility, failure handling, tests, scientific assumptions, or acceptance.
-3. Ask one targeted question at a time only when the answer cannot be recovered safely from the repository and would materially change the result.
+3. Ask one targeted question at a time when answers depend on each other. Bundle independent missing decisions when that reduces delay. Ask only when the answer cannot be recovered safely from the repository and would materially change the result.
 4. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to clarify stack, tools, state, observability, evals, retrieval, and provider routing.
-5. For text-processing requests, clarify whether each text step is syntax-bound or semantic:
-   - Syntax-bound means stable structure, exact markers, structured formats, IDs, URLs, logs, or protocol fields, and can usually be deterministic.
-   - Semantic means meaning, intent, relevance, classification, summarisation, ambiguity resolution, natural-language extraction, rubric judgment, entity/claim matching, or semantic equivalence, and should usually use an LLM-backed path.
+5. For text-processing requests, establish whether acceptance depends on stable syntax or meaning. Clarify expected errors and tolerances; leave the choice among an LLM and other validated semantic methods to implementation unless it is a product constraint.
 6. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.
 7. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.
-8. Record the agreed requirements, accepted risks, remaining questions, and recommended next workflow. Create a PRD only when the human asks for one, using `$rb-create-prd`. Create a top-level plan only when the human asks for one, using `$rb-create-implementation-plan`.
+8. Record the agreed requirements, accepted risks, remaining questions, and next workflow. Continue when the current request already authorises that work. Do not require a separate confirmation merely to change skills. Create a PRD or top-level plan only when it is part of the authorised task, using `$rb-create-prd` or `$rb-create-implementation-plan` respectively.
 
 ## Stop condition
 

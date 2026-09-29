@@ -62,7 +62,7 @@ Use this when the human wants continuity from durable project context rather tha
    - unresolved questions, blockers, risks, assumptions, and stale evidence;
    - recovered pipeline stage, completed gates, active artifact, and next gate;
    - recommended next action and matching RB workflow skill.
-9. Stop and ask for approval before code edits, destructive commands, dependency changes, migrations, broad refactors, or entry into a pipeline workflow that the recorded autonomy decision did not authorise explicitly.
+9. Continue into the requested work when the current request or recorded authority covers it. Ask only about a material decision or action outside that authority. Preserve explicit stop points and required permissions for destructive commands, dependency changes, migrations, or broad refactors; a change of skill does not itself require approval.
 
 ## Routing
 
@@ -84,7 +84,7 @@ Use the same routing rule as `$rb-start-project`:
 
 Do not insert `$rb-discuss` merely because a change is substantial. Use it only when material ambiguity remains.
 
-Before entering the selected workflow, update `Pipeline State` with its canonical stage and status, the exact approved transition, the exit evidence needed from that workflow, and the expected successor. Before a cross-session handoff or stage change, persist the updated record through `$rb-working-diary`.
+Before entering the selected workflow, update `Pipeline State` if the project uses that record. Recover only fields needed for the requested work; do not introduce the full onboarding pipeline for a bounded maintenance task. Before a cross-session handoff or material stage change, persist the updated record through `$rb-working-diary`.
 
 ## Required Behaviour
 
@@ -98,23 +98,6 @@ Before entering the selected workflow, update `Pipeline State` with its canonica
 
 ## Output
 
-Provide a concise continuity brief:
+Briefly state the recovered objective, current worktree and verification state, material uncertainty, and next action. Link the relevant plan or handoff. Do not reproduce the full discovery inventory.
 
-```markdown
-## Continuity Brief
-
-- Project:
-- Prior context:
-- Current state:
-- Test levels and commands:
-- CI-equivalent gate:
-- Coverage / fixtures / environment:
-- Checks last run and omissions:
-- Open questions / risks:
-- Pipeline stage / status / completed evidence:
-- PRD status / active artifact:
-- Next gate / expected successor:
-- Recommended next step:
-```
-
-Then ask whether to proceed with the recommended workflow.
+If the next workflow is already authorised, continue after the brief. Otherwise ask only for the missing decision or permission. A request to resume and implement an identified task does not require a second confirmation.

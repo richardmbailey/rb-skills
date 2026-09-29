@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-sync-skills-repo",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "sync-verification-only-dry-run",
+      "kind": "regression",
+      "prompt": "Verify what synchronising this local rb-skills repository into the Codex skills directory would do. Run the dry-run, inspect destinations and conflicts, and stop without installing or replacing anything.",
+      "should_trigger": true,
+      "success": [{"name": "sync dry-run is the stopping point", "evaluator": "semantic", "rubric": "Pass only if the response runs or describes the repository sync dry-run, reports exact planned destinations and conflicts, and performs no installation, replacement, backup, or unrelated setup after a verification-only request."}]
+    },
+    {
+      "id": "sync-authorised-install-after-preview",
+      "kind": "outcome",
+      "prompt": "Synchronise the selected skills from this local repository into my Codex skills directory using symlinks. Run the dry-run first, inspect it, then install the approved selection without replacing unrelated skills.",
+      "should_trigger": true,
+      "success": [{"name": "sync follows reviewed preview", "evaluator": "semantic", "rubric": "Pass if the workflow performs the dry-run before installation, installs only the approved selected skills as symlinks, preserves unrelated destinations, and reports observed paths and conflicts accurately."}]
+    },
+    {
+      "id": "sync-project-setup-negative",
+      "kind": "trigger",
+      "prompt": "Repair the existing project's AGENTS.md, CONTEXT.md, and skill discovery after an incomplete setup.",
+      "should_trigger": false,
+      "success": [{"name": "setup repair is not repository sync", "evaluator": "semantic", "rubric": "Pass if rb-sync-skills-repo is not selected and the request routes to rb-setup-local-agent-skills."}]
+    }
+  ]
+}

@@ -41,16 +41,7 @@ Available collaboration tools, model availability, and concurrency limits may fu
 
 ## Ownership
 
-The parent agent owns:
-
-- understanding the user's complete request;
-- selecting and scoping delegated work;
-- decisions that affect the whole task;
-- resolving conflicts between results;
-- inspecting returned evidence and changed artifacts;
-- running or reviewing the final relevant checks;
-- deciding whether the user's task is complete;
-- writing the final answer.
+The parent owns the full request, delegation boundaries, cross-cutting decisions, evidence review, integration, final checks, completion judgement, and final answer.
 
 A sub-agent owns only the task packet it receives. Its completion message is a proposed result, not proof that the overall task is complete.
 
@@ -58,22 +49,11 @@ A sub-agent owns only the task packet it receives. Its completion message is a p
 
 Before delegating, prefer deterministic code or a direct tool call when stable inputs and outputs make model judgement unnecessary.
 
-Use `gpt-5.6-luna` with `reasoning_effort: max` for a well-defined, discrete subtask that requires limited judgement. Suitable work includes:
+Use `gpt-5.6-luna` with `reasoning_effort: max` for bounded work with limited judgement: locating evidence, applying an explicit mechanical edit, adding an already-specified isolated test, or running focused checks.
 
-- locating files, symbols, tests, or source passages within a bounded scope;
-- extracting or classifying information into a stated structure;
-- summarising a small supplied source set;
-- making a narrow mechanical edit with explicit acceptance criteria;
-- adding an isolated test from an already-defined behaviour;
-- running focused checks and returning the exact evidence;
-- checking a bounded artifact against a concrete checklist.
+Use `gpt-6-astra` with `reasoning_effort: medium` for an independent subtask needing difficult reasoning or synthesis, such as a substantial review, mathematical argument, or implementation across several components.
 
-Use `gpt-6-astra` with `reasoning_effort: medium` when an independently scoped subtask genuinely needs high intelligence. Suitable work includes:
-
-- difficult mathematical or scientific reasoning;
-- synthesis across a large but bounded source or file set;
-- a substantial coding unit that requires reasoning across several components;
-- a difficult review or investigation that requires evolving judgement.
+These are routing defaults, not measured cost guarantees. Follow an explicit user model choice or a project policy backed by task-relevant measurements. Compare accepted outcomes and total effort, including retries and parent review, before changing the defaults.
 
 Keep the work with the parent when it requires the parent's broad context, final synthesis, cross-cutting trade-offs, or continuous integration judgement. Do not move work to Astra merely because it is large; first confirm that it has an independent boundary and acceptance test.
 

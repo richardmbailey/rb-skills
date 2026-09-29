@@ -12,7 +12,7 @@ Inspect the codebase for structural problems and opportunities for clearer bound
 ## Procedure
 
 1. Read `AGENTS.md` and `CONTEXT.md` if present; otherwise note missing project context and continue.
-2. Inspect repository structure.
+2. Inspect repository structure and identify the decision this review should inform. Follow the relevant data and control paths before expanding to unrelated modules.
 3. Identify major modules and responsibilities.
 4. Look for shallow modules, unclear names, duplication, implicit dependencies, hidden scientific assumptions, poor test seams, circular imports, scattered configuration, unnecessary coupling, and ownership gaps.
 5. Identify candidate deeper modules with simple interfaces and testable contracts only when the evidence supports a change.
@@ -29,6 +29,8 @@ Inspect the codebase for structural problems and opportunities for clearer bound
 - Prefer the simplest architecture that expresses the required behaviour; require evidence before escalating from explicit state machines to dynamic planning or orchestration.
 - Prefer incremental refactors with tests over large rewrites.
 - Preserve existing project conventions unless a proposed change has a clear payoff.
+- Explain the failure or change cost that a proposed refactor removes. A different pattern, newer framework, or shorter file is not sufficient justification.
+- Stop expanding the review when additional inspection would not change the supported recommendation. Name material areas not inspected.
 
 ## Output
 

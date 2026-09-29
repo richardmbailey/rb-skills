@@ -7,7 +7,7 @@ description: "Use for the full RB setup workflow: install or verify global skill
 
 ## Purpose
 
-Install or verify the RB skills setup for the current repository in one pass, then continue into onboarding.
+Install or verify the RB skills setup for the current repository. Continue into onboarding when the user has requested it.
 
 This is the setup entrypoint for new projects when the human wants global skills, project resources, and visibility checks prepared before normal start-project onboarding.
 
@@ -52,7 +52,7 @@ This is the setup entrypoint for new projects when the human wants global skills
    - for the legacy layout, use the legacy project-resource installer;
    - verify flat-layout installed skills are symlinks back to the selected `rb-skills` repo;
    - confirm `.rb-agent/skills` was not created.
-6. If installation succeeds, continue into `$rb-start-project` onboarding in Codex or `/rb-start-project` onboarding in Claude Code.
+6. If installation succeeds and the request includes onboarding, continue into `$rb-start-project` in Codex or `/rb-start-project` in Claude Code. For installation-only or verification-only work, report the result and stop; do not begin a project interview solely because installation succeeded.
 
 ## Required behaviour
 

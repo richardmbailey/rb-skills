@@ -284,10 +284,39 @@
   "skill_metadata_contracts": [
     {"skill": "rb-start-project", "required": ["testing", "CI-equivalent", "route"]},
     {"skill": "rb-continue-project", "required": ["testing", "CI-equivalent", "route"]},
-    {"skill": "rb-create-implementation-plan", "required": ["testing architecture", "constrained static-only"]},
+    {
+      "skill": "rb-create-implementation-plan",
+      "required": [
+        "testing architecture",
+        "constrained static-only",
+        "standard execution by default",
+        "only when requested"
+      ]
+    },
     {"skill": "rb-create-prd", "required": ["product requirements document", "implementation planning", "success measures", "decisions"]},
-    {"skill": "rb-execute-plan", "required": ["standard conditions by default", "automated behavioural tests", "independent sub-agent review", "CI-equivalent", "static-only"]},
-    {"skill": "rb-sprint", "required": ["adaptive", "PRD", "automated behavioural tests", "CI-equivalent"]},
+    {
+      "skill": "rb-execute-plan",
+      "required": [
+        "standard conditions by default",
+        "automated behavioural tests",
+        "independent sub-agent review",
+        "CI-equivalent",
+        "static-only",
+        "small local changes",
+        "existing explicit gates"
+      ]
+    },
+    {
+      "skill": "rb-sprint",
+      "required": [
+        "adaptive",
+        "PRD",
+        "automated behavioural tests",
+        "CI-equivalent",
+        "compact NO_CHANGE",
+        "authorised human decisions"
+      ]
+    },
     {"skill": "rb-implement-with-tests", "required": ["automated behavioural tests", "test levels", "CI-equivalent"]},
     {"skill": "rb-tdd-scientific-code", "required": ["test levels", "invariants", "CI-equivalent"]},
     {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},

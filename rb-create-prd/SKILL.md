@@ -33,6 +33,7 @@ Do not invent missing product decisions, research findings, metrics, legal oblig
    - **Revise:** update an existing PRD while preserving valid decisions and traceability.
    - **Review:** identify material gaps, conflicts, unsupported claims, and readiness problems without changing the document unless requested.
 2. Inspect relevant source material. Distinguish observed evidence, stakeholder decisions, assumptions, proposals, and unresolved questions. Preserve links or identifiers that let readers trace material claims and requirements to their source.
+   For a revision, inspect the affected requirements and their dependencies first. Do not rebuild the whole PRD for a local clarification. A current instruction from the authorised decision-maker can supersede an older requirement; record that decision and resolve material consequences without asking for the same approval again.
 3. Establish the decision boundary. Define the product problem and desired outcome before specifying features. Separate user needs from a proposed solution. State why the work matters now when the sources establish that reason.
 4. Identify users and affected parties. Record primary users, secondary users, administrators, operators, support teams, and affected non-users when their needs, permissions, actions, or risks change a requirement. Describe needs in language that focuses on the user's problem rather than an assumed interface.
 5. Define outcomes and scope:
@@ -55,10 +56,13 @@ Do not invent missing product decisions, research findings, metrics, legal oblig
 - Use `$rb-create-implementation-plan` after the PRD is decision-ready and the user asks for implementation planning.
 - Use `$rb-project-language` when the project needs a durable shared vocabulary beyond the PRD.
 - Do not create backlog tickets, detailed architecture, task estimates, or code unless the user separately requests that work.
+- Existing instructions to continue into planning or implementation count as that request. Keep unrelated work outside scope, but do not stop solely because the next authorised step uses another skill.
 
 ## Output
 
 For a new or revised PRD, write to the path or document named by the user. If the user does not request a file, return the PRD in Markdown. Use an existing project template when it captures every material decision required by this skill. Otherwise, preserve the project template and add the missing sections, or use the structure in `references/prd-structure.md` when no template exists.
+
+Include only sections that affect a product decision or acceptance. Do not create metrics, stakeholders, deadlines, or empty risk registers to make a small feature resemble a large programme.
 
 Place unresolved items where readers will encounter their consequences and collect them in the open-decisions section. Do not hide uncertainty in polished prose.
 

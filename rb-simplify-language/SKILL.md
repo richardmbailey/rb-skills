@@ -1,6 +1,6 @@
 ---
 name: "rb-simplify-language"
-description: "Manual invocation only. Use only when the human explicitly requests $rb-simplify-language in Codex or /rb-simplify-language in Claude Code. It is intended primarily for agent-facing control text but may be applied to any text the human supplies. Do not select it automatically."
+description: "Manual invocation only. Use when the human explicitly requests $rb-simplify-language in Codex or /rb-simplify-language in Claude Code, or when the authorised rb-write-skill post-draft procedure explicitly invokes it. Primarily for agent-facing control text; direct human invocation may cover any supplied text. Do not select it automatically."
 ---
 
 # RB Simplify Language
@@ -11,11 +11,13 @@ This is an LLM-specific controlled-language method inspired by simplified techni
 
 ## Invocation
 
-Apply this skill only when the human explicitly invokes it by name. Valid invocations include:
+Apply this skill only through an explicit invocation. Valid invocations include:
 
 - Codex: `$rb-simplify-language`;
 - Claude Code: `/rb-simplify-language`;
 - an explicit natural-language request to apply the `rb-simplify-language` skill.
+
+The authorised `$rb-write-skill` post-draft procedure also explicitly invokes this method for its completed draft. That scoped call does not enable automatic selection for other control-text work.
 
 Do not select or apply this skill automatically because a task concerns prompts, system instructions, tools, workflows, handoffs, or evaluation criteria. A mention that quotes, documents, reviews, or modifies the skill itself is not an invocation unless the human also asks to apply its method.
 
@@ -51,7 +53,7 @@ If a missing criterion would materially change behaviour, do not invent it. Mark
 ## Method
 
 1. Identify the supplied text's purpose, audience, and format. For agent-facing control text, separate operative rules from user-facing explanation. For other text, preserve its natural form unless the human requests a controlled format.
-2. Build an intent ledger. For each required behaviour, identify the actor, condition, action, object, observable result, failure response, and precedence. Preserve negation, scope, quantities, exceptions, permissions, and side effects.
+2. Build an intent ledger. For each required behaviour, identify the actor, condition, action, object, observable result, failure response, and precedence. Preserve negation, scope, quantities, exceptions, permissions, and side effects. Keep the ledger internal unless an audit artifact is requested; simple wording edits do not need a published protocol table.
 3. Establish canonical terms. Use one name for each tool, state, role, object, and action. Do not collapse distinct concepts merely because their names are similar.
 4. Classify each requirement:
    - deterministic structure or syntax belongs in a schema, parser, enum, table, or exact field definition where practical;

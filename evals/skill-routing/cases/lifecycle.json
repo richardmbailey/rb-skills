@@ -135,6 +135,33 @@
     "rationale": "The explicit transfer to another session requires a handoff."
   },
   {
+    "id": "lifecycle-start-existing-authority",
+    "family": "project-lifecycle",
+    "prompt": "Onboard this repository. Its approved PRD is decision-ready, and I explicitly authorise the transition into implementation planning and delivery of the agreed feature; continue without asking me to confirm that transition again.",
+    "expected": {"outcome": "select", "skill": "rb-start-project"},
+    "forbidden_skills": ["rb-continue-project", "rb-create-prd"],
+    "critical": true,
+    "rationale": "First onboarding still owns recovery of the lifecycle state, while the explicit authority permits the recorded next transition without a repeated permission question."
+  },
+  {
+    "id": "lifecycle-continue-existing-authority",
+    "family": "project-lifecycle",
+    "prompt": "Resume this mature repository from its handoff. The handoff identifies the next approved implementation task, and I want you to continue it through tests and review without asking for the same authority again.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-start-project", "rb-end-session"],
+    "critical": true,
+    "rationale": "The existing handoff and current request supply continuity and authority for the next workflow."
+  },
+  {
+    "id": "lifecycle-end-no-implicit-archive",
+    "family": "project-lifecycle",
+    "prompt": "Prepare a durable handoff with decisions, checks, unfinished work, risks, and exact next steps. Ending this work session does not mean that the Codex chat should be archived.",
+    "expected": {"outcome": "select", "skill": "rb-end-session"},
+    "forbidden_skills": ["rb-where-are-we", "rb-continue-project"],
+    "critical": true,
+    "rationale": "Session closure requires a handoff; archival is a separate explicit action."
+  },
+  {
     "id": "lifecycle-ambiguous-help-project",
     "family": "project-lifecycle",
     "prompt": "Can you help me with this project?",

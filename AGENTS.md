@@ -139,6 +139,6 @@ When implementing or reviewing code that handles text:
 
 - Use deterministic parsing for stable structure and syntax: JSON, YAML, XML, CSV, frontmatter, exact delimiters, known IDs, URLs, file paths, logs, protocol fields, and other formats with explicit grammar.
 - Prefer structured parsers and existing libraries for structured formats before regex.
-- Use an LLM-backed path when correctness depends on meaning: intent, relevance, classification, summarisation, ambiguity resolution, rubric judgment, natural-language extraction, entity or claim matching, or deciding whether differently worded passages mean the same thing.
+- When correctness depends on meaning, use an LLM or an existing semantic method validated against representative acceptance cases. Preserve explicit project technology requirements; do not add an LLM when a proven semantic library or classifier already meets the requirement.
 - Do not build elaborate regexes, keyword lists, fuzzy string scoring, or brittle heuristics as substitutes for semantic understanding.
 - When using an LLM, wrap it with deterministic boundaries: bounded inputs, typed outputs, validation, retries or visible failure, and focused fixtures/evals where practical.

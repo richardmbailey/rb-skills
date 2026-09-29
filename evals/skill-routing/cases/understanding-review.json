@@ -225,6 +225,15 @@
     "rationale": "The skill remains inactive because the user did not invoke it by name."
   },
   {
+    "id": "understanding-simplify-language-authorised-write-skill-postdraft",
+    "family": "understanding-review",
+    "prompt": "The first complete RB skill draft is finished. The authorised rb-write-skill post-draft procedure explicitly invokes $rb-simplify-language to review its control text while preserving trigger boundaries and rationale.",
+    "expected": {"outcome": "select", "skill": "rb-simplify-language"},
+    "forbidden_skills": ["rb-revise-ai-draft"],
+    "critical": true,
+    "rationale": "The explicit scoped post-draft invocation is the manual-only skill's authorised exception."
+  },
+  {
     "id": "understanding-ambiguous-review",
     "family": "understanding-review",
     "prompt": "Can you look over these changes?",

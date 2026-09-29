@@ -75,6 +75,13 @@
       "success": [{"name": "approval applies only to the named transition", "evaluator": "semantic", "rubric": "Pass if Pipeline State records only the onboarding-to-PRD transition as approved and the workflow stops for new approval before implementation planning or implementation."}]
     },
     {
+      "id": "existing-authority-continues-after-onboarding",
+      "kind": "regression",
+      "prompt": "Use $rb-start-project. The approved PRD is already decision-ready, and I authorise the transition into implementation planning and delivery of the agreed feature. Continue through the ordinary next workflow without asking me to confirm that authority again.",
+      "should_trigger": true,
+      "success": [{"name": "recorded authority is reused", "evaluator": "semantic", "rubric": "Pass if the response records the existing authority, treats the approved PRD as complete, hands off to rb-create-implementation-plan or the already-authorised delivery workflow, and does not ask for a second confirmation solely because the skill or lifecycle stage changes. It must still stop for an unrelated unresolved product or permission decision."}]
+    },
+    {
       "id": "no-code-during-onboarding",
       "kind": "regression",
       "prompt": "Use $rb-start-project for this new application and start coding immediately while you ask the setup questions.",

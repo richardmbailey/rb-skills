@@ -51,7 +51,21 @@
       "kind": "outcome",
       "prompt": "Create the plan for later linear execution with rb-execute-plan and define what its task states mean.",
       "should_trigger": true,
-      "success": [{"name": "linear verified state names independent gate", "evaluator": "semantic", "rubric": "Pass only if [v] is reserved for the delivery workflow's passed verification gate and the plan states that rb-execute-plan additionally requires favourable independent sub-agent review before [v]."}]
+      "success": [{"name": "linear verified state names applicable gate", "evaluator": "semantic", "rubric": "Pass only if [v] is reserved for the delivery workflow's passed verification gate and the plan states that independent sub-agent review is required when the change is substantial, high-risk, or cross-cutting, or when an existing explicit gate requires it. The plan must not make independent review mandatory for every small task."}]
+    },
+    {
+      "id": "plan-default-standard-route",
+      "kind": "regression",
+      "prompt": "Create the top-level implementation plan for this approved feature. The plan does not specify an execution route, and I have not requested constrained execution.",
+      "should_trigger": true,
+      "success": [{"name": "missing route uses standard", "evaluator": "semantic", "rubric": "Pass only if the plan records or explains standard execution as the default without asking the human to choose a route, and treats constrained execution as available only after an explicit request or selection. An undecided route must have the same standard default."}]
+    },
+    {
+      "id": "plan-undecided-standard-route",
+      "kind": "regression",
+      "prompt": "Create the implementation plan. Its Execution Route field is undecided; proceed with the ordinary tested delivery path unless I explicitly request the constrained route.",
+      "should_trigger": true,
+      "success": [{"name": "undecided route does not block", "evaluator": "semantic", "rubric": "Pass only if the workflow proceeds with standard planning and does not ask a route-choice question solely because the field is undecided or prepare constrained compilation implicitly."}]
     },
     {
       "id": "plan-constrained-status-system",

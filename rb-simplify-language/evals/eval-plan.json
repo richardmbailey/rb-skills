@@ -156,7 +156,7 @@
         {
           "name": "does not replace skill authoring",
           "evaluator": "semantic",
-          "rubric": "Pass if rb-simplify-language is not selected during initial routing because the complete authoring request belongs to rb-write-skill. After the first complete draft, rb-write-skill may explicitly invoke rb-simplify-language for its required language-review step."
+          "rubric": "Pass if rb-simplify-language is not selected during initial routing because the complete authoring request belongs to rb-write-skill. After the first complete draft, the authorised rb-write-skill post-draft procedure may explicitly invoke rb-simplify-language for that required language-review step; this scoped exception does not enable automatic selection for other skill-authoring or control-text requests."
         }
       ]
     },
@@ -274,6 +274,19 @@
           "name": "manual method composes with specialist revision",
           "evaluator": "semantic",
           "rubric": "Pass only if the explicit rb-simplify-language invocation is honoured within the broader task while rb-revise-ai-draft remains the primary workflow. The result must preserve the report's natural form and all facts, citations, qualifications, and uncertainty rather than converting it into control text."
+        }
+      ]
+    },
+    {
+      "id": "authorised-write-skill-postdraft-exception",
+      "kind": "regression",
+      "prompt": "The first complete draft of this RB skill is finished. The authorised rb-write-skill post-draft procedure now explicitly invokes $rb-simplify-language to review the draft while preserving its trigger boundary, permissions, examples, and rationale.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "scoped postdraft invocation is accepted",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the explicit, authorised rb-write-skill post-draft call selects rb-simplify-language for the completed draft, preserves the skill's meaning and useful context, and does not imply that the manual-only skill may be selected automatically for other skill-authoring or control-text work."
         }
       ]
     }

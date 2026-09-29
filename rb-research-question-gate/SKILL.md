@@ -12,6 +12,7 @@ Use this skill to keep research exploration honest before product or code moment
 ## Ground Rules
 
 - Treat "stop" as a valid successful outcome.
+- Apply the novelty gate to the claimed contribution. Replication, teaching, or applying an established method need not be novel; assess their stated purpose rather than rejecting them because prior work exists.
 - Do not write a PRD, implementation plan, experiment script, or code until the gate explicitly allows it.
 - Prefer primary sources: peer-reviewed papers, arXiv papers, major conference proceedings, standards documents, and major-lab technical reports.
 - Use cautious technical language. Avoid novelty, breakthrough, semantic, intelligent, or marketing-style claims unless the source evidence justifies them.
@@ -70,7 +71,7 @@ If supplied research already exists, read it and extract claims into a structure
 
 ### 4. Build A Review And Gap Matrix
 
-Create a matrix with columns suited to the domain. For algorithm/method work, include:
+Create one matrix with columns suited to the domain and the decision. For algorithm/method work, select the relevant fields below; omit fields that do not distinguish the proposal from prior work:
 
 - Source.
 - Area or prior-art class.
@@ -118,7 +119,7 @@ Classify each source as direct, high-overlap, adjacent, baseline, or not relevan
 
 ### 7. Separate Dimensions Explicitly
 
-Produce tables or notes that distinguish:
+Use the existing matrix or notes to distinguish the applicable dimensions; do not create a second artifact for the same evidence:
 
 - Signal source: scalar loss, confidence, entropy, internal state, gradients, optimizer state, metadata, human labels, environment feedback, novelty, etc.
 - Actuator: sample weighting, token weighting, loss weighting, global schedule, layer/group/tensor multiplier, architecture change, regularizer, selection, synthetic signal, evaluation filter, etc.
@@ -131,9 +132,9 @@ This separation is often where the real research question emerges.
 
 Define explicit criteria before deciding. Adapt the thresholds to the field, but include at least:
 
-- Stop criteria: direct duplicate found; core terms cannot be operationalized; the distinction collapses into known work; only weak baselines would support the claim; or the first credible test is infeasible.
+- Stop criteria for a novelty claim: direct duplicate found or the claimed distinction collapses into known work. For any contribution, stop when core terms cannot be operationalized, only weak baselines would support the claim, or the first credible test is infeasible.
 - Revise criteria: one dimension survives, but the original framing is too broad, the contribution type changes, or a near miss forces a narrower regime, signal, actuator, or claim.
-- Proceed criteria: no direct duplicate found; nearest priors are understood; signal, actuator, and regime distinctions survive; falsifiers are clear; and credible controls/baselines can be named.
+- Proceed criteria: nearest priors are understood, the stated contribution remains credible, falsifiers are clear, and controls/baselines can be named. A novelty claim also requires that no direct duplicate was found and the claimed distinctions survive. For replication, teaching, or application, assess fidelity and the stated learning or use objective instead of requiring novelty.
 
 State which criteria passed, failed, or remain uncertain.
 
@@ -141,15 +142,15 @@ State which criteria passed, failed, or remain uncertain.
 
 Use one of these outcomes:
 
-- **Stop**: direct prior found, distinction collapses, claim is untestable, or only weak baselines would support it.
+- **Stop**: the claimed novelty is contradicted by direct prior work, or the stated contribution is untestable or supported only by weak comparisons.
 - **Revise**: part of the idea survives, but the original framing is too broad or the contribution type changes.
-- **Proceed to narrow PRD/research design**: no direct duplicate found, nearest priors are understood, falsifiers are clear, and the first non-code research design can be written.
+- **Proceed to narrow PRD/research design**: the applicable proceed criteria above pass and the first non-code research design can be written. Name whether this supports a novelty claim, replication, teaching, or application; do not relabel one as another.
 
 Proceeding to PRD/research design is not permission to code. Unless the user already asked to continue, stop after reporting the gate outcome and ask whether to create the PRD/research-design document. The PRD/research design must still define operational measures, controls, baselines, falsifiers, minimum experiments, and stop criteria.
 
 ## Deliverables
 
-Prefer files over chat-only output for substantial projects. Suggested artifacts:
+Prefer a single linked assessment for substantial projects. Split into the following artifacts only when their size or reuse warrants separate files:
 
 - `deep_research_prompts.md`
 - `review_gap_matrix.md`
@@ -164,10 +165,10 @@ Update `CONTEXT.md` and `$rb-working-diary` with durable decisions, especially i
 
 Stop and ask for user direction if:
 
-- The user wants implementation before accepting the novelty gate.
+- Implementation is requested while a material research premise remains unresolved and the user has not accepted that uncertainty. Do not insert a novelty gate into an already agreed application of an established method.
 - Required sources are inaccessible and the result would depend on guessing.
 - The idea cannot be expressed in measurable terms.
-- The closest prior art appears to be a direct duplicate.
+- The closest prior art contradicts the novelty being claimed and the user has not authorised reframing. A direct prior is expected in an explicitly requested replication.
 - The only surviving claim relies on marketing language or weak comparisons.
 
 When uncertain, recommend another targeted audit or Deep Research prompt rather than inflating confidence.

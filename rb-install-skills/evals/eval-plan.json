@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "skill": "rb-install-skills",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "install-verification-only-stops-after-check",
+      "kind": "regression",
+      "prompt": "Verify the full RB installation for this existing repository, including global skill visibility, AGENTS.md, CONTEXT.md, and discovery. This is verification-only; do not begin project onboarding after the check succeeds.",
+      "should_trigger": true,
+      "success": [{"name": "verification-only installation boundary", "evaluator": "semantic", "rubric": "Pass only if the workflow reports global installation, project resources, and visibility evidence, stops after verification, and does not start rb-start-project merely because installation or verification succeeded."}]
+    },
+    {
+      "id": "install-full-setup-and-onboarding",
+      "kind": "outcome",
+      "prompt": "Set up the full RB workflow on this new repository: install or verify global skills, prepare project resources, confirm visibility, and then begin initial onboarding.",
+      "should_trigger": true,
+      "success": [{"name": "full installation hands off deliberately", "evaluator": "semantic", "rubric": "Pass if the workflow verifies the target and pack, performs the requested installation and resource setup, reports exact visibility results, and continues to rb-start-project only because onboarding was explicitly included."}]
+    }
+  ]
+}

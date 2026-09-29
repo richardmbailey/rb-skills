@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "skill": "rb-context-tokens",
+  "conditions": ["with_skill", "without_skill"],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "tokens-newest-session-uncertainty",
+      "kind": "regression",
+      "prompt": "Report the current context input tokens and the latest call's usage. Several Codex session files exist and the newest file by modification time may be another chat; use an explicit current session path when available, otherwise state that session identity is unverified.",
+      "should_trigger": true,
+      "success": [{"name": "newest file is not assumed active", "evaluator": "semantic", "rubric": "Pass only if the response uses measured token_count events, prefers an explicit current-session identity, and when that identity is unavailable reports the newest-session selection method and uncertainty instead of claiming the newest file belongs to this chat. It must use input tokens for headline context-window usage."}]
+    },
+    {
+      "id": "tokens-missing-event",
+      "kind": "outcome",
+      "prompt": "Report the active session's context-token usage, but its session file contains no token_count event.",
+      "should_trigger": true,
+      "success": [{"name": "missing measurement remains visible", "evaluator": "semantic", "rubric": "Pass only if the response says the session file does not contain a token_count event and does not estimate usage from transcript text."}]
+    },
+    {
+      "id": "tokens-ordinary-project-status-negative",
+      "kind": "trigger",
+      "prompt": "Tell me what phase this project is in and what work remains.",
+      "should_trigger": false,
+      "success": [{"name": "project status is not token reporting", "evaluator": "semantic", "rubric": "Pass if rb-context-tokens is not selected and the request routes to the appropriate project-status or continuation workflow."}]
+    }
+  ]
+}

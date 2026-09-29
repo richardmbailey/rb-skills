@@ -31,6 +31,8 @@ Bundled script: `scripts/sync_skills_repo.py`.
 python3 /path/to/skills-repo/rb-sync-skills-repo/scripts/sync_skills_repo.py /path/to/skills-repo --dry-run
 ```
 
+Inspect the exact destinations and planned actions. If an existing symlink already resolves to the requested source, source edits are already available through it. Report that state rather than replacing the link or claiming a new installation. A verification-only request stops after the dry-run.
+
 4. Install:
 
 ```bash

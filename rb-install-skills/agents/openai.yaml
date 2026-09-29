@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Install Skills"
   short_description: "Install RB skills and project resources"
-  default_prompt: "Use $rb-install-skills to install or verify RB skills and prepare this repository for start-project onboarding."
+  default_prompt: "Use $rb-install-skills to install or verify RB skills and prepare the requested project resources. Begin onboarding only if it is included in my request."

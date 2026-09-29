@@ -16,7 +16,14 @@
       "kind": "outcome",
       "prompt": "Diagnose this regression and then fix it with a regression test.",
       "should_trigger": true,
-      "success": [{"name": "implementation has an explicit owner", "evaluator": "semantic", "rubric": "Pass if diagnosis establishes the cause before the requested implementation proceeds through rb-implement-with-tests or rb-tdd-scientific-code, with a failing-before and passing-after regression test when feasible."}]
+      "success": [{"name": "implementation has an explicit owner", "evaluator": "semantic", "rubric": "Pass if diagnosis establishes the cause before the requested implementation proceeds through rb-implement-with-tests or rb-tdd-scientific-code, with a failing-before and passing-after regression test when feasible. The existing request to diagnose and fix is sufficient authority for that handoff; the response must not ask for a second confirmation solely because the implementation skill takes over."}]
+    },
+    {
+      "id": "diagnose-authorised-fix-no-reconfirmation",
+      "kind": "regression",
+      "prompt": "Investigate the failing import, then implement the agreed fix and its regression test in the same task. Do not pause to ask whether you may move from diagnosis to implementation.",
+      "should_trigger": true,
+      "success": [{"name": "diagnosis-to-fix authority is continuous", "evaluator": "semantic", "rubric": "Pass only if the response keeps diagnosis read-only until the cause is supported, then transfers the already-authorised fix to rb-implement-with-tests or rb-tdd-scientific-code without repeating the permission question. It must preserve the failing evidence and required regression coverage."}]
     },
     {
       "id": "diagnose-known-fix-negative",

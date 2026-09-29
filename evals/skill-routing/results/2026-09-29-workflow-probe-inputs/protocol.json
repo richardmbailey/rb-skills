@@ -1,0 +1,21 @@
+{
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "max",
+  "trials_per_condition": 3,
+  "scenarios_per_trial": 6,
+  "inherited_conversation": false,
+  "scope": "Workflow decisions only; no repository task execution.",
+  "grading": "Parent semantic review against criteria, not blinded.",
+  "packets": {
+    "with_skill.txt": "104b6a4ca2b6ddaa6165f84c5fb6c4c6576e450d18fe85e6103e2a11dbcf0d67",
+    "without_skill.txt": "b0112a2d21ffcf11520c441c3434a52b47213e6570458affdbcc2d84c7876b69"
+  },
+  "result_file": "../2026-09-29-workflow-probes.json",
+  "limitations": [
+    "No pre-edit skill condition.",
+    "No live coding outcomes or defect-rate measurements.",
+    "No cost or latency measurements.",
+    "Trials share model and prompts; not independent estimates of general reliability.",
+    "Most baseline answers already match the expected decisions."
+  ]
+}

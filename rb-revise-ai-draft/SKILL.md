@@ -39,8 +39,8 @@ If a requested personal detail or concrete example is missing, use a clearly mar
 ## Editing approach
 
 1. Establish the audience, purpose, medium, voice evidence, and protected content.
-2. Build a mental claim ledger covering each factual assertion, qualification, attribution, quotation, and personal statement.
-3. Diagnose meaning-level problems. Use `references/editorial-patterns.md` as a set of diagnostic cues, not banned forms or a word-replacement checklist.
+2. Build a mental claim ledger covering each factual assertion, qualification, attribution, quotation, and personal statement. Keep this check internal unless the human requests an audit trail; it should protect the revision without adding a second document to a prose-editing task.
+3. Diagnose meaning-level problems. Use `references/editorial-patterns.md` as a set of diagnostic cues, not banned forms or a word-replacement checklist. Preserve passages that already communicate their meaning well; visible change is not itself evidence of improvement.
 4. Rewrite at the lightest level that meets the request. Prefer concrete subjects, direct verbs, purposeful transitions, and sentence rhythms suited to the genre. Remove slogan-like and marketing-like language wherever it appears. Do not merge or embed the slogan wording in a longer sentence. Discard the rhetorical formulation and state only its supported meaning in plain language.
 5. Use a supplied voice sample as evidence about diction, rhythm, formality, humour, and first-person usage. Do not manufacture quirks when no sample exists.
 6. Run a fidelity pass against the claim ledger. Every material claim in the revision must trace to the source, and every material qualification in the source must survive.

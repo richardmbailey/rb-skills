@@ -25,13 +25,13 @@ inspect repo -> establish pipeline state -> resolve discovery gates -> create pr
 ## Required Behaviour
 
 - Do not write product code during onboarding.
-- Ask one question at a time and wait for the human's answer.
-- If repository files already answer a question, state the inferred answer and ask the human to confirm or correct it.
-- Keep a short `Pipeline State` after each answer using the fields below.
+- Ask only for missing decisions that change the next action. Bundle independent questions; ask dependent questions one at a time.
+- Use answers already established by the request or repository. State material assumptions without asking for confirmation of known facts.
+- For multi-stage work, update `Pipeline State` when a decision changes the stage or next action. For one bounded task, a goal, acceptance check, and next workflow are sufficient.
 - Do not invent domain assumptions, units, invariants, users, deployment targets, testing expectations, or success criteria.
 - Do not mark a pipeline stage complete unless its exit evidence exists or the human explicitly accepts the missing evidence as a risk.
 - If the human changes the goal or skips a stage, update `Pipeline State` and record the reason and consequence.
-- Before entering a new workflow, obtain explicit approval unless the recorded autonomy decision already authorises that exact transition. Approval for one workflow does not authorise later workflows.
+- Continue into workflows already authorised by the current request or recorded autonomy decision. If a transition introduces a material decision or action outside that authority, obtain explicit approval for that difference. A skill change alone is not an approval boundary.
 
 ## New Project Pipeline
 
@@ -99,22 +99,14 @@ Continue with this global skill. `.rb-agent/` may contain project resources, pro
 
 ## Question Sequence
 
-Ask these in order unless the answer is already clear from the repository. Stop the onboarding questions when the known facts are sufficient to choose and persist the next pipeline stage. Leave stage-specific detail to the workflow that owns that stage.
+Stop questioning once the known facts support the next action. Recover these from the repository and request before asking:
 
-1. **Goal:** What is the main outcome you want from this project or session?
-2. **Audience:** Who uses the code, product, analysis, or outputs?
-3. **Current state:** Is this greenfield, existing but unfamiliar, active development, bug fixing, research/prototyping, or maintenance?
-4. **Evidence and premise:** Which user research, operational evidence, scientific premise, policy, or stakeholder decision supports the project?
-5. **Product-requirements gate:** Will this create a product, service, or substantial user-facing capability? Does an authoritative PRD or equivalent requirements artifact already exist?
-6. **Decision ownership:** Who owns product decisions, technical decisions, approvals, and acceptance?
-7. **First task:** What is the first concrete thing you want help with?
-8. **Non-goals:** What should the agent avoid changing or deciding?
-9. **Constraints:** What technical, time, dependency, privacy, deployment, or compatibility constraints matter?
-10. **Run/check loop:** Which commands install, run, unit-test, integration-test, lint, type-check, format, build, benchmark, or validate the project, and which command best matches CI before completion?
-11. **Test expectations:** Which boundaries and critical workflows require integration, contract, migration, end-to-end, stochastic, performance, security, concurrency, or recovery coverage? Are there existing coverage thresholds or flaky tests?
-12. **Domain language:** What project-specific terms, units, invariants, assumptions, or trusted outputs should be captured?
-13. **Definition of done:** What would make the first deliverable acceptable, including required automated tests and checks?
-14. **Autonomy:** Which exact pipeline transitions, if any, may proceed without another confirmation? Stop at every material decision or permission boundary.
+1. The desired outcome, first deliverable, intended users, and acceptance evidence.
+2. Material constraints and non-goals, including scientific assumptions or product decisions still unresolved.
+3. Existing requirements, plans, and the test/CI commands needed for that deliverable.
+4. Authority to continue, including any explicit stop points. A request to implement or finish the work already authorises its ordinary necessary steps.
+
+Leave later-stage details to the owning workflow. Do not ask the human to classify the repository, repeat discoverable commands, or approve every stage separately.
 
 ## Workflow Routing
 
@@ -136,7 +128,7 @@ Route to the narrowest next workflow supported by the first task:
 | The user wants structural critique or a refactoring strategy | `$rb-architecture-review` |
 | The user wants defects found in a diff, branch, or pull request | `$rb-review-pr-or-diff` |
 
-Use `$rb-name` syntax in Codex and `/rb-name` syntax in Claude Code. Do not force every project through every workflow. Recommend the next workflow and show the later expected stages. Obtain approval as defined above, then hand off. Before the handoff, persist `Pipeline State` so the next session can recover the current stage and expected successor.
+Use `$rb-name` syntax in Codex and `/rb-name` syntax in Claude Code. Do not force every project through every workflow. Recommend the next workflow and show the later expected stages. Continue within existing authority. Persist `Pipeline State` before a cross-session handoff when the project needs it.
 
 After implementation, require a review+fix cycle before completion: review small changes inline or use `$rb-review-pr-or-diff` for substantial changes, fix actionable findings, rerun affected focused, failure-path, integration, and CI-equivalent checks, and re-review until no blocking finding remains or the human accepts the residual risk.
 
@@ -144,34 +136,8 @@ If a named global skill is unavailable, run the equivalent bounded workflow inli
 
 ## Handoff
 
-At the end of onboarding, provide:
+Summarise the project goal, material constraints, relevant testing and CI-equivalent commands, current stage when applicable, and next action. Include missing decisions and verification limits; omit empty categories.
 
-- current pipeline stage and completed or `not required` gates;
-- PRD applicability, status, and path or the recorded reason it is not required;
-- active lifecycle artifacts and their approval status;
-- project summary;
-- agreed constraints;
-- test levels and test/check commands;
-- canonical CI-equivalent command and checks available only remotely;
-- coverage thresholds, fixture requirements, and known flaky tests;
-- domain/context items to capture;
-- first task and definition of done;
-- recommended next workflow;
-- the expected workflow after that stage completes;
-- exact handoff question.
+If the project needs cross-session continuity, use `$rb-working-diary` to preserve the stage, artifact paths, accepted decisions, test evidence, and next action. Link existing records rather than copying them.
 
-If the project is expected to continue beyond the current turn, update `$rb-working-diary` before handoff. Store the `Pipeline State` fields, project path, constraints, and testing/CI conventions. This record lets `$rb-continue-project` resume the pipeline instead of restarting onboarding or guessing the next stage.
-
-Ask the handoff question for the route actually selected:
-
-- unresolved feature requirements: `Proceed into the discuss session for the first task now?`
-- research premise: `Proceed into the research-question gate now?`
-- product requirements document: `Proceed into PRD creation now?`
-- agreed bounded ordinary change: `Proceed into implementation with tests now?`
-- agreed scientific or modelling change: `Proceed into scientific TDD now?`
-- existing implementation plan: `Proceed into verified plan execution now?`
-- adaptive implementation plan: `Proceed into PRD-aligned sprint delivery now?`
-- new top-level planning: `Proceed into implementation planning now?`
-- unknown-cause bug or flaky test: `Proceed into diagnosis now?`
-
-Do not route an agreed task through `$rb-discuss` merely because it is substantial.
+Proceed with the selected workflow when it is already authorised. Otherwise ask one question identifying the missing decision or authority. Do not route an agreed task through `$rb-discuss` merely because it is substantial.

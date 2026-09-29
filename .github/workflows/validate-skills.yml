@@ -57,6 +57,9 @@ jobs:
           python -m compileall -q \
             evals/skill-routing \
             rb-create-skill-evals/scripts \
+            rb-install-skills/scripts \
+            rb-sync-skills-repo/scripts \
+            platforms/claude \
             rb-safe-operation/runtime/src \
             rb-safe-operation/runtime/tests \
             2>&1 | tee validation-output/compile.txt
@@ -74,6 +77,7 @@ jobs:
               "evals/skill-routing/*.json",
               "evals/skill-routing/cases/*.json",
               "rb-*/evals/*.json",
+              "platforms/claude/**/*.json",
           )
           paths = sorted({path for pattern in patterns for path in Path(".").glob(pattern)})
           if not paths:
@@ -90,7 +94,7 @@ jobs:
           set -o pipefail
           {
             found=0
-            for manifest in rb-*/evals/eval-plan.json; do
+            for manifest in rb-*/evals/eval-plan.json platforms/claude/skills/*/evals/eval-plan.json; do
               if [[ -f "$manifest" ]]; then
                 found=1
                 python rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest"

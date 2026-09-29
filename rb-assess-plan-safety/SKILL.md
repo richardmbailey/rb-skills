@@ -17,6 +17,8 @@ Assess an unchanged canonical plan. Machine output is `safe: true|false`; displa
 
 ## Deterministic Gate
 
+The following checks are runtime-owned. Invoke the prescribed preflight and inspect its typed result; do not substitute a model's checklist or reconstruct hashes and bindings manually. Semantic assessment begins only after this gate passes.
+
 1. Strictly parse and validate versions, unknown fields, canonical bytes, hashes, source phase, snapshot, paths, executable/input identities, operation graph, and later-phase continuity.
 2. Merge project policy only through the closed monotonic algebra. Reject widening, conflicts, unknown identifiers, or fallback to global policy.
 3. Validate transitive execution, environment, network, subprocess/delegation, plan-envelope approvals, provider identity and source-transmission authority, run-resource ceilings, verifier coverage, and the exact adapter capability profile.

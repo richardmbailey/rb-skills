@@ -7,6 +7,8 @@ description: "Use when the user wants a deep, evidence-backed HTML state-of-play
 
 Create a professional state-of-play report that starts with the one-minute answer and becomes progressively more detailed. Explain the practical meaning first, then provide precise technical evidence.
 
+Use this workflow for the requested deep HTML report. A brief progress question does not require this artifact. Preserve the report structure below, but keep sections short when evidence is sparse; an explicit unknown is better than generic analysis added to fill space.
+
 ## Scope and boundaries
 
 - Default to the repository in the current working directory. Confirm the path only when the target is genuinely ambiguous.
@@ -47,7 +49,7 @@ Do not present old test or benchmark results as current. Give the result, source
 ## Run proportionate checks
 
 1. Discover the repository's documented test and validation commands before running anything.
-2. Run safe, already-configured, reasonably quick checks when they materially improve the report's freshness.
+2. Run safe, already-configured, reasonably quick checks when they materially improve the report's freshness. Reuse current results for the same code and environment; do not repeat checks merely to populate every health category.
 3. Do not install dependencies, start services, alter data, run migrations, access production, or launch expensive or long-running suites and benchmarks without approval.
 4. If a useful check is unavailable or disproportionate, report the limitation rather than substituting an improvised result.
 5. Record every command run, its outcome, and when it ran in the evidence appendix.

@@ -11,7 +11,7 @@
         "Set Stage 4 to `in_progress`",
         "## Pipeline State Record",
         "Do not rely on conversation memory as the only pipeline record.",
-        "Approval for one workflow does not authorise later workflows.",
+        "Continue into workflows already authorised by the current request or recorded autonomy decision.",
         "## Workflow Routing",
         "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved | `$rb-discuss` |",
         "| The product or feature needs a durable requirements document before implementation planning | `$rb-create-prd` |",
@@ -21,8 +21,14 @@
         "coverage thresholds",
         "Do not route an agreed task through `$rb-discuss` merely because it is substantial."
       ],
-      "forbidden": ["## Guided Implementation Sequence", "## Inline Discuss Fallback", "For feature work, ask:"],
-      "max_occurrences": {"## Workflow Routing": 1},
+      "forbidden": [
+        "## Guided Implementation Sequence",
+        "## Inline Discuss Fallback",
+        "For feature work, ask:"
+      ],
+      "max_occurrences": {
+        "## Workflow Routing": 1
+      },
       "max_lines": 500
     },
     {
@@ -38,13 +44,16 @@
         "Before entering the selected workflow, update `Pipeline State`",
         "If one bounded ordinary change is already agreed",
         "recommend `$rb-implement-with-tests` directly",
-        "Do not insert `$rb-discuss` merely because a change is substantial."
+        "Do not insert `$rb-discuss` merely because a change is substantial.",
+        "If the next workflow is already authorised, continue after the brief."
       ],
       "forbidden": [
         "recommend `$rb-discuss` before `$rb-implement-with-tests`",
         "recommend `$rb-discuss` before `$rb-tdd-scientific-code`"
       ],
-      "max_occurrences": {"## Routing": 1},
+      "max_occurrences": {
+        "## Routing": 1
+      },
       "max_lines": 500
     },
     {
@@ -55,25 +64,28 @@
         "`[v]` verified",
         "Execute under the `standard` route unless the human explicitly specifies another route",
         "an independent sub-agent returns a favourable verdict for that task",
-        "require a new constrained compile, assessment, and safe-operation cycle",
         "return that task to `[x]`",
         "Prefer a walking-skeleton approach",
-        "complete the phase-level integration, CI-equivalent, and review+fix gates below",
+        "Complete the phase only when every required task is `[v]`",
         "use `$rb-multi-agent-systems`",
-        "use `$rb-implement-with-tests` for one bounded ordinary software or product change",
-        "## Optional Constrained Route",
-        "never select `constrained` implicitly",
-        "static_file_state::<description>",
-        "runtime deterministically rejects untyped requirements",
-        "manifest-pinned read-only `doctor` command",
-        "persist authority only after the human supplies the exact preview-bound confirmation statement",
-        "accept phase completion only when `$rb-safe-operation` reaches `verified`",
-        "Use automated behavioural tests by default",
-        "canonical CI-equivalent command",
-        "Do not rerun until green"
+        "`$rb-implement-with-tests` directly for one bounded change",
+        "## Authority and route",
+        "applicable behavioural evidence and review pass",
+        "closest available repository CI-equivalent command",
+        "do not weaken tests or rerun intermittent failures until green",
+        "references/constrained-execution.md",
+        "Require an independent sub-agent review for substantial, high-risk, or cross-cutting changes",
+        "inline review is sufficient",
+        "only when a dependency or executable verification requirement makes the next task impossible"
       ],
-      "forbidden": ["PydanticAI", "Ollama", "For greenfield Python projects"],
-      "max_occurrences": {"## Phase Completion Review": 1},
+      "forbidden": [
+        "PydanticAI",
+        "Ollama",
+        "For greenfield Python projects"
+      ],
+      "max_occurrences": {
+        "## Phase Completion Review": 1
+      },
       "max_lines": 500
     },
     {
@@ -83,19 +95,6 @@
         "Apply the artifacts in this order when they conflict",
         "review -- NO_CHANGE",
         "Start every review with `NO_CHANGE`",
-        "PLAN_CHANGE_GATE: NO_CHANGE | REPLAN | AWAITING_HUMAN_DECISION | BLOCKED",
-        "PLAN_STATE:",
-        "CHANGE_CLASS:",
-        "UNCHANGED_CONSEQUENCE:",
-        "SMALLEST_RESPONSE:",
-        "If any required field is missing, unsupported, or uncertain, do not return `REPLAN`",
-        "Use the same result when the same `EVIDENCE` is reviewed against the same `PLAN_STATE`",
-        "Execution refinement",
-        "Plan adaptation",
-        "Governed technical decision",
-        "Product decision",
-        "Invocation of `$rb-sprint` authorises execution refinements under `NO_CHANGE`",
-        "It authorises plan adaptations only after the gate returns `REPLAN`",
         "Plan Change Log",
         "Do not perform a ceremonial rewrite",
         "`[ ]` planned",
@@ -106,10 +105,21 @@
         "Do not rerun until green",
         "## Optional Constrained Route",
         "static_file_state::<description>",
-        "Any proposed change to the current compiled or assessed phase invalidates that constrained continuation"
+        "Any proposed change to the current compiled or assessed phase invalidates that constrained continuation",
+        "references/plan-change-gate.md",
+        "record only `NO_CHANGE`",
+        "Existing explicit authority counts",
+        "`undecided` also uses `standard`"
       ],
-      "forbidden": ["PydanticAI", "Ollama", "For greenfield Python projects"],
-      "max_occurrences": {"## Sprint Loop": 1, "## Optional Constrained Route": 1},
+      "forbidden": [
+        "PydanticAI",
+        "Ollama",
+        "For greenfield Python projects"
+      ],
+      "max_occurrences": {
+        "## Sprint Loop": 1,
+        "## Optional Constrained Route": 1
+      },
       "max_lines": 500
     },
     {
@@ -201,20 +211,33 @@
         "Choose control-flow complexity and runtime durability independently",
         "do not enforce permissions, constrain behaviour, or control risk by themselves",
         "For non-trivial multi-agent systems, prefer a deterministic state-machine runner",
-        "Runner, A2A, MCP, and agent-runtime boundaries",
         "Do not treat PydanticAI and A2A as competing alternatives",
         "separate A2A agent-and-skill and MCP capability allow-lists",
         "references/framework-selection.md",
         "current official documentation",
         "maximum model calls, tool calls, retries, wall-clock time, spend",
         "Do not select this skill for a single-agent system",
-        "references/test-and-review-checklists.md"
+        "references/test-and-review-checklists.md",
+        "references/agent-boundaries.md"
       ],
       "forbidden": [
-        "FastMCP", "LiteLLM", "LangGraph", "Temporal", "DBOS", "Restate", "LlamaIndex",
-        "Langfuse", "Logfire", "Outlines", "DSPy", "OpenAI Agents SDK"
+        "FastMCP",
+        "LiteLLM",
+        "LangGraph",
+        "Temporal",
+        "DBOS",
+        "Restate",
+        "LlamaIndex",
+        "Langfuse",
+        "Logfire",
+        "Outlines",
+        "DSPy",
+        "OpenAI Agents SDK"
       ],
-      "max_occurrences": {"## Modes": 1, "## Completion material": 1},
+      "max_occurrences": {
+        "## Modes": 1,
+        "## Completion material": 1
+      },
       "max_lines": 500
     },
     {
@@ -267,7 +290,8 @@
         "A resume pointer does not authorise execution",
         "selected test levels",
         "canonical CI-equivalent command",
-        "residual regression"
+        "residual regression",
+        "references/constrained-continuity.md"
       ],
       "forbidden": [],
       "max_occurrences": {},
@@ -299,13 +323,17 @@
         "assets/IMPLEMENTATION_PLAN.md",
         "Route an approved plan to `$rb-execute-plan`",
         "Route it to `$rb-sprint`",
-        "Present exactly these plan-wide choices",
+        "Record `Execution Route: standard` unless the human explicitly selects",
         "never infer `constrained`",
         "Define the testing architecture at the top level",
         "constrained static-only route",
-        "cannot execute tests, builds, linting, typing, or application commands"
+        "cannot execute tests, builds, linting, typing, or application commands",
+        "references/constrained-route.md"
       ],
-      "forbidden": ["Restate the idea.", "Ask clarifying questions if needed."],
+      "forbidden": [
+        "Restate the idea.",
+        "Ask clarifying questions if needed."
+      ],
       "max_occurrences": {},
       "max_lines": 500
     },
@@ -410,7 +438,6 @@
         "AgentPatchProposal",
         "PatchProposalPreflight",
         "PatchAssessment",
-        "coordinator code",
         "Before acquiring the lease, invoke manifest-pinned `doctor`",
         "manifest-pinned `codex-run`",
         "`codex-resume`",
@@ -418,10 +445,17 @@
         "`proposal_format_error`",
         "fresh request token",
         "finite aggregate",
-        "Never repeat a provider call whose durable request has an incomplete or uncertain outcome"
+        "Never repeat a provider call whose durable request has an incomplete or uncertain outcome",
+        "references/coordinator-protocol.md"
       ],
-      "forbidden": ["automatically installs", "skip independent verification"],
-      "max_occurrences": {"## Separated Verification": 1, "## Executable Verification Limit": 1},
+      "forbidden": [
+        "automatically installs",
+        "skip independent verification"
+      ],
+      "max_occurrences": {
+        "## Separated Verification": 1,
+        "## Executable Verification Limit": 1
+      },
       "max_lines": 500
     },
     {
@@ -555,7 +589,7 @@
       "path": "rb-simplify-language/SKILL.md",
       "required": [
         "Manual invocation only.",
-        "Apply this skill only when the human explicitly invokes it by name.",
+        "Apply this skill only through an explicit invocation.",
         "Codex: `$rb-simplify-language`",
         "Claude Code: `/rb-simplify-language`",
         "Do not select or apply this skill automatically",
@@ -576,14 +610,17 @@
         "Do not impose a fixed sentence-length limit.",
         "Do not force natural user dialogue",
         "rules remain distinct from rationale and examples",
-        "references/simplified-language-patterns.md"
+        "references/simplified-language-patterns.md",
+        "The authorised `$rb-write-skill` post-draft procedure also explicitly invokes this method"
       ],
       "forbidden": [
         "matching requests should trigger the skill automatically",
         "Always use sentences of 20 words or fewer",
         "Delete every vague word"
       ],
-      "max_occurrences": {"## Method": 1},
+      "max_occurrences": {
+        "## Method": 1
+      },
       "max_lines": 500
     },
     {
@@ -608,6 +645,60 @@
       ],
       "forbidden": ["Add soul", "Let some mess in", "Replace all curly quotes"],
       "max_occurrences": {"## Editing approach": 1},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-execute-plan/references/constrained-execution.md",
+      "required": [
+        "require a new constrained compile, assessment, and safe-operation cycle",
+        "never select `constrained` implicitly",
+        "static_file_state::<description>",
+        "runtime deterministically rejects untyped requirements",
+        "manifest-pinned read-only `doctor` command",
+        "persist authority only after the human supplies the exact preview-bound confirmation statement",
+        "accept phase completion only when `$rb-safe-operation` reaches `verified`"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-sprint/references/plan-change-gate.md",
+      "required": [
+        "PLAN_CHANGE_GATE: NO_CHANGE | REPLAN | AWAITING_HUMAN_DECISION | BLOCKED",
+        "PLAN_STATE:",
+        "CHANGE_CLASS:",
+        "UNCHANGED_CONSEQUENCE:",
+        "SMALLEST_RESPONSE:",
+        "If any required field is missing, unsupported, or uncertain, do not return `REPLAN`",
+        "Use the same result when the same `EVIDENCE` is reviewed against the same `PLAN_STATE`",
+        "Execution refinement",
+        "Plan adaptation",
+        "Governed technical decision",
+        "Product decision",
+        "Invocation of `$rb-sprint` authorises execution refinements under `NO_CHANGE`",
+        "It authorises plan adaptations only after the gate returns `REPLAN`"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-multi-agent-systems/references/agent-boundaries.md",
+      "required": [
+        "Runner, A2A, MCP, and agent-runtime boundaries"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
+      "max_lines": 500
+    },
+    {
+      "path": "rb-safe-operation/references/coordinator-protocol.md",
+      "required": [
+        "coordinator code"
+      ],
+      "forbidden": [],
+      "max_occurrences": {},
       "max_lines": 500
     }
   ]

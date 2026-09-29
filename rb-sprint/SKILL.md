@@ -27,12 +27,12 @@ If no authoritative requirements artifact exists, do not infer product intent fr
 
 Apply the artifacts in this order when they conflict:
 
-1. repository and current human instructions;
+1. applicable higher-priority instructions and current authorised human decisions;
 2. the authoritative PRD or equivalent requirements artifact;
 3. the approved implementation plan;
 4. the current sprint record.
 
-The repository implementation and test results describe observed state. They provide evidence for changing a plan, but they do not override an approved requirement. A lower-level artifact must not silently change a higher-level artifact.
+The repository implementation and test results describe observed state. They provide evidence for changing a plan, but they do not override an approved requirement. A lower-level artifact must not silently change a higher-level artifact. A current instruction from an authorised decision-maker can change the product baseline. Record that decision and update the affected requirements before adapting the plan; do not ask for the same approval again. If authority or material consequences remain unresolved, ask only about that gap.
 
 ## Core Defaults
 
@@ -46,7 +46,7 @@ The repository implementation and test results describe observed state. They pro
 - Avoid silent fallbacks. A degraded mode must be deliberate, visible, tested, auditable, and within the approved product requirements.
 - Preserve repository language, framework, dependency, testing, coverage, CI, and deployment conventions unless evidence supports a change within the authorised boundary.
 - For systems with multiple LLM agents, agentic workflows, or orchestration layers, use `$rb-multi-agent-systems` to define the control model, agent and tool boundaries, state, handoffs, failure containment, observability, evaluation, budgets, durability, and orchestration test matrix.
-- For text-processing work, separate deterministic handling of stable syntax from LLM-backed judgement about natural-language meaning.
+- For text-processing work, separate deterministic handling of stable syntax from validated semantic methods for natural-language meaning.
 
 ## Adaptive Workflow State
 
@@ -71,7 +71,7 @@ Do not begin `building` until the sprint is `sprint_ready`. Do not begin another
 
 At the start of every sprint, and immediately after a material discovery:
 
-1. Read the authoritative requirements, current implementation plan, active phase files, latest sprint record, relevant diary or handoff, repository instructions, Git state, implementation, and test evidence.
+1. Establish the authoritative requirements, current plan, active sprint, repository instructions, Git state, and relevant test evidence. On later checkpoints, inspect changes and affected dependencies; do not reread unchanged artifacts already available in context.
 2. Compare the implemented system and remaining plan with the applicable product requirements and acceptance evidence.
 3. Identify requirements that are satisfied, partially satisfied, not started, blocked, contradicted, or no longer covered by the remaining plan.
 4. Identify new evidence, invalidated assumptions, failed checks, architecture drift, emerging risks, duplicated work, obsolete tasks, and missing verification.
@@ -83,48 +83,11 @@ Do not perform a ceremonial rewrite when the evidence supports the current plan.
 
 The plan-change gate has four possible results: `NO_CHANGE`, `REPLAN`, `AWAITING_HUMAN_DECISION`, or `BLOCKED`. Start every review with `NO_CHANGE`. Do not edit the implementation plan before the gate result is recorded.
 
-First classify the proposed response to the evidence:
+If evidence still supports the current plan, record only `NO_CHANGE`, the plan revision or checkpoint, the evidence checked (or `none_new`), and the next increment. Do not create empty change fields or a separate change-log entry.
 
-- **Execution refinement:** a local implementation detail changes without altering product behaviour, public contracts, phase intent, dependencies, risk, or acceptance evidence.
-- **Plan adaptation:** remaining tasks or phases are split, combined, reordered, added, superseded, or given a different technical approach while the approved product intent and material risk boundary remain unchanged.
-- **Governed technical decision:** the proposal adds a production dependency, replaces an established framework or service, changes architecture boundaries, introduces a migration, changes compatibility or rollback, changes external side effects, or changes a recorded security, privacy, cost, performance, operations, or delivery-risk commitment.
-- **Product decision:** the proposal changes requirements, user-visible behaviour, scope, non-goals, users, permissions, data policy, success measures, acceptance evidence, rollout authority, or accepted product risk.
-- **Blocker:** required evidence, authority, environment, dependency, or a credible implementation route is absent.
+For a proposed change, unresolved governed decision, or blocker, read `references/plan-change-gate.md` before editing. `REPLAN` requires the exact plan state, new grounded evidence, affected item, concrete problem with preserving it, smallest adequate response, authority, and verification impact. Preference, novelty, or speculative risk alone does not justify a change. Missing authority returns `AWAITING_HUMAN_DECISION`; insufficient evidence that prevents sound continuation returns `BLOCKED`.
 
-Then create one gate record with these fields:
-
-```text
-PLAN_CHANGE_GATE: NO_CHANGE | REPLAN | AWAITING_HUMAN_DECISION | BLOCKED
-PLAN_STATE: <implementation-plan path and current revision or sprint-checkpoint identifier>
-CHANGE_CLASS: none | execution_refinement | plan_adaptation | governed_technical_decision | product_decision | blocker
-EVIDENCE: <one or more exact tests, reviews, experiments, repository observations, operational observations, or explicit human statements; or none_new>
-AFFECTED_PLAN_ITEM: <stable task, phase, assumption, dependency, constraint, risk, or verification identifier>
-CONTRADICTION: <how the evidence invalidates, blocks, satisfies, or makes that item obsolete>
-UNCHANGED_CONSEQUENCE: <specific requirement, constraint, dependency, ordering, duplication, executability, or verification problem caused by preserving it>
-SMALLEST_RESPONSE: <why local execution refinement is sufficient, or why the smallest adequate response requires a plan delta>
-AUTHORITY: <within existing authority | explicit approval required | authority unavailable>
-VERIFICATION_IMPACT: <tests, checks, exit criteria, coverage, rollout, or rollback affected>
-```
-
-For `NO_CHANGE`, set `CHANGE_CLASS: none` or `execution_refinement`, use `EVIDENCE: none_new` when no new evidence exists, and set unsupported change fields to `none`. Do not invent an affected item, contradiction, or unchanged consequence to make the record appear complete.
-
-Set `PLAN_CHANGE_GATE: REPLAN` only when all of these conditions are established:
-
-1. `PLAN_STATE` identifies the exact plan state under review. `EVIDENCE` names new externally grounded evidence or evidence that became newly relevant after the current plan or last plan change. Agent preference, reflection, generic best practice, novelty, stylistic consistency, and a speculative future risk are not evidence.
-2. `AFFECTED_PLAN_ITEM` identifies an exact current plan item. `CONTRADICTION` explains how the evidence contradicts, invalidates, blocks, already satisfies, or makes that item obsolete. An alternative that merely appears cleaner, more elegant, or equally viable does not pass.
-3. `UNCHANGED_CONSEQUENCE` identifies a concrete problem with preserving the item: failure to satisfy a named requirement or constraint, an invalid dependency or order, duplicated or already completed work, work shown to be non-executable, or a missing verification path. A possible improvement without one of these consequences does not pass.
-4. `SMALLEST_RESPONSE` shows that an execution refinement cannot resolve the problem and that the proposed plan delta is the smallest adequate response.
-5. `AUTHORITY` confirms that the delta remains within the approved product and risk boundaries. `VERIFICATION_IMPACT` identifies every affected acceptance or verification commitment.
-
-If any required field is missing, unsupported, or uncertain, do not return `REPLAN`:
-
-- Return `NO_CHANGE` when the current plan remains supported. Preserve it and continue to sprint selection.
-- Return `AWAITING_HUMAN_DECISION` when the evidence supports a governed technical decision or product decision. Do not edit the governed artifact or begin affected implementation.
-- Return `BLOCKED` when a credible concern makes affected work unsafe or unsound to continue but the evidence, authority, environment, dependency, or implementation route is insufficient to choose a delta.
-
-Use the same result when the same `EVIDENCE` is reviewed against the same `PLAN_STATE`. Evidence already reflected in the current plan does not justify another change. Record `NO_CHANGE` unless new evidence or a changed plan state changes the gate result.
-
-Invocation of `$rb-sprint` authorises execution refinements under `NO_CHANGE` because they do not edit the plan. It authorises plan adaptations only after the gate returns `REPLAN` within the approved product and risk boundaries. A governed technical decision or product decision requires explicit human approval. If the decision authority is absent or unclear, return `AWAITING_HUMAN_DECISION`. Route product decisions through `$rb-discuss` or `$rb-create-prd` according to whether the project needs discussion or a durable requirements change.
+Existing explicit authority counts. A new authorised product decision must be recorded in the requirements before adapting the plan. Do not treat an old PRD as overriding that decision, or infer permission for unrelated consequences.
 
 ### 3. Refactor the remaining plan
 
@@ -151,7 +114,7 @@ The sprint record must contain:
 - sprint ID, state, goal, and applicable requirement and phase IDs;
 - reviewed product baseline and implementation-plan paths;
 - evidence and plan deltas considered at sprint entry;
-- the complete plan-change gate record and result;
+- the compact `NO_CHANGE` checkpoint or a link to the full change/decision/blocker record;
 - scope, non-scope, dependencies, and expected learning;
 - bounded `[ ]` task checklist;
 - changed behaviours and likely failure modes;
@@ -176,10 +139,10 @@ For each selected task:
 After every sprint task is `[x]`:
 
 1. Run a separate verification pass over every task and applicable product requirement.
-2. Confirm or rerun focused behavioural tests. Add missing integration, contract, migration, end-to-end, negative, boundary, concurrency, recovery, scientific, or agent-eval coverage where the likely failure crosses those boundaries.
-3. Mark a task `[v]` only after the appropriate automated evidence passes. If automation is genuinely infeasible, record why, define the best executable or manual check, state the residual regression risk, and obtain explicit acceptance before `[v]`.
+2. Reuse focused evidence for unchanged code and environment. Rerun affected checks and add missing coverage where the combined change exposes a new failure boundary.
+3. Confirm the appropriate automated evidence passes; retain `[x]` until the review below also passes. If automation is genuinely infeasible, record why, define the best executable or manual check, state the residual regression risk, and obtain explicit acceptance before `[v]`.
 4. Run the closest available repository CI-equivalent command or the largest relevant affordable subset. Record every omitted check, its reason, and the residual risk.
-5. Review the complete sprint diff for defects, regressions, architecture drift, hidden fallback behaviour, test weakening, coverage gaps, documentation gaps, and unresolved assumptions. Use `$rb-review-pr-or-diff` for substantial, high-risk, or cross-cutting changes.
+5. Review the complete sprint diff for defects, integration gaps, scope drift, hidden fallbacks, and test weakening. Require independent sub-agent review for substantial, high-risk, or cross-cutting changes, or existing explicit gates; use `$rb-review-pr-or-diff` for that review. A small local change without such a gate may be reviewed inline. If required review cannot run, retain `[x]` and report the blocker. Mark `[v]` only after required review as well as tests passes.
 6. Fix actionable findings, rerun affected checks, and re-review before accepting the sprint.
 7. Treat flaky tests as defects. Do not rerun until green, skip, quarantine, weaken assertions, or lower thresholds merely to finish the sprint.
 
@@ -211,9 +174,9 @@ Do not declare a sprint or phase complete until every required task is `[v]`, th
 
 ## Optional Constrained Route
 
-- Read the implementation plan's `Execution Route`. A missing route behaves as `standard`; `undecided` requires one bounded human choice; never select `constrained` implicitly.
+- Read the implementation plan's `Execution Route`. A missing route behaves as `standard`; `undecided` also uses `standard`; never select `constrained` implicitly.
 - The first-release constrained route accepts only unchanged, statically verifiable phases whose requirements and checks use `static_file_state::<description>`. It cannot execute tests, builds, linting, type checking, application commands, or other runtime-dependent acceptance checks.
-- Before constrained work, follow the readiness, compilation, independent assessment, unchanged-bundle execution, verification, checkpoint, and phase-status rules in `$rb-execute-plan`. A sprint does not relax those gates.
+- Before constrained work, read and follow `$rb-execute-plan` and its `references/constrained-execution.md` for readiness, compilation, assessment, unchanged-bundle execution, verification, and phase-status rules. A sprint does not relax those gates.
 - Treat one verified constrained phase as one sprint increment. Perform adaptive review only before a phase is compiled or after it reaches verified and the coordinator handoff is recorded.
 - Any proposed change to the current compiled or assessed phase invalidates that constrained continuation. Do not edit, relabel, or execute the bundle. Stop for a new approved plan and route decision, then compile and assess the changed phase as a new bundle if `constrained` remains selected.
 - A plan change after a rejected or incomplete constrained run does not make that run executable. Preserve its hashes, lifecycle state, evidence, and required human decision in the canonical external working-diary checkpoint.
@@ -224,15 +187,4 @@ Use `$rb-working-diary` when the sprint cycle spans sessions, produces substanti
 
 ## Output
 
-At every sprint checkpoint, return:
-
-- current sprint ID and state;
-- PRD or requirements alignment, including satisfied and uncovered requirement IDs;
-- evidence reviewed and assumptions changed;
-- the complete plan-change gate record, including its `NO_CHANGE`, `REPLAN`, `AWAITING_HUMAN_DECISION`, or `BLOCKED` result;
-- accepted and proposed plan deltas with authority status;
-- sprint goal, tasks, and `[ ]`, `[x]`, or `[v]` status;
-- focused, integration, contract, end-to-end, coverage, CI-equivalent, and review evidence as applicable;
-- checks not run and residual risks;
-- blockers or decisions required from the human;
-- next state and exact next action.
+At a checkpoint, report the delivered behaviour, requirements coverage, verification/review outcomes, material risks or decisions, and next action. Link the sprint record. For `NO_CHANGE`, include only the compact checkpoint; for other gate results, link the full record and explain its consequence. Do not reproduce unchanged inventories or empty fields.

@@ -30,6 +30,7 @@ Use the facts, notes, draft, or instructions the human supplies. Use the intende
 ## Method
 
 1. Identify the requested deliverable and its audience.
+   For a local edit, revise only the affected passage and read enough surrounding text to preserve its meaning and voice. Do not broaden a small wording request into a full editorial audit.
 2. Begin with the requested substance. Remove canned praise, throat-clearing, chatbot commentary, and offers to continue.
 3. Prefer concrete subjects, direct verbs, plain words, and specific supported facts. Remove filler, unsupported promotional language, vague authority, and empty emphasis.
 4. Preserve meaning, attribution, claim strength, uncertainty, quotations, citations, and genuine personal claims. Do not invent facts, opinions, feelings, experiences, evidence, or stylistic quirks.

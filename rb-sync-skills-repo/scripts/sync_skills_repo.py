@@ -7,6 +7,7 @@ import argparse
 import fnmatch
 import os
 import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -245,6 +246,39 @@ def main(argv: list[str] | None = None) -> int:
     else:
         destination = default_dest(args.agent)
     dest = destination.path
+    effective_agent = args.agent if args.agent != "auto" else (default_dest("auto").agent if args.dest else destination.agent)
+    claude_source = source
+    if effective_agent == "claude" and (source / "SKILL.md").is_file() and ((source.parent / "platforms/claude").is_dir() or (source.parent / "rb-sync-skills-repo/scripts/sync_skills_repo.py").is_file()):
+        claude_source = source.parent
+        if args.skills and args.skills != [source.name]:
+            raise SystemExit("A single-skill source only supports its own name in --skills")
+    claude_names = args.skills or ([source.name] if claude_source != source else None)
+    claude_installer = claude_source / "platforms" / "claude" / "install.py"
+    rb_repository = (claude_source / "rb-sync-skills-repo/scripts/sync_skills_repo.py").is_file() or (claude_source / "platforms/claude/profile.json").is_file()
+    if effective_agent == "claude" and rb_repository and not claude_installer.is_file():
+        raise SystemExit("RB Claude adapter is missing; restore platforms/claude/install.py before installing")
+    if effective_agent == "claude" and claude_installer.is_file():
+        print("RB Claude profile: generating real copies; requested symlink/copy mode is superseded.", flush=True)
+        if args.list:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("rb_claude_install", claude_installer)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            _, supported = module.load_profile(claude_source.resolve())
+            selected = set(claude_names or supported)
+            if not selected <= supported:
+                raise SystemExit("Unsupported Claude skills: " + ", ".join(sorted(selected - supported)))
+            for name in sorted(selected):
+                print(name)
+            return 0
+        command = [sys.executable, str(claude_installer), str(claude_source), "--dest", str(dest)]
+        if claude_names:
+            command += ["--skills", *claude_names]
+        if args.dry_run:
+            command.append("--dry-run")
+        if args.replace:
+            command.append("--replace")
+        return subprocess.run(command, check=False).returncode
     candidates = discover_skills(source, args.allow_name_mismatch)
     candidates = filter_candidates(candidates, args.skills)
 
