@@ -322,7 +322,15 @@
         "is not agreement",
         "Do not implement behaviour that depends on an unanswered user decision.",
         "Do not block unrelated authorised work.",
-        "evals/eval-plan.json"
+        "evals/eval-plan.json",
+        "distinct clickable options with brief trade-offs",
+        "Use a free-text answer box",
+        "Put the necessary explanation before opening the question.",
+        "keep the turn open",
+        "Do not send a final response",
+        "An acknowledgement that the question was displayed is not a user answer.",
+        "do not busy-poll or treat a wait timeout as an answer",
+        "honour that change without reopening the unanswered question automatically"
       ],
       "forbidden": [
         "Produce a short implementation plan",

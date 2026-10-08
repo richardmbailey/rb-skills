@@ -128,6 +128,8 @@ The routing rule is:
 
 `rb-discuss` is not a mandatory stage. It guides an interview with the user about goals, outcomes, scope, priorities, and consequential requirements. It offers options with trade-offs and a recommendation when the evidence supports one. It uses clickable choices when a native question tool is available and permitted, and falls back to text otherwise. The user can supply another answer; a displayed default or silence is not agreement.
 
+When meaningful alternatives exist, the interview supplies clickable options; open discovery can use a free-text answer box. If the question tool returns before the user answers, the agent keeps the turn open and waits instead of following the question with a final response that could dismiss it. This governs agent behaviour; it does not guarantee how every host renders or retains its question UI.
+
 Agreed work routes directly to planning or implementation. A new session or technical uncertainty does not require an interview. Handoffs preserve settled decisions and separate pending user choices from agent investigations and nonblocking risks. An unanswered choice blocks only work that depends on it.
 
 Requests to create, revise, or review a product requirements document select `$rb-create-prd` automatically. Users can also invoke `$rb-create-prd` in Codex or `/rb-create-prd` in Claude Code.

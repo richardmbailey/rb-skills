@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Discuss"
   short_description: "Interview about goals and consequential choices"
-  default_prompt: "Use $rb-discuss to interview me about the goals and decisions that need my judgement, offering trade-offs, grounded recommendations, and clickable choices when supported. Preserve existing agreements."
+  default_prompt: "Use $rb-discuss to interview me about the goals and decisions that need my judgement, offering trade-offs, grounded recommendations, and clickable choices when supported. Keep native questions open until I answer or redirect the discussion. Preserve existing agreements."

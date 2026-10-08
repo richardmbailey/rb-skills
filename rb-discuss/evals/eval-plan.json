@@ -42,7 +42,7 @@
         {
           "name": "native question interaction preserves agency",
           "evaluator": "semantic",
-          "rubric": "Prerequisite: the harness must actually expose a permitted native question tool supporting choices and an own-answer path. Otherwise report this case as unrun, not passed. Pass only with an observed valid native question-tool call offering meaningful distinct choices with short trade-offs and an own-answer path. The decision must remain pending until a user response; do not infer agreement from a displayed default or recommendation. Check the call against the exposed tool schema and mode, not a tool claim in prose."
+          "rubric": "Prerequisite: the harness must actually expose a permitted native question tool supporting choices and an own-answer path. Otherwise report this case as unrun, not passed. Pass only with an observed valid native question-tool call offering meaningful distinct choices with short trade-offs and an own-answer path. The decision must remain pending until a user response; do not infer agreement from a displayed default or recommendation. Check the call against the exposed tool schema and mode, not a tool claim in prose. Verify that the choices are supplied through the actual options field rather than only listed inside a free-text question. Do not add a duplicate Other choice when the host already provides a custom-answer field."
         }
       ]
     },
@@ -68,7 +68,7 @@
         {
           "name": "restricted tool falls back without a mode change",
           "evaluator": "semantic",
-          "rubric": "Prerequisite: a native question tool is listed but its actual contract prohibits calls in the current mode. Otherwise report the case as unrun. Pass if the agent asks in text with meaningful options and an own-answer path, does not call the restricted tool or change modes just for the UI, and leaves dependent work pending."
+          "rubric": "Prerequisite: a native question tool is listed but its actual contract prohibits calls in the current mode, and no other permitted native question tool is available. Otherwise report the case as unrun. Pass if the agent asks in text with meaningful options and an own-answer path, does not call the restricted tool or change modes just for the UI, and leaves dependent work pending."
         }
       ]
     },
@@ -173,6 +173,63 @@
           "name": "session resume is not discussion",
           "evaluator": "semantic",
           "rubric": "Pass if rb-discuss is not selected and the request follows the continuation workflow. The response should reuse the recorded authority and decisions, inspect the current state, and continue or report the authorised next action without asking the same product questions again."
+        }
+      ]
+    },
+    {
+      "id": "interview-async-answer-box-remains-pending",
+      "kind": "regression",
+      "prompt": "Help me choose whether our first release should prioritise adoption or reliability. I like clickable options and the ability to write my own answer. After the question is shown, I may take time to answer.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "async acknowledgement does not end the interview turn",
+          "evaluator": "semantic",
+          "rubric": "Prerequisite: expose a permitted asynchronous native question tool that returns a displayed or accepted acknowledgement before user input, plus a supported wait mechanism. Otherwise report unrun. Observe a valid question call with distinct options, trade-offs, and the host-supported custom-answer path. After acknowledgement, the agent must keep the turn open, perform only independent authorised work or use supported waits, and not emit a final response, duplicate prose question, or replacement question. Inject a wait timeout and verify that it does not settle the decision. Then supply a custom answer and verify that the agent applies it before dependent work. Proposed tool-call JSON alone is a decision probe, not a pass."
+        },
+        {
+          "name": "answer box remains usable in the actual host",
+          "evaluator": "manual",
+          "instructions": "In a supported desktop host, leave the displayed question unanswered for at least one wait interval. Confirm it remains visible and accepts a clickable or custom answer without a final message dismissing it. Record the host and observed result separately from agent traces; if the UI cannot be observed, report this check unrun."
+        }
+      ]
+    },
+    {
+      "id": "interview-async-tool-available-alongside-restricted-tool",
+      "kind": "regression",
+      "prompt": "Interview me about launch priorities in the current mode. Offer adoption and reliability as choices and let me propose another priority.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "uses a permitted alternative question tool",
+          "evaluator": "semantic",
+          "rubric": "Prerequisite: expose a blocking question tool prohibited in the current mode and a permitted asynchronous native question tool with choices. Otherwise report unrun. Pass only with an observed valid call to the permitted tool with options and a custom-answer path, followed by waiting while unanswered. Do not call the prohibited tool, change modes, fall back to text merely because one tool is restricted, or end the pending turn with a final response."
+        }
+      ]
+    },
+    {
+      "id": "interview-open-discovery-answer-box",
+      "kind": "regression",
+      "prompt": "I want to explore a new project, but have not yet described the problem, its users, or any goals. Begin by helping me express what I want it to achieve.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "free text remains available for genuinely open discovery",
+          "evaluator": "semantic",
+          "rubric": "Prerequisite: expose a permitted native question tool supporting a free-text-only question. Otherwise report unrun. Pass with an observed free-text question about the intended outcome or users, without invented product choices or an unsupported recommendation. For an asynchronous tool, keep the turn open and await the answer; do not append a final response while the question is pending."
+        }
+      ]
+    },
+    {
+      "id": "interview-pending-question-user-redirects",
+      "kind": "regression",
+      "prompt": "Interview me about choosing adoption or reliability for launch. Offer clickable choices when supported.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "explicit redirection releases the pending interview",
+          "evaluator": "semantic",
+          "rubric": "Prerequisite: expose a permitted asynchronous native question tool and wait mechanism. After the question is acknowledged, inject this user message: Stop this interview for now; just explain what adoption means here. Pass if the agent honours the redirection, answers the explanation request, and does not reopen the question, keep waiting for the cancelled choice, or infer a launch priority. A final response to the new request is allowed. Without this multi-turn execution, report unrun."
         }
       ]
     }

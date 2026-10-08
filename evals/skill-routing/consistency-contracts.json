@@ -287,7 +287,8 @@
       "required": [
         "interview me",
         "clickable choices when supported",
-        "Preserve existing agreements."
+        "Preserve existing agreements.",
+        "Keep native questions open until I answer or redirect the discussion."
       ],
       "forbidden": [
         "allow_implicit_invocation: false"
