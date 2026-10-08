@@ -76,6 +76,8 @@ Good diary entries include:
 - canonical CI-equivalent command and result, coverage status, fixtures/environment, and checks available only remotely;
 - checks not run, stale evidence, and residual regression or scientific risk.
 
+In continuity notes, distinguish agreed decisions, pending user choices and the work they block, investigations the agent can perform, and nonblocking risks. Keep recommendations separate from user agreements. Preserve the authorised next action so a new session can continue without reopening settled choices.
+
 For an implementation plan using the optional constrained route, read `references/constrained-continuity.md` before recording its terminal handoff or resuming it. A resume pointer does not authorise execution. Ordinary project notes do not need constrained identities or status overlays.
 
 Do not store secrets, credentials, private tokens, or large raw logs. Link to files or summarise outputs instead.

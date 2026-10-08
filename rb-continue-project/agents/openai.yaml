@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Continue Project"
   short_description: "Resume with testing and CI context"
-  default_prompt: "Use $rb-continue-project to resume this repository from the latest diary and handoff, reconcile Git state, preserve test levels, coverage and CI-equivalent commands, and route unresolved work to discussion or agreed work directly to the appropriate implementation workflow without asking again when the current request already authorises it."
+  default_prompt: "Use $rb-continue-project to recover the handoff, agreed decisions, Git state, test levels, and the CI-equivalent gate, then route agreed work directly to its authorised workflow. Use discussion only for consequential requirements that need my judgement; investigate technical unknowns without reopening settled decisions."

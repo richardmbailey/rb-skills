@@ -59,7 +59,8 @@ Use this when the human wants continuity from durable project context rather tha
    - what prior sessions appear to have been doing;
    - current git/worktree state;
    - relevant test levels, commands, and CI-equivalent gate;
-   - unresolved questions, blockers, risks, assumptions, and stale evidence;
+   - settled decisions, pending user choices, agent investigations, and nonblocking risks;
+   - other blockers, assumptions, and stale evidence;
    - recovered pipeline stage, completed gates, active artifact, and next gate;
    - recommended next action and matching RB workflow skill.
 9. Continue into the requested work when the current request or recorded authority covers it. Ask only about a material decision or action outside that authority. Preserve explicit stop points and required permissions for destructive commands, dependency changes, migrations, or broad refactors; a change of skill does not itself require approval.
@@ -69,7 +70,7 @@ Use this when the human wants continuity from durable project context rather tha
 Use the same routing rule as `$rb-start-project`:
 
 - If a research, scientific, modelling, algorithmic, or novelty premise must be assessed before product requirements are credible, recommend `$rb-research-question-gate`.
-- If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved, recommend `$rb-discuss`.
+- If the user requests an interview or a consequential requirement needs their judgement and is not already settled or delegated, recommend `$rb-discuss`.
 - If the project needs a durable PRD or an existing PRD must become decision-ready, recommend `$rb-create-prd`.
 - If the requirements are sufficiently understood and a new top-level implementation plan is needed, recommend `$rb-create-implementation-plan`.
 - If an existing multi-step implementation plan or phase checklist should be followed linearly, recommend `$rb-execute-plan`.
@@ -82,7 +83,7 @@ Use the same routing rule as `$rb-start-project`:
 - If the next step is reviewing changes, recommend `$rb-review-pr-or-diff`.
 - If the user explicitly authorises the next workflow, continue with the selected skill.
 
-Do not insert `$rb-discuss` merely because a change is substantial. Use it only when material ambiguity remains.
+Do not insert `$rb-discuss` merely because a change is substantial. Resuming a session, unfinished work, and technical uncertainty are not interview triggers. Recover existing agreements and continue the authorised next task. Reopen a settled decision only when the user changes it or new evidence undermines its assumptions; explain that reason. Investigate technical unknowns in the owning workflow and handle routine clarification there. A pending user choice blocks only work that depends on it.
 
 Before entering the selected workflow, update `Pipeline State` if the project uses that record. Recover only fields needed for the requested work; do not introduce the full onboarding pipeline for a bounded maintenance task. Before a cross-session handoff or material stage change, persist the updated record through `$rb-working-diary`.
 

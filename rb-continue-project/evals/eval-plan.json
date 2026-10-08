@@ -24,6 +24,20 @@
       "prompt": "Create the first implementation plan for this new project; no continuity artifacts or existing plan are available.",
       "should_trigger": false,
       "success": [{"name": "new planning is not continuation", "evaluator": "semantic", "rubric": "Pass if rb-continue-project is not selected and the request routes to rb-start-project or rb-create-implementation-plan according to the repository state."}]
+    },
+    {
+      "id": "continue-discuss-handoff-authorised-independent-work",
+      "kind": "outcome",
+      "prompt": "Resume from this synthetic handoff produced after a requirements interview. Agreed decisions are CSV export v2 and admin-only access. A human choice about the retention period is still pending and blocks only the deletion job. The agent is benchmarking the parser, and documentation drift is a nonblocking risk. The handoff and my current request authorise continuing the parser implementation, tests, and review while preserving that boundary; do not reopen the settled export or access decisions.",
+      "should_trigger": true,
+      "success": [{"name": "continuation carries discussion state into work", "evaluator": "semantic", "rubric": "Pass only if the response reads and preserves the handoff's separate agreed, pending, agent-investigation, and nonblocking-risk states; continues the authorised parser work through its tests and review; leaves only retention-dependent deletion blocked; and does not repeat the interview or ask for the same authority again. A pending human choice must not become a blanket project stop."}]
+    },
+    {
+      "id": "continue-discuss-handoff-after-custom-answer",
+      "kind": "outcome",
+      "prompt": "Resume the synthetic project after the previous handoff recorded a pending choice between local-only and cloud-backed storage. I now explicitly choose a hybrid encrypted local cache with cloud synchronisation disabled until consent review. Apply that answer to the continuation, unblock only the work that depends on this choice, and keep the separate agent benchmark and documentation risk visible.",
+      "should_trigger": true,
+      "success": [{"name": "continuation applies a human override precisely", "evaluator": "semantic", "rubric": "Pass if the response treats the user's free-form answer as the new authoritative decision, updates the affected pending state without forcing the old options or recommendation, resumes the newly unblocked dependent work, and retains the independent investigation and nonblocking risk. It must not restart the completed interview or infer permission for unrelated work."}]
     }
   ]
 }

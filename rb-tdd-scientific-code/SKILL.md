@@ -11,7 +11,7 @@ Implement scientific, numerical, modelling, simulation, or domain-sensitive chan
 
 ## Procedure
 
-1. Confirm requirements from the human, a PRD, or an implementation plan. If material ambiguity remains, use `$rb-discuss` first.
+1. Confirm requirements from the human, a PRD, or an implementation plan. If a consequential requirement or scientific assumption needs the user's judgement and is not already settled or delegated, use `$rb-discuss`. Investigate technical unknowns within this workflow.
 2. Read `CONTEXT.md`, relevant docs, benchmark fixtures, tests, coverage configuration, canonical CI commands, and source code for units, assumptions, invariants, tolerances, trusted outputs, and integration boundaries. Ask only when a missing scientific decision changes the model or its acceptance; a missing context file alone is not a blocker.
 3. If the change implements multi-LLM-agent behaviour, also use `$rb-multi-agent-systems` to define testable agent contracts, tool boundaries, traces, evals, failure cases, and reproducibility expectations.
 4. Identify the smallest meaningful behaviour to test and the plausible scientific failure modes.

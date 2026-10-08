@@ -41,7 +41,7 @@ Use this pipeline to keep a new project moving. Give each stage one status: `not
 | --- | --- | --- |
 | 1. Onboarding | Goal, users, project type, constraints, test/CI context, autonomy, and first deliverable are known. | Continue to the applicable discovery gate. |
 | 2. Research premise | Any scientific, algorithmic, modelling, or novelty claim that controls product feasibility has been assessed, or this gate is `not required`. | `$rb-research-question-gate` when assessment is required. |
-| 3. Requirements discussion | Material behaviour, interfaces, permissions, data rules, failure handling, and acceptance decisions are resolved or recorded as accepted risks, or this gate is `not required`. | `$rb-discuss` when material ambiguity remains. |
+| 3. Requirements discussion | Material behaviour, interfaces, permissions, data rules, failure handling, and acceptance decisions are resolved or recorded as accepted risks, or this gate is `not required`. | `$rb-discuss` when a consequential requirement needs the user's judgement. |
 | 4. Product requirements | A PRD is `decision-ready`, or the PRD gate is `not required` with a recorded reason. | `$rb-create-prd` when the gate applies. |
 | 5. Implementation planning | A top-level plan exists, its route is recorded, and the human has approved it for execution, or a plan is `not required` for one bounded agreed change. | `$rb-create-implementation-plan` or the bounded implementation skill. |
 | 6. Implementation | The agreed change or all approved phases are implemented with the selected test levels and recorded evidence. | `$rb-execute-plan`, `$rb-sprint`, `$rb-implement-with-tests`, or `$rb-tdd-scientific-code`. |
@@ -106,6 +106,8 @@ Stop questioning once the known facts support the next action. Recover these fro
 3. Existing requirements, plans, and the test/CI commands needed for that deliverable.
 4. Authority to continue, including any explicit stop points. A request to implement or finish the work already authorises its ordinary necessary steps.
 
+Use `$rb-discuss` when exploring goals or consequential requirements needs a focused interview. Do not repeat answers already established during onboarding. Technical investigation and routine clarification stay in the owning workflow.
+
 Leave later-stage details to the owning workflow. Do not ask the human to classify the repository, repeat discoverable commands, or approve every stage separately.
 
 ## Workflow Routing
@@ -115,7 +117,7 @@ Route to the narrowest next workflow supported by the first task:
 | First-task signal | Next workflow |
 | --- | --- |
 | A research, scientific, modelling, algorithmic, or novelty premise must be assessed before product requirements are credible | `$rb-research-question-gate` |
-| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved | `$rb-discuss` |
+| The user wants an interview, or a consequential requirement needs their judgement and is not already settled or delegated | `$rb-discuss` |
 | The product or feature needs a durable requirements document before implementation planning | `$rb-create-prd` |
 | A PRD or equivalent requirements artifact is decision-ready and needs its first top-level implementation plan | `$rb-create-implementation-plan` |
 | A sufficiently understood idea needs its first top-level plan | `$rb-create-implementation-plan` |

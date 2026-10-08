@@ -23,7 +23,7 @@ Before starting the first sprint, locate or obtain:
 - recorded decision authority, constraints, accepted risks, and rollout or rollback boundaries;
 - existing sprint, diary, handoff, decision, and plan-change records.
 
-If no authoritative requirements artifact exists, do not infer product intent from the implementation plan. Use `$rb-discuss` for unresolved behaviour or `$rb-create-prd` when durable product requirements are needed. If the implementation plan is missing, use `$rb-create-implementation-plan`.
+If no authoritative requirements artifact exists, do not infer product intent from the implementation plan. Use `$rb-discuss` for consequential requirements that need the user's judgement, or `$rb-create-prd` when durable product requirements are needed. Investigate technical unknowns within the sprint; preserve settled or delegated choices. If the implementation plan is missing, use `$rb-create-implementation-plan`.
 
 Apply the artifacts in this order when they conflict:
 

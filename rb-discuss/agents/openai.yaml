@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Discuss"
-  short_description: "Discuss requirements before implementation"
-  default_prompt: "Use $rb-discuss to clarify unresolved requirements and record the agreed decisions before implementation."
+  short_description: "Interview about goals and consequential choices"
+  default_prompt: "Use $rb-discuss to interview me about the goals and decisions that need my judgement, offering trade-offs, grounded recommendations, and clickable choices when supported. Preserve existing agreements."

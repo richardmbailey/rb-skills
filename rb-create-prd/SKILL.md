@@ -51,7 +51,7 @@ Do not invent missing product decisions, research findings, metrics, legal oblig
 
 ## Boundaries with other skills
 
-- Use `$rb-discuss` when the user wants to explore a change but has not requested a durable PRD and material behaviour is unresolved.
+- Use `$rb-discuss` when the user wants an interview about goals or consequential requirements without a durable PRD. If a PRD is requested, resolve its missing decisions within this workflow.
 - Use `$rb-research-question-gate` first when the product depends on an untested scientific, algorithmic, or novelty claim that must be evaluated before requirements are credible.
 - Use `$rb-create-implementation-plan` after the PRD is decision-ready and the user asks for implementation planning.
 - Use `$rb-project-language` when the project needs a durable shared vocabulary beyond the PRD.

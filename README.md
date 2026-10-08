@@ -8,6 +8,8 @@ The skills are intended for practical coding, modelling, AI/ML, research, review
 
 ## Latest changes
 
+- Refined `$rb-discuss` into a focused user interview with options, grounded recommendations, and clickable choices where supported. Continuation and handoff skills preserve settled decisions and keep technical investigations out of the interview workflow. See the [change and validation record](docs/discussion-interviews-2026-10-08.md).
+
 - Added a separate Claude profile with generated skill copies, native manual-only controls, and user-selected subagent models. Codex skill sources and model defaults are unchanged.
 
 - Simplified the active skills: recognise existing authority, use proportionate standard-route review, keep unchanged sprint checkpoints compact, and load specialist constrained/runtime detail through references. Exact constrained-runtime gates remain unchanged.
@@ -112,7 +114,7 @@ The routing rule is:
 
 | Task state | Workflow |
 | --- | --- |
-| Material requirements unresolved | `rb-discuss` |
+| Interview about goals or consequential requirements needing user judgement | `rb-discuss` |
 | Product or feature needs a durable requirements document | `rb-create-prd` |
 | Sufficiently understood idea needs a top-level plan | `rb-create-implementation-plan` |
 | Existing multi-step plan should be followed linearly | `rb-execute-plan` |
@@ -124,7 +126,9 @@ The routing rule is:
 | Structural critique | `rb-architecture-review` |
 | Defect review of a diff or pull request | `rb-review-pr-or-diff` |
 
-`rb-discuss` is not a mandatory stage. Agreed work routes directly to planning or implementation.
+`rb-discuss` is not a mandatory stage. It guides an interview with the user about goals, outcomes, scope, priorities, and consequential requirements. It offers options with trade-offs and a recommendation when the evidence supports one. It uses clickable choices when a native question tool is available and permitted, and falls back to text otherwise. The user can supply another answer; a displayed default or silence is not agreement.
+
+Agreed work routes directly to planning or implementation. A new session or technical uncertainty does not require an interview. Handoffs preserve settled decisions and separate pending user choices from agent investigations and nonblocking risks. An unanswered choice blocks only work that depends on it.
 
 Requests to create, revise, or review a product requirements document select `$rb-create-prd` automatically. Users can also invoke `$rb-create-prd` in Codex or `/rb-create-prd` in Claude Code.
 
@@ -203,7 +207,7 @@ The parent sends the minimum self-contained context, checks the returned artifac
 | --- | --- |
 | `$rb-start-project` | First onboarding of a new or poorly understood project, including testing and CI discovery before routing. |
 | `$rb-continue-project` | Resume a mature project from instructions, diary, handoff, Git state, and preserved testing context. |
-| `$rb-discuss` | Material behaviour, interfaces, edge cases, failure handling, tests, or acceptance criteria remain unresolved. |
+| `$rb-discuss` | The user wants an interview about goals or a consequential requirement needs their judgement; not routine clarification, technical investigation, or resuming agreed work. |
 | `$rb-create-prd` | Create, revise, or review product requirements, including users, outcomes, scope, success measures, risks, dependencies, and unresolved decisions. |
 | `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan with `[ ]`, `[x]`, and `[v]` task states, testing architecture, risks, success criteria, and route choice. |
 | `$rb-execute-plan` | An existing multi-step plan should be followed linearly under standard conditions by default, with `[ ]`, `[x]`, and `[v]` task status, test coverage, independent sub-agent review for substantial/high-risk/cross-cutting work or explicit gates before `[v]`, CI-equivalent checks, and verification. |

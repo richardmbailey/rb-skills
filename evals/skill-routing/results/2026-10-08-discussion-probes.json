@@ -1,0 +1,692 @@
+{
+  "protocol": {
+    "date": "2026-10-08",
+    "kind": "simulated workflow decision probes",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "max",
+    "trials_per_condition": 3,
+    "scenarios_per_trial": 6,
+    "old_commit": "9a9b5b728066134c4b074e26b2ee169f25e02d67",
+    "conversation_fork": "none; fresh agent per trial",
+    "review": "Parent semantic inspection of all outputs, not blinded; custom-answer field also inspected deterministically. No aggregate pass rate assigned.",
+    "limitations": [
+      "Not execution of the full behavioural manifests or routing suite.",
+      "No native question tool was invoked; proposed tool calls are simulated JSON. Native UI cases remain unrun.",
+      "No product repository task was executed. Handoff scenarios are written decision probes, not a live two-session integration test.",
+      "No Claude model trials; generated profile checks establish packaging only.",
+      "Shared platform and tool instructions remain outside the packet and can influence all conditions. No task conversation was inherited.",
+      "Six scenarios share a packet in each trial; outputs are not independent population estimates.",
+      "No token-cost or latency comparison.",
+      "Old and no-skill conditions also handled agreed resumptions and unanswered decisions sensibly; results do not establish general skill lift."
+    ]
+  },
+  "packets": {
+    "old": {
+      "instructions": "These are independent workflow decision probes, not live project execution. Read only this packet. Do not load installed skills, repository guidance or other packets. For each case, give the next assistant response and proposed action, not a critique. Use only supplied evidence. Return JSON array of {id, response, action, proposed_tool_call} with proposed_tool_call null or a JSON object. Keep each response under 160 words. Do not invoke real question tools or contact the user. No file edits except the specified output file. Do not spawn agents.",
+      "cases": [
+        {
+          "id": "resume",
+          "request": "Resume the approved CSV export task from this handoff and continue the next work.",
+          "context": "Agreed: admin-only CSV v2; acceptance tests specify escaping and partial errors. Next authorised task: repair the failing escaping test. Unknown: which parser branch causes the failure. User has approved implementation, tests and review. There is no new product decision.",
+          "question_capability": "No question tool."
+        },
+        {
+          "id": "choice",
+          "request": "Help me decide the first-release sync policy before we implement it.",
+          "context": "Intended users often work offline. Their stated top priority is avoiding silent loss of local edits; instant cross-device updates are secondary. Options under consideration: manual sync with explicit conflict review, or automatic sync with last-write-wins. No choice has been made.",
+          "question_capability": "For this decision probe only, the host exposes a permitted ask_user tool. Arguments: question string, options array of objects with label and description, allow_custom boolean. It displays clickable choices and returns no answer yet. Represent the proposed call as JSON; do not call a real user-facing tool."
+        },
+        {
+          "id": "restricted",
+          "request": "Help me decide the first-release sync policy before we implement it.",
+          "context": "Intended users often work offline. Their stated top priority is avoiding silent loss of local edits; instant cross-device updates are secondary. Options under consideration: manual sync with explicit conflict review, or automatic sync with last-write-wins. No choice has been made.",
+          "question_capability": "ask_user is listed but its contract prohibits use in the current mode. There is no other question tool."
+        },
+        {
+          "id": "silence",
+          "request": "Carry on with the project.",
+          "context": "A question asking whether to enable remote sync is pending; the recommended/default option was enable. The user has not answered it or delegated the choice. Separately, they already authorised an independent local-cache benchmark. Remote sync would transfer their data.",
+          "question_capability": "The earlier question is still pending; do not issue another one solely to duplicate it."
+        },
+        {
+          "id": "handoff",
+          "request": "Prepare a concise handoff and restart prompt; we are ending this session.",
+          "context": "The user selected a custom hybrid storage option: encrypted local cache, cloud sync disabled until consent review. Retention remains undecided and blocks deletion only. The agent can benchmark local reads under existing authority. Outdated help text is a nonblocking risk. No implementation or new tests have run this session.",
+          "question_capability": "No question tool."
+        },
+        {
+          "id": "discovery",
+          "request": "Interview me about what this project should achieve before we choose features.",
+          "context": "A new community knowledge project. No primary audience, desired outcome or success criterion is established. No code or plan exists.",
+          "question_capability": "No question tool."
+        }
+      ],
+      "skill_instructions": {
+        "rb-discuss": "---\nname: \"rb-discuss\"\ndescription: \"Use when a non-trivial change still has unresolved material requirements, behaviour, interfaces, edge cases, or acceptance criteria that must be discussed before implementation. Do not use once the change is sufficiently agreed for planning or implementation.\"\n---\n\n# /rb:discuss - discuss before coding\n\n## Purpose\n\nUse this when a non-trivial feature or change cannot yet be planned or implemented safely because material requirements remain unresolved.\n\nDo not use it merely because a change is substantial. Once the intended behaviour and acceptance criteria are sufficiently agreed, use `$rb-create-prd` when the user wants a durable product requirements document. Otherwise, use `$rb-create-implementation-plan` for a new top-level plan or the appropriate implementation skill for agreed work.\n\n## Procedure\n\n1. Read `CONTEXT.md` if present, plus relevant ADRs, README files, docs, and tests. If `CONTEXT.md` is missing, note that and continue.\n2. Separate what is already agreed from decisions that materially affect behaviour, interfaces, data, compatibility, failure handling, tests, scientific assumptions, or acceptance.\n3. Ask one targeted question at a time when answers depend on each other. Bundle independent missing decisions when that reduces delay. Ask only when the answer cannot be recovered safely from the repository and would materially change the result.\n4. For multi-LLM-agent systems, also use `$rb-multi-agent-systems` to clarify stack, tools, state, observability, evals, retrieval, and provider routing.\n5. For text-processing requests, establish whether acceptance depends on stable syntax or meaning. Clarify expected errors and tolerances; leave the choice among an LLM and other validated semantic methods to implementation unless it is a product constraint.\n6. Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear.\n7. For substantial discovery or planning, update `$rb-working-diary` with durable findings, decisions, and open questions.\n8. Record the agreed requirements, accepted risks, remaining questions, and next workflow. Continue when the current request already authorises that work. Do not require a separate confirmation merely to change skills. Create a PRD or top-level plan only when it is part of the authorised task, using `$rb-create-prd` or `$rb-create-implementation-plan` respectively.\n\n## Stop condition\n\nDo not start coding until material ambiguity is resolved or explicitly accepted as a risk.\n",
+        "rb-continue-project": "---\nname: \"rb-continue-project\"\ndescription: \"Use when resuming a mature project from existing instructions, diary, handoff, and Git state, with a quick orientation before editing. Do not use for first onboarding. If the deliverable could instead be a standalone status artifact, clarify.\"\n---\n\n# RB Continue Project\n\n## Purpose\n\nContinue work in an existing or mature repository without losing prior context.\n\nUse this when the human wants continuity from durable project context rather than first-time onboarding.\n\n## Inputs\n\n- Target repository path. Default to the current working directory.\n- Optional current task from the human.\n- Existing project context such as `AGENTS.md`, `CONTEXT.md`, README/docs, working diary files, handoff notes, plans, and git state.\n\n## Procedure\n\n1. Confirm the current working directory is the repository to continue. If uncertain, ask before proceeding.\n2. Read repository-level agent instructions first:\n   - `AGENTS.md` when present;\n   - tool-specific instructions only when relevant to the current session.\n3. Use `$rb-working-diary`:\n   - read `${CODEX_HOME:-$HOME/.codex}/diary/diary.md`;\n   - match the current project by absolute path first, then by project name;\n   - if a project diary exists, read `handoff.md` first when present, then recent `working-diary.md`;\n   - read `decisions.md`, `open-questions.md`, or `investigations.md` only when the current task needs them.\n4. Read project context files that explain the codebase:\n   - `CONTEXT.md` when present;\n   - `README.md` and nearby docs that describe setup, architecture, tests, or current work;\n   - active implementation plans, issue notes, or project-local handoff files if clearly relevant.\n5. Inspect read-only repo state:\n   - top-level files and build, test, coverage, lint, typing, formatting, packaging, pre-commit, and CI configuration;\n   - `git status --short`;\n   - current branch;\n   - recent commits when useful.\n6. Recover the testing context established by prior work:\n   - focused unit/property test commands;\n   - integration, contract, migration, end-to-end, benchmark, scientific, or agent-eval commands;\n   - canonical CI-equivalent command and checks available only remotely;\n   - coverage tooling and existing thresholds;\n   - fixture, service, secret, container, hardware, network, or test-data requirements;\n   - known flaky or quarantined tests;\n   - checks last run, their dates/context, omitted checks, and residual regression risk.\n7. Recover `Pipeline State` when the project began through `$rb-start-project`:\n   - current pipeline stage;\n   - canonical stage status;\n   - completed and `not required` gates with their evidence or reasons;\n   - PRD applicability, status, and path;\n   - active lifecycle artifacts and approval status;\n   - blocking decisions and owners;\n   - next gate, recommended skill, and expected successor.\n   If the record is absent or stale, reconstruct only what repository and diary evidence supports. Mark every reconstructed or uncertain field.\n8. Summarise before editing:\n   - what the project is;\n   - what prior sessions appear to have been doing;\n   - current git/worktree state;\n   - relevant test levels, commands, and CI-equivalent gate;\n   - unresolved questions, blockers, risks, assumptions, and stale evidence;\n   - recovered pipeline stage, completed gates, active artifact, and next gate;\n   - recommended next action and matching RB workflow skill.\n9. Continue into the requested work when the current request or recorded authority covers it. Ask only about a material decision or action outside that authority. Preserve explicit stop points and required permissions for destructive commands, dependency changes, migrations, or broad refactors; a change of skill does not itself require approval.\n\n## Routing\n\nUse the same routing rule as `$rb-start-project`:\n\n- If a research, scientific, modelling, algorithmic, or novelty premise must be assessed before product requirements are credible, recommend `$rb-research-question-gate`.\n- If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved, recommend `$rb-discuss`.\n- If the project needs a durable PRD or an existing PRD must become decision-ready, recommend `$rb-create-prd`.\n- If the requirements are sufficiently understood and a new top-level implementation plan is needed, recommend `$rb-create-implementation-plan`.\n- If an existing multi-step implementation plan or phase checklist should be followed linearly, recommend `$rb-execute-plan`.\n- If an existing plan should be delivered through repeated PRD-aligned review, evidence-backed plan adaptation, and bounded sprints, recommend `$rb-sprint`.\n- If one bounded ordinary change is already agreed and does not need plan-state ownership, recommend `$rb-implement-with-tests` directly.\n- If an agreed change is scientific, numerical, modelling, simulation, stochastic, or domain-sensitive, recommend `$rb-tdd-scientific-code` directly.\n- If the next step is a bug, regression, failing or flaky test, or surprising output with an unknown cause, recommend `$rb-diagnose`.\n- If the next step is understanding an unfamiliar area, recommend `$rb-explain-codebase`.\n- If the next step is structural review, recommend `$rb-architecture-review`.\n- If the next step is reviewing changes, recommend `$rb-review-pr-or-diff`.\n- If the user explicitly authorises the next workflow, continue with the selected skill.\n\nDo not insert `$rb-discuss` merely because a change is substantial. Use it only when material ambiguity remains.\n\nBefore entering the selected workflow, update `Pipeline State` if the project uses that record. Recover only fields needed for the requested work; do not introduce the full onboarding pipeline for a bounded maintenance task. Before a cross-session handoff or material stage change, persist the updated record through `$rb-working-diary`.\n\n## Required Behaviour\n\n- Do not treat `/continue_project` or `/continue_session` as built-in slash commands; treat them as invocation phrases for this skill.\n- Do not write product code during the continuity pass.\n- Do not invent missing project history. State what was found and what is absent.\n- Do not load every diary file by default. Start with handoff and recent working-diary entries, then expand only as needed.\n- Do not claim tests passed unless they were run in this session or documented in the handoff with dates and context.\n- Distinguish passed, failed, not run, unavailable, remote-only, and stale checks.\n- Preserve user changes in the worktree. Report them rather than reverting them.\n\n## Output\n\nBriefly state the recovered objective, current worktree and verification state, material uncertainty, and next action. Link the relevant plan or handoff. Do not reproduce the full discovery inventory.\n\nIf the next workflow is already authorised, continue after the brief. Otherwise ask only for the missing decision or permission. A request to resume and implement an identified task does not require a second confirmation.\n",
+        "rb-end-session": "---\nname: \"rb-end-session\"\ndescription: \"Use when the user wants to pause or close the current work, prepare durable continuity notes, or create a handoff brief for another agent session. For an ongoing project status report, use $rb-where-are-we.\"\n---\n\n# RB End Session\n\nUse this skill to close one working session cleanly and prepare a new agent/session to continue without guessing.\n\n## Core Workflow\n\n1. Inspect current state:\n   - run `git status --short`;\n   - identify the current branch with `git branch --show-current`;\n   - if useful, list recent commits with `git log --oneline -5`;\n   - check for active phase/plan files, TODOs, or handoff notes.\n2. Summarise the work:\n   - current goal;\n   - what changed in this session;\n   - files edited or important files to read first;\n   - changed behaviours and selected test levels;\n   - automated tests, negative/boundary cases, integration/contract/end-to-end checks, and canonical CI-equivalent command run;\n   - exact results, coverage status, and date/context;\n   - checks omitted, unavailable, remote-only, or stale, with the resulting regression risk;\n   - uncommitted changes, if any;\n   - blockers, risks, and known caveats;\n   - next recommended task.\n3. Create or update a project-local handoff file if the user asks for a durable handoff. Prefer:\n   - `docs/end-session.md` for documented project work;\n   - `AGENT_BRIEF.md` if the project already uses that convention;\n   - an existing project-local handoff path when the project already uses one;\n   - `.rb-agent/templates/AGENT_BRIEF.md` as a template when present.\n4. Use `$rb-working-diary` for durable continuity when the session had meaningful investigation, decisions, unresolved risks, or compaction-prone context. Update `handoff.md` and, when helpful, `working-diary.md`.\n5. Provide a paste-ready prompt for the next session.\n6. Archive the chat only when the user explicitly requests archival. Ending a work session or preparing a handoff alone does not imply archival. In Codex desktop, use `set_thread_archived` when available.\n\n## Handoff Brief Shape\n\nUse this structure unless the project already has a stronger convention. Omit empty sections and link evidence already recorded in a plan or diary. Create one canonical handoff and link it from other continuity records rather than copying the same brief into several files:\n\n```markdown\n# RB End Session Brief\n\n## Current Goal\n\n## Current Status\n\n## Recent Changes\n\n## Files To Read First\n\n## Testing And Verification\n\n- Changed behaviours / test levels:\n- Tests and checks run:\n- Canonical CI-equivalent result:\n- Coverage / fixtures / environment:\n- Checks not run or stale:\n- Residual regression risk:\n\n## Git State\n\n## Constraints And Project Rules\n\n## Risks Or Caveats\n\n## Next Recommended Step\n\n## Prompt For Next Session\n```\n\n## Rules\n\n- Do not hide uncommitted changes. Call them out clearly.\n- Do not claim tests passed unless they were run in this session or the user explicitly provided that fact with context.\n- Distinguish passed, failed, not run, unavailable, remote-only, and stale evidence.\n- Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence.\n- Keep the next-session prompt short enough to paste, but include the exact repo path and immediate next task.\n- Preserve project-specific workflow rules, especially phase checklist status, selected test levels, CI-equivalent commands, coverage thresholds, security constraints, and no-fallback rules.\n- Prefer a durable file when the context is large or the user is about to start a new session.\n- Prefer the working diary for cross-session operational memory that should outlive the current repository checkout or chat thread.\n"
+      }
+    },
+    "revised": {
+      "instructions": "These are independent workflow decision probes, not live project execution. Read only this packet. Do not load installed skills, repository guidance or other packets. For each case, give the next assistant response and proposed action, not a critique. Use only supplied evidence. Return JSON array of {id, response, action, proposed_tool_call} with proposed_tool_call null or a JSON object. Keep each response under 160 words. Do not invoke real question tools or contact the user. No file edits except the specified output file. Do not spawn agents.",
+      "cases": [
+        {
+          "id": "resume",
+          "request": "Resume the approved CSV export task from this handoff and continue the next work.",
+          "context": "Agreed: admin-only CSV v2; acceptance tests specify escaping and partial errors. Next authorised task: repair the failing escaping test. Unknown: which parser branch causes the failure. User has approved implementation, tests and review. There is no new product decision.",
+          "question_capability": "No question tool."
+        },
+        {
+          "id": "choice",
+          "request": "Help me decide the first-release sync policy before we implement it.",
+          "context": "Intended users often work offline. Their stated top priority is avoiding silent loss of local edits; instant cross-device updates are secondary. Options under consideration: manual sync with explicit conflict review, or automatic sync with last-write-wins. No choice has been made.",
+          "question_capability": "For this decision probe only, the host exposes a permitted ask_user tool. Arguments: question string, options array of objects with label and description, allow_custom boolean. It displays clickable choices and returns no answer yet. Represent the proposed call as JSON; do not call a real user-facing tool."
+        },
+        {
+          "id": "restricted",
+          "request": "Help me decide the first-release sync policy before we implement it.",
+          "context": "Intended users often work offline. Their stated top priority is avoiding silent loss of local edits; instant cross-device updates are secondary. Options under consideration: manual sync with explicit conflict review, or automatic sync with last-write-wins. No choice has been made.",
+          "question_capability": "ask_user is listed but its contract prohibits use in the current mode. There is no other question tool."
+        },
+        {
+          "id": "silence",
+          "request": "Carry on with the project.",
+          "context": "A question asking whether to enable remote sync is pending; the recommended/default option was enable. The user has not answered it or delegated the choice. Separately, they already authorised an independent local-cache benchmark. Remote sync would transfer their data.",
+          "question_capability": "The earlier question is still pending; do not issue another one solely to duplicate it."
+        },
+        {
+          "id": "handoff",
+          "request": "Prepare a concise handoff and restart prompt; we are ending this session.",
+          "context": "The user selected a custom hybrid storage option: encrypted local cache, cloud sync disabled until consent review. Retention remains undecided and blocks deletion only. The agent can benchmark local reads under existing authority. Outdated help text is a nonblocking risk. No implementation or new tests have run this session.",
+          "question_capability": "No question tool."
+        },
+        {
+          "id": "discovery",
+          "request": "Interview me about what this project should achieve before we choose features.",
+          "context": "A new community knowledge project. No primary audience, desired outcome or success criterion is established. No code or plan exists.",
+          "question_capability": "No question tool."
+        }
+      ],
+      "skill_instructions": {
+        "rb-discuss": "---\nname: \"rb-discuss\"\ndescription: \"Interview the user about project goals, outcomes, scope, priorities, or consequential requirements that need their judgement. Use for initial discovery or later decisions; not routine clarification, technical investigation, or resuming agreed work.\"\n---\n\n# RB Discuss\n\n## Purpose\n\nHelp the user decide what a project or change should achieve. Use a focused interview to clarify intended outcomes, explore trade-offs, and agree the decisions needed for the next action.\n\n## Selection boundary\n\nUse this when the user requests an interview or exploratory discussion, or when a consequential choice needs their judgement and is not already settled or delegated. Examples include intended users, success criteria, scope, acceptable failure behaviour, and scientific comparisons.\n\nDo not use it merely because a change is substantial. A new session, unfinished task, unfamiliar code, or technical uncertainty is not an interview trigger. Investigate recoverable facts and make ordinary implementation choices within existing authority. Handle a routine clarification in the current workflow.\n\nThis skill guides a conversation with the user. Do not simulate their answers or use it as an internal reasoning checklist. If reading the context resolves the apparent question, continue the authorised work without an interview.\n\n## Procedure\n\n1. Read the request and relevant existing decisions, handoff, `CONTEXT.md`, docs, or tests. Missing context files do not require creating them. Preserve settled decisions unless the user changes them or new evidence undermines their assumptions; explain the reason before reopening one.\n2. Identify the next decision that needs the user's judgement. For initial discovery, establish the intended outcome and who benefits before exploring solutions. Separate user decisions from investigations the agent can perform and risks that do not block the next action.\n3. Ask one targeted question at a time when answers depend on each other. Bundle independent missing decisions when that reduces delay. Explain why the answer matters. Explore only what is needed for the next action; do not work through an exhaustive questionnaire.\n4. Where meaningful alternatives exist, offer a small set of distinct options with short trade-offs. Recommend an option when the known goals and evidence support it, and explain why. If that context is missing, ask an open question before recommending. Let the user propose another answer or reject the recommendation.\n5. Prefer the host's native question tool for clickable options when it is available and permitted for this question. Follow its current schema and mode restrictions; preserve a way for the user to give their own answer. If the tool cannot be used, ask in text, including any applicable options and evidence-supported recommendation. Do not invent buttons or change modes just to obtain them.\n6. Wait for the user's answer before taking an action that depends on it. A recommendation, preselected option, unanswered question, or elapsed time is not agreement. Continue independent work only within existing authority. Apply the user's answer, including a custom choice, and ask a follow-up only if it leaves a consequential decision unresolved.\n7. Use specialist guidance only for the decision at hand. For multi-LLM-agent design, use `$rb-multi-agent-systems`. For text processing, clarify whether success depends on syntax or meaning and what errors are acceptable; leave technical method choices to implementation unless they are user constraints.\n8. Summarise the agreed decisions, accepted risks, and any remaining user choices separately from agent investigations. For substantial discovery, preserve these through `$rb-working-diary`. Stop the interview once the next action is clear. Continue work already authorised; a skill change alone does not require confirmation. Use `$rb-create-prd` or `$rb-create-implementation-plan` only when that deliverable is part of the authorised task.\n\n## Stop condition\n\nDo not implement behaviour that depends on an unanswered user decision. Resume that work when the user decides, delegates the choice, or explicitly accepts the risk. Do not block unrelated authorised work.\n\nBehavioural cases for selection, handoffs, and question delivery are in `evals/eval-plan.json`.\n",
+        "rb-continue-project": "---\nname: \"rb-continue-project\"\ndescription: \"Use when resuming a mature project from existing instructions, diary, handoff, and Git state, with a quick orientation before editing. Do not use for first onboarding. If the deliverable could instead be a standalone status artifact, clarify.\"\n---\n\n# RB Continue Project\n\n## Purpose\n\nContinue work in an existing or mature repository without losing prior context.\n\nUse this when the human wants continuity from durable project context rather than first-time onboarding.\n\n## Inputs\n\n- Target repository path. Default to the current working directory.\n- Optional current task from the human.\n- Existing project context such as `AGENTS.md`, `CONTEXT.md`, README/docs, working diary files, handoff notes, plans, and git state.\n\n## Procedure\n\n1. Confirm the current working directory is the repository to continue. If uncertain, ask before proceeding.\n2. Read repository-level agent instructions first:\n   - `AGENTS.md` when present;\n   - tool-specific instructions only when relevant to the current session.\n3. Use `$rb-working-diary`:\n   - read `${CODEX_HOME:-$HOME/.codex}/diary/diary.md`;\n   - match the current project by absolute path first, then by project name;\n   - if a project diary exists, read `handoff.md` first when present, then recent `working-diary.md`;\n   - read `decisions.md`, `open-questions.md`, or `investigations.md` only when the current task needs them.\n4. Read project context files that explain the codebase:\n   - `CONTEXT.md` when present;\n   - `README.md` and nearby docs that describe setup, architecture, tests, or current work;\n   - active implementation plans, issue notes, or project-local handoff files if clearly relevant.\n5. Inspect read-only repo state:\n   - top-level files and build, test, coverage, lint, typing, formatting, packaging, pre-commit, and CI configuration;\n   - `git status --short`;\n   - current branch;\n   - recent commits when useful.\n6. Recover the testing context established by prior work:\n   - focused unit/property test commands;\n   - integration, contract, migration, end-to-end, benchmark, scientific, or agent-eval commands;\n   - canonical CI-equivalent command and checks available only remotely;\n   - coverage tooling and existing thresholds;\n   - fixture, service, secret, container, hardware, network, or test-data requirements;\n   - known flaky or quarantined tests;\n   - checks last run, their dates/context, omitted checks, and residual regression risk.\n7. Recover `Pipeline State` when the project began through `$rb-start-project`:\n   - current pipeline stage;\n   - canonical stage status;\n   - completed and `not required` gates with their evidence or reasons;\n   - PRD applicability, status, and path;\n   - active lifecycle artifacts and approval status;\n   - blocking decisions and owners;\n   - next gate, recommended skill, and expected successor.\n   If the record is absent or stale, reconstruct only what repository and diary evidence supports. Mark every reconstructed or uncertain field.\n8. Summarise before editing:\n   - what the project is;\n   - what prior sessions appear to have been doing;\n   - current git/worktree state;\n   - relevant test levels, commands, and CI-equivalent gate;\n   - settled decisions, pending user choices, agent investigations, and nonblocking risks, including stale evidence;\n   - recovered pipeline stage, completed gates, active artifact, and next gate;\n   - recommended next action and matching RB workflow skill.\n9. Continue into the requested work when the current request or recorded authority covers it. Ask only about a material decision or action outside that authority. Preserve explicit stop points and required permissions for destructive commands, dependency changes, migrations, or broad refactors; a change of skill does not itself require approval.\n\n## Routing\n\nUse the same routing rule as `$rb-start-project`:\n\n- If a research, scientific, modelling, algorithmic, or novelty premise must be assessed before product requirements are credible, recommend `$rb-research-question-gate`.\n- If the user requests an interview or a consequential requirement needs their judgement and is not already settled or delegated, recommend `$rb-discuss`.\n- If the project needs a durable PRD or an existing PRD must become decision-ready, recommend `$rb-create-prd`.\n- If the requirements are sufficiently understood and a new top-level implementation plan is needed, recommend `$rb-create-implementation-plan`.\n- If an existing multi-step implementation plan or phase checklist should be followed linearly, recommend `$rb-execute-plan`.\n- If an existing plan should be delivered through repeated PRD-aligned review, evidence-backed plan adaptation, and bounded sprints, recommend `$rb-sprint`.\n- If one bounded ordinary change is already agreed and does not need plan-state ownership, recommend `$rb-implement-with-tests` directly.\n- If an agreed change is scientific, numerical, modelling, simulation, stochastic, or domain-sensitive, recommend `$rb-tdd-scientific-code` directly.\n- If the next step is a bug, regression, failing or flaky test, or surprising output with an unknown cause, recommend `$rb-diagnose`.\n- If the next step is understanding an unfamiliar area, recommend `$rb-explain-codebase`.\n- If the next step is structural review, recommend `$rb-architecture-review`.\n- If the next step is reviewing changes, recommend `$rb-review-pr-or-diff`.\n- If the user explicitly authorises the next workflow, continue with the selected skill.\n\nDo not insert `$rb-discuss` merely because a change is substantial. Resuming a session, unfinished work, and technical uncertainty are not interview triggers. Recover existing agreements and continue the authorised next task. Reopen a settled decision only when the user changes it or new evidence undermines its assumptions; explain that reason. Investigate technical unknowns in the owning workflow and handle routine clarification there. A pending user choice blocks only work that depends on it.\n\nBefore entering the selected workflow, update `Pipeline State` if the project uses that record. Recover only fields needed for the requested work; do not introduce the full onboarding pipeline for a bounded maintenance task. Before a cross-session handoff or material stage change, persist the updated record through `$rb-working-diary`.\n\n## Required Behaviour\n\n- Do not treat `/continue_project` or `/continue_session` as built-in slash commands; treat them as invocation phrases for this skill.\n- Do not write product code during the continuity pass.\n- Do not invent missing project history. State what was found and what is absent.\n- Do not load every diary file by default. Start with handoff and recent working-diary entries, then expand only as needed.\n- Do not claim tests passed unless they were run in this session or documented in the handoff with dates and context.\n- Distinguish passed, failed, not run, unavailable, remote-only, and stale checks.\n- Preserve user changes in the worktree. Report them rather than reverting them.\n\n## Output\n\nBriefly state the recovered objective, current worktree and verification state, material uncertainty, and next action. Link the relevant plan or handoff. Do not reproduce the full discovery inventory.\n\nIf the next workflow is already authorised, continue after the brief. Otherwise ask only for the missing decision or permission. A request to resume and implement an identified task does not require a second confirmation.\n",
+        "rb-end-session": "---\nname: \"rb-end-session\"\ndescription: \"Use when the user wants to pause or close the current work, prepare durable continuity notes, or create a handoff brief for another agent session. For an ongoing project status report, use $rb-where-are-we.\"\n---\n\n# RB End Session\n\nUse this skill to close one working session cleanly and prepare a new agent/session to continue without guessing.\n\n## Core Workflow\n\n1. Inspect current state:\n   - run `git status --short`;\n   - identify the current branch with `git branch --show-current`;\n   - if useful, list recent commits with `git log --oneline -5`;\n   - check for active phase/plan files, TODOs, or handoff notes.\n2. Summarise the work:\n   - current goal;\n   - what changed in this session;\n   - files edited or important files to read first;\n   - changed behaviours and selected test levels;\n   - automated tests, negative/boundary cases, integration/contract/end-to-end checks, and canonical CI-equivalent command run;\n   - exact results, coverage status, and date/context;\n   - checks omitted, unavailable, remote-only, or stale, with the resulting regression risk;\n   - uncommitted changes, if any;\n   - agreed decisions, pending user choices, agent investigations, and nonblocking risks;\n   - next recommended task.\n3. Create or update a project-local handoff file if the user asks for a durable handoff. Prefer:\n   - `docs/end-session.md` for documented project work;\n   - `AGENT_BRIEF.md` if the project already uses that convention;\n   - an existing project-local handoff path when the project already uses one;\n   - `.rb-agent/templates/AGENT_BRIEF.md` as a template when present.\n4. Use `$rb-working-diary` for durable continuity when the session had meaningful investigation, decisions, unresolved risks, or compaction-prone context. Update `handoff.md` and, when helpful, `working-diary.md`.\n5. Provide a paste-ready prompt for the next session. Carry forward agreed decisions and the authorised next action. Request a resumed interview only when a consequential choice still needs the user's judgement; name the choice and what depends on it. A new session does not itself require `$rb-discuss`.\n6. Archive the chat only when the user explicitly requests archival. Ending a work session or preparing a handoff alone does not imply archival. In Codex desktop, use `set_thread_archived` when available.\n\n## Handoff Brief Shape\n\nUse this structure unless the project already has a stronger convention. Omit empty sections and link evidence already recorded in a plan or diary. Create one canonical handoff and link it from other continuity records rather than copying the same brief into several files:\n\n```markdown\n# RB End Session Brief\n\n## Current Goal\n\n## Current Status\n\n## Recent Changes\n\n## Files To Read First\n\n## Testing And Verification\n\n- Changed behaviours / test levels:\n- Tests and checks run:\n- Canonical CI-equivalent result:\n- Coverage / fixtures / environment:\n- Checks not run or stale:\n- Residual regression risk:\n\n## Git State\n\n## Constraints And Project Rules\n\n## Decisions And Remaining Work\n\n- Agreed decisions and authority:\n- Pending user choices and dependent work:\n- Investigations the agent can perform:\n\n## Risks Or Caveats\n\n## Next Recommended Step\n\n## Prompt For Next Session\n```\n\n## Rules\n\n- Do not hide uncommitted changes. Call them out clearly.\n- Do not claim tests passed unless they were run in this session or the user explicitly provided that fact with context.\n- Distinguish passed, failed, not run, unavailable, remote-only, and stale evidence.\n- Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence.\n- Keep the next-session prompt short enough to paste, but include the exact repo path and immediate next task.\n- Keep proposals distinct from user decisions. Do not turn technical investigations or nonblocking risks into requests to approve settled requirements again.\n- Preserve project-specific workflow rules, especially phase checklist status, selected test levels, CI-equivalent commands, coverage thresholds, security constraints, and no-fallback rules.\n- Prefer a durable file when the context is large or the user is about to start a new session.\n- Prefer the working diary for cross-session operational memory that should outlive the current repository checkout or chat thread.\n"
+      }
+    },
+    "without": {
+      "instructions": "These are independent workflow decision probes, not live project execution. Read only this packet. Do not load installed skills, repository guidance or other packets. For each case, give the next assistant response and proposed action, not a critique. Use only supplied evidence. Return JSON array of {id, response, action, proposed_tool_call} with proposed_tool_call null or a JSON object. Keep each response under 160 words. Do not invoke real question tools or contact the user. No file edits except the specified output file. Do not spawn agents.",
+      "cases": [
+        {
+          "id": "resume",
+          "request": "Resume the approved CSV export task from this handoff and continue the next work.",
+          "context": "Agreed: admin-only CSV v2; acceptance tests specify escaping and partial errors. Next authorised task: repair the failing escaping test. Unknown: which parser branch causes the failure. User has approved implementation, tests and review. There is no new product decision.",
+          "question_capability": "No question tool."
+        },
+        {
+          "id": "choice",
+          "request": "Help me decide the first-release sync policy before we implement it.",
+          "context": "Intended users often work offline. Their stated top priority is avoiding silent loss of local edits; instant cross-device updates are secondary. Options under consideration: manual sync with explicit conflict review, or automatic sync with last-write-wins. No choice has been made.",
+          "question_capability": "For this decision probe only, the host exposes a permitted ask_user tool. Arguments: question string, options array of objects with label and description, allow_custom boolean. It displays clickable choices and returns no answer yet. Represent the proposed call as JSON; do not call a real user-facing tool."
+        },
+        {
+          "id": "restricted",
+          "request": "Help me decide the first-release sync policy before we implement it.",
+          "context": "Intended users often work offline. Their stated top priority is avoiding silent loss of local edits; instant cross-device updates are secondary. Options under consideration: manual sync with explicit conflict review, or automatic sync with last-write-wins. No choice has been made.",
+          "question_capability": "ask_user is listed but its contract prohibits use in the current mode. There is no other question tool."
+        },
+        {
+          "id": "silence",
+          "request": "Carry on with the project.",
+          "context": "A question asking whether to enable remote sync is pending; the recommended/default option was enable. The user has not answered it or delegated the choice. Separately, they already authorised an independent local-cache benchmark. Remote sync would transfer their data.",
+          "question_capability": "The earlier question is still pending; do not issue another one solely to duplicate it."
+        },
+        {
+          "id": "handoff",
+          "request": "Prepare a concise handoff and restart prompt; we are ending this session.",
+          "context": "The user selected a custom hybrid storage option: encrypted local cache, cloud sync disabled until consent review. Retention remains undecided and blocks deletion only. The agent can benchmark local reads under existing authority. Outdated help text is a nonblocking risk. No implementation or new tests have run this session.",
+          "question_capability": "No question tool."
+        },
+        {
+          "id": "discovery",
+          "request": "Interview me about what this project should achieve before we choose features.",
+          "context": "A new community knowledge project. No primary audience, desired outcome or success criterion is established. No code or plan exists.",
+          "question_capability": "No question tool."
+        }
+      ],
+      "skill_instructions": {}
+    }
+  },
+  "runs": [
+    {
+      "condition": "old",
+      "trial": 1,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "The CSV v2 behaviour and acceptance tests are already agreed, and repair is authorised. I\u2019ll resume from the handoff, reproduce the escaping failure, trace it to the parser branch, then patch it and run the focused regression and relevant checks. No new product decision is needed.",
+          "action": "Continue through rb-continue-project, then route the unknown failing-test cause to rb-diagnose before implementing the repair.",
+          "proposed_tool_call": {
+            "skill": "rb-diagnose",
+            "task": "Investigate and repair the authorised CSV v2 escaping-test failure, then run the focused regression and relevant checks."
+          }
+        },
+        {
+          "id": "choice",
+          "response": "Avoiding silent loss of local edits is the stated first-release priority, so manual sync with explicit conflict review is the better fit. I\u2019ll ask you to choose between that policy and automatic last-write-wins before implementation.",
+          "action": "Use the permitted decision question and wait for the policy choice before implementing sync.",
+          "proposed_tool_call": {
+            "tool": "ask_user",
+            "question": "Which first-release sync policy should we adopt?",
+            "options": [
+              {
+                "label": "Manual sync with conflict review",
+                "description": "Prioritises avoiding silent loss by requiring explicit review when local and remote edits conflict."
+              },
+              {
+                "label": "Automatic last-write-wins",
+                "description": "Provides faster cross-device updates but can silently overwrite local edits."
+              }
+            ],
+            "allow_custom": false
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "This policy materially affects data-loss behaviour and is still undecided. The evidence favours manual sync with explicit conflict review, but that remains a recommendation. The required question tool is unavailable in this mode, so I\u2019ll pause implementation until the user selects a policy through an available interaction.",
+          "action": "Hold at the rb-discuss decision gate; do not implement sync or silently choose an option.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue with the already authorised local-cache benchmark. The remote-sync question remains pending, so I will leave sync disabled and will not transfer data until the user answers or delegates that choice.",
+          "action": "Run the independent local-cache benchmark and preserve the pending remote-sync decision without issuing a duplicate question.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: the selected first-release storage is an encrypted local cache, with cloud sync disabled pending consent review. Retention is undecided and blocks deletion decisions only. No implementation or tests ran this session. An authorised local-read benchmark remains available; outdated help text is a nonblocking risk. Restart prompt: resume by resolving retention and consent, benchmark local reads if useful, then implement and test the agreed policy.",
+          "action": "Use rb-end-session to record this concise handoff and restart prompt, preserving retention and consent review as open decisions.",
+          "proposed_tool_call": {
+            "skill": "rb-end-session",
+            "deliverable": "Concise handoff and restart prompt for the selected hybrid storage policy."
+          }
+        },
+        {
+          "id": "discovery",
+          "response": "Before choosing features, I\u2019ll establish the project\u2019s purpose one decision at a time. First question: who is the primary audience this community knowledge project should serve? If several groups matter, name the one whose needs should drive the first release.",
+          "action": "Start rb-discuss discovery with the primary-audience question, then clarify desired outcome and success criterion before selecting features.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "old",
+      "trial": 2,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "The handoff already authorises implementation, tests, and review, and the next task is specific. I would resume the project context, then diagnose the failing escaping test to identify the parser branch before repairing it, run the focused acceptance tests, and review the change. No product question is needed.",
+          "action": "Run the continuity pass, diagnose the failing escaping test and parser branch, repair the defect, then run the focused acceptance tests and review the diff.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "Your stated priority points toward manual sync with explicit conflict review because last-write-wins can silently replace local edits. Before implementation, choose the first-release policy. I would ask one focused question and wait for your selection.",
+          "action": "Ask the user to choose the sync policy, record the decision, and only then proceed to implementation planning.",
+          "proposed_tool_call": {
+            "question": "Which first-release sync policy should we implement?",
+            "options": [
+              {
+                "label": "Manual sync with conflict review",
+                "description": "Requires explicit sync and surfaces conflicts so local edits are not silently overwritten."
+              },
+              {
+                "label": "Automatic sync with last-write-wins",
+                "description": "Provides faster cross-device updates but can silently replace local edits."
+              }
+            ],
+            "allow_custom": false
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "The sync policy is still a material unresolved decision, so implementation should wait. The permitted question tool cannot be used in this mode, and I cannot safely choose on your behalf. Please choose between manual sync with explicit conflict review and automatic sync with last-write-wins; the first better protects the stated priority of avoiding silent loss.",
+          "action": "Pause implementation and obtain the policy choice in the ordinary conversation, without attempting the restricted question tool.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I will continue with the already authorised local-cache benchmark. The unanswered remote-sync question remains pending, so I will not enable remote sync or ask the same question again. The benchmark can proceed without transferring your data.",
+          "action": "Run the independent local-cache benchmark and report its evidence; leave remote sync unchanged until the existing question is answered or delegated.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: The selected design is an encrypted local cache, with cloud sync disabled until consent review. Retention is undecided and blocks deletion work. Local-read benchmarking is authorised. No implementation or tests ran this session; outdated help text is a nonblocking risk. Restart prompt: Resume by benchmarking local reads, preserve cloud-sync-disabled state, and resolve retention before deletion. Do not enable cloud sync without consent review.",
+          "action": "Provide this concise handoff and restart prompt, leaving implementation and test work for the next session.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before choosing features, I need to establish who the project is for. Who is the primary audience for this community knowledge project?",
+          "action": "Ask for the primary audience first; use that answer to ask about the desired outcome, then define a success criterion before selecting features.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "old",
+      "trial": 3,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "I\u2019ll recover the handoff context, then diagnose and repair the failing escaping test and run the approved tests and review. The CSV v2 behaviour and acceptance criteria are already agreed, so there is no new product decision to discuss.",
+          "action": "Use rb-continue-project for the brief continuity pass, then route the unknown-cause failing test to rb-diagnose and continue into the authorised repair, tests, and review.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "The first-release sync policy is a material product decision. The stated priority favours protecting local edits, but I need your choice before implementation.",
+          "action": "Pause implementation and ask one targeted policy question using the permitted ask_user capability.",
+          "proposed_tool_call": {
+            "name": "ask_user",
+            "arguments": {
+              "question": "Which sync policy should the first release use?",
+              "options": [
+                {
+                  "label": "Manual sync with conflict review",
+                  "description": "Protects local edits by making conflicts explicit, but cross-device updates are less immediate."
+                },
+                {
+                  "label": "Automatic sync with last-write-wins",
+                  "description": "Provides faster cross-device updates, but can silently overwrite local edits."
+                }
+              ],
+              "allow_custom": false
+            }
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "The first-release sync policy still needs an explicit choice because it changes whether local edits can be silently overwritten. The available mode cannot use its listed ask_user tool, so please choose directly in chat: manual sync with explicit conflict review, or automatic sync with last-write-wins.",
+          "action": "Pause implementation until the user supplies an explicit policy choice in chat; do not attempt the prohibited question tool.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue with the independently authorised local-cache benchmark. Remote-sync work will remain paused pending your answer to the existing consent question, and I will not repeat that question or transfer data.",
+          "action": "Run only the local-cache benchmark under the existing authority and leave remote sync pending the already-open question.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: The selected design is an encrypted local cache; cloud sync stays disabled pending consent review. Retention is undecided and blocks deletion only. A local-read benchmark is authorised. Outdated help text is nonblocking. No implementation or tests ran this session. Restart prompt: Continue the local-read benchmark, keep cloud sync disabled, and resolve retention before deletion work.",
+          "action": "Use rb-end-session to record the current state, verification status, risks, and the paste-ready restart prompt without claiming unrun implementation or tests.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "I\u2019ll start by clarifying the project\u2019s primary audience, then its desired outcome and how success will be judged. Who is the main group this community knowledge project should serve first?",
+          "action": "Use rb-discuss and ask one foundational question at a time; defer feature choices and planning until the audience, outcome, success criterion, and material constraints are clear.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "revised",
+      "trial": 1,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "The next task is already authorised: investigate and repair the failing escaping test. No product decision needs reopening. I will resume the project context, diagnose which parser branch causes the failure, implement the approved fix, run the relevant tests, and review the result.",
+          "action": "Continue through the continuity workflow, then use the diagnostic workflow for the unknown parser cause. Do not ask an interview question.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "Your stated priority supports manual sync with explicit conflict review. It makes conflicts visible and avoids last-write-wins silently replacing a local edit, while automatic sync would favour faster cross-device updates. I will ask you to choose before implementing the policy.",
+          "action": "Ask one focused policy question and wait for the user's answer before implementing sync behaviour.",
+          "proposed_tool_call": {
+            "question": "Which first-release sync policy should we adopt, given that avoiding silent loss of local edits is your top priority?",
+            "options": [
+              {
+                "label": "Manual sync with explicit conflict review",
+                "description": "Keeps syncing explicit and lets you review conflicts, reducing the risk of silently losing local edits."
+              },
+              {
+                "label": "Automatic sync with last-write-wins",
+                "description": "Provides faster cross-device updates but can silently replace a local edit during a conflict."
+              }
+            ],
+            "allow_custom": true
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "Your priority points to manual sync with explicit conflict review because it makes conflicts visible and avoids automatic last-write-wins overwriting a local edit. Automatic last-write-wins is faster across devices but can silently discard edits. Which policy should the first release use? You may choose either option or propose another.",
+          "action": "Ask the focused policy question in text and wait for the user's decision; do not implement dependent behaviour yet.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I will continue the authorised local-cache benchmark. Remote sync remains paused because the earlier enable-sync question is unanswered; the recommended default does not constitute consent for transferring data. I will not issue the same question again, and sync-dependent work can resume after you decide.",
+          "action": "Run only the independent local-cache benchmark and leave remote sync blocked on the pending decision.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "## Handoff\n\nThe selected policy is an encrypted local cache with cloud sync disabled until consent review. Retention is undecided and blocks deletion only. No implementation or tests ran this session. Outdated help text is a nonblocking risk.\n\n## Restart prompt\nResume from this handoff. Keep cloud sync disabled until consent review. Benchmark local reads under existing authority if useful. Resolve the retention decision before any deletion, then implement and test the agreed next step.",
+          "action": "Prepare the concise end-session handoff and restart prompt, preserve the pending retention and consent decisions, and stop at the session boundary.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before discussing features, I need to establish who the project is for. Who should this community knowledge project primarily help? That answer will guide the next question about the outcome it should create and keep feature choices tied to a real beneficiary.",
+          "action": "Ask this first discovery question in text and wait for the answer before discussing features or proposing a plan.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "revised",
+      "trial": 2,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "I\u2019ll resume the authorised CSV v2 task by investigating the failing escaping test, identifying the parser branch involved, repairing it, and running the relevant tests and review. The product decision is already settled, so no interview is needed.",
+          "action": "Continue the approved work; use the continuity context and diagnose the failing escaping behaviour before implementing the repair.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "Your priority favours manual sync with explicit conflict review because it makes conflicting local edits visible and preserves them for review. Automatic last-write-wins is simpler and faster, but it can silently discard a local edit. Which should the first release use? You can choose one of these options or give a different policy.",
+          "action": "Pause sync-policy implementation and ask the user to choose before taking dependent action.",
+          "proposed_tool_call": {
+            "question": "Which sync policy should the first release use, given that avoiding silent loss of local edits is the top priority?",
+            "options": [
+              {
+                "label": "Manual sync with conflict review",
+                "description": "Conflicts are shown explicitly so local edits can be reviewed and preserved."
+              },
+              {
+                "label": "Automatic last-write-wins",
+                "description": "Updates are immediate and simple, but a conflicting local edit may be overwritten silently."
+              }
+            ],
+            "allow_custom": true
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "Your stated priority favours manual sync with explicit conflict review because it makes conflicting local edits visible and preserves them for review. Automatic last-write-wins is faster, but it can silently overwrite a local edit. Should the first release use manual sync with conflict review, automatic last-write-wins, or another policy?",
+          "action": "Ask the decision question in text and wait for the user\u2019s answer before implementing sync behaviour.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue the authorised local-cache benchmark. The remote-sync question is still unanswered, so I\u2019ll keep remote sync and any work that depends on transferring data paused until you answer or delegate that choice.",
+          "action": "Run the independent local-cache benchmark only; preserve the pending remote-sync decision and do not treat silence or the default as consent.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: The selected first-release design is an encrypted local cache with cloud sync disabled pending consent review. Retention is undecided and blocks deletion decisions. Local-read benchmarking remains authorised. Outdated help text is a nonblocking risk. No implementation or tests ran this session. Restart prompt: Continue from this handoff, preserve the storage decision, and benchmark local reads; resolve retention before deletion work.",
+          "action": "Prepare the concise end-session handoff and restart prompt, clearly separating settled decisions, the retention choice that remains open, authorised benchmarking, and checks not run.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before choosing features, who is the primary audience for this community knowledge project, and what outcome should it create for them? That answer will set the direction for the next discovery question and the eventual success criterion.",
+          "action": "Start the focused discovery interview, establish the intended audience and outcome first, and defer feature selection until those decisions are clear.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "revised",
+      "trial": 3,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "I\u2019ll resume from the handoff and continue the authorised CSV v2 work. The next step is to investigate and repair the failing escaping test, then run the relevant tests and review the change. The parser branch is a technical investigation, so it does not require a new product decision or confirmation.",
+          "action": "Use rb-continue-project for a brief continuity pass, then rb-diagnose the failing escaping test and implement the authorised repair with tests and review.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "Before implementation, which first-release sync policy should we adopt? Given that avoiding silent loss of offline edits is your top priority, I recommend manual sync with explicit conflict review. It makes conflicts visible, though it adds user steps; automatic last-write-wins gives faster updates but can silently replace a local edit. You can choose either option or provide a different policy.",
+          "action": "Ask one targeted question with the recommended option and wait for the user\u2019s decision before implementing sync behaviour.",
+          "proposed_tool_call": {
+            "name": "ask_user",
+            "arguments": {
+              "question": "Which first-release sync policy should we adopt?",
+              "options": [
+                {
+                  "label": "Manual sync with conflict review",
+                  "description": "Protects offline edits by making conflicts explicit, at the cost of extra user steps."
+                },
+                {
+                  "label": "Automatic sync with last-write-wins",
+                  "description": "Provides instant cross-device updates, but a later write can silently replace a local edit."
+                }
+              ],
+              "allow_custom": true
+            }
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "Before we implement the sync policy, which option do you choose? I recommend manual sync with explicit conflict review because avoiding silent loss of offline edits is your stated priority. It requires more user steps but makes conflicts visible. Automatic sync with last-write-wins is faster across devices, but a later write can silently replace a local edit. You may also propose another policy.",
+          "action": "Ask the decision question in text and wait for the user\u2019s answer; do not implement either policy while the choice remains unresolved.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue the authorised local-cache benchmark. Remote sync remains disabled while the earlier consent question is unanswered, because enabling it would transfer your data; I will not treat the recommended default or your silence as consent.",
+          "action": "Run the independent local-cache benchmark under existing authority, leaving remote sync unchanged and preserving the pending question without issuing a duplicate.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: the selected storage policy is an encrypted local cache, with cloud sync disabled until consent review. Retention is undecided and blocks deletion only. No implementation or tests ran this session. The outdated help text is a nonblocking risk. The next agent may benchmark local reads under existing authority.\n\nRestart prompt: Resume this project, preserve the storage decision, run the authorised local-read benchmark, keep cloud sync disabled pending consent review, and do not delete data until retention is decided. Report the benchmark result and then assess the help-text update.",
+          "action": "Close the session with this concise handoff and restart prompt, carrying forward the settled choice, pending retention decision, authorised benchmark, and unrun verification state.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before we choose features, who is the primary audience for this community knowledge project, and what should it help them accomplish? We need those two points first so later feature choices serve a clear outcome. There is no code or plan to continue yet, so we can stay focused on that initial discovery decision.",
+          "action": "Start rb-discuss with this one open discovery question, then wait for the answer before exploring solutions or selecting features.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "without",
+      "trial": 1,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "I\u2019ll trace the failing escaping case through the parser branches, repair the defect, run the targeted escaping test and the relevant acceptance tests, then review the resulting diff. The implementation, tests, and review are already authorised, so no new product decision is needed.",
+          "action": "Continue with diagnosis, implementation, targeted tests, and review under the existing approval.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "The first-release policy needs your choice before implementation. Given that avoiding silent loss of local edits is the top priority, I recommend manual sync with explicit conflict review. It makes conflicts visible; automatic last-write-wins gives faster updates but can overwrite local edits silently.",
+          "action": "Ask the user to choose the sync policy, then wait for the answer before implementing it.",
+          "proposed_tool_call": {
+            "question": "Which first-release sync policy should we adopt?",
+            "options": [
+              {
+                "label": "Manual sync with conflict review",
+                "description": "Surfaces conflicts for explicit review and best protects local edits from silent loss."
+              },
+              {
+                "label": "Automatic last-write-wins",
+                "description": "Provides faster cross-device updates but can silently overwrite local edits."
+              }
+            ],
+            "allow_custom": false
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "The stated priority favours manual sync with explicit conflict review because it makes competing edits visible. The choice still needs to be confirmed before implementation; automatic last-write-wins remains the faster but riskier alternative for local-edit preservation.",
+          "action": "Present the two policy options in the conversation, recommend manual sync, and pause implementation until the user explicitly chooses.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue with the already authorised local-cache benchmark. Remote sync remains unchanged and will stay disabled while the earlier enablement question is unanswered, since enabling it would transfer data and the recommended default is not a delegation of that choice.",
+          "action": "Run the independent local-cache benchmark and leave remote sync pending without repeating the existing question.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Session handoff: The selected first-release storage is an encrypted local cache; cloud sync stays disabled pending consent review. Retention is undecided and is the blocker for deletion decisions. No implementation or new tests ran this session. A local-read benchmark is authorised. Outdated help text is a nonblocking risk.\n\nRestart prompt: Resume from this handoff. Benchmark local reads under existing authority, record the results, then resolve retention before deletion design. Keep cloud sync disabled until consent review.",
+          "action": "Prepare this handoff and restart prompt, with the authorised local-read benchmark as the next work item and the stated consent and retention gates preserved.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before choosing features, I need to establish the project\u2019s foundations: Who is the primary audience? What change should the project create for them? How will we measure success in the first release? What constraints or exclusions should guide the work? I\u2019ll use the answers to draft a short goal and success criteria before proposing features.",
+          "action": "Run a discovery interview and defer feature selection until the primary audience, desired outcome, and success criterion are established.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "without",
+      "trial": 2,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "I\u2019ll resume the approved CSV export work by tracing the failing escaping test through the parser branches, repairing the defect, and running the relevant acceptance tests before review. The product scope is already agreed, so no new decision is needed.",
+          "action": "Proceed with bounded implementation work: diagnose the escaping failure, patch the responsible parser branch, run the escaping and related acceptance tests, and review the diff.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "Your stated priority favours manual sync with explicit conflict review because automatic last-write-wins can silently discard offline edits. I\u2019ll ask you to choose the first-release policy before implementation proceeds.",
+          "action": "Ask for an explicit policy choice, recommending manual sync with explicit conflict review while preserving automatic last-write-wins as the alternative.",
+          "proposed_tool_call": {
+            "name": "ask_user",
+            "arguments": {
+              "question": "Which first-release sync policy should we implement?",
+              "options": [
+                {
+                  "label": "Manual sync with conflict review",
+                  "description": "Best protects offline edits by requiring conflicts to be reviewed explicitly."
+                },
+                {
+                  "label": "Automatic last-write-wins",
+                  "description": "Provides faster cross-device updates but can silently overwrite offline edits."
+                }
+              ],
+              "allow_custom": false
+            }
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "The sync policy is still an unresolved product decision, and the available question capability cannot be used in this mode. Based on the stated priority, I recommend manual sync with explicit conflict review, but implementation should remain paused until you provide an explicit choice through an allowed channel.",
+          "action": "Do not implement either policy; record manual sync with explicit conflict review as the recommendation and wait for an explicit user decision through an allowed channel.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue with the independently authorised local-cache benchmark. Remote sync remains paused because its pending consent question has not been answered, and enabling it would transfer data.",
+          "action": "Run the local-cache benchmark under the existing authority and leave remote sync unchanged; do not infer an answer or repeat the pending question.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: The selected first-release design is an encrypted local cache with cloud sync disabled pending consent review. Retention is undecided and blocks deletion only. Local-read benchmarking is authorised. Outdated help text is a nonblocking risk. No implementation or tests ran this session. Restart by reviewing retention, then benchmark local reads; keep cloud sync disabled until consent review.",
+          "action": "Provide the concise handoff and restart prompt, preserving the selected storage decision, the retention blocker, the authorised benchmark, the nonblocking help-text risk, and the unrun-work status.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before choosing features, we need to establish the project\u2019s primary audience, desired outcome, and success criterion. Who is the primary audience, what should this community knowledge project help them achieve, and what observable result would show that it is working?",
+          "action": "Pause feature selection and conduct structured discovery, starting with the audience, desired outcome, and measurable success criterion.",
+          "proposed_tool_call": null
+        }
+      ]
+    },
+    {
+      "condition": "without",
+      "trial": 3,
+      "responses": [
+        {
+          "id": "resume",
+          "response": "Yes. I\u2019ll resume the authorised CSV export work by reproducing the escaping-test failure, tracing it to the parser branch, repairing that implementation, then running the acceptance tests and reviewing the diff. The agreed admin-only CSV v2 scope and escaping/partial-error requirements remain unchanged.",
+          "action": "Continue with the authorised implementation workflow: diagnose the parser branch, repair the escaping failure, run acceptance tests, and review the change.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "choice",
+          "response": "Before implementation, we need an explicit sync-policy choice. Because avoiding silent loss of local edits is the top priority, I recommend manual sync with explicit conflict review. It gives up some immediacy but makes conflicting edits visible. Automatic sync with last-write-wins is faster across devices but can overwrite local work. Please choose one of the two options.",
+          "action": "Pause implementation and request the user\u2019s explicit choice of sync policy.",
+          "proposed_tool_call": {
+            "tool": "ask_user",
+            "arguments": {
+              "question": "Which first-release sync policy should we adopt?",
+              "options": [
+                {
+                  "label": "Manual sync with explicit conflict review",
+                  "description": "Protects local edits by making conflicts visible, though updates are less immediate."
+                },
+                {
+                  "label": "Automatic sync with last-write-wins",
+                  "description": "Provides faster cross-device updates but can silently overwrite local edits."
+                }
+              ],
+              "allow_custom": false
+            }
+          }
+        },
+        {
+          "id": "restricted",
+          "response": "Implementation is blocked on an explicit sync-policy decision. The stated priority points toward manual sync with explicit conflict review, but I cannot select that policy on the user\u2019s behalf. Choose either manual sync with explicit conflict review or automatic sync with last-write-wins before implementation proceeds.",
+          "action": "Keep implementation paused; record the recommendation and wait for an explicit user decision through the available conversation channel.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "silence",
+          "response": "I\u2019ll continue the already authorised local-cache benchmark. Remote sync remains paused because the consent question is still unanswered; \u201ccarry on\u201d does not resolve that decision, and enabling sync would transfer data. I will leave the pending question in place and report the benchmark result.",
+          "action": "Run the independent local-cache benchmark; do not enable or modify remote sync and do not issue a duplicate question.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "handoff",
+          "response": "Handoff: The selected storage design is an encrypted local cache, with cloud sync disabled until consent review. Retention is undecided; it blocks deletion work only. No implementation or new tests ran this session. The next authorised step is to benchmark local reads. Outdated help text is a nonblocking risk.\nRestart prompt: \u201cContinue the storage project from this handoff. Preserve encrypted local cache, keep cloud sync disabled pending consent review, benchmark local reads, and resolve retention before any deletion work.\u201d",
+          "action": "Provide the handoff and restart prompt; leave implementation and tests unchanged until the next session.",
+          "proposed_tool_call": null
+        },
+        {
+          "id": "discovery",
+          "response": "Before choosing features, I need three foundations: Who is the primary audience? What concrete outcome should the project produce for them? How will we know the first release is successful? Please also describe the main problem or workflow you want improved, if that is not clear from the outcome. I\u2019ll use those answers to frame a small set of candidate features and their acceptance criteria.",
+          "action": "Pause feature selection and run a requirements interview covering audience, desired outcome, problem or workflow, and measurable success criterion.",
+          "proposed_tool_call": null
+        }
+      ]
+    }
+  ],
+  "observations": {
+    "old": {
+      "trials": 3,
+      "scenario_responses": 18,
+      "custom_answer_enabled_in_proposed_choice_call": 0
+    },
+    "revised": {
+      "trials": 3,
+      "scenario_responses": 18,
+      "custom_answer_enabled_in_proposed_choice_call": 3
+    },
+    "without": {
+      "trials": 3,
+      "scenario_responses": 18,
+      "custom_answer_enabled_in_proposed_choice_call": 0
+    }
+  }
+}

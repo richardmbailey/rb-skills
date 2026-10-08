@@ -1,6 +1,6 @@
 # Claude Code compatibility
 
-The repository has a separate Claude installation profile. It derives ordinary workflows from shared sources, supplies Claude host instructions, and replaces the Codex delegation procedure with a Claude edition. The top-level skill text, Codex metadata, model defaults, and constrained runtime are unchanged by this compatibility work.
+The repository has a separate Claude installation profile. It derives ordinary workflows from shared sources, supplies Claude host instructions, and replaces the Codex delegation procedure with a Claude edition. Generation preserves the top-level sources and Codex metadata. Common workflow revisions belong in those shared sources and reach Claude when its generated copies are refreshed. Codex model defaults and the constrained runtime remain separate.
 
 ## What is installed
 
@@ -31,9 +31,15 @@ Do not edit generated copies as source. Keep common changes in the versioned top
 
 The full project installer now creates a missing `CLAUDE.md` bridge automatically for a Claude target. It imports `AGENTS.md` instead of duplicating shared policy and adds the Claude model-choice and runtime boundaries. Existing `CLAUDE.md`, `AGENTS.md`, and `CONTEXT.md` files remain untouched unless explicit force is requested. An existing bridge should be checked by its owner; successful skill installation does not prove every pre-existing project instruction is suitable.
 
-The repository itself has a [CLAUDE.md](../CLAUDE.md) bridge. The locally observed Claude CLI is 2.1.275; an explicit import supports that version, while current documentation describes direct `AGENTS.md` support from 2.1.277 subject to configuration. [Official project-instruction documentation](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools).
+The repository itself has a [CLAUDE.md](../CLAUDE.md) bridge. During the 29 September 2026 compatibility check, the locally observed Claude CLI was 2.1.275. The explicit import supported that installation; the documentation reviewed then described direct `AGENTS.md` support from 2.1.277 subject to configuration. This is historical validation evidence, not a statement of the currently installed CLI version. [Official project-instruction documentation](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools).
 
 The RB diary remains shared Markdown at `${CODEX_HOME:-$HOME/.codex}/diary/`. Claude uses filesystem access to the same history; this is not Claude automatic memory. An explicitly chosen alternative canonical root applies consistently to onboarding, continuation, setup, and handoff. There is no automatic migration or second diary.
+
+## Interviews and continuation
+
+`/rb-discuss` uses the shared interview procedure. It helps the user resolve project goals or consequential choices that need their judgement. It offers options and grounded recommendations, prefers the host's native clickable question tool when available and permitted, and falls back to text otherwise. The user can give a custom answer. A recommendation, displayed default, or unanswered question does not establish agreement.
+
+A new session does not require another interview. The continuation and handoff skills preserve settled decisions, distinguish pending user choices from agent investigations and nonblocking risks, and continue authorised work that does not depend on an unanswered choice. Refresh the generated editions after pulling these changes. The [8 October change record](discussion-interviews-2026-10-08.md) describes the checks and live-interaction limits.
 
 ## Delegation and manual invocation
 
@@ -47,12 +53,14 @@ The authorised post-draft review in `rb-write-skill` is generated as an explicit
 
 ## Validation
 
+The following installation results describe the initial compatibility work on 29 September 2026. The 8 October interview revision has a [separate validation record](discussion-interviews-2026-10-08.md), including 30 current behavioural manifests and checks of the ten refreshed Claude editions.
+
 Installation tests cover exported resources and invocation metadata, unsupported requests, dry-run behaviour, source preservation, refresh, local edits, backups, content drift, and failure recovery. Project-setup tests cover the shared-policy import, preservation of existing files, generated-copy verification, source discovery, and unchanged Codex setup. Repository CI includes these tests and the Claude delegation evaluation manifest.
 
-All 46 skill regression tests pass under Python 3.12, including 27 exporter tests and seven Claude setup tests. Setup regressions reproduced four missing behaviours before the fixes; five additional permission and preview regressions also failed before their fixes. Metadata, instruction contracts, consistency contracts, all 29 evaluation manifests, compilation, and whitespace checks pass. Runtime source is unchanged, so the constrained-runtime suite was not repeated for this installation change; this is not a full remote CI result.
+At that initial check, all 46 skill regression tests passed under Python 3.12, including 27 exporter tests and seven Claude setup tests. Setup regressions reproduced four missing behaviours before the fixes; five additional permission and preview regressions also failed before their fixes. Metadata, instruction contracts, consistency contracts, all 29 evaluation manifests then present, compilation, and whitespace checks passed. Runtime source is unchanged, so the constrained-runtime suite was not repeated for this installation change; this is not a full remote CI result.
 
 The 29 Claude editions were installed locally and passed `--check`, including generated frontmatter parsing. Six pre-existing Claude symlinks were backed up and replaced; their shared targets were not edited. All 34 Codex links still point to the same sources. Comparison against the start of this task confirms that the only changed pre-existing `rb-*` files are the two shared installation scripts with their Claude branches. No Claude account settings were changed.
 
 The delegation manifest covers missing, reused, inherited, unavailable, and out-of-scope model choices, unnecessary delegation, and unavailable required review. Manifest validity is not proof of model behaviour.
 
-Live Claude model trials are not completed: the local CLI's authentication status reports `loggedIn: false`. No alternative account, API key, or provider was substituted. After authentication, run matched with-skill/without-skill trials using these cases, plus a bounded bug fix, shared-diary continuation, and HTML artifact validation. Earlier Codex probes do not establish Claude performance.
+Live Claude model trials remain unrun. The initial compatibility check observed `loggedIn: false`; that historical result does not establish current authentication status. No alternative account, API key, or provider was substituted. After authentication, run matched with-skill/without-skill trials using these cases, plus a bounded bug fix, shared-diary continuation, and HTML artifact validation. Earlier Codex probes do not establish Claude performance.

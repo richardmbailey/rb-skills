@@ -178,5 +178,50 @@
     "forbidden_skills": ["rb-where-are-we", "rb-continue-project"],
     "critical": true,
     "rationale": "The request could mean a quick resumption orientation or a durable HTML status artifact followed by mutation."
+  },
+  {
+    "id": "lifecycle-discuss-goal-interview",
+    "family": "project-lifecycle",
+    "prompt": "Before we plan the new workspace, interview me about the user outcome, first-release scope, priorities, constraints, and success measures. Several of those decisions are still mine to make.",
+    "expected": {"outcome": "select", "skill": "rb-discuss"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-continue-project", "rb-start-project"],
+    "critical": true,
+    "rationale": "The request explicitly asks for a focused human interview about material product decisions before planning."
+  },
+  {
+    "id": "lifecycle-discuss-consequential-later-choice",
+    "family": "project-lifecycle",
+    "prompt": "The approved project plan has a retention decision, but new compliance evidence makes its consequences materially different. Help me choose between the affected options and identify which work can proceed while I decide.",
+    "expected": {"outcome": "select", "skill": "rb-discuss"},
+    "forbidden_skills": ["rb-create-implementation-plan", "rb-execute-plan", "rb-sprint", "rb-continue-project"],
+    "critical": true,
+    "rationale": "New evidence justifies a focused discussion of a consequential human choice; it does not reopen unrelated settled decisions."
+  },
+  {
+    "id": "lifecycle-continue-discuss-handoff",
+    "family": "project-lifecycle",
+    "prompt": "Resume from the synthetic handoff after a requirements interview. The export format and access policy are agreed, retention is still a human choice that blocks only deletion, the parser benchmark is an agent investigation, and documentation drift is nonblocking. Continue the authorised parser work without repeating the interview.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-discuss", "rb-start-project", "rb-end-session", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "The existing handoff and authority make this continuation, while the pending decision has a narrow dependency boundary."
+  },
+  {
+    "id": "lifecycle-end-discussion-handoff",
+    "family": "project-lifecycle",
+    "prompt": "End this session after a requirements interview. Prepare a durable handoff that separates agreed decisions, pending human choices, agent investigations, and nonblocking risks so the next session can continue safely.",
+    "expected": {"outcome": "select", "skill": "rb-end-session"},
+    "forbidden_skills": ["rb-discuss", "rb-continue-project", "rb-where-are-we"],
+    "critical": true,
+    "rationale": "The current request is session closure and handoff preparation, even though the handoff contains an unresolved human choice."
+  },
+  {
+    "id": "lifecycle-code-investigation-not-discuss",
+    "family": "project-lifecycle",
+    "prompt": "The product requirements are settled. Trace why the synthetic CSV parser drops escaped commas by inspecting its code, tests, and logs, then report the root cause before we fix it.",
+    "expected": {"outcome": "select", "skill": "rb-diagnose"},
+    "forbidden_skills": ["rb-discuss", "rb-create-prd", "rb-continue-project"],
+    "critical": true,
+    "rationale": "This is a concrete code investigation with settled requirements, not a human product interview or project resumption."
   }
 ]

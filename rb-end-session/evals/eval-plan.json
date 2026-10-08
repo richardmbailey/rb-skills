@@ -24,6 +24,20 @@
       "prompt": "Create a deep HTML state-of-play report for this established project, including goals, phase progress, code health, risks, recent changes, and next steps.",
       "should_trigger": false,
       "success": [{"name": "status report is not session closure", "evaluator": "semantic", "rubric": "Pass if rb-end-session is not selected and the request routes to rb-where-are-we."}]
+    },
+    {
+      "id": "end-session-interview-handoff-state",
+      "kind": "outcome",
+      "prompt": "End this synthetic requirements discussion and prepare a durable handoff for the next session. Record the agreed outcome and scope, the human choice still pending, the agent's open benchmark investigation, the nonblocking documentation risk, and which work is blocked by the pending choice. Do not archive the chat unless separately requested.",
+      "should_trigger": true,
+      "success": [{"name": "session handoff preserves decision ownership", "evaluator": "semantic", "rubric": "Pass if the handoff clearly distinguishes agreed decisions, pending human choices, agent investigations, and nonblocking risks; identifies only the dependent work as blocked; records evidence and the next decision needed; and does not turn session closure into implicit chat archival. It must not fill the missing human choice with a default or simulated answer."}]
+    },
+    {
+      "id": "end-session-unanswered-choice-remains-pending",
+      "kind": "regression",
+      "prompt": "Close the session while the user has not answered the launch-priority question. A recommended default was shown but never accepted. Preserve the approved independent implementation work, leave the dependent rollout decision pending, and make the next continuation safe.",
+      "should_trigger": true,
+      "success": [{"name": "unanswered interview decision survives closure", "evaluator": "semantic", "rubric": "Pass only if the handoff says that no human answer was received, does not record the displayed recommendation as agreement, separates independent work from rollout-dependent work, and gives rb-continue-project enough state to resume without redoing the interview or over-blocking the project."}]
     }
   ]
 }

@@ -9,7 +9,7 @@ description: "Use for one bounded agreed change with automated behavioural tests
 
 Implement one agreed ordinary change in small verified increments. This skill owns the detailed code, test, and task-level review loop; it does not sequence multi-phase work or maintain plan-wide status.
 
-Use `$rb-discuss` first when material behaviour, interface, edge cases, compatibility, or test expectations are unclear. Use `$rb-execute-plan` when the user asks to follow, sequence, continue, or track an existing plan linearly. Use `$rb-sprint` when plan-state ownership includes recurring PRD reconciliation and evidence-driven changes to remaining work. When either plan owner selects one ordinary task, use this skill to implement that task and return evidence; the plan owner updates `[ ]`, `[x]`, and `[v]` status. Use `$rb-tdd-scientific-code` instead when the selected change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
+Use `$rb-discuss` when a consequential requirement needs the user's judgement and is not already settled or delegated. Investigate technical unknowns and handle routine clarification within this workflow. Use `$rb-execute-plan` when the user asks to follow, sequence, continue, or track an existing plan linearly. Use `$rb-sprint` when plan-state ownership includes recurring PRD reconciliation and evidence-driven changes to remaining work. When either plan owner selects one ordinary task, use this skill to implement that task and return evidence; the plan owner updates `[ ]`, `[x]`, and `[v]` status. Use `$rb-tdd-scientific-code` instead when the selected change is scientific, numerical, modelling, simulation, or domain-sensitive enough to need scientific invariants.
 
 ## Procedure
 

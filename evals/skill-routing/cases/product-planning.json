@@ -88,5 +88,50 @@
     "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan"],
     "critical": true,
     "rationale": "Backlog decomposition after requirements and planning is not PRD creation or implementation planning."
+  },
+  {
+    "id": "product-planning-goal-interview",
+    "family": "product-planning",
+    "prompt": "Interview me before we write a PRD. The intended user outcome, first-release scope, priority order, operating constraints, and success criteria for this synthetic workspace are still open.",
+    "expected": {"outcome": "select", "skill": "rb-discuss"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "The user requests focused exploration of material product choices before a durable requirements artifact."
+  },
+  {
+    "id": "product-planning-consequential-later-choice",
+    "family": "product-planning",
+    "prompt": "An approved product decision chose a short data-retention period, but new synthetic compliance evidence changes the trade-off. Help me revisit that one consequential choice and say what work depends on it.",
+    "expected": {"outcome": "select", "skill": "rb-discuss"},
+    "forbidden_skills": ["rb-create-prd", "rb-create-implementation-plan", "rb-sprint", "rb-implement-with-tests"],
+    "critical": true,
+    "rationale": "A current evidence change justifies reopening one settled product decision and keeping unrelated decisions intact."
+  },
+  {
+    "id": "product-planning-authorised-resume",
+    "family": "product-planning",
+    "prompt": "Resume the approved implementation from its synthetic handoff. The product choices, implementation task, authority, tests, and review path are already explicit, and no new evidence or human decision needs discussion.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-discuss", "rb-create-prd", "rb-create-implementation-plan", "rb-end-session"],
+    "critical": true,
+    "rationale": "An authorised resume should use the continuation workflow and should not trigger discussion merely because the work is consequential."
+  },
+  {
+    "id": "product-planning-technical-investigation",
+    "family": "product-planning",
+    "prompt": "The product behaviour and acceptance criteria are settled. Investigate whether stale results come from the cache or the worker queue by examining the synthetic code, logs, and tests; do not interview me about product priorities.",
+    "expected": {"outcome": "select", "skill": "rb-diagnose"},
+    "forbidden_skills": ["rb-discuss", "rb-create-prd", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "The request is an internal technical investigation rather than unresolved product requirements."
+  },
+  {
+    "id": "product-planning-small-reversible-change",
+    "family": "product-planning",
+    "prompt": "Apply the already approved one-line documentation correction and run its focused check. The change is small and reversible, and no product behaviour or acceptance criterion remains open.",
+    "expected": {"outcome": "select", "skill": "rb-implement-with-tests"},
+    "forbidden_skills": ["rb-discuss", "rb-create-prd", "rb-create-implementation-plan"],
+    "critical": true,
+    "rationale": "A bounded agreed change should proceed through implementation and verification without an unnecessary interview."
   }
 ]

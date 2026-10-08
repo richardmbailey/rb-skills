@@ -13,7 +13,7 @@
         "Do not rely on conversation memory as the only pipeline record.",
         "Continue into workflows already authorised by the current request or recorded autonomy decision.",
         "## Workflow Routing",
-        "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved | `$rb-discuss` |",
+        "| The user wants an interview, or a consequential requirement needs their judgement and is not already settled or delegated | `$rb-discuss` |",
         "| The product or feature needs a durable requirements document before implementation planning | `$rb-create-prd` |",
         "`$rb-sprint`",
         "After implementation, require a review+fix cycle",
@@ -45,7 +45,9 @@
         "If one bounded ordinary change is already agreed",
         "recommend `$rb-implement-with-tests` directly",
         "Do not insert `$rb-discuss` merely because a change is substantial.",
-        "If the next workflow is already authorised, continue after the brief."
+        "If the next workflow is already authorised, continue after the brief.",
+        "Resuming a session, unfinished work, and technical uncertainty are not interview triggers.",
+        "A pending user choice blocks only work that depends on it."
       ],
       "forbidden": [
         "recommend `$rb-discuss` before `$rb-implement-with-tests`",
@@ -272,10 +274,16 @@
         "Canonical CI-equivalent result",
         "Checks not run or stale",
         "Residual regression risk",
-        "Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence."
+        "Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence.",
+        "Agreed decisions and authority:",
+        "Pending user choices and dependent work:",
+        "Investigations the agent can perform:",
+        "A new session does not itself require `$rb-discuss`."
       ],
       "forbidden": [],
-      "max_occurrences": {"## Testing And Verification": 1},
+      "max_occurrences": {
+        "## Testing And Verification": 1
+      },
       "max_lines": 500
     },
     {
@@ -300,13 +308,27 @@
     {
       "path": "rb-discuss/SKILL.md",
       "required": [
-        "decisions that materially affect behaviour",
         "Ask one targeted question at a time",
-        "Do not start coding until material ambiguity is resolved",
         "$rb-create-prd",
-        "$rb-create-implementation-plan"
+        "$rb-create-implementation-plan",
+        "This skill guides a conversation with the user.",
+        "not already settled or delegated",
+        "Do not simulate their answers",
+        "Recommend an option when the known goals and evidence support it",
+        "Prefer the host's native question tool",
+        "available and permitted for this question",
+        "ask in text, including any applicable options and evidence-supported recommendation",
+        "preselected option",
+        "is not agreement",
+        "Do not implement behaviour that depends on an unanswered user decision.",
+        "Do not block unrelated authorised work.",
+        "evals/eval-plan.json"
       ],
-      "forbidden": ["Produce a short implementation plan", "Restate the requested change"],
+      "forbidden": [
+        "Produce a short implementation plan",
+        "Restate the requested change",
+        "Continue until behaviour, interface, edge cases, failure modes, tests, scientific assumptions, and compatibility are clear."
+      ],
       "max_occurrences": {},
       "max_lines": 500
     },

@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "skill": "rb-discuss",
+  "conditions": [
+    "with_skill",
+    "without_skill"
+  ],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "interview-goal-and-outcome-discovery",
+      "kind": "outcome",
+      "prompt": "We are considering a new internal knowledge workspace. The synthetic brief identifies the users, but the desired outcome, first-release scope, priority trade-off, operating constraints, and success signal are still open. Interview me about the decisions needed before a product plan. The brief already records that a mobile app is out of scope for the first release, and no new evidence changes that decision.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "focused human decision interview",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response recognises that unresolved human or product decisions require discussion, retains the settled mobile-app non-goal, and asks only the highest-value next questions needed to establish the outcome, scope, priority, constraints, or success signal. It should make progress through a bounded interview and leave work that depends on unanswered user decisions pending, without turning the exchange into an exhaustive checklist."
+        }
+      ]
+    },
+    {
+      "id": "interview-consequential-later-choice",
+      "kind": "outcome",
+      "prompt": "An approved plan uses a 30-day retention period. New synthetic compliance evidence means we must choose between 30 and 365 days before enabling deletion. Help me examine this consequential choice, give the options and trade-offs, and state what approved work may continue while the choice is pending.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "changed evidence reopens only the affected decision",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response reopens the settled retention choice because current evidence changes its consequences, presents meaningful options with brief trade-offs, gives a grounded recommendation only if the evidence supports one, and records the human choice as pending until answered. It should block only deletion or other work that depends on the retention period while preserving independent approved work."
+        }
+      ]
+    },
+    {
+      "id": "interview-native-question-tool",
+      "kind": "outcome",
+      "prompt": "Interview me about whether the first launch should optimise adoption or reliability. Offer meaningful choices and let me answer in my own words before dependent work begins.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "native question interaction preserves agency",
+          "evaluator": "semantic",
+          "rubric": "Prerequisite: the harness must actually expose a permitted native question tool supporting choices and an own-answer path. Otherwise report this case as unrun, not passed. Pass only with an observed valid native question-tool call offering meaningful distinct choices with short trade-offs and an own-answer path. The decision must remain pending until a user response; do not infer agreement from a displayed default or recommendation. Check the call against the exposed tool schema and mode, not a tool claim in prose."
+        }
+      ]
+    },
+    {
+      "id": "interview-text-fallback-when-no-native-tool",
+      "kind": "outcome",
+      "prompt": "No native clickable question tool is available in this synthetic run. Interview me about whether to prioritise import reliability or a faster first-use experience, and let me answer in my own words before any dependent implementation begins.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "text fallback remains an honest interview",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response falls back to clear text questions without claiming that a native interaction occurred, explains the relevant trade-off, accepts a free-form answer, and keeps the dependent choice pending until the user answers. It must not use the missing tool as a reason to simulate an answer or apply an unaccepted default."
+        }
+      ]
+    },
+    {
+      "id": "interview-question-tool-mode-restricted",
+      "kind": "outcome",
+      "prompt": "Interview me about launch priorities in the current mode. We have an adoption-versus-reliability choice and no answer yet. Keep me able to propose another priority.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "restricted tool falls back without a mode change",
+          "evaluator": "semantic",
+          "rubric": "Prerequisite: a native question tool is listed but its actual contract prohibits calls in the current mode. Otherwise report the case as unrun. Pass if the agent asks in text with meaningful options and an own-answer path, does not call the restricted tool or change modes just for the UI, and leaves dependent work pending."
+        }
+      ]
+    },
+    {
+      "id": "interview-grounded-recommendation",
+      "kind": "outcome",
+      "prompt": "Synthetic research shows that 78 percent of target users are on mobile and 60 percent abandon a task after three seconds. We can build a mobile-first first release or aim for feature parity across mobile and desktop. Interview me about the launch priority and recommend an option if the evidence justifies it.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "recommendation is tied to evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response states the decision that matters next, presents both meaningful options and their practical trade-offs, and gives a proportionate recommendation grounded in the supplied mobile usage and abandonment evidence. It should still leave the final human choice visible rather than treating the recommendation as agreement."
+        }
+      ]
+    },
+    {
+      "id": "interview-recommendation-insufficient-context",
+      "kind": "outcome",
+      "prompt": "We must choose between batch and streaming processing for the first release, but the synthetic context contains no latency target, cost limit, workload shape, or user priority. Help me decide what information matters and ask for my judgement.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "missing evidence does not force a recommendation",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response explains the relevant trade-offs, identifies the missing decision criteria, and asks the human to choose or supply priorities without pretending that one option is objectively preferred. It must not fabricate performance evidence, invent a target, or convert its provisional preference into an agreed requirement."
+        }
+      ]
+    },
+    {
+      "id": "interview-default-and-no-response",
+      "kind": "outcome",
+      "prompt": "You previously asked me to choose between a conservative and an aggressive rollout. I have not replied. A question interface may show a recommended default, but I have not clicked it or agreed to it. Continue safely and prepare the next response without deciding for me.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "silence and defaults remain pending",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response leaves the rollout choice explicitly pending, does not simulate a reply, and does not treat a displayed default or its own recommendation as user agreement. It may continue independent investigation or preparation, but it must identify and respect the boundary around work that depends on the unanswered choice."
+        }
+      ]
+    },
+    {
+      "id": "interview-custom-answer",
+      "kind": "outcome",
+      "prompt": "Continue our active requirements interview. You offered local-only storage and cloud-backed storage. I choose a hybrid with an encrypted local cache, and cloud synchronisation disabled until consent review. Record my answer and identify the next decision. Retention is still unresolved and blocks only deletion; an agent benchmark and a nonblocking documentation risk remain.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "custom decision and handoff state are preserved",
+          "evaluator": "semantic",
+          "rubric": "Pass if the response accepts the explicit custom answer instead of forcing an offered option or its prior recommendation, records the consent boundary, and asks only the next consequential question about retention. It distinguishes the agreed storage decision, pending retention choice, agent benchmark, and nonblocking risk. It must not restart the storage interview, infer consent for synchronisation, or block unrelated work."
+        }
+      ]
+    },
+    {
+      "id": "technical-uncertainty-without-human-decision",
+      "kind": "trigger",
+      "prompt": "The product behaviour and acceptance tests are already agreed. Investigate whether the current implementation should use a queue or a worker pool by examining latency measurements, repository constraints, and operational evidence. Do not interview me about product scope or priorities.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "ordinary technical uncertainty stays outside discussion",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-discuss is not selected for this request. The response should treat the work as technical investigation or implementation planning, use repository evidence to resolve the engineering choice, and avoid inventing a human product decision that the prompt has already settled."
+        }
+      ]
+    },
+    {
+      "id": "code-investigation-not-discussion",
+      "kind": "trigger",
+      "prompt": "Trace why the CSV parser drops escaped commas in the synthetic repository, inspect the implementation, tests, and logs, and identify the root cause. Requirements are settled and I want the code investigation before any fix.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "code investigation keeps its own route",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-discuss is not selected and the response investigates the code, tests, or runtime evidence through the appropriate diagnostic or code-understanding workflow. It should not turn a concrete root-cause investigation into a product interview."
+        }
+      ]
+    },
+    {
+      "id": "small-reversible-routine-clarification",
+      "kind": "trigger",
+      "prompt": "The approved copy and acceptance check for this small reversible documentation change are final. Update the one named line; if the file path is unclear, inspect the tree and resolve that routine detail. Do not open a product interview.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "proportionality prevents an unnecessary interview",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-discuss is not selected. The response should handle the bounded change or routine repository clarification through the appropriate direct editing or language workflow, without asking a broad set of product questions or treating the change's small size as a reason to create a discussion phase."
+        }
+      ]
+    },
+    {
+      "id": "authorised-resume-without-new-decision",
+      "kind": "trigger",
+      "prompt": "Resume the synthetic project from its existing handoff. The next implementation task, authority, tests, and review sequence are already explicit, and no new evidence or human decision has appeared. Continue the authorised work without reopening settled choices or starting an interview.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "session resume is not discussion",
+          "evaluator": "semantic",
+          "rubric": "Pass if rb-discuss is not selected and the request follows the continuation workflow. The response should reuse the recorded authority and decisions, inspect the current state, and continue or report the authorised next action without asking the same product questions again."
+        }
+      ]
+    }
+  ]
+}

@@ -23,7 +23,8 @@ Use this skill to close one working session cleanly and prepare a new agent/sess
    - exact results, coverage status, and date/context;
    - checks omitted, unavailable, remote-only, or stale, with the resulting regression risk;
    - uncommitted changes, if any;
-   - blockers, risks, and known caveats;
+   - agreed decisions, pending user choices, agent investigations, and nonblocking risks;
+   - other blockers and known caveats;
    - next recommended task.
 3. Create or update a project-local handoff file if the user asks for a durable handoff. Prefer:
    - `docs/end-session.md` for documented project work;
@@ -31,7 +32,7 @@ Use this skill to close one working session cleanly and prepare a new agent/sess
    - an existing project-local handoff path when the project already uses one;
    - `.rb-agent/templates/AGENT_BRIEF.md` as a template when present.
 4. Use `$rb-working-diary` for durable continuity when the session had meaningful investigation, decisions, unresolved risks, or compaction-prone context. Update `handoff.md` and, when helpful, `working-diary.md`.
-5. Provide a paste-ready prompt for the next session.
+5. Provide a paste-ready prompt for the next session. Carry forward agreed decisions and the authorised next action. Request a resumed interview only when a consequential choice still needs the user's judgement; name the choice and what depends on it. A new session does not itself require `$rb-discuss`.
 6. Archive the chat only when the user explicitly requests archival. Ending a work session or preparing a handoff alone does not imply archival. In Codex desktop, use `set_thread_archived` when available.
 
 ## Handoff Brief Shape
@@ -62,6 +63,12 @@ Use this structure unless the project already has a stronger convention. Omit em
 
 ## Constraints And Project Rules
 
+## Decisions And Remaining Work
+
+- Agreed decisions and authority:
+- Pending user choices and dependent work:
+- Investigations the agent can perform:
+
 ## Risks Or Caveats
 
 ## Next Recommended Step
@@ -76,6 +83,7 @@ Use this structure unless the project already has a stronger convention. Omit em
 - Distinguish passed, failed, not run, unavailable, remote-only, and stale evidence.
 - Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence.
 - Keep the next-session prompt short enough to paste, but include the exact repo path and immediate next task.
+- Keep proposals distinct from user decisions. Do not turn technical investigations or nonblocking risks into requests to approve settled requirements again.
 - Preserve project-specific workflow rules, especially phase checklist status, selected test levels, CI-equivalent commands, coverage thresholds, security constraints, and no-fallback rules.
 - Prefer a durable file when the context is large or the user is about to start a new session.
 - Prefer the working diary for cross-session operational memory that should outlive the current repository checkout or chat thread.

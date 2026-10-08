@@ -17,7 +17,7 @@
         "static-only",
         "static_file_state",
         "runtime-dependent phases must use the standard route",
-        "Material requirements unresolved",
+        "Interview about goals or consequential requirements needing user judgement",
         "Python 3.10 or newer",
         "complete behavioural-eval manifest structure",
         "model returns exact diff",
@@ -195,7 +195,7 @@
     {
       "path": "rb-continue-project/SKILL.md",
       "required": [
-        "If material behaviour, interfaces, edge cases, failure handling, test expectations, or acceptance criteria remain unresolved",
+        "If the user requests an interview or a consequential requirement needs their judgement and is not already settled or delegated",
         "If one bounded ordinary change is already agreed",
         "canonical CI-equivalent command",
         "recommend `$rb-sprint`"
@@ -210,10 +210,12 @@
       "required": [
         "| One bounded ordinary product change is agreed",
         "| Scientific, numerical, modelling, simulation, or domain-sensitive work is agreed",
-        "| Material behaviour, interface, edge cases, failure handling, test expectations, or acceptance criteria are unresolved",
+        "| The user wants an interview, or a consequential requirement needs their judgement and is not already settled or delegated",
         "| An existing plan should use repeated PRD-aligned delivery increments with evidence-driven replanning | `$rb-sprint` |"
       ],
-      "forbidden": ["For feature work, ask:"]
+      "forbidden": [
+        "For feature work, ask:"
+      ]
     },
     {
       "path": "rb-safe-operation/runtime/src/rb_safe_operation/__init__.py",
@@ -279,6 +281,17 @@
         "test_lease_appearing_after_preview_blocks_persistence"
       ],
       "forbidden": []
+    },
+    {
+      "path": "rb-discuss/agents/openai.yaml",
+      "required": [
+        "interview me",
+        "clickable choices when supported",
+        "Preserve existing agreements."
+      ],
+      "forbidden": [
+        "allow_implicit_invocation: false"
+      ]
     }
   ],
   "skill_metadata_contracts": [
