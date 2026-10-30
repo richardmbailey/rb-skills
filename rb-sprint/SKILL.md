@@ -138,13 +138,25 @@ For each selected task:
 
 After every sprint task is `[x]`:
 
-1. Run a separate verification pass over every task and applicable product requirement.
+1. Perform a separate assessment of every task and applicable product requirement using the implementation evidence. Run additional checks only for gaps or results that may have been invalidated.
 2. Reuse focused evidence for unchanged code and environment. Rerun affected checks and add missing coverage where the combined change exposes a new failure boundary.
 3. Confirm the appropriate automated evidence passes; retain `[x]` until the review below also passes. If automation is genuinely infeasible, record why, define the best executable or manual check, state the residual regression risk, and obtain explicit acceptance before `[v]`.
-4. Run the closest available repository CI-equivalent command or the largest relevant affordable subset. Record every omitted check, its reason, and the residual risk.
+4. Use a current passing result for the closest available repository CI-equivalent command, or run that command if the result is missing or invalidated. Use the largest relevant affordable subset when the full command is impractical. Record every omitted check, its reason, and the residual risk.
 5. Review the complete sprint diff for defects, integration gaps, scope drift, hidden fallbacks, and test weakening. Require independent sub-agent review for substantial, high-risk, or cross-cutting changes, or existing explicit gates; use `$rb-review-pr-or-diff` for that review. A small local change without such a gate may be reviewed inline. If required review cannot run, retain `[x]` and report the blocker. Mark `[v]` only after required review as well as tests passes.
 6. Fix actionable findings, rerun affected checks, and re-review before accepting the sprint.
 7. Treat flaky tests as defects. Do not rerun until green, skip, quarantine, weaken assertions, or lower thresholds merely to finish the sprint.
+
+### Use implementation evidence without repeating its work
+
+The separate sprint verification pass is an assessment of the implemented increment and its evidence. It does not require another execution of passing tests or another independent review of the same unchanged diff. The implementation skill owns task-level testing and review. The sprint owner checks that this evidence covers the requirements and that the combined increment has no uncovered interaction.
+
+If combining tasks exposes a new interaction, add a check for that interaction. If a later edit invalidates a task result, rerun the affected check. Otherwise, accept the current task evidence and continue. One independent review may cover the coherent increment and provide the required verdicts for its tasks. Use follow-up review for material changes or unresolved findings.
+
+Create a separate operational review only when recovery, deployment or another action introduces a distinct risk, or an explicit project gate requires it. Explain that risk or gate. Do not create additional sprints, review reports or approvals solely because work passes from diagnosis to implementation or from implementation to verification.
+
+Track progress against the user-visible exit criteria. A successful calculation or component test does not establish that the final document, database write or export is correct. Keep those remaining criteria open and move towards the next missing acceptance result once the repair is verified. These defaults do not change the explicit requirements of the optional constrained route.
+
+If successive preparation or review cycles produce no accepted user outcome and resolve no blocker, reassess the approach before commissioning more checks. Identify the missing outcome, the evidence gained, and the next action that can advance it. Keep optional hardening outside the sprint unless a concrete failure or approved requirement makes it necessary. Record the decision in the current sprint record; do not create another sprint or approval solely for this reassessment. A request to keep working authorises progress within scope, not indefinite expansion of verification.
 
 ### 7. Close the sprint and choose the next transition
 

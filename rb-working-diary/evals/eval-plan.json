@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "skill": "rb-working-diary",
+  "conditions": [
+    "with_skill",
+    "without_skill"
+  ],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "diary-compact-reusable-checkpoint",
+      "kind": "regression",
+      "prompt": "At a natural checkpoint, several component tests and a review pass. A retained failure and a pending export acceptance remain. Write continuity notes that let a later session continue without repeating work.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Record the outcome, remaining blocker, next authorised action and links identifying relevant evidence conditions. Preserve failed and protected state without copying full historical logs or requiring another test or review solely for the diary entry."
+        }
+      ]
+    },
+    {
+      "id": "diary-timing-unknown-is-unknown",
+      "kind": "regression",
+      "prompt": "The user reports twelve hours of elapsed work. Available records show 74 tests took 46 seconds and that several workflow, recovery and review cycles occurred, but those other activities have no measured total. Record the efficiency lesson.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Distinguish measured test duration from unmeasured workflow and process costs. Leave percentages and savings unknown or explicitly estimated; use the existing record instead of creating a new telemetry system. Measure progress by delivered outcomes and uncertainties resolved."
+        }
+      ]
+    }
+  ]
+}

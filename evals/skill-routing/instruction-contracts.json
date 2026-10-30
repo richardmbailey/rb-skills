@@ -78,7 +78,10 @@
         "references/constrained-execution.md",
         "Require an independent sub-agent review for substantial, high-risk, or cross-cutting changes",
         "inline review is sufficient",
-        "only when a dependency or executable verification requirement makes the next task impossible"
+        "only when a dependency or executable verification requirement makes the next task impossible",
+        "## Keep verification proportionate",
+        "The constrained route retains its own verification and checkpoint requirements",
+        "reassess the dependency before another cycle"
       ],
       "forbidden": [
         "PydanticAI",
@@ -111,7 +114,10 @@
         "references/plan-change-gate.md",
         "record only `NO_CHANGE`",
         "Existing explicit authority counts",
-        "`undecided` also uses `standard`"
+        "`undecided` also uses `standard`",
+        "### Use implementation evidence without repeating its work",
+        "One independent review may cover the coherent increment",
+        "A request to keep working authorises progress within scope, not indefinite expansion of verification."
       ],
       "forbidden": [
         "PydanticAI",
@@ -136,7 +142,10 @@
         "Add or update an automated test",
         "closest available repository CI-equivalent command",
         "Do not rerun an intermittent test until it happens to pass",
-        "Do not introduce a universal percentage target"
+        "Do not introduce a universal percentage target",
+        "## Select checks and know when to proceed",
+        "Each additional live attempt must address a remaining uncertainty",
+        "Treat the test categories above as choices based on the changed behaviour, not a checklist to exhaust."
       ],
       "forbidden": [],
       "max_occurrences": {"## Test Integrity Rules": 1},
@@ -149,7 +158,10 @@
         "closest available repository CI-equivalent command",
         "Do not repeatedly rerun a stochastic or intermittent failure until it passes",
         "statistical tests for stochastic components",
-        "## Test Integrity Rules"
+        "## Test Integrity Rules",
+        "## Reuse scientific evidence without overstating completion",
+        "Accepted calculations do not establish",
+        "Software verification establishes that the implementation behaves as intended; it does not by itself make an experiment worth running."
       ],
       "forbidden": [],
       "max_occurrences": {"## Test Integrity Rules": 1},
@@ -164,7 +176,9 @@
         "Do not delete, skip, quarantine, weaken, or repeatedly rerun a failing test",
         "Do not create or edit that test during diagnosis-only work",
         "Do not edit implementation or tests during diagnosis-only work",
-        "Do not write diary entries for an isolated one-turn diagnosis"
+        "Do not write diary entries for an isolated one-turn diagnosis",
+        "## Use the failure already available",
+        "distinguish the phase that exceeded its allowance"
       ],
       "forbidden": [],
       "max_occurrences": {},
@@ -176,7 +190,10 @@
         "Review the testing strategy against the likely regression boundary",
         "Check test integrity",
         "wrongly levelled tests",
-        "Do not impose a universal numerical coverage target"
+        "Do not impose a universal numerical coverage target",
+        "## Reuse evidence and limit follow-up review",
+        "A code review never substitutes for required fresh authority or cleanup checks",
+        "Do not turn every uncertainty into a required test."
       ],
       "forbidden": [],
       "max_occurrences": {},
@@ -220,7 +237,8 @@
         "maximum model calls, tool calls, retries, wall-clock time, spend",
         "Do not select this skill for a single-agent system",
         "references/test-and-review-checklists.md",
-        "references/agent-boundaries.md"
+        "references/agent-boundaries.md",
+        "establish which agent currently owns that operation"
       ],
       "forbidden": [
         "FastMCP",
@@ -299,7 +317,9 @@
         "selected test levels",
         "canonical CI-equivalent command",
         "residual regression",
-        "references/constrained-continuity.md"
+        "references/constrained-continuity.md",
+        "## Record progress without creating another verification cycle",
+        "leave unmeasured costs unknown"
       ],
       "forbidden": [],
       "max_occurrences": {},

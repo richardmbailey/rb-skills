@@ -122,6 +122,45 @@
       "prompt": "Run repeated sprints against the approved PRD. After each increment, evaluate new evidence, revise the remaining implementation plan when justified, and then choose the next sprint.",
       "should_trigger": false,
       "success": [{"name": "adaptive workflow boundary", "evaluator": "semantic", "rubric": "Pass if rb-sprint is selected because the request requires recurring PRD reconciliation and evidence-driven replanning rather than linear execution."}]
+    },
+    {
+      "id": "execute-one-review-coherent-tasks",
+      "kind": "regression",
+      "prompt": "The implementation owner returned current passing evidence and an independent review with task-specific verdicts for three related tasks. No combined integration gap remains. Finish standard-route phase verification.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Accept valid task evidence and the coherent review rather than commissioning one review per task or rerunning the same suite at the plan layer. Continue only after the actual phase criteria are satisfied."
+        }
+      ]
+    },
+    {
+      "id": "execute-new-interaction-invalidates-subset",
+      "kind": "regression",
+      "prompt": "Two verified tasks are now integrated. The integration changes the event schema used by a third consumer. Existing unit results remain applicable, but that consumer has no compatibility evidence. Verify the phase.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Retain unaffected unit results, add or run the consumer contract or integration check, and update affected status or review as needed. Neither rerun every suite automatically nor treat old component passes as integrated acceptance."
+        }
+      ]
+    },
+    {
+      "id": "execute-independent-work-not-artificial-wait",
+      "kind": "regression",
+      "prompt": "Worker A can collect its assigned records independently within its own remaining quota. Worker B is still collecting. Combined analysis requires both complete datasets, but collection does not. A previous preparation step made A wait so both accounting reports could be frozen together. Continue the approved plan.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Remove the unsupported collection dependency within existing authority and advance A after its actual prerequisites pass. Preserve both histories, quotas and the later combined-analysis barrier. Do not wait for B solely to align accounting stages or invent B completion."
+        }
+      ]
     }
   ]
 }

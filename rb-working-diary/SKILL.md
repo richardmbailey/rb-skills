@@ -98,6 +98,16 @@ Update the matching `Last touched` date in `diary.md` whenever a project diary i
 
 Prefer one compact update at each natural checkpoint over constant logging.
 
+## Record progress without creating another verification cycle
+
+At a natural checkpoint, record the user-visible outcome reached, the current blocker and the next authorised action. Link the existing test result, review or execution receipt that supports each important conclusion. Keep reusable evidence identifiable by its relevant version, data, configuration or environment. Record what would invalidate it when that is not obvious, so a later session can decide whether a rerun is needed.
+
+Preserve failures, incomplete outputs, protected state and recovery boundaries. Summarise their significance and link the retained evidence instead of copying the full history into each entry. A new diary entry does not itself require another test, review or evidence report.
+
+When progress is unexpectedly slow or the user raises efficiency concerns, use available timings to distinguish time spent on tests, model or workflow execution, review, recovery, installation and administration. Mark estimates as estimates, and leave unmeasured costs unknown. Do not invent a percentage breakdown or claim savings without a comparison. Use the existing diary or task record; do not create a separate measurement system unless it is needed for the task.
+
+Measure progress by completed user outcomes and uncertainties resolved. Increasing test counts, review counts, commits or sprint numbers does not by itself show that the requested deliverable is closer to completion.
+
 ## Index Entry Shape
 
 Use this shape in `diary.md`:

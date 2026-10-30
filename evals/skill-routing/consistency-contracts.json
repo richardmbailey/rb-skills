@@ -2,6 +2,54 @@
   "schema_version": 1,
   "file_contracts": [
     {
+      "path": "rb-review-pr-or-diff/agents/openai.yaml",
+      "required": [
+        "$rb-review-pr-or-diff",
+        "distinguish blocking findings from optional improvements"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-multi-agent-systems/agents/openai.yaml",
+      "required": [
+        "$rb-multi-agent-systems",
+        "concrete failure boundaries"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-tdd-scientific-code/agents/openai.yaml",
+      "required": [
+        "$rb-tdd-scientific-code",
+        "advance the requested conclusion or decision"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-sprint/agents/openai.yaml",
+      "required": [
+        "$rb-sprint",
+        "Reuse valid task tests and reviews"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-execute-plan/agents/openai.yaml",
+      "required": [
+        "$rb-execute-plan",
+        "reassess repeated preparation"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-implement-with-tests/agents/openai.yaml",
+      "required": [
+        "$rb-implement-with-tests",
+        "concrete failure boundaries"
+      ],
+      "forbidden": []
+    },
+    {
       "path": "rb-simplify-language/agents/openai.yaml",
       "required": [
         "allow_implicit_invocation: false",
@@ -414,6 +462,8 @@
     }
   ],
   "behavioural_eval_contracts": [
+    {"path": "rb-review-pr-or-diff/evals/eval-plan.json", "skill": "rb-review-pr-or-diff", "minimum_cases": 3},
+    {"path": "rb-working-diary/evals/eval-plan.json", "skill": "rb-working-diary", "minimum_cases": 2},
     {"path": "rb-diagnose/evals/eval-plan.json", "skill": "rb-diagnose", "minimum_cases": 3},
     {"path": "rb-architecture-review/evals/eval-plan.json", "skill": "rb-architecture-review", "minimum_cases": 3},
     {"path": "rb-delegate/evals/eval-plan.json", "skill": "rb-delegate", "minimum_cases": 16},

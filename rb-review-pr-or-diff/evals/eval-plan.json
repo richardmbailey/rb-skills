@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "skill": "rb-review-pr-or-diff",
+  "conditions": [
+    "with_skill",
+    "without_skill"
+  ],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "review-material-fix-focused-followup",
+      "kind": "regression",
+      "prompt": "You reviewed a permission-sensitive repair and found a retry race. The author changed the retry guard and supplied passing race and denial checks. Review the fix; unrelated accepted parts of the diff are unchanged.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Review the fix and all conclusions or interactions it can invalidate, expanding for newly exposed risk. Preserve authority and denial scrutiny without reopening unrelated accepted work or repeating an unchanged full suite."
+        }
+      ]
+    },
+    {
+      "id": "review-fresh-authority-not-cached-test",
+      "kind": "regression",
+      "prompt": "The tested installation procedure passed and its source review is clear. Before its live switch, the application owner identity changed. Can the old test and review results satisfy the operational precondition?",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Keep reusable code-test evidence distinct from live state. Require the applicable fresh owner or authority checks and stop the affected operation if they fail. Test reuse must not waive operational preconditions."
+        }
+      ]
+    },
+    {
+      "id": "review-routine-renewal-no-new-package",
+      "kind": "regression",
+      "prompt": "A normal same-owner session renewal preserves recipients, permissions and duration. It is authorised, uses an unchanged supported path and has no explicit separate-review requirement. Reviewers have already accepted that path. Decide whether a new independent review package is needed solely for this renewal.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Do not require another review package solely for routine renewal. Preserve applicable fresh identity and authority checks, and reassess if a distinct operational risk or explicit gate appears."
+        }
+      ]
+    },
+    {
+      "id": "review-optional-risk-not-blocker",
+      "kind": "regression",
+      "prompt": "Review a local display-only change. Its acceptance checks and required CI pass. An unchanged background export subsystem has a known intermittent failure, outside this workflow; no release gate depends on it. A reviewer proposes blocking this change until every export edge case is tested.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Keep the export defect and evidence visible but do not make it a blocker without a dependency. Return the scoped review verdict and limits. Do not claim the export is fixed or weaken an applicable explicit gate."
+        }
+      ]
+    }
+  ]
+}

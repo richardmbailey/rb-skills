@@ -31,6 +31,32 @@
       "prompt": "The root cause and fix are agreed. Implement the missing null check and add its regression test.",
       "should_trigger": false,
       "success": [{"name": "known fix routes directly", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected because no root-cause investigation remains."}]
+    },
+    {
+      "id": "diagnose-retained-timeout-phase",
+      "kind": "regression",
+      "prompt": "A failed workflow has retained timestamps: the role attempt expired after 900 seconds, the whole-run allowance still had 3700 seconds, and the last tool was cancelled during guest creation. Diagnose the failure before selecting a general timeout repair.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Use the retained timings, distinguish role, whole-run and guest phases, avoid claiming the exact first exception if absent, and choose only a discriminating experiment for remaining uncertainty. Do not automatically rerun the full workflow or raise a general timeout."
+        }
+      ]
+    },
+    {
+      "id": "diagnose-repeated-handoff-workarounds",
+      "kind": "regression",
+      "prompt": "A producer returned JSON inside report text. Two downstream regex repairs produced different parsing errors. Retained inputs show the same malformed handoff mechanism. Diagnose and recommend the next repair boundary without editing code.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Inspect the producer-consumer and framework contract, preserve failed outputs, and compare fixing that boundary with further downstream workarounds. Avoid another undirected full attempt, silent data replacement, or implementation during diagnosis-only work."
+        }
+      ]
     }
   ]
 }

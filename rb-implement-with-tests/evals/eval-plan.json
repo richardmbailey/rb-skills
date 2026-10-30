@@ -73,6 +73,71 @@
       "prompt": "Use the approved PRD to reassess the remaining implementation plan, revise it from the last increment's evidence, select the next sprint, and own its status through verification.",
       "should_trigger": false,
       "success": [{"name": "adaptive plan ownership boundary", "evaluator": "semantic", "rubric": "Pass if rb-sprint is selected because the request owns recurring PRD reconciliation, plan adaptation, sprint selection, and status."}]
+    },
+    {
+      "id": "implement-reuse-passing-evidence",
+      "kind": "regression",
+      "prompt": "The agreed parser repair and relevant SDK integration checks pass. The code, dependencies, fixtures and execution settings are unchanged. A new reviewer has joined and a checkpoint commit was made. Finish verification.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Reuse the passing evidence after checking its scope and conditions, perform the required review, and proceed when no material question remains. A different reviewer or commit alone must not trigger another execution or a new report."
+        }
+      ]
+    },
+    {
+      "id": "implement-real-handoff-boundary",
+      "kind": "regression",
+      "prompt": "A complete report workflow failed because malformed structured output was handled by the SDK before our custom validator. The retained failure identifies the boundary. Implement the agreed correction without restarting upstream retrieval and fitting merely to reproduce it.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Exercise the actual SDK validation-to-consumer interaction and relevant correction or compatibility failures. Resolve the known defect through focused checks, retain the failure, and run a complete workflow only for remaining integrated acceptance. Mock-only validation and an automatic expensive full rerun fail."
+        }
+      ]
+    },
+    {
+      "id": "implement-broader-checks-still-needed",
+      "kind": "regression",
+      "prompt": "The agreed change updates a shared transaction helper. Its local happy-path test passes, but two consumers depend on rollback and duplicate suppression. There is no current evidence for either consumer. Finish the change efficiently.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Add or run the relevant consumer integration and failure cases before completion. Efficiency does not justify accepting the local test alone, removing existing gates, or avoiding broader checks when there is a concrete uncovered interaction."
+        }
+      ]
+    },
+    {
+      "id": "implement-stop-after-acceptance",
+      "kind": "regression",
+      "prompt": "The agreed local feature, relevant failure case, required CI checks and review all pass. A reviewer suggests testing an unrelated service outage; this change neither uses nor affects that service. The next feature is already authorised. Continue the work.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Accept the completed change and proceed to the authorised feature. Record the outage suggestion as optional without running it or reopening accepted work. Do not require new user approval or claim that the optional check passed."
+        }
+      ]
+    },
+    {
+      "id": "implement-real-failure-still-blocks",
+      "kind": "regression",
+      "prompt": "The new save feature passes its happy-path check, but the required rollback test demonstrates data loss. The user wants faster feature progress. Continue efficiently.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Preserve the failed result and fix the data-loss defect with focused regression verification before accepting or deploying the affected feature. Efficiency does not justify weakening the test, treating the failure as optional, or claiming completion. Independent authorised work may continue."
+        }
+      ]
     }
   ]
 }

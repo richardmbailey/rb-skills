@@ -178,6 +178,45 @@
       "prompt": "Implement this one already agreed validation change with its regression test. There is no multi-step plan to own or revise.",
       "should_trigger": false,
       "success": [{"name": "bounded implementation boundary", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected because the request contains one agreed change and excludes plan-state ownership."}]
+    },
+    {
+      "id": "sprint-assess-evidence-without-duplicate-execution",
+      "kind": "regression",
+      "prompt": "All tasks in a coherent sprint increment have current passing focused evidence, the required independent task verdicts and applicable CI evidence. No code or environment changed, and no additional combined interaction is uncovered. Perform the separate sprint verification pass.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Assess evidence against requirements and exit criteria, record the supported status and continue. Do not interpret a separate verification pass as mandatory test re-execution or another independent review of the same diff."
+        }
+      ]
+    },
+    {
+      "id": "sprint-intermediate-success-is-not-exit",
+      "kind": "regression",
+      "prompt": "The calculation and its trusted reference comparison passed. The approved sprint exit criteria also require a report, database rows and exports, which have not been verified. Continue the sprint.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Keep final acceptance open and move towards checking the actual report, committed records and exported contents or receipts. Neither repeat an unchanged calculation as a substitute nor claim the sprint complete from component success."
+        }
+      ]
+    },
+    {
+      "id": "sprint-repeated-preparation-without-outcome",
+      "kind": "regression",
+      "prompt": "Two review and packaging cycles have reused the same passing evidence without delivering the approved feature or resolving a blocker. Required tests and review are complete. The team proposes another review package before the already authorised install. Continue the sprint.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Reassess the repeated preparation, identify installation as the missing outcome, and proceed through the actual installation preconditions. Do not commission another review of unchanged work, create another sprint for reassessment, skip fresh operational checks, or ask for already granted approval."
+        }
+      ]
     }
   ]
 }

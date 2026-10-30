@@ -30,6 +30,10 @@ The runner owns authoritative workflow state, legal transitions, dispatch, permi
 
 Give every agent a responsibility, input/output contract, state ownership, allowed tools, and failure response. Keep its context and tool list narrow. Reject a new agent that mainly relays decisions to its parent, needs the parent's full context, or has no independent success criterion.
 
+Require a concrete dependency before making one worker wait for another: needed input, shared mutable state, resource contention, or an explicit acceptance gate. Independent collection can proceed while a later combined evaluation waits for all inputs. Do not require all workers to finish merely to align their review or accounting stages. Preserve each worker's accounting and applicable limits.
+
+Before a resumed or scheduled agent performs shared side effects, establish which agent currently owns that operation. Reuse the existing owner and handoff when it is active; do not prepare or launch a duplicate. If ownership cannot be established, pause that shared action and continue independent work. Use existing coordination records rather than adding a new coordination layer by default.
+
 Use explicit caller identity even within one process. Require authentication across real trust boundaries. Allocate only the tools needed for the current role and task. Treat discovered agents and tools as candidates, not grants of authority.
 
 Logging and tracing provide evidence; they do not enforce permissions, constrain behaviour, or control risk by themselves. Keep current state and an append-only event log when audit, replay, or recovery is required; short in-process work may use in-memory state and traces without adding a persistence platform.

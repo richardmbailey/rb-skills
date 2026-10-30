@@ -35,6 +35,18 @@ Review changes for actionable defects, regressions, missing or inadequate tests,
 11. Use `$rb-working-diary` only when its trigger conditions apply and the human has authorized durable continuity. Do not write diary entries for an isolated one-turn review.
 12. Recommend concrete fixes for each finding, but do not apply them unless asked.
 
+## Reuse evidence and limit follow-up review
+
+Review the supplied test results against the actual diff and the conditions in which they ran. Do not rerun a passing suite merely to make it the reviewer's own result. Run a focused check when the available evidence leaves a material question unanswered, when a relevant condition has changed, or when the project explicitly requires independent execution. Explain which of these reasons applies.
+
+A review may cover the complete coherent repair, including its tests and integration implications. After findings are fixed, review the changed parts and any conclusions that the fix could invalidate. Expand the review when the fix exposes a new risk; do not automatically reopen every accepted part of the original diff.
+
+Do not require a separate review package for each routine status check, same-scope session renewal or handoff. Require separate operational assessment when the action changes authority, has uncertain side effects, involves recovery or deployment risks not covered by the code review, or falls under an explicit gate. A code review never substitutes for required fresh authority or cleanup checks.
+
+When no blocking finding or material unanswered question remains within the requested scope, return the verdict and its limits. Do not delay it to produce more review artifacts or repeat an unchanged test inventory.
+
+For a blocking finding, name the affected requirement or explicit gate, the evidence of failure or missing acceptance evidence, and the action that cannot proceed. Keep speculative edge cases and optional improvements separate from blockers. An unrelated defect does not automatically block this change; preserve its evidence and assess whether it affects the requested behaviour or a required gate. Do not turn every uncertainty into a required test.
+
 ## Required Behaviour
 
 - Findings come first, ordered by severity.

@@ -24,6 +24,19 @@
       "prompt": "Improve retrieval and structured citations for one LLM agent; there is no delegation or orchestration layer.",
       "should_trigger": false,
       "success": [{"name": "single-agent retrieval exclusion", "evaluator": "semantic", "rubric": "Pass only if rb-multi-agent-systems is not selected merely because one agent uses retrieval and structured output."}]
+    },
+    {
+      "id": "multi-agent-existing-owner-on-resume",
+      "kind": "regression",
+      "prompt": "A scheduled continuation and a newly resumed chat both intend to start the same experiment. The coordination record and live process evidence show the scheduled continuation currently owns that launch. The shared release already exists. Continue without losing progress.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Use the active owner and existing handoff; do not construct or launch a duplicate, replace its state, or restart healthy work. Continue only independent work or observe the current owner as needed. An existing release alone must not be treated as proof that the experiment succeeded."
+        }
+      ]
     }
   ]
 }

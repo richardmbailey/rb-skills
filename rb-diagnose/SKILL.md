@@ -14,7 +14,7 @@ Use this for bugs, regressions, surprising outputs, failing tests, or flaky test
 1. State expected behaviour.
 2. State observed behaviour.
 3. Identify the smallest reproducible case.
-4. Build or find a feedback loop and run it when possible.
+4. Find the existing failure evidence and feedback loop. Run a new reproduction or experiment when it can supply missing evidence or distinguish the remaining explanations.
 5. Capture the failing output, input, environment, seed/configuration, execution order, timing, platform, and affected version or commit when relevant.
 6. Localise the failure by reading surrounding code, tests, recent changes, logs, configuration, and integration boundaries.
 7. Form hypotheses.
@@ -28,6 +28,16 @@ Use this for bugs, regressions, surprising outputs, failing tests, or flaky test
 15. If automated regression coverage is genuinely infeasible, document the technical reason, define the best executable or manual check, and state the remaining regression risk. Do not silently substitute a lint, build, import, or smoke check for behavioural coverage.
 16. If the human asks for implementation, use `$rb-implement-with-tests` or `$rb-tdd-scientific-code` for the fix path after diagnosis. An existing request to diagnose and fix authorises this transition; do not ask again solely because the skill changes.
 17. Explain the root cause, why the regression escaped existing coverage, and which regression test should prevent recurrence. Report its result only when implementation was requested.
+
+## Use the failure already available
+
+Start with retained logs, inputs, versions and execution receipts when they establish the observed failure. A new reproduction is useful when that evidence is incomplete or when an experiment can distinguish remaining explanations. Do not repeat an expensive complete workflow solely to obtain another copy of a failure already localised.
+
+For a timeout, distinguish the phase that exceeded its allowance from the operation's total elapsed time. Inspect the available phase timings and cancellation evidence before changing a general timeout. If the evidence cannot identify the exact phase, state that limit and choose the smallest experiment that can resolve it.
+
+For a failed producer-to-consumer handoff, test the actual contract, parser or framework boundary before repeating upstream retrieval and computation. Preserve failed outputs. Do not silently repair or replace them to make a downstream check pass.
+
+If successive attempts fail through the same mechanism or require similar ad hoc repairs, reconsider the proposed fix before trying again. Compare a correction at the original failure boundary with further downstream workarounds. Stop diagnosis once the evidence supports the requested repair decision and its regression test; reopen it only when a new failure or contradiction warrants doing so.
 
 ## Required Behaviour
 

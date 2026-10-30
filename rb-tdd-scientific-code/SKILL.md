@@ -36,7 +36,21 @@ Implement scientific, numerical, modelling, simulation, or domain-sensitive chan
 18. Fix actionable review findings, rerun affected checks, and re-review when findings were material. Reuse passing evidence only while the relevant code, data, configuration, and environment remain unchanged.
 19. Do not call the implementation scientifically complete until no blocking review findings remain, or the human explicitly accepts the residual scientific or validation risk.
 
+## Reuse scientific evidence without overstating completion
+
+Before adding a calculation or test, identify which scientific assumption, implementation defect or acceptance criterion it will assess. Select the smallest check that can answer that question. Expand to other regimes, integration boundaries or stochastic trials when the changed behaviour or scientific claim requires them.
+
+Before proposing a further scientific experiment, identify which requested conclusion or decision could change under its possible outcomes. If the result follows from an already established mechanism, use that result rather than rerunning it unless implementation correctness or an explicit acceptance requirement still needs checking. If neither outcome would advance the research question, defer that experiment and return to the next unresolved question. Software verification establishes that the implementation behaves as intended; it does not by itself make an experiment worth running.
+
+Reuse a trusted benchmark result when the actual input data, model assumptions, algorithm, units, parameters, numerical tolerances and execution conditions relevant to that result still match. Establish that match from the artifacts; do not assume it because a task has a familiar name. If a relevant condition changes, rerun or replace the affected comparison and explain why. A new session or report draft alone does not require recomputing an unchanged benchmark.
+
+Keep numerical verification separate from completion of the surrounding product. Accepted calculations do not establish that a report transcribes them correctly, that database records were committed, or that exported files contain the accepted values and provenance. Check those outputs and their actual receipts when they are required. Do not claim scientific validity or operational forecasting accuracy from implementation agreement alone.
+
+Once the selected scientific checks and required review pass, proceed to the next missing acceptance criterion. Preserve tolerances, independent references and safeguards; efficiency comes from reusing valid evidence and testing the remaining uncertainty.
+
 ## Scientific Test Types
+
+Select the types needed for the changed model and its claims. This list is not a requirement to exercise every category for every change.
 
 - units and dimensional consistency
 - conservation or mass balance

@@ -52,6 +52,45 @@
       "prompt": "Add a normal web form validation rule with unit and integration tests; no numerical or scientific assumptions are involved.",
       "should_trigger": false,
       "success": [{"name": "ordinary implementation boundary", "evaluator": "semantic", "rubric": "Pass if rb-implement-with-tests is selected rather than the scientific workflow."}]
+    },
+    {
+      "id": "scientific-reuse-benchmark-verify-publication",
+      "kind": "regression",
+      "prompt": "A new report draft uses the exact accepted input grid, algorithm, units, parameters, tolerances and relevant execution conditions. A trusted benchmark comparison already passed. Database records and exports are required but unverified. Continue verification.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Establish the actual artifact match and reuse the numerical comparison. Check report transcription, actual database completion and exports directly; do not recompute solely because the draft is new or claim product or operational scientific validity from numerical agreement."
+        }
+      ]
+    },
+    {
+      "id": "scientific-changed-units-invalidates-reference",
+      "kind": "regression",
+      "prompt": "A revised model now converts millimetres to metres at a different stage and changes a parameter. An earlier benchmark passed for the old units and parameters. Finish efficiently.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "proportionate verification preserves correctness",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Treat the relevant old comparison as invalidated, run the affected numerical, units and integration checks, preserve justified tolerances and independent references, and report remaining scientific uncertainty. Familiar task naming must not establish equivalence."
+        }
+      ]
+    },
+    {
+      "id": "scientific-decline-low-value-experiment",
+      "kind": "regression",
+      "prompt": "The goal is to determine whether a colony reallocates effort effectively after resources change. Established model equations and existing checks already show that pheromone decays gradually. A proposed large simulation would only show that old pheromone persists briefly; neither outcome would resolve the allocation question. Decide the next step.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "progress with sufficient evidence",
+          "evaluator": "semantic",
+          "rubric": "Pass only if the response does the following: Defer the persistence simulation, explain why it does not advance the requested conclusion, and select or propose the next discriminating allocation question using existing evidence. Preserve any genuinely unresolved implementation checks; do not abandon scientific validation or invent experimental results."
+        }
+      ]
     }
   ]
 }

@@ -45,6 +45,18 @@ If needed behavioural automation is infeasible, record the reason, alternative c
 7. Mark supported tasks `[v]`. Complete the phase only when every required task is `[v]`, exit criteria are met, and applicable integration, CI-equivalent, and review gates pass. Preserve explicit release and deployment approvals.
 8. Continue to the next authorised phase. At meaningful checkpoints, use `$rb-working-diary` when the work needs continuity. Record evidence and next action without copying the whole plan.
 
+## Keep verification proportionate
+
+For the standard route, the implementation skill supplies task-level tests and review. The plan owner checks their scope and validity, then verifies any additional phase interactions. Do not repeat accepted tests or commission another review of the same unchanged work simply to mark a task or phase verified.
+
+Before running an additional check, name the requirement, failure or uncertainty it addresses. Reuse passing evidence when the relevant code, dependencies, configuration, fixtures and execution conditions match. Later changes require the checks they could invalidate, rather than an automatic restart of the full verification sequence.
+
+One independent review can cover a coherent group of tasks and give task-specific verdicts. Separate recovery or deployment reviews need a distinct operational risk or an explicit project requirement. Preserve required approvals and fresh authority, cleanup and state checks before side effects. The constrained route retains its own verification and checkpoint requirements.
+
+Once the applicable tests, review and phase exit criteria pass, continue to the next authorised task. If the final user outcome still needs a report, database records or exports, verify those outputs directly. Do not repeatedly prove an already accepted intermediate result while leaving the final acceptance work untouched.
+
+If preparation or review repeats without delivering the next required outcome or resolving a blocker, reassess the dependency before another cycle. Name the missing outcome, what the last cycle established, and the smallest action that advances it. A dependency must follow from an acceptance requirement, an explicit gate or evidence of failure; do not add one merely to keep all work at the same stage. Preserve required gates and continue independent authorised work. Record this decision in the existing task record, without creating another review gate.
+
 ## Output
 
 Report delivered behaviour, phase/task status, verification and review outcomes, omitted checks, residual risks, and the next action. Link detailed evidence instead of reproducing it. Do not invent findings, artifacts, or approvals to fill a template.
