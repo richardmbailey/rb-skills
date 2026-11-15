@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "command": "python3 -m unittest discover -s docs/rb-build-test-suite-specification/implementation-evidence/oracle-checks -p 'test_*.py' -v",
+  "exit": 0,
+  "tests": 3,
+  "saved_artifacts": 9,
+  "healthy_artifacts": 3,
+  "defective_artifacts": 6,
+  "python": "3.14.2 (main, Dec  5 2025, 16:49:16) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "sha256": {
+    "test_oracles.py": "3acf6021874dd04dec72f51cc07298a922c9c3fb55423f870a753172abf7fce7",
+    "evaluate.py": "512fb28e2b7180168540e7dcdeece3e24e3e8dbe94f8ebe9175f044432585de1",
+    "artifacts.json": "20840b12f8c8b5abdab4ee166fa106f05b95053e3d52fffc140b4b2a0deb5e67"
+  },
+  "output": "Ran 3 tests in 0.006s\nOK",
+  "limits": "Independent P0 analytical artifact checks only. No generated candidate, product gate, adapter, host, or held-out qualification."
+}

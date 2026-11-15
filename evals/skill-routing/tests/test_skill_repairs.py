@@ -115,18 +115,19 @@ class ManualInvocationMetadataTests(unittest.TestCase):
             result = self.run_validator(root)
             self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_aggregate_description_budget_allows_one_more_40_word_skill(self) -> None:
+    def test_aggregate_description_budget_accepts_limit_rejects_one_more_word(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             description = " ".join(["word"] * 40)
-            for index in range(27):
+            for index in range(29):
+                skill_description = description if index < 28 else " ".join(["word"] * 35)
                 name = f"rb-auto-{index}"
                 skill = root / name
                 (skill / "agents").mkdir(parents=True)
                 (skill / "SKILL.md").write_text(
                     "---\n"
                     f"name: {name}\n"
-                    f"description: {description}\n"
+                    f"description: {skill_description}\n"
                     "---\n\n# Automatic\n",
                     encoding="utf-8",
                 )
@@ -151,7 +152,7 @@ class ManualInvocationMetadataTests(unittest.TestCase):
             )
             result = self.run_validator(root)
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("exceed the 1080-word budget", result.stderr)
+            self.assertIn("exceed the 1155-word budget", result.stderr)
 
 
 class InstructionBoundaryTests(unittest.TestCase):

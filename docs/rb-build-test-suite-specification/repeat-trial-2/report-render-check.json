@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "offline": true,
+  "javascript_enabled": false,
+  "checked_links": [
+    "../../docs/rb-build-test-suite-specification/repeat-trial-2/COMPARISON.md",
+    "CHECKS.md",
+    "REQUIREMENTS.md",
+    "independent-review.md",
+    "evidence/final/tests.log",
+    "evidence/final/tests.xml",
+    "evidence/final/commands.jsonl",
+    "evidence/final/coverage.log",
+    "evidence/final/before.json",
+    "evidence/assessment_oneoff.py"
+  ],
+  "desktop_width": 1200,
+  "mobile_width": 390,
+  "mobile_overflow": false,
+  "page_errors": [],
+  "limit": "Basic rendering and link checks, not a full accessibility audit."
+}

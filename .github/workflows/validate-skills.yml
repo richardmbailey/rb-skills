@@ -114,6 +114,30 @@ jobs:
           python -m unittest discover -s evals/skill-routing/tests -p 'test_*.py' \
             2>&1 | tee validation-output/skill-regressions.txt
 
+      - name: Validate packaged test-suite reference schemas
+        id: test_suite_schemas
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pip install -r docs/rb-build-test-suite-specification/checks/requirements.txt
+          python -m unittest discover -s docs/rb-build-test-suite-specification/checks -p 'test_*.py' \
+            2>&1 | tee validation-output/test-suite-schemas.txt
+
+      - name: Validate deterministic test audit and coordinator
+        id: test_audit
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pip install -r rb-audit-test-suite/examples/numerical/requirements.txt
+          python -m unittest discover -s rb-audit-test-suite/tests -p 'test_*.py' \
+            2>&1 | tee validation-output/test-audit-coordinator.txt
+          python -m pytest -c rb-audit-test-suite/examples/numerical/pytest.ini \
+            rb-audit-test-suite/examples/numerical/audit -q \
+            --basetemp="${{ runner.temp }}/test-audit-pytest" \
+            --evidence="${{ github.workspace }}/validation-output/test-audit-evidence" \
+            --junitxml=validation-output/test-audit.xml \
+            2>&1 | tee validation-output/test-audit-example.txt
+
       - name: Validate skill metadata
         id: metadata
         continue-on-error: true
@@ -190,6 +214,8 @@ jobs:
             "${{ steps.json.outcome }}"
             "${{ steps.evals.outcome }}"
             "${{ steps.skill_regressions.outcome }}"
+            "${{ steps.test_suite_schemas.outcome }}"
+            "${{ steps.test_audit.outcome }}"
             "${{ steps.metadata.outcome }}"
             "${{ steps.instructions.outcome }}"
             "${{ steps.consistency.outcome }}"

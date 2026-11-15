@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "focus": "development",
+  "profile": "standard",
+  "runner": "./run_tests.sh",
+  "instruction_paths": [
+    "AGENTS.md",
+    "REQUIREMENTS.md"
+  ],
+  "workflows": [
+    "ordinary",
+    "scientific",
+    "plan",
+    "direct"
+  ],
+  "enforcement": "cooperative",
+  "required_gaps": [
+    "Full renderer/browser qualification and general host-adapter qualification are outside this example."
+  ],
+  "completion": "incomplete",
+  "runner_argv": [
+    "./run_tests.sh"
+  ],
+  "supported_workflows": [
+    "ordinary_implementation",
+    "scientific_implementation",
+    "plan_execution",
+    "direct_completion"
+  ]
+}

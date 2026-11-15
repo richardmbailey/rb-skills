@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "builder_id": "/root/heat_builder",
+  "max_rounds": 3,
+  "input_paths": [
+    "examples/periodic-heat/heat.py",
+    "examples/periodic-heat/test_heat.py",
+    "examples/periodic-heat/audit_science.py",
+    "examples/periodic-heat/audit_suite.py",
+    "examples/periodic-heat/pytest.ini",
+    "examples/periodic-heat/pyproject.toml",
+    "examples/periodic-heat/requirements.txt",
+    "examples/periodic-heat/expected-tests.json",
+    "examples/periodic-heat/expected-audit-tests.json",
+    "examples/periodic-heat/REQUIREMENTS.md",
+    "examples/periodic-heat/TEST_DESIGN.md",
+    "examples/periodic-heat/AUDIT_PLAN.md",
+    "examples/periodic-heat/CHECKS.md",
+    "examples/periodic-heat/check-plan.json",
+    "examples/periodic-heat/environment.json",
+    "rb-audit-test-suite/examples/numerical/audit/support.py",
+    "rb-audit-test-suite/examples/numerical/audit/test_evidence.py",
+    "rb-audit-test-suite/examples/numerical/audit/conftest.py",
+    "rb-audit-test-suite/examples/numerical/pytest.ini",
+    "rb-audit-test-suite/scripts/test_loop.py"
+  ],
+  "protected_paths": [
+    "examples/periodic-heat/REQUIREMENTS.md",
+    "examples/periodic-heat/TEST_DESIGN.md",
+    "examples/periodic-heat/AUDIT_PLAN.md",
+    "examples/periodic-heat/expected-tests.json",
+    "examples/periodic-heat/expected-audit-tests.json",
+    "examples/periodic-heat/check-plan.json",
+    "examples/periodic-heat/environment.json"
+  ],
+  "checks": [
+    {
+      "id": "project-tests",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "coverage",
+        "run",
+        "--rcfile=examples/periodic-heat/pyproject.toml",
+        "--data-file=examples/periodic-heat/evidence/assessment/.coverage",
+        "-m",
+        "pytest",
+        "examples/periodic-heat/test_heat.py",
+        "-c",
+        "examples/periodic-heat/pytest.ini",
+        "--confcutdir=examples/periodic-heat",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "-s",
+        "--basetemp=examples/periodic-heat/evidence/assessment/project-tmp",
+        "--junitxml=examples/periodic-heat/evidence/assessment/project.xml"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "coverage-json",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "coverage",
+        "json",
+        "--rcfile=examples/periodic-heat/pyproject.toml",
+        "--data-file=examples/periodic-heat/evidence/assessment/.coverage",
+        "-o",
+        "examples/periodic-heat/evidence/assessment/coverage.json"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "coverage-report",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "coverage",
+        "report",
+        "--rcfile=examples/periodic-heat/pyproject.toml",
+        "--data-file=examples/periodic-heat/evidence/assessment/.coverage"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "ruff",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "ruff",
+        "check",
+        "--no-fix",
+        "--no-fix-only",
+        "--no-cache",
+        "--config",
+        "examples/periodic-heat/pyproject.toml",
+        "examples/periodic-heat/heat.py",
+        "examples/periodic-heat/test_heat.py",
+        "examples/periodic-heat/audit_science.py",
+        "examples/periodic-heat/audit_suite.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "format",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "--no-cache",
+        "--config",
+        "examples/periodic-heat/pyproject.toml",
+        "examples/periodic-heat/heat.py",
+        "examples/periodic-heat/test_heat.py",
+        "examples/periodic-heat/audit_science.py",
+        "examples/periodic-heat/audit_suite.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "types",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "mypy",
+        "--strict",
+        "--config-file",
+        "examples/periodic-heat/pyproject.toml",
+        "--cache-dir=examples/periodic-heat/evidence/assessment/mypy",
+        "examples/periodic-heat/heat.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "independent-audit",
+      "kind": "audit",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "pytest",
+        "examples/periodic-heat/audit_science.py",
+        "examples/periodic-heat/audit_suite.py",
+        "-c",
+        "examples/periodic-heat/pytest.ini",
+        "--confcutdir=examples/periodic-heat",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "-s",
+        "--basetemp=examples/periodic-heat/evidence/assessment/audit-tmp",
+        "--junitxml=examples/periodic-heat/evidence/assessment/audit.xml"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "id": "reused-evidence-helper-controls",
+      "kind": "audit",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-m",
+        "pytest",
+        "rb-audit-test-suite/examples/numerical/audit/test_evidence.py",
+        "-c",
+        "rb-audit-test-suite/examples/numerical/pytest.ini",
+        "--confcutdir=rb-audit-test-suite/examples/numerical/audit",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "--basetemp=examples/periodic-heat/evidence/assessment/helper-tmp",
+        "--junitxml=examples/periodic-heat/evidence/assessment/helper.xml"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "project-identity-and-outcomes",
+      "kind": "project",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-c",
+        "import json, runpy\nfrom pathlib import Path\nsupport=runpy.run_path('rb-audit-test-suite/examples/numerical/audit/support.py')\nexpected=json.loads(Path('examples/periodic-heat/expected-tests.json').read_text())\nassert expected and len(expected)==len(set(expected))\nsupport['inspect_result']((0,Path('examples/periodic-heat/evidence/assessment/project.xml')),{x.replace('.py::','::',1) for x in expected})\nprint('Exact required test identities and successful outcomes verified:',len(expected))\n"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "audit-identity-and-outcomes",
+      "kind": "audit",
+      "argv": [
+        "env",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "python3",
+        "-c",
+        "import json, runpy\nfrom pathlib import Path\nsupport=runpy.run_path('rb-audit-test-suite/examples/numerical/audit/support.py')\nexpected=json.loads(Path('examples/periodic-heat/expected-audit-tests.json').read_text())\nassert expected and len(expected)==len(set(expected))\nsupport['inspect_result']((0,Path('examples/periodic-heat/evidence/assessment/audit.xml')),{x.replace('.py::','::',1) for x in expected})\nprint('Exact required test identities and successful outcomes verified:',len(expected))\n"
+      ],
+      "timeout_seconds": 120
+    }
+  ]
+}

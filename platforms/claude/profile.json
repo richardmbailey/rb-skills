@@ -2,6 +2,8 @@
   "schema_version": 1,
   "portable_skills": [
     "rb-architecture-review",
+    "rb-audit-test-suite",
+    "rb-build-test-suite",
     "rb-continue-project",
     "rb-create-implementation-plan",
     "rb-create-prd",

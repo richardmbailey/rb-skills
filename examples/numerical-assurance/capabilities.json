@@ -1,0 +1,334 @@
+[
+  {
+    "id": "unit",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Exact recurrence, invalid inputs and floating-point regressions.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "functional",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Public simulation and CLI results; shared pytest execution.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "component",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "One standalone numerical module; no separately deployed subsystem boundary.",
+    "module_ids": []
+  },
+  {
+    "id": "fuzz",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "Dedicated parser fuzzing deferred; bounded property generation covers numerical input regimes only.",
+    "module_ids": []
+  },
+  {
+    "id": "property_based",
+    "disposition": "selected",
+    "required": true,
+    "reason": "150 bounded Hypothesis trajectories for conservation, monotonicity and positivity.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "formal_verification",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "Analytical error argument provided, but no formal proof assistant or machine-checked proof.",
+    "module_ids": []
+  },
+  {
+    "id": "static_analysis",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Strict typing of model.py only; tests/harness are outside the type claim.",
+    "module_ids": [
+      "typing"
+    ]
+  },
+  {
+    "id": "mutation",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Six predeclared scientific faults and three static-tool controls.",
+    "module_ids": [
+      "mutation"
+    ]
+  },
+  {
+    "id": "coverage",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Branch coverage of model; inspect missing CLI branches separately from subprocess tests.",
+    "module_ids": [
+      "coverage"
+    ]
+  },
+  {
+    "id": "benchmark",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "No justified timing baseline or performance objective; runtime observations are descriptive.",
+    "module_ids": []
+  },
+  {
+    "id": "contract",
+    "disposition": "selected",
+    "required": true,
+    "reason": "CSV column names and units, plus evidence shape tests; shared execution.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "lint",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Read-only Ruff rules and separate formatting assessment across example Python files.",
+    "module_ids": [
+      "lint",
+      "format"
+    ]
+  },
+  {
+    "id": "acceptance",
+    "disposition": "selected",
+    "required": true,
+    "reason": "R1-R7 example acceptance, not stakeholder or empirical validation.",
+    "module_ids": [
+      "pytest",
+      "independent_review"
+    ]
+  },
+  {
+    "id": "regression",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Two independently discovered floating-point defects remain executable regressions.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "smoke",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Real CLI invocation and CSV reload in shared pytest run.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "usability",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No participant study or human usability claim for the teaching CLI.",
+    "module_ids": []
+  },
+  {
+    "id": "ui_ux",
+    "disposition": "deferred",
+    "required": true,
+    "reason": "Full report browser/accessibility qualification is deferred; static escaping checks alone are insufficient.",
+    "module_ids": []
+  },
+  {
+    "id": "penetration",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No deployed network target, authentication service or authorized penetration scope.",
+    "module_ids": []
+  },
+  {
+    "id": "threat_modelling",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No production system; local tool authority and HTML escaping are bounded controls, not a threat-model assessment.",
+    "module_ids": []
+  },
+  {
+    "id": "performance",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "Step cap is checked; no hardware performance target or scaling acceptance study.",
+    "module_ids": []
+  },
+  {
+    "id": "integration",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Solve-write-reload workflow with no mocked numerical or file boundary.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "tap_compare",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "Analytical comparison uses deterministic inputs; no live observation tap.",
+    "module_ids": []
+  },
+  {
+    "id": "load",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No request-serving system or traffic workload.",
+    "module_ids": []
+  },
+  {
+    "id": "shadowing",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No serving system or live traffic to mirror.",
+    "module_ids": []
+  },
+  {
+    "id": "configuration",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Invalid numerical parameters fail before creating output.",
+    "module_ids": [
+      "pytest"
+    ]
+  },
+  {
+    "id": "soak",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "Stateless bounded simulation, no long-running service-state claim.",
+    "module_ids": []
+  },
+  {
+    "id": "canary",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No deployment or user cohort exposure.",
+    "module_ids": []
+  },
+  {
+    "id": "release_monitoring",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No deployed release observation window.",
+    "module_ids": []
+  },
+  {
+    "id": "traffic_shaping",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No routing or traffic controls.",
+    "module_ids": []
+  },
+  {
+    "id": "feature_flags",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No feature flag system.",
+    "module_ids": []
+  },
+  {
+    "id": "exception_tracking",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "CLI errors are tested locally; no external exception pipeline.",
+    "module_ids": []
+  },
+  {
+    "id": "teeing",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No duplicated data stream or secondary consumer.",
+    "module_ids": []
+  },
+  {
+    "id": "profiling",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "No unresolved bottleneck warrants a profiling campaign in this short example.",
+    "module_ids": []
+  },
+  {
+    "id": "logs_events",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "Raw test logs are evidence, not a domain-event ingestion system.",
+    "module_ids": []
+  },
+  {
+    "id": "chaos",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No infrastructure failure/recovery hypothesis or live disruption.",
+    "module_ids": []
+  },
+  {
+    "id": "operational_monitoring",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No continuing deployed service.",
+    "module_ids": []
+  },
+  {
+    "id": "ab_experiment",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No user treatments or randomized experiment.",
+    "module_ids": []
+  },
+  {
+    "id": "tracing",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No distributed work or span propagation.",
+    "module_ids": []
+  },
+  {
+    "id": "dynamic_exploration",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "Independent review explored numerical boundaries; broader agent exploration not qualified.",
+    "module_ids": []
+  },
+  {
+    "id": "real_user_monitoring",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No actual users or collection of personal telemetry.",
+    "module_ids": []
+  },
+  {
+    "id": "auditing",
+    "disposition": "deferred",
+    "required": false,
+    "reason": "Local hashes and receipts are retained; authenticated/tamper-resistant control audit is deferred.",
+    "module_ids": []
+  },
+  {
+    "id": "on_call_experience",
+    "disposition": "not_applicable",
+    "required": false,
+    "reason": "No responders or on-call service.",
+    "module_ids": []
+  },
+  {
+    "id": "independent_verification",
+    "disposition": "selected",
+    "required": true,
+    "reason": "Requirements-first independent analytical tests and subsequent code review.",
+    "module_ids": [
+      "independent_review",
+      "pytest"
+    ]
+  }
+]

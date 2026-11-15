@@ -1,0 +1,881 @@
+{
+  "packet_version": "1.0.0",
+  "purpose": "Public preimplementation oracle cases only; reserved cases omitted.",
+  "status": "oracle_design_only_no_product_tests_run",
+  "provenance": {
+    "author_role": "independent preimplementation verifier",
+    "session_task": "/root/initial_oracles",
+    "source_digests": {
+      "README.md": "0210f3e597185e1cc34754372413a4db0c97ca6d17a0ffa0f00883abce1e9ccc",
+      "assurance-contract.md": "f9b7563d25249b7adb8e5a52ebfd1a4c97a3974156c86bdc508ad13c07e3a342",
+      "module-interface.md": "47ed6870beeb7b453741f3927609de8a85b6c75732ceb48a798c85e589a79cc6",
+      "evidence-and-report.md": "4b8ffd7bce8b16abd987da5bec0846c5c4708bc5fe5ef19c0c100fced4ac2513",
+      "IMPLEMENTATION_PLAN.md": "e93e0afab681f5a43215a3b31c1bb8eff84874fed309dc5ece3669cb65552f70"
+    },
+    "implementation_seen": false,
+    "developer_tests_seen": false,
+    "oracle_origin": "Specification-derived decision table and elementary analytical derivations, not candidate output.",
+    "write_isolation": "Shared filesystem; assigned write scope enforced by instructions only."
+  },
+  "scenario_language": {
+    "description": "Normalized oracle scenarios, not schema-valid product records. Materialize full records through an independently reviewed fixture adapter. Dotted input keys override baseline properties; variants are separate independent runs. O22-O28 are standalone fixtures, except O26 predicate context inherits the baseline.",
+    "baseline": {
+      "record_structurally_valid": true,
+      "record_semantically_consistent": true,
+      "finalised": true,
+      "run_id": "r1",
+      "candidate": "candidate-A",
+      "policy": "policy-v1",
+      "all_43_capability_dispositions_present": true,
+      "all_artifacts_valid": true,
+      "all_identities_current_and_matching": true,
+      "adoption_current": true,
+      "impact_all_paths_accounted_and_reviewed": true,
+      "required_criteria": [
+        "c_required"
+      ],
+      "modules": {
+        "m_required": {
+          "required": true,
+          "execution": "completed",
+          "criterion": "satisfied",
+          "criterion_id": "c_required",
+          "expected_ids": [
+            "test_required"
+          ],
+          "collected_ids": [
+            "test_required"
+          ],
+          "executed_ids": [
+            "test_required"
+          ]
+        }
+      },
+      "blocking_findings": [],
+      "required_gaps": [],
+      "cancelled": false,
+      "runner_error": false,
+      "render_error": false,
+      "scope": "bounded fixture requirements only"
+    }
+  },
+  "normative_acceptance": {
+    "precedence": [
+      "cancellation exit 130",
+      "invalid config/record, runner or report error exit 3",
+      "demonstrated required violation or unresolved blocking defect: REJECTED exit 1",
+      "required gap: INSUFFICIENT_EVIDENCE exit 2",
+      "otherwise finalised valid accepted policy: ACCEPTED exit 0"
+    ],
+    "module_rules": [
+      "PASSED requires completed execution, nonempty criteria, all satisfied, valid artifacts, no unresolved blocker.",
+      "timed_out plus demonstrated violation is FAILED; timed_out plus unknown is REQUIRES_REVIEW.",
+      "not_run maps to NOT_RUN; blocked maps to BLOCKED; error maps to REQUIRES_REVIEW.",
+      "NOT_APPLICABLE belongs only to a justified nonrequired capability disposition."
+    ],
+    "capability_rules": [
+      "Any failed module makes the selected capability FAILED.",
+      "All selected modules passed permits PASSED.",
+      "Otherwise all unresolved modules blocked gives BLOCKED; all unrun gives NOT_RUN; mixed unresolved states give REQUIRES_REVIEW.",
+      "A selected capability with zero substantive modules requires review."
+    ],
+    "completion": "Only accepted finalised evidence bound to the current final candidate and adopted workflow supports verified completion."
+  },
+  "future_tests": {
+    "status": "not_run",
+    "materialization": "Build paired real projects and evidence records; assert literal expected values/outcomes above. Gate tables alone cannot qualify process, adapter, browser or agent behavior.",
+    "discrimination": "Run each defective and healthy pair. Retain failures and raw receipts; no retry-until-pass or oracle replacement.",
+    "scientific_limits": "These deterministic toy fixtures verify units, transfer equations and convergence discrimination. They do not validate an empirical model or provide stochastic, ML leakage, operational, or all-43 adapter coverage."
+  },
+  "materially_blocking_contract_ambiguities": [],
+  "cases": [
+    {
+      "id": "O01",
+      "title": "Complete required evidence accepts",
+      "partition": "public_contract",
+      "inputs": {},
+      "expected": {
+        "gate": "ACCEPTED",
+        "exit": 0,
+        "completion": "verified"
+      },
+      "normative_basis": "evidence-and-report.md \u00a73; assurance-contract.md \u00a71",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O02",
+      "title": "Quick selection cannot waive deep requirement",
+      "partition": "public_contract",
+      "inputs": {
+        "profile": "quick",
+        "modules.m_deep": {
+          "required": true,
+          "execution": "not_run",
+          "criterion": "unknown"
+        }
+      },
+      "expected": {
+        "gate": "INSUFFICIENT_EVIDENCE",
+        "exit": 2,
+        "completion": "incomplete"
+      },
+      "normative_basis": "evidence-and-report.md \u00a73; module-interface.md \u00a75",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O03",
+      "title": "Optional nonblocking failure remains visible",
+      "partition": "public_contract",
+      "inputs": {
+        "modules.m_optional": {
+          "required": false,
+          "execution": "completed",
+          "criterion": "violated",
+          "blocking_finding": false
+        }
+      },
+      "expected": {
+        "gate": "ACCEPTED",
+        "exit": 0,
+        "optional_failures": [
+          "m_optional"
+        ]
+      },
+      "normative_basis": "evidence-and-report.md \u00a73",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O04",
+      "title": "Demonstrated required failure beats missing evidence",
+      "partition": "public_contract",
+      "inputs": {
+        "modules.m_required.criterion": "violated",
+        "modules.m_deep": {
+          "required": true,
+          "execution": "blocked",
+          "criterion": "unknown"
+        }
+      },
+      "expected": {
+        "gate": "REJECTED",
+        "exit": 1,
+        "required_failures": [
+          "m_required"
+        ],
+        "required_gaps": [
+          "m_deep"
+        ]
+      },
+      "normative_basis": "evidence-and-report.md \u00a73",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O05",
+      "title": "Unresolved blocking defect rejects even when checks pass",
+      "partition": "public_contract",
+      "inputs": {
+        "findings": [
+          {
+            "id": "f1",
+            "blocking": true,
+            "resolved": false,
+            "demonstrated_defect": true
+          }
+        ]
+      },
+      "expected": {
+        "gate": "REJECTED",
+        "exit": 1
+      },
+      "normative_basis": "evidence-and-report.md \u00a73",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O06",
+      "title": "Timeout preserves a demonstrated violation",
+      "partition": "public_contract",
+      "inputs": {
+        "modules.m_required.execution": "timed_out",
+        "modules.m_required.criterion": "violated"
+      },
+      "expected": {
+        "gate": "REJECTED",
+        "exit": 1,
+        "module_assessment": "FAILED"
+      },
+      "normative_basis": "evidence-and-report.md \u00a73; module-interface.md \u00a75",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O07",
+      "title": "Timeout without violation is incomplete",
+      "partition": "public_contract",
+      "inputs": {
+        "modules.m_required.execution": "timed_out",
+        "modules.m_required.criterion": "unknown"
+      },
+      "expected": {
+        "gate": "INSUFFICIENT_EVIDENCE",
+        "exit": 2,
+        "module_assessment": "REQUIRES_REVIEW"
+      },
+      "normative_basis": "evidence-and-report.md \u00a73",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O08",
+      "title": "Cancellation preserves failure but controls exit",
+      "partition": "public_contract",
+      "inputs": {
+        "cancelled": true,
+        "modules.m_required.criterion": "violated"
+      },
+      "expected": {
+        "exit": 130,
+        "preserved_required_failure": "m_required",
+        "must_not_claim_accepted": true
+      },
+      "normative_basis": "module-interface.md \u00a75; evidence-and-report.md \u00a73",
+      "future_validation": {
+        "phase": "P3",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O09",
+      "title": "Report error beats a required failure exit",
+      "partition": "public_contract",
+      "inputs": {
+        "modules.m_required.criterion": "violated",
+        "render_error": true,
+        "previous_report_run": "r0"
+      },
+      "expected": {
+        "exit": 3,
+        "evidence_gate": "REJECTED",
+        "previous_report_run": "r0",
+        "preserve_evidence": true
+      },
+      "normative_basis": "module-interface.md \u00a75; evidence-and-report.md \u00a75",
+      "future_validation": {
+        "phase": "P3",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O10",
+      "title": "No required acceptance criterion is invalid policy",
+      "partition": "public_contract",
+      "inputs": {
+        "policy.required_criteria": []
+      },
+      "expected": {
+        "exit": 3,
+        "acceptance_policy_valid": false,
+        "must_not_claim_accepted": true
+      },
+      "normative_basis": "evidence-and-report.md \u00a73",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O11",
+      "title": "Forged pass and corrupt binding are invalid records",
+      "partition": "public_contract",
+      "inputs": {
+        "variants": [
+          {
+            "stored_assessment": "PASSED",
+            "criterion": "violated"
+          },
+          {
+            "evidence_candidate": "candidate-B",
+            "plan_candidate": "candidate-A"
+          },
+          {
+            "artifact_declared_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_actual_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          {
+            "duplicate_module_ids": [
+              "m_required",
+              "m_required"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "each_variant": {
+          "exit": 3,
+          "record_valid": false,
+          "diagnostic_view": true
+        }
+      },
+      "normative_basis": "evidence-and-report.md \u00a7\u00a71,6",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O12",
+      "title": "Required skips and xfails are gaps",
+      "partition": "public_contract",
+      "inputs": {
+        "variants": [
+          {
+            "executed_id": "test_required",
+            "outcome": "skipped"
+          },
+          {
+            "executed_id": "test_required",
+            "outcome": "xfail"
+          }
+        ]
+      },
+      "expected": {
+        "each_variant": {
+          "gate": "INSUFFICIENT_EVIDENCE",
+          "exit": 2
+        }
+      },
+      "normative_basis": "assurance-contract.md \u00a73; module-interface.md \u00a76",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O13",
+      "title": "Actual stale first-party import cannot qualify checkout",
+      "partition": "public_contract",
+      "inputs": {
+        "planned_source": "candidate-A",
+        "receipt_source": "candidate-A",
+        "expected_origin": "checkout/pkg/core.py",
+        "captured_origin": "venv/site-packages/pkg/core.py",
+        "expected_content_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "captured_content_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "tests_passed": true
+      },
+      "expected": {
+        "gate": "INSUFFICIENT_EVIDENCE",
+        "exit": 2,
+        "reason": "actual first-party code does not match intended candidate"
+      },
+      "normative_basis": "assurance-contract.md \u00a73",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O14",
+      "title": "Healthy execution modes preserve exact custom discovery",
+      "partition": "public_contract",
+      "inputs": {
+        "variants": [
+          {
+            "mode": "editable",
+            "expected_ids": [
+              "checks/check_core.py::verify_a[kg]"
+            ],
+            "collected_ids": [
+              "checks/check_core.py::verify_a[kg]"
+            ],
+            "executed_ids": [
+              "checks/check_core.py::verify_a[kg]"
+            ],
+            "first_party_origins_match": true
+          },
+          {
+            "mode": "distribution",
+            "build_manifest_matches": true,
+            "distribution_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "checkout_excluded": true,
+            "package_data_present": true,
+            "delivered_workflow_passed": true
+          },
+          {
+            "mode": "script",
+            "script_digest_matches": true,
+            "packaging_required": false
+          }
+        ]
+      },
+      "expected": {
+        "each_variant": {
+          "gate": "ACCEPTED",
+          "exit": 0
+        }
+      },
+      "normative_basis": "assurance-contract.md \u00a73",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O15",
+      "title": "Same-count test substitution is not selection identity",
+      "partition": "public_contract",
+      "inputs": {
+        "expected_ids": [
+          "test_mass",
+          "test_units"
+        ],
+        "collected_ids": [
+          "test_mass",
+          "test_smoke"
+        ],
+        "executed_ids": [
+          "test_mass",
+          "test_smoke"
+        ],
+        "tests_passed": true
+      },
+      "expected": {
+        "gate": "INSUFFICIENT_EVIDENCE",
+        "exit": 2,
+        "missing_ids": [
+          "test_units"
+        ],
+        "unexpected_ids": [
+          "test_smoke"
+        ]
+      },
+      "normative_basis": "assurance-contract.md \u00a73",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O16",
+      "title": "Changed path requires reviewed accounting",
+      "partition": "public_contract",
+      "inputs": {
+        "variants": [
+          {
+            "changed_paths": [
+              "src/core.py",
+              "config.yaml"
+            ],
+            "accounted_paths": [
+              "src/core.py"
+            ]
+          },
+          {
+            "changed_paths": [
+              "notes.md"
+            ],
+            "disposition": "excluded",
+            "review_receipt": null
+          },
+          {
+            "behavior": "new_output_units",
+            "disposition": "unresolved",
+            "old_tests_pass": true
+          }
+        ]
+      },
+      "expected": {
+        "each_variant": {
+          "gate": "INSUFFICIENT_EVIDENCE",
+          "exit": 2
+        }
+      },
+      "normative_basis": "assurance-contract.md \u00a72",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O17",
+      "title": "Reviewed documentation exclusion needs no new tests",
+      "partition": "public_contract",
+      "inputs": {
+        "changed_paths": [
+          "README.md"
+        ],
+        "impact": [
+          {
+            "paths": [
+              "README.md"
+            ],
+            "disposition": "excluded",
+            "reason": "Spelling correction has no effect on accepted behavior",
+            "policy_reference": "scope-v1",
+            "review_receipt": "review-current"
+          }
+        ],
+        "new_test_ids": []
+      },
+      "expected": {
+        "gate": "ACCEPTED",
+        "exit": 0
+      },
+      "normative_basis": "assurance-contract.md \u00a72 F2b",
+      "future_validation": {
+        "phase": "P1",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O18",
+      "title": "Later edit prevents verified completion",
+      "partition": "public_contract",
+      "inputs": {
+        "accepted_run_candidate": "candidate-A",
+        "current_completion_candidate": "candidate-B"
+      },
+      "expected": {
+        "saved_gate": "ACCEPTED",
+        "completion": "incomplete",
+        "new_run_required": true,
+        "must_not_rewrite_saved_evidence": true
+      },
+      "normative_basis": "assurance-contract.md \u00a71",
+      "future_validation": {
+        "phase": "P3",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O19",
+      "title": "Static scope distinguishes limitation from full checking",
+      "partition": "public_contract",
+      "inputs": {
+        "variants": [
+          {
+            "claim": "all changed functions type-checked",
+            "unchecked": [
+              "src/core.py::untyped_f"
+            ],
+            "policy_allows_limitation": false
+          },
+          {
+            "claim": "annotated public functions type-checked",
+            "unchecked": [
+              "src/core.py::untyped_f"
+            ],
+            "policy_allows_limitation": true,
+            "reviewed_exclusion": true
+          }
+        ]
+      },
+      "expected": {
+        "variant_outcomes": [
+          {
+            "gate": "INSUFFICIENT_EVIDENCE",
+            "exit": 2
+          },
+          {
+            "gate": "ACCEPTED",
+            "exit": 0
+          }
+        ],
+        "always_display_unchecked": true
+      },
+      "normative_basis": "assurance-contract.md \u00a74",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O20",
+      "title": "Ruff assessment cannot fix or mask violations",
+      "partition": "public_contract",
+      "inputs": {
+        "project_configuration": {
+          "fix": true,
+          "fix-only": true
+        },
+        "seeded_required_lint_violation": true,
+        "healthy_control_has_violation": false
+      },
+      "expected": {
+        "required_argv_options": [
+          "--no-fix",
+          "--no-fix-only"
+        ],
+        "forbidden_argv_options": [
+          "--exit-zero"
+        ],
+        "source_bytes_unchanged": true,
+        "defective": {
+          "gate": "REJECTED",
+          "exit": 1
+        },
+        "healthy": {
+          "gate": "ACCEPTED",
+          "exit": 0
+        },
+        "unexpected_edit": {
+          "affected_evidence_valid": false,
+          "report_unauthorized_effect": true,
+          "silent_restore": false
+        }
+      },
+      "normative_basis": "assurance-contract.md \u00a74",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O21",
+      "title": "Unavailable independence cannot become self-review",
+      "partition": "public_contract",
+      "inputs": {
+        "capability_43_required": true,
+        "host_delegation_available": false,
+        "parent_review_passed": true
+      },
+      "expected": {
+        "gate": "INSUFFICIENT_EVIDENCE",
+        "exit": 2,
+        "capability_43": "BLOCKED",
+        "independent_session_claim": false
+      },
+      "normative_basis": "README.md \u00a74",
+      "future_validation": {
+        "phase": "P5",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O22",
+      "title": "Unit conversion exposes a new behavior missed by old tests",
+      "partition": "public_contract",
+      "inputs": {
+        "requirement": "Export mass in metric tonnes from kg",
+        "kg_values": [
+          0,
+          1,
+          1250
+        ],
+        "healthy_outputs_tonnes": [
+          0,
+          0.001,
+          1.25
+        ],
+        "defective_outputs_tonnes": [
+          0,
+          1,
+          1250
+        ],
+        "absolute_error_bound_tonnes": 1e-12,
+        "old_suite_passes_both": true
+      },
+      "expected": {
+        "healthy": {
+          "gate": "ACCEPTED",
+          "exit": 0
+        },
+        "defective_after_new_assertion": {
+          "gate": "REJECTED",
+          "exit": 1
+        },
+        "old_suite_only": {
+          "gate": "INSUFFICIENT_EVIDENCE",
+          "exit": 2
+        },
+        "oracle": "One metric tonne is 1000 kg; tonnes = kg / 1000. This analytical identity is independent of candidate output."
+      },
+      "normative_basis": "README.md \u00a75; assurance-contract.md F2a",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O23",
+      "title": "Mass transfer checks totals and direction independently",
+      "partition": "public_contract",
+      "inputs": {
+        "initial_kg": [
+          10,
+          2
+        ],
+        "transfer_kg": 3,
+        "healthy_final_kg": [
+          7,
+          5
+        ],
+        "defective_nonconserving_final_kg": [
+          7,
+          4
+        ],
+        "defective_wrong_direction_final_kg": [
+          13,
+          -1
+        ],
+        "absolute_error_bound_kg": 1e-12,
+        "domain": "0 <= transfer <= donor mass"
+      },
+      "expected": {
+        "expected_total_kg": 12,
+        "expected_final_kg": [
+          7,
+          5
+        ],
+        "healthy": "PASSED",
+        "nonconserving": "FAILED",
+        "wrong_direction": "FAILED",
+        "oracle": "A closed transfer subtracts q from donor and adds q to receiver. Total conservation alone cannot reject the wrong-direction variant."
+      },
+      "normative_basis": "README.md \u00a75",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O24",
+      "title": "Analytical integral distinguishes first and second order convergence",
+      "partition": "public_contract",
+      "inputs": {
+        "problem": "Integral of x^2 from 0 to 1",
+        "reference": "1/3",
+        "grids_n": [
+          4,
+          8,
+          16
+        ],
+        "healthy_method": "composite trapezoid",
+        "healthy_exact_errors": [
+          "1/96",
+          "1/384",
+          "1/1536"
+        ],
+        "defective_method": "left endpoint rectangle",
+        "defective_exact_errors": [
+          "11/96",
+          "23/384",
+          "47/1536"
+        ],
+        "required_order_interval": [
+          1.9,
+          2.1
+        ]
+      },
+      "expected": {
+        "healthy_orders": [
+          2,
+          2
+        ],
+        "healthy": "PASSED",
+        "defective": "FAILED",
+        "oracle": "Trapezoid result = 1/3 + 1/(6*n^2). Left rectangle result = 1/3 - 1/(2*n) + 1/(6*n^2). Calculate p = log2(error(n)/error(2*n)); the defective ratios are 44/23 and 92/47, each below 2 and therefore p < 1."
+      },
+      "normative_basis": "README.md \u00a75; module-interface.md \u00a73",
+      "future_validation": {
+        "phase": "P4",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    },
+    {
+      "id": "O25",
+      "title": "Exact report totals preserve optional failure and shared execution",
+      "partition": "public_contract",
+      "inputs": {
+        "capabilities": {
+          "PASSED": 2,
+          "FAILED": 1,
+          "NOT_APPLICABLE": 40
+        },
+        "modules": 3,
+        "attempts": 4,
+        "shared_execution_references": 2,
+        "unique_executions": 3,
+        "unique_test_cases": 7,
+        "skipped_test_cases": 1,
+        "xfail_test_cases": 1,
+        "gate": "ACCEPTED",
+        "failed_capability_required": false,
+        "shared_execution_required_criteria_satisfied": true,
+        "null_metric": null
+      },
+      "expected": {
+        "capability_total": 43,
+        "module_total": 3,
+        "attempt_total": 4,
+        "execution_total": 3,
+        "test_total": 7,
+        "skipped_total": 1,
+        "xfail_total": 1,
+        "gate": "ACCEPTED",
+        "optional_failure_visible": true,
+        "null_metric_display": "missing",
+        "confidence_percentage_absent": true,
+        "required_sections": [
+          "overview",
+          "capabilities",
+          "checks",
+          "findings",
+          "scientific",
+          "independence",
+          "performance",
+          "provenance",
+          "limitations"
+        ]
+      },
+      "normative_basis": "evidence-and-report.md \u00a74",
+      "future_validation": {
+        "phase": "P6",
+        "status": "not_run",
+        "requirement": "Materialize real evidence and assert these literal outcomes; never compute the expected result with product gate functions."
+      }
+    }
+  ]
+}

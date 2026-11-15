@@ -1,0 +1,11 @@
+# Independent audit of the comparison
+
+A separate reviewer agent (`repeat_numerical_reviewer`, GPT-6 Astra medium) audited the completed comparison after the numerical test freeze. It had previously designed the repeat's independent tests without seeing the candidate; during this later audit it was explicitly allowed to inspect both trials and the parent evaluator's evidence.
+
+The reviewer checked all 18 paired runs against candidate and test files. Recorded hashes matched; each run selected and executed 68 unique cases, without setup/teardown failures. Healthy controls passed. The six scientific faults produced meaningful assertions in both suites, while the two historical defects produced assertions only in the original suite. The cross-check of the repeat model against the original suite passed 68 cases. Inventory arithmetic was verified: 80.6499% less support code and 80.4274% less support code including its tests.
+
+One wording finding was returned: “updated skill led to” implied causation despite the confounded single-trial design. The parent replaced it with “The repeat using the updated skill retained substantially less supporting code” and removed the corresponding causal implication. No numerical tests or measured outcomes changed. The reviewer reported no other findings within its audit scope.
+
+After audit, the parent updated only report status, comparison links, coverage wording and generated-evidence exclusions. Final inventories were refreshed. Frozen model and substantive-test hashes were rechecked and remained identical. Offline/no-JavaScript Chrome checks passed for final report links and mobile width; the parent visually inspected desktop and mobile lower-section screenshots. An initial full-page screenshot repeated viewport content, so the final visual evidence uses separate viewport captures rather than treating that capture as a reliable full-document image.
+
+The parent also ran instruction and consistency contracts, 46 repository regression tests and 15 schema-reference tests successfully. No constrained-runtime, platform matrix or repeated skill-behaviour campaign was run; those areas were unchanged. The numerical trial and paired tests, rather than these repository structural checks, provide the behavioural evidence for this comparison.

@@ -78,11 +78,12 @@ environment is an unrun check, not a pass.
 - Never hand-edit files under a `references/generated/` directory.
 - After a runtime or schema change, use the manifest-pinned launcher described
   in `rb-safe-operation/references/runtime-contract.md` to regenerate all
-  three mirrors:
+  four mirrors:
   `rb-create-low-level-plan/references/generated/`,
-  `rb-assess-plan-safety/references/generated/`, and
-  `rb-safe-operation/references/generated/`.
-- Confirm schema drift is absent and the three mirrors are byte-identical before
+  `rb-assess-plan-safety/references/generated/`,
+  `rb-safe-operation/references/generated/`, and
+  `rb-create-safe-operation-policy/references/generated/`.
+- Confirm schema drift is absent and the four mirrors are byte-identical before
   completion.
 - The first-release constrained route supports exact read/patch work and
   `static_file_state` verification only. It cannot run tests, builds, linting,

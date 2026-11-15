@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "baseline": null,
+  "scope": "First adoption of the complete example; no earlier accepted candidate.",
+  "requirements": {
+    "R1": [
+      "tests/test_model.py",
+      "tests/test_independent.py"
+    ],
+    "R2": [
+      "tests/test_model.py",
+      "tests/test_independent.py"
+    ],
+    "R3": [
+      "tests/test_independent.py"
+    ],
+    "R4": [
+      "tests/test_model.py",
+      "tests/test_independent.py"
+    ],
+    "R5": [
+      "tests/test_model.py"
+    ],
+    "R6": [
+      "tools/run_suite.py",
+      "tests/test_harness.py"
+    ],
+    "R7": [
+      "tools/run_mutations.py",
+      "tests/test_mutations.py"
+    ]
+  },
+  "scientific_claim": "Numerical implementation of the declared equations; empirical validity excluded.",
+  "review": "independent-review.md",
+  "source_inventory": "Recorded by runner before-manifest.json; tooling and control documents included.",
+  "excluded_outputs": "artifacts/ and caches are derived outputs, not candidate inputs."
+}

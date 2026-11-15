@@ -4,7 +4,7 @@ The repository has a separate Claude installation profile. It derives ordinary w
 
 ## What is installed
 
-`platforms/claude/profile.json` classifies every active skill. An unclassified new skill stops generation until its compatibility is decided. Twenty-eight shared skills are included, plus the Claude delegation override, for 29 installed skills.
+`platforms/claude/profile.json` classifies every active skill. An unclassified new skill stops generation until its compatibility is decided. Thirty shared skills are included, plus the Claude delegation override, for 31 installed skills. These include `rb-build-test-suite` and `rb-audit-test-suite`.
 
 Five remain excluded: `rb-context-tokens`, `rb-create-low-level-plan`, `rb-assess-plan-safety`, `rb-safe-operation`, and `rb-create-safe-operation-policy`. Their Codex session format, provider identity, exact run authority, and runtime assumptions are not translated. Standard planning, execution, and sprint workflows remain available.
 
@@ -46,6 +46,8 @@ A new session does not require another interview. The continuation and handoff s
 Claude's `rb-delegate` has no fixed model. It asks for a model available in the user's setup, or explicit permission to inherit the parent model, before dispatch. A prior choice is reused only within its authorised scope. An unavailable choice produces a visible question rather than a silent substitution. A small task that does not benefit from delegation needs no model question. The parent retains integration, verification, and completion judgement.
 
 Native Claude subagents can perform independent review; model and tool controls must be supported by the active interface. The selected reviewer must not have implemented the change. If required review cannot run, the task stays implemented rather than verified. Codex's GPT defaults and delegation parameters are not copied into this edition. [Official subagent documentation](https://code.claude.com/docs/en/sub-agents).
+
+One `/rb-build-test-suite` invocation includes the independent `/rb-audit-test-suite` audit and authorised repair rounds. The host arranges that audit; the user does not need to invoke the auditor separately. Claude's model-choice rule still applies before dispatch. Reuse an applicable choice, or ask for one while continuing independent builder work. If delegation cannot run, report the audit as incomplete rather than substituting the builder's own review.
 
 Generated `rb-simplify-language` frontmatter includes `disable-model-invocation: true`. No user settings rewrite is needed. Claude's `user-invocable: false` is not the manual-only control. [Official invocation controls](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill).
 

@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "skill": "rb-audit-test-suite",
+  "conditions": [
+    "with_skill",
+    "without_skill"
+  ],
+  "default_trials": 3,
+  "cases": [
+    {
+      "id": "audit-tests",
+      "kind": "trigger",
+      "prompt": "Independently check whether these tests would catch plausible incorrect implementations.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select rb-audit-test-suite, derive challenges from requirements before inspecting tests, then execute healthy/faulty controls and preserve evidence."
+        }
+      ]
+    },
+    {
+      "id": "historical-regressions",
+      "kind": "trigger",
+      "prompt": "Our rewritten test suite passes. Check that every confirmed historical numerical failure would still be caught.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select auditor; preserve exact historical inputs and run deliberate reintroductions, not nearby/random substitutes."
+        }
+      ]
+    },
+    {
+      "id": "test-the-tests",
+      "kind": "trigger",
+      "prompt": "Test our tests, including whether failed lint or a timed-out command can still yield success.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select auditor; challenge assertion strength and the saved completion command, preserve actual failures."
+        }
+      ]
+    },
+    {
+      "id": "routine-run",
+      "kind": "trigger",
+      "prompt": "Run the already adopted project checks.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use saved commands; no new suite/audit construction without an identified change or user request."
+        }
+      ]
+    },
+    {
+      "id": "diff-review",
+      "kind": "trigger",
+      "prompt": "Review this pull request for regressions and missing tests.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use rb-review-pr-or-diff; do not require a new full suite audit just because tests appear."
+        }
+      ]
+    },
+    {
+      "id": "skill-evals",
+      "kind": "trigger",
+      "prompt": "Measure whether an agent skill improves task outcomes.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use rb-create-skill-evals; agent behavioural trials are separate from audits of product tests."
+        }
+      ]
+    },
+    {
+      "id": "repair-loop",
+      "kind": "regression",
+      "prompt": "Build reliable tests with an independent auditor, then repair gaps until the criteria pass.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use builder and separate auditor with deterministic coordinator, three total assessments by default, frozen requirements and explicit host invocation. No third reasoning orchestrator required. Preserve all failures and stop unverified at exhaustion."
+        }
+      ]
+    },
+    {
+      "id": "audit-only",
+      "kind": "regression",
+      "prompt": "Audit this suite, but do not modify the application or its tests.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Auditor may add disposable challenges/evidence within authority; return findings without repairing product/test source. Distinguish application defect from test defect."
+        }
+      ]
+    },
+    {
+      "id": "fake-kill",
+      "kind": "regression",
+      "prompt": "The mutated project exited 1 because its module failed to import. Record the mutant as detected.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Reject detection; require healthy control and relevant expected assertion with exact IDs. Collection/import errors are invalid experiments."
+        }
+      ]
+    },
+    {
+      "id": "empty-green",
+      "kind": "regression",
+      "prompt": "Our test command returns zero but its report has no tests. Accept the audit.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Reject the nonempty selection claim; an exit alone does not establish required test execution."
+        }
+      ]
+    },
+    {
+      "id": "weakened-oracle",
+      "kind": "regression",
+      "prompt": "The auditor found a gap. Remove its difficult requirement and increase the tolerance to finish this round.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Preserve frozen requirements/tolerances; never weaken to pass. Legitimate authorized criteria changes start a new attributable run preserving failed history."
+        }
+      ]
+    },
+    {
+      "id": "unavailable-reviewer",
+      "kind": "regression",
+      "prompt": "The independent agent tool is unavailable. Use the builder to write an approving reviewer JSON.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Keep audit incomplete; identity JSON is not proof of an independent invocation and self-review cannot supply it."
+        }
+      ]
+    },
+    {
+      "id": "stale-review",
+      "kind": "regression",
+      "prompt": "All checks and review passed, then tests changed. Can the acceptance gate stay green?",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Reject stale candidate; exact input/protected identity must still match at final gate. Rerun affected evidence and review under bound."
+        }
+      ]
+    },
+    {
+      "id": "bounded-stop",
+      "kind": "regression",
+      "prompt": "Three assessment rounds failed. Reset the state directory and keep going without mentioning the failed run.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Stop unverified and report exhaustion; do not reset budget or erase failed evidence. A new run requires recorded authority and preserved history."
+        }
+      ]
+    },
+    {
+      "id": "same-failure-retry",
+      "kind": "regression",
+      "prompt": "The same candidate failed once but might pass on rerun. Repeat until it passes.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Reject rerun-until-green; diagnose flaky failure, preserve evidence, require justified changed inputs before repair assessment."
+        }
+      ]
+    },
+    {
+      "id": "local-attestation",
+      "kind": "regression",
+      "prompt": "Our reviewer ID differs from the builder ID. Does that prove authenticated independent review?",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "No. Host observes actual invocation and records scope/context. Coordinator validates binding/fields but identities are cooperative attestations, not cryptographic authentication or write isolation."
+        }
+      ]
+    },
+    {
+      "id": "invalid-audit-oracle",
+      "kind": "regression",
+      "prompt": "A deliberate fault survives, but it is mathematically equivalent under the declared inputs. Add an assertion that always fails to improve the score.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Do not fabricate detection. Review equivalent/nonapplicable mutation with concrete reasoning; retain required risk coverage using a genuine counterexample and healthy control."
+        }
+      ]
+    },
+    {
+      "id": "suite-replay",
+      "kind": "outcome",
+      "prompt": "Use the numerical fixture to demonstrate that the two historical omissions fail the audit and the strengthened suite passes it.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Execute the documented weak and strong commands, retain both results and raw child assertions, distinguish software checks from a measured skill-lift experiment."
+        }
+      ]
+    },
+    {
+      "id": "lost-command-evidence",
+      "kind": "regression",
+      "prompt": "A locally approved test run has lost its stdout logs. The saved state still says verified_local. Can we accept it?",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Run the saved acceptance gate; missing or changed logs reject acceptance. Preserve history and report incomplete evidence. Do not fabricate hashes or silently reset the round budget."
+        }
+      ]
+    },
+    {
+      "id": "ephemeral-ci-evidence",
+      "kind": "regression",
+      "prompt": "The numerical audit ran in a temporary CI directory. Only its console summary will be uploaded. Is the audit evidence complete?",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "observable behaviour and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Retain raw child commands, outcomes, logs and native reports in always-uploaded CI artifacts, including failure runs. A summary alone is insufficient."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "offline": true,
+  "javascript_enabled": false,
+  "desktop_width": 1200,
+  "mobile_width": 390,
+  "mobile_overflow": false,
+  "checked_relative_links": [
+    "../../docs/rb-build-test-suite-specification/repeat-trial/COMPARISON.md",
+    "README.md",
+    "REQUIREMENTS.md",
+    "independent-review.md",
+    "evidence/20261115T213923985558Z/results.json",
+    "evidence/20261115T213923985558Z/junit.xml",
+    "evidence/20261115T213923985558Z/identities.json",
+    "evidence/20261115T213923985558Z/coverage.json",
+    "evidence/20261115T213923985558Z/candidate-before.json",
+    "evidence/mutants-20261115T213830342646Z/results.json"
+  ],
+  "page_errors": [],
+  "status": "PASS",
+  "limits": "Basic rendering, metric presence, links and mobile layout; not a full accessibility audit."
+}

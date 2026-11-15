@@ -1,0 +1,28 @@
+{
+  "purpose": "Single independent updated-skill repeat compared with original historical trial, plus paired frozen-suite evaluation on identical candidates.",
+  "started_at": "2026-11-15T21:32:42.421910+00:00",
+  "workflows": {
+    "original": "historical assurance-style trial",
+    "repeat": "updated skill selects workflow; same numerical acceptance requirements"
+  },
+  "requirements_sha256": "0b2d4ae0c7eabbd275a380679f61f355a47be36b6572656d699c8919c61f1bcd",
+  "loc_rules": {
+    "primary": "Physical lines including blank/comments in retained executable support files: wrappers, hooks, tooling; model and substantive numerical tests separate.",
+    "secondary": "Support self-tests separately; config/schema/docs/generated evidence separately; no hiding saved replay/report helper scripts.",
+    "transient": "Tool orchestration not retained as project source and external comparison harness excluded from project LOC but disclosed.",
+    "versions": "Freeze file hashes at delivered repeat before comparison or any parent repair."
+  },
+  "detection_rules": {
+    "healthy": "Both suites must pass shared healthy model before a mutation result counts.",
+    "faults": "Same six predetermined fault classes plus two separately labelled reintroductions of historical floating-point defects.",
+    "kill": "A relevant behavioural assertion failure, not collection/import/setup failure, timeout or syntax error.",
+    "freeze": "Repeat agent cannot inspect shared candidate variants or original tests before its suite is frozen."
+  },
+  "limits": [
+    "One new authoring trial, not repeated or randomized",
+    "Different authoring agents/model and evolving guidance confound causal attribution",
+    "Original model and tests may have been shaped by review findings; report initial vs repaired states",
+    "Shared filesystem separation is instruction-only",
+    "Updated skill deliberately contains lessons from old defects; those are learned regression cases, not unseen holdouts"
+  ]
+}

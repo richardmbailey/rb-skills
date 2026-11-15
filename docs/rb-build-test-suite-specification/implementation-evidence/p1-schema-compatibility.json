@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "draft_version": "1.0.0 unreleased",
+  "implementation_package_version": "0.1.0",
+  "schema_version_retained": "1.0.0",
+  "original_structural_tests_against_generated_schemas": 15,
+  "result": "passed",
+  "original_roots": [
+    "contracts.schema.json",
+    "evidence.schema.json",
+    "module-plan.schema.json",
+    "report.schema.json"
+  ],
+  "generated_roots": [
+    "catalogue.schema.json",
+    "change-inventory.schema.json",
+    "config.schema.json",
+    "contracts.schema.json",
+    "criterion.schema.json",
+    "event.schema.json",
+    "evidence.schema.json",
+    "execution-manifest.schema.json",
+    "managed-file.schema.json",
+    "module-plan.schema.json",
+    "module-request.schema.json",
+    "report.schema.json",
+    "static-policy.schema.json",
+    "verifier-packet.schema.json"
+  ],
+  "public_field_changes": [
+    {
+      "definition": "EvidenceRun",
+      "added_fields": [
+        "evaluation"
+      ],
+      "removed_fields": []
+    }
+  ],
+  "compatibility_notes": [
+    "Generated definitions add titles and lift some nested objects into named definitions.",
+    "EvidenceRun adds optional evaluation for producer input; evaluated output binds source and assessed digests, policy/version and preserved evaluation time.",
+    "Authoring config and control roots are new; no deployed consumer exists.",
+    "Unsupported versions and migrations are rejected; no consumer upgrade is claimed.",
+    "Initial comparison harness failed because it replaced the old fixture definition lookup with generated nested references. Corrected harness retains original fixture construction and replaces only the schema validators. No product assertion was weakened."
+  ]
+}

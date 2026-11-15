@@ -1,0 +1,382 @@
+{
+  "kind": "portable_derived_summary",
+  "provenance": "Derived from local paired-results.json; original execution paths omitted. Original raw receipt is preserved locally and is not distributed.",
+  "source_receipt_sha256": "c0fb261d5c96d7507d9fc2c6f2e3ea2368608b80a8e19655f3531323d569d1f7",
+  "rows": [
+    {
+      "suite": "original",
+      "candidate": "healthy",
+      "candidate_sha256": "2264b4a4afea32d9411ccc23c64426447486793ccf035623299a07bcac435811",
+      "status": "PASS",
+      "eligible_detection": false,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [],
+      "actual_model_sha256": "2264b4a4afea32d9411ccc23c64426447486793ccf035623299a07bcac435811",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "healthy",
+      "candidate_sha256": "2264b4a4afea32d9411ccc23c64426447486793ccf035623299a07bcac435811",
+      "status": "PASS",
+      "eligible_detection": false,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [],
+      "actual_model_sha256": "2264b4a4afea32d9411ccc23c64426447486793ccf035623299a07bcac435811",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "wrong_direction",
+      "candidate_sha256": "b7aacfaf3371ecc1bc0420157b7ccc05c4cd7c8c0afdfc8628f3927461c05134",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_model::test_single_step_and_fractional_endpoint",
+        "tests.test_model::test_zero_duration_rate_and_positivity_boundary",
+        "tests.test_model::test_conservation_direction_and_nonnegativity",
+        "tests.test_model::test_csv_round_trip_and_exported_units",
+        "tests.test_independent::test_exact_transfer_and_short_final_step",
+        "tests.test_independent::test_endpoint_against_continuous_solution_and_derived_bound",
+        "tests.test_independent::test_first_order_convergence_in_declared_regime",
+        "tests.test_independent::test_trajectory_physical_invariants[32.0-7.0-0.5-3.125-0.25]",
+        "tests.test_independent::test_trajectory_physical_invariants[1e-08-2e-08-0.25-4.0-0.5]",
+        "tests.test_independent::test_positivity_boundary_empties_donor_once",
+        "tests.test_independent::test_rounding_near_stability_boundary_preserves_nonnegative_donor"
+      ],
+      "actual_model_sha256": "b7aacfaf3371ecc1bc0420157b7ccc05c4cd7c8c0afdfc8628f3927461c05134",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "wrong_direction",
+      "candidate_sha256": "b7aacfaf3371ecc1bc0420157b7ccc05c4cd7c8c0afdfc8628f3927461c05134",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [
+        "tests.test_model::test_euler_and_short_final_step",
+        "tests.test_model::test_supported_boundaries",
+        "tests.test_model::test_trajectory_properties",
+        "tests.test_model::test_analytic_accuracy_and_convergence",
+        "tests.test_model::test_cli_roundtrip",
+        "tests.test_independent::test_exact_simultaneous_transfer_and_short_final_step",
+        "tests.test_independent::test_bounded_trajectory_invariants[7-5-2-1.25-0.5]",
+        "tests.test_independent::test_bounded_trajectory_invariants[1e-10-3e-10-0.3-7.1-0.25]",
+        "tests.test_independent::test_bounded_trajectory_invariants[10000000000.0-30000000000.0-0.3-7.1-0.25]",
+        "tests.test_independent::test_bounded_trajectory_invariants[1000-0-0.2-10-0.1]",
+        "tests.test_independent::test_continuous_reference_and_first_order_convergence",
+        "tests.test_independent::test_actual_cli_custom_exact_case",
+        "tests.test_independent::test_actual_cli_defaults_against_discrete_closed_form"
+      ],
+      "actual_model_sha256": "b7aacfaf3371ecc1bc0420157b7ccc05c4cd7c8c0afdfc8628f3927461c05134",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "wrong_receiver",
+      "candidate_sha256": "e87cc21ddb39c163d7cb8c499741ca4d8d4dc377c2072addf100a89d3bc9a5be",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_model::test_single_step_and_fractional_endpoint",
+        "tests.test_model::test_zero_duration_rate_and_positivity_boundary",
+        "tests.test_model::test_conservation_direction_and_nonnegativity",
+        "tests.test_model::test_csv_round_trip_and_exported_units",
+        "tests.test_independent::test_exact_transfer_and_short_final_step",
+        "tests.test_independent::test_endpoint_against_continuous_solution_and_derived_bound",
+        "tests.test_independent::test_trajectory_physical_invariants[32.0-7.0-0.5-3.125-0.25]",
+        "tests.test_independent::test_trajectory_physical_invariants[1e-08-2e-08-0.25-4.0-0.5]",
+        "tests.test_independent::test_positivity_boundary_empties_donor_once",
+        "tests.test_independent::test_rounding_near_stability_boundary_preserves_nonnegative_donor"
+      ],
+      "actual_model_sha256": "e87cc21ddb39c163d7cb8c499741ca4d8d4dc377c2072addf100a89d3bc9a5be",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "wrong_receiver",
+      "candidate_sha256": "e87cc21ddb39c163d7cb8c499741ca4d8d4dc377c2072addf100a89d3bc9a5be",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [
+        "tests.test_model::test_euler_and_short_final_step",
+        "tests.test_model::test_supported_boundaries",
+        "tests.test_model::test_trajectory_properties",
+        "tests.test_model::test_analytic_accuracy_and_convergence",
+        "tests.test_model::test_cli_roundtrip",
+        "tests.test_independent::test_exact_simultaneous_transfer_and_short_final_step",
+        "tests.test_independent::test_bounded_trajectory_invariants[7-5-2-1.25-0.5]",
+        "tests.test_independent::test_bounded_trajectory_invariants[1e-10-3e-10-0.3-7.1-0.25]",
+        "tests.test_independent::test_bounded_trajectory_invariants[10000000000.0-30000000000.0-0.3-7.1-0.25]",
+        "tests.test_independent::test_bounded_trajectory_invariants[1000-0-0.2-10-0.1]",
+        "tests.test_independent::test_continuous_reference_and_first_order_convergence",
+        "tests.test_independent::test_actual_cli_custom_exact_case",
+        "tests.test_independent::test_actual_cli_defaults_against_discrete_closed_form"
+      ],
+      "actual_model_sha256": "e87cc21ddb39c163d7cb8c499741ca4d8d4dc377c2072addf100a89d3bc9a5be",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "wrong_rate",
+      "candidate_sha256": "2311c6181c5f911691d62a271e5e8f1f69d0c4aaaa3f3304841bd095fc82ff76",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_model::test_single_step_and_fractional_endpoint",
+        "tests.test_model::test_zero_duration_rate_and_positivity_boundary",
+        "tests.test_model::test_csv_round_trip_and_exported_units",
+        "tests.test_independent::test_exact_transfer_and_short_final_step",
+        "tests.test_independent::test_endpoint_against_continuous_solution_and_derived_bound",
+        "tests.test_independent::test_first_order_convergence_in_declared_regime",
+        "tests.test_independent::test_positivity_boundary_empties_donor_once"
+      ],
+      "actual_model_sha256": "2311c6181c5f911691d62a271e5e8f1f69d0c4aaaa3f3304841bd095fc82ff76",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "wrong_rate",
+      "candidate_sha256": "2311c6181c5f911691d62a271e5e8f1f69d0c4aaaa3f3304841bd095fc82ff76",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [
+        "tests.test_model::test_euler_and_short_final_step",
+        "tests.test_model::test_supported_boundaries",
+        "tests.test_model::test_analytic_accuracy_and_convergence",
+        "tests.test_model::test_cli_roundtrip",
+        "tests.test_independent::test_exact_simultaneous_transfer_and_short_final_step",
+        "tests.test_independent::test_bounded_trajectory_invariants[7-5-2-1.25-0.5]",
+        "tests.test_independent::test_continuous_reference_and_first_order_convergence",
+        "tests.test_independent::test_actual_cli_custom_exact_case",
+        "tests.test_independent::test_actual_cli_defaults_against_discrete_closed_form"
+      ],
+      "actual_model_sha256": "2311c6181c5f911691d62a271e5e8f1f69d0c4aaaa3f3304841bd095fc82ff76",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "wrong_final_step",
+      "candidate_sha256": "a2a426c3604eb18644025682cdd535ca15b76f235cb50c6e9516d698daf9b4eb",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_model::test_single_step_and_fractional_endpoint",
+        "tests.test_independent::test_exact_transfer_and_short_final_step"
+      ],
+      "actual_model_sha256": "a2a426c3604eb18644025682cdd535ca15b76f235cb50c6e9516d698daf9b4eb",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "wrong_final_step",
+      "candidate_sha256": "a2a426c3604eb18644025682cdd535ca15b76f235cb50c6e9516d698daf9b4eb",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [
+        "tests.test_model::test_euler_and_short_final_step",
+        "tests.test_model::test_cli_roundtrip",
+        "tests.test_independent::test_exact_simultaneous_transfer_and_short_final_step",
+        "tests.test_independent::test_actual_cli_custom_exact_case"
+      ],
+      "actual_model_sha256": "a2a426c3604eb18644025682cdd535ca15b76f235cb50c6e9516d698daf9b4eb",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "wrong_units",
+      "candidate_sha256": "a080f46ccbc72a699c640d0b3cf7fd8de44fd3375447fc5f74688257b2f0f8c1",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_model::test_csv_round_trip_and_exported_units",
+        "tests.test_independent::test_exact_transfer_and_short_final_step"
+      ],
+      "actual_model_sha256": "a080f46ccbc72a699c640d0b3cf7fd8de44fd3375447fc5f74688257b2f0f8c1",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "wrong_units",
+      "candidate_sha256": "a080f46ccbc72a699c640d0b3cf7fd8de44fd3375447fc5f74688257b2f0f8c1",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [
+        "tests.test_model::test_immutable_and_units",
+        "tests.test_model::test_cli_roundtrip",
+        "tests.test_independent::test_exact_simultaneous_transfer_and_short_final_step",
+        "tests.test_independent::test_bounded_trajectory_invariants[0-7-0.5-3-0.5]",
+        "tests.test_independent::test_bounded_trajectory_invariants[7-5-0-3.25-0.5]",
+        "tests.test_independent::test_bounded_trajectory_invariants[7-5-1-0-0.5]",
+        "tests.test_independent::test_bounded_trajectory_invariants[7-5-2-1.25-0.5]",
+        "tests.test_independent::test_bounded_trajectory_invariants[1e-10-3e-10-0.3-7.1-0.25]",
+        "tests.test_independent::test_bounded_trajectory_invariants[10000000000.0-30000000000.0-0.3-7.1-0.25]",
+        "tests.test_independent::test_bounded_trajectory_invariants[1000-0-0.2-10-0.1]",
+        "tests.test_independent::test_actual_cli_custom_exact_case",
+        "tests.test_independent::test_actual_cli_defaults_against_discrete_closed_form"
+      ],
+      "actual_model_sha256": "a080f46ccbc72a699c640d0b3cf7fd8de44fd3375447fc5f74688257b2f0f8c1",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "missing_stability",
+      "candidate_sha256": "f224afa107776b1872ba624028363071fe715edce355470a6df09f0877ecc487",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_model::test_invalid_parameters_rejected[inputs6]",
+        "tests.test_independent::test_invalid_boundary_inputs_rejected[args6]"
+      ],
+      "actual_model_sha256": "f224afa107776b1872ba624028363071fe715edce355470a6df09f0877ecc487",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "missing_stability",
+      "candidate_sha256": "f224afa107776b1872ba624028363071fe715edce355470a6df09f0877ecc487",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [
+        "tests.test_model::test_rejected_boundaries[inputs1]",
+        "tests.test_model::test_supported_boundaries",
+        "tests.test_independent::test_rejects_invalid_domains_and_resource_excess[arguments6]",
+        "tests.test_independent::test_actual_cli_invalid_does_not_create_output[args2]"
+      ],
+      "actual_model_sha256": "f224afa107776b1872ba624028363071fe715edce355470a6df09f0877ecc487",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "historical_rounded_step",
+      "candidate_sha256": "839c8bb366f3736162408697a83e114975ee7ca7bd2dadfcc9df3feaf5898b44",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_independent::test_rounding_near_stability_boundary_preserves_nonnegative_donor"
+      ],
+      "actual_model_sha256": "839c8bb366f3736162408697a83e114975ee7ca7bd2dadfcc9df3feaf5898b44",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "historical_rounded_step",
+      "candidate_sha256": "839c8bb366f3736162408697a83e114975ee7ca7bd2dadfcc9df3feaf5898b44",
+      "status": "PASS",
+      "eligible_detection": false,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [],
+      "actual_model_sha256": "839c8bb366f3736162408697a83e114975ee7ca7bd2dadfcc9df3feaf5898b44",
+      "selected_count": 80
+    },
+    {
+      "suite": "original",
+      "candidate": "historical_underflow",
+      "candidate_sha256": "528bcc3aafee3439ff6d92d90fe91cd2b2afcba87936941025794953c56c9d99",
+      "status": "ASSERTION_FAILURE",
+      "eligible_detection": true,
+      "test_hashes": {
+        "test_model.py": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d",
+        "test_independent.py": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+      },
+      "test_count": 68,
+      "failure_ids": [
+        "tests.test_independent::test_underflowed_step_quotient_still_includes_positive_final_time"
+      ],
+      "actual_model_sha256": "528bcc3aafee3439ff6d92d90fe91cd2b2afcba87936941025794953c56c9d99",
+      "selected_count": 68
+    },
+    {
+      "suite": "repeat",
+      "candidate": "historical_underflow",
+      "candidate_sha256": "528bcc3aafee3439ff6d92d90fe91cd2b2afcba87936941025794953c56c9d99",
+      "status": "PASS",
+      "eligible_detection": false,
+      "test_hashes": {
+        "test_model.py": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6",
+        "test_independent.py": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+      },
+      "test_count": 80,
+      "failure_ids": [],
+      "actual_model_sha256": "528bcc3aafee3439ff6d92d90fe91cd2b2afcba87936941025794953c56c9d99",
+      "selected_count": 80
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "purpose": "Second fresh independent updated-skill repeat versus historical original; first repeat remains separate.",
+  "started_at": "2026-11-15T21:47:41.646769+00:00",
+  "workflows": {
+    "original": "historical assurance-style trial",
+    "repeat": "updated skill selects workflow; same numerical acceptance requirements"
+  },
+  "requirements_sha256": "0b2d4ae0c7eabbd275a380679f61f355a47be36b6572656d699c8919c61f1bcd",
+  "loc_rules": {
+    "primary": "Physical lines including blank/comments in retained executable support files: wrappers, hooks, tooling; model and substantive numerical tests separate.",
+    "secondary": "Support self-tests separately; config/schema/docs/generated evidence separately; no hiding saved replay/report helper scripts.",
+    "transient": "Tool orchestration not retained as project source and external comparison harness excluded from project LOC but disclosed.",
+    "versions": "Freeze file hashes at delivered repeat before comparison or any parent repair.",
+    "embedded": "Evidence-only capture code embedded inside a substantive test file must be disclosed and counted as support, not hidden by its filename. Retain both file-based inventory and explicit AST line-span adjustment where applicable.",
+    "embedded_rule_recorded_at": "2026-11-15T21:51:14.709081+00:00"
+  },
+  "detection_rules": {
+    "healthy": "Both suites must pass shared healthy model before a mutation result counts.",
+    "faults": "Same six predetermined fault classes plus two separately labelled reintroductions of historical floating-point defects.",
+    "kill": "A relevant behavioural assertion failure, not collection/import/setup failure, timeout or syntax error.",
+    "freeze": "Repeat agent cannot inspect shared candidate variants or original tests before its suite is frozen."
+  },
+  "limits": [
+    "One additional authoring repeat; two updated-skill repeats now exist, not randomized or matched old/new authoring conditions.",
+    "Different authoring agents/model and evolving guidance confound causal attribution",
+    "Original model and tests may have been shaped by review findings; report initial vs repaired states",
+    "Shared filesystem separation is instruction-only",
+    "Updated skill deliberately contains lessons from old defects; those are learned regression cases, not unseen holdouts"
+  ],
+  "skill_sha256": {
+    "README.md": "cb676f4a960d1c59aa9d591840481c67b78f006e797c362c281962ac0332f613",
+    "SKILL.md": "3b02cb18e31f9d09874c00585f2eb6b477acfe3c51cdfa5c0c75043024edf83c",
+    "agents/openai.yaml": "4bdb72df140734a11a2c02824a76834f50937e5f74f5ac7fc45bc5ceb234897d",
+    "assets/project-checks.md": "0fbc76a765abaefc2f2fca2f8395f47a320c4b482fc06a9731d432bb7f7fdd75",
+    "evals/eval-plan.json": "805b2a51ac1333d4784299e5362395860f6dbf1e7b862f748863f01b27f01c72",
+    "evals/fixtures/scientific-project/requirements.md": "dcfe32bd8874c31461b55da107ff463464aa865f6e986f6bb9fea07eda057aaf",
+    "references/assurance-contract.md": "657bd4d072a2f4c2217d80ff82ca7e85abc848cad206002556386e2d1578324c",
+    "references/catalogue.md": "b1f4174e15349bb1df44e15931194c3afd396b88e2d7c4fda844d3f752ea4516",
+    "references/construction.md": "859136b241bb278b487b7eb783a63a2361670161b60506e887e451061e1ceb14",
+    "references/evidence-and-report.md": "67278826b8a3dea7b9516fe32185d82a600fb40d9b598d16d11b9a31eeb8c2a5",
+    "references/independent-verification.md": "f549c96aab26c5b8bd83828333060b8955bcc06a6ee929c09327027578934bab",
+    "references/module-interface.md": "56c9722d5588f42793155e4b1f8fe863eda5b5942d76780b874c3916523134be",
+    "references/project-workflow.md": "5f3309e296b42ed04f847fba7ff673f5e2de8eff2ec7e464944f0b18ed8d4ced",
+    "references/scientific-validation.md": "1e2c9e6a78099335bca7872e10383a16de6ad0bf6f4b521a6d8642ffaa75da4d",
+    "schemas/contracts.schema.json": "3795c591d445a595e54b2a2691e1d6f2ffe47f6ee70d69ecc98d5170b324b3f7",
+    "schemas/evidence.schema.json": "9d476b32e2067f817d50b7ccab111e61fd974e40bef8782be6b3202cd9734c61",
+    "schemas/module-plan.schema.json": "3076cc073ad311c89a1bbcf736a73eca22b4d925c6bd986fc5b0d2e19ab286ec",
+    "schemas/report.schema.json": "d29d475a438302619504f61c778a4fc3d8cd2ed562995eeb47922344a44ccf4b"
+  },
+  "parent_interventions": "Record corrections separately; freeze numerical suite before exposing common candidates; do not repair detection gaps before reporting."
+}

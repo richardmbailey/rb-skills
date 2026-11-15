@@ -148,7 +148,9 @@
         "Treat the test categories above as choices based on the changed behaviour, not a checklist to exhaust."
       ],
       "forbidden": [],
-      "max_occurrences": {"## Test Integrity Rules": 1},
+      "max_occurrences": {
+        "## Test Integrity Rules": 1
+      },
       "max_lines": 500
     },
     {
@@ -164,7 +166,9 @@
         "Software verification establishes that the implementation behaves as intended; it does not by itself make an experiment worth running."
       ],
       "forbidden": [],
-      "max_occurrences": {"## Test Integrity Rules": 1},
+      "max_occurrences": {
+        "## Test Integrity Rules": 1
+      },
       "max_lines": 500
     },
     {
@@ -218,7 +222,10 @@
         "Use `fork_turns: \"all\"` for routine bounded delegation.",
         "automatically trust"
       ],
-      "max_occurrences": {"## Selection boundary": 1, "## Completion": 1},
+      "max_occurrences": {
+        "## Selection boundary": 1,
+        "## Completion": 1
+      },
       "max_lines": 500
     },
     {
@@ -271,14 +278,24 @@
         "## Output fields"
       ],
       "forbidden": [],
-      "max_occurrences": {"## Required test matrix": 1, "## Review checklist": 1, "## Output fields": 1},
+      "max_occurrences": {
+        "## Required test matrix": 1,
+        "## Review checklist": 1,
+        "## Output fields": 1
+      },
       "max_lines": 500
     },
     {
       "path": "rb-multi-agent-systems/references/framework-selection.md",
       "required": [
-        "PydanticAI", "OpenAI Agents SDK", "A2A", "FastMCP", "LiteLLM", "DSPy",
-        "current official documentation", "Choose control-flow complexity and runtime durability independently"
+        "PydanticAI",
+        "OpenAI Agents SDK",
+        "A2A",
+        "FastMCP",
+        "LiteLLM",
+        "DSPy",
+        "current official documentation",
+        "Choose control-flow complexity and runtime durability independently"
       ],
       "forbidden": [],
       "max_occurrences": {},
@@ -405,7 +422,10 @@
         "mark it approved automatically",
         "invent a reasonable target"
       ],
-      "max_occurrences": {"## Workflow": 1, "## Completion check": 1},
+      "max_occurrences": {
+        "## Workflow": 1,
+        "## Completion check": 1
+      },
       "max_lines": 500
     },
     {
@@ -424,7 +444,9 @@
         "static_file_state::<description>"
       ],
       "forbidden": [],
-      "max_occurrences": {"## Testing Strategy": 1},
+      "max_occurrences": {
+        "## Testing Strategy": 1
+      },
       "max_lines": 500
     },
     {
@@ -447,8 +469,14 @@
         "Require a current manifest-pinned `doctor` result",
         "never receives `apply_patch`"
       ],
-      "forbidden": ["automatically select", "install dependencies", "exact read and check actions"],
-      "max_occurrences": {"## Procedure": 1},
+      "forbidden": [
+        "automatically select",
+        "install dependencies",
+        "exact read and check actions"
+      ],
+      "max_occurrences": {
+        "## Procedure": 1
+      },
       "max_lines": 500
     },
     {
@@ -467,8 +495,13 @@
         "Re-run manifest-pinned `doctor`",
         "accepts no caller-authored semantic proposal"
       ],
-      "forbidden": ["confidence makes", "execute the plan"],
-      "max_occurrences": {"## Fresh Semantic Assessment": 1},
+      "forbidden": [
+        "confidence makes",
+        "execute the plan"
+      ],
+      "max_occurrences": {
+        "## Fresh Semantic Assessment": 1
+      },
       "max_lines": 500
     },
     {
@@ -556,8 +589,14 @@
     },
     {
       "path": "rb-setup-local-agent-skills/SKILL.md",
-      "required": ["references/legacy-pack.md", "current flat `rb-skills` source repo"],
-      "forbidden": ["python3 scripts/verify_pack.py", "python3 scripts/audit_skill_visibility.py"],
+      "required": [
+        "references/legacy-pack.md",
+        "current flat `rb-skills` source repo"
+      ],
+      "forbidden": [
+        "python3 scripts/verify_pack.py",
+        "python3 scripts/audit_skill_visibility.py"
+      ],
       "max_occurrences": {},
       "max_lines": 500
     },
@@ -600,7 +639,10 @@
         "Richard-owned",
         "Also note that matching requests should trigger the skill automatically after the agent reloads."
       ],
-      "max_occurrences": {"## Procedure": 1, "## Completion check": 1},
+      "max_occurrences": {
+        "## Procedure": 1,
+        "## Completion check": 1
+      },
       "max_lines": 500
     },
     {
@@ -617,7 +659,9 @@
         "Apply automatically as a style layer",
         "Use for every response"
       ],
-      "max_occurrences": {"## Selection boundary": 1},
+      "max_occurrences": {
+        "## Selection boundary": 1
+      },
       "max_lines": 500
     },
     {
@@ -632,7 +676,9 @@
       "forbidden": [
         "If the project includes multiple LLM agents, also use `$rb-multi-agent-systems`"
       ],
-      "max_occurrences": {"## Procedure": 1},
+      "max_occurrences": {
+        "## Procedure": 1
+      },
       "max_lines": 500
     },
     {
@@ -693,8 +739,14 @@
         "does not establish authorship or make detector results reliable",
         "references/editorial-patterns.md"
       ],
-      "forbidden": ["Add soul", "Let some mess in", "Replace all curly quotes"],
-      "max_occurrences": {"## Editing approach": 1},
+      "forbidden": [
+        "Add soul",
+        "Let some mess in",
+        "Replace all curly quotes"
+      ],
+      "max_occurrences": {
+        "## Editing approach": 1
+      },
       "max_lines": 500
     },
     {
@@ -750,6 +802,78 @@
       "forbidden": [],
       "max_occurrences": {},
       "max_lines": 500
+    },
+    {
+      "path": "rb-build-test-suite/SKILL.md",
+      "required": [
+        "It does not bundle an executable runner, adapters or HTML renderer.",
+        "43 capabilities",
+        "Routine execution of an adopted suite uses its saved command",
+        "unresolved coverage prevents verified completion",
+        "Schema validity does not prove",
+        "Default to the **project workflow**",
+        "Do not silently downgrade an existing policy",
+        "No profile authorizes live actions",
+        "assets/project-checks.md",
+        "fix-only behaviour",
+        "final candidate",
+        "references/scientific-validation.md",
+        "references/independent-verification.md",
+        "## Paired construction and audit",
+        "three total assessment rounds",
+        "../rb-audit-test-suite/references/paired-workflow.md",
+        "One invocation owns the complete build, independent audit and repair loop",
+        "including non-scientific projects",
+        "The user does not need to invoke the auditor or request each repair cycle.",
+        "The host automatically invokes the separate auditor",
+        "report incomplete acceptance",
+        "Omitting an additional domain check never waives the suite audit or impact review."
+      ],
+      "forbidden": [
+        "scripts/run_checks.py",
+        "scripts/build_report.py",
+        "Use the paired workflow for new scientific-core suites",
+        "An ordinary scoped change outside this paired route"
+      ],
+      "max_lines": 170
+    },
+    {
+      "path": "rb-build-test-suite/references/evidence-and-report.md",
+      "required": [
+        "derive one outcome per logical module",
+        "Only a complete valid retry may supply the logical outcome",
+        "Never merge partial results across attempts",
+        "Retrying cannot erase an earlier failure from history"
+      ],
+      "max_lines": 300
+    },
+    {
+      "path": "rb-build-test-suite/references/project-workflow.md",
+      "required": [
+        "Do not convert every output into a second schema",
+        "Actual first-party import/build origin",
+        "Do not accept a commit hash alone for a dirty working tree",
+        "raw logs and assertion XML",
+        "A quick profile cannot waive a required deep check",
+        "Never label this lighter evidence"
+      ],
+      "max_lines": 180
+    },
+    {
+      "path": "rb-audit-test-suite/SKILL.md",
+      "required": [
+        "The builder owns production tests. The auditor owns challenge tests",
+        "scripts/test_loop.py",
+        "Do not repeatedly run an unchanged failing candidate",
+        "verified_local",
+        "three total assessment rounds",
+        "Do not replace an exact known failing input",
+        "A crash, import error",
+        "actually observe the independent invocation",
+        "references/challenge-design.md"
+      ],
+      "forbidden": [],
+      "max_lines": 160
     }
   ]
 }

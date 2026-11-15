@@ -1,0 +1,90 @@
+{
+  "files": [
+    {
+      "path": ".gitignore",
+      "category": "configuration",
+      "lines": 6,
+      "nonblank_lines": 6,
+      "sha256": "1835ae72c05350c01c6afeaffc44561ff6e3b8edcb62495c5a373a76dd09938c"
+    },
+    {
+      "path": "CHECKS.md",
+      "category": "documentation",
+      "lines": 161,
+      "nonblank_lines": 136,
+      "sha256": "65e16c586fcea173ccd305a00b73e02b9d53d016d684ea534ae6d98172ca0615"
+    },
+    {
+      "path": "REQUIREMENTS.md",
+      "category": "documentation",
+      "lines": 62,
+      "nonblank_lines": 53,
+      "sha256": "0b2d4ae0c7eabbd275a380679f61f355a47be36b6572656d699c8919c61f1bcd"
+    },
+    {
+      "path": "independent-review.md",
+      "category": "documentation",
+      "lines": 29,
+      "nonblank_lines": 15,
+      "sha256": "57f064ae3b44f4e2d0cdf11165272dd59089e240d43805756181499d08c344f3"
+    },
+    {
+      "path": "model.py",
+      "category": "model",
+      "lines": 80,
+      "nonblank_lines": 70,
+      "sha256": "29027f941b2f6ac847edf26f3ec8719ae9fc78f7044ce8519936e3a2885539ef"
+    },
+    {
+      "path": "pyproject.toml",
+      "category": "configuration",
+      "lines": 11,
+      "nonblank_lines": 11,
+      "sha256": "068f51ee6ed82658efe13a991d43c5c5d307d7ef7a8691a9c6ddb39cac5e48ec"
+    },
+    {
+      "path": "report.html",
+      "category": "documentation",
+      "lines": 1,
+      "nonblank_lines": 1,
+      "sha256": "5adb99840c21fff9464e8b3fb4777dc310ac63758059bf92836a39ea88170fa7"
+    },
+    {
+      "path": "tests/test_independent.py",
+      "category": "substantive_tests",
+      "lines": 214,
+      "nonblank_lines": 183,
+      "sha256": "2885cac9a9b55d8db3673896371682abc57d05f8086e3f130f82ed152858282a"
+    },
+    {
+      "path": "tests/test_model.py",
+      "category": "substantive_tests",
+      "lines": 162,
+      "nonblank_lines": 138,
+      "sha256": "7d6b40f39afd53a73579c2e1102f01824a30de8f1f5ea84af3acfdbfc1bc44d6"
+    }
+  ],
+  "totals": {
+    "configuration": {
+      "files": 2,
+      "lines": 17,
+      "nonblank_lines": 17
+    },
+    "documentation": {
+      "files": 4,
+      "lines": 253,
+      "nonblank_lines": 205
+    },
+    "model": {
+      "files": 1,
+      "lines": 80,
+      "nonblank_lines": 70
+    },
+    "substantive_tests": {
+      "files": 2,
+      "lines": 376,
+      "nonblank_lines": 321
+    }
+  },
+  "count_scope": "Retained authored project source; generated evidence/candidate copies excluded. Disclose unretained orchestration separately."
+}

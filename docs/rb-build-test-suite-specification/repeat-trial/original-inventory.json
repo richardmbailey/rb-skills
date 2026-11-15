@@ -1,0 +1,224 @@
+{
+  "files": [
+    {
+      "path": ".gitignore",
+      "category": "configuration",
+      "lines": 9,
+      "nonblank_lines": 9,
+      "sha256": "87c7c113005f6b5c3a3456eb36c25618ac7a6cb8da1cf7e5edc334fe13b48609"
+    },
+    {
+      "path": "AGENTS.md",
+      "category": "documentation",
+      "lines": 18,
+      "nonblank_lines": 15,
+      "sha256": "96fdddadec9b322737a93da0ef2536e93c68bec2204f3a3892664b747c832c3d"
+    },
+    {
+      "path": "README.md",
+      "category": "documentation",
+      "lines": 57,
+      "nonblank_lines": 46,
+      "sha256": "e4ee48b8e10cdaa25e47346f95cd6dfa277dca2695fa7d838c1fb1832913d0d5"
+    },
+    {
+      "path": "REQUIREMENTS.md",
+      "category": "documentation",
+      "lines": 62,
+      "nonblank_lines": 53,
+      "sha256": "0b2d4ae0c7eabbd275a380679f61f355a47be36b6572656d699c8919c61f1bcd"
+    },
+    {
+      "path": "adoption.json",
+      "category": "configuration",
+      "lines": 30,
+      "nonblank_lines": 30,
+      "sha256": "794f772b22511261d8be336515d4a51ac31835450a9f9029e724ddb7769e977e"
+    },
+    {
+      "path": "capabilities.json",
+      "category": "configuration",
+      "lines": 334,
+      "nonblank_lines": 334,
+      "sha256": "e39b1719666774df9742b9358d5814fa5288c7539a088567e4c2d1a286c69aca"
+    },
+    {
+      "path": "change-impact.json",
+      "category": "configuration",
+      "lines": 37,
+      "nonblank_lines": 37,
+      "sha256": "2aa41bb4669eaaa4ddcecf59f56ad0df2874017ef334c6cd0cdc2be89c66cf8d"
+    },
+    {
+      "path": "conftest.py",
+      "category": "support_code",
+      "lines": 41,
+      "nonblank_lines": 33,
+      "sha256": "0c5278ab65ea75ec3e906941f4749739c76e7dfb5e6686b4ed5976a10450c2d2"
+    },
+    {
+      "path": "contracts/contracts.schema.json",
+      "category": "schemas",
+      "lines": 3535,
+      "nonblank_lines": 3535,
+      "sha256": "3795c591d445a595e54b2a2691e1d6f2ffe47f6ee70d69ecc98d5170b324b3f7"
+    },
+    {
+      "path": "contracts/evidence.schema.json",
+      "category": "schemas",
+      "lines": 6,
+      "nonblank_lines": 6,
+      "sha256": "9d476b32e2067f817d50b7ccab111e61fd974e40bef8782be6b3202cd9734c61"
+    },
+    {
+      "path": "contracts/module-plan.schema.json",
+      "category": "schemas",
+      "lines": 6,
+      "nonblank_lines": 6,
+      "sha256": "3076cc073ad311c89a1bbcf736a73eca22b4d925c6bd986fc5b0d2e19ab286ec"
+    },
+    {
+      "path": "contracts/report.schema.json",
+      "category": "schemas",
+      "lines": 6,
+      "nonblank_lines": 6,
+      "sha256": "d29d475a438302619504f61c778a4fc3d8cd2ed562995eeb47922344a44ccf4b"
+    },
+    {
+      "path": "independent-review.md",
+      "category": "documentation",
+      "lines": 108,
+      "nonblank_lines": 87,
+      "sha256": "1de925e23f18a9cf76dadb1ce4a218184810c057702848c35438a574a509de67"
+    },
+    {
+      "path": "model.py",
+      "category": "model",
+      "lines": 68,
+      "nonblank_lines": 58,
+      "sha256": "2264b4a4afea32d9411ccc23c64426447486793ccf035623299a07bcac435811"
+    },
+    {
+      "path": "pyproject.toml",
+      "category": "configuration",
+      "lines": 24,
+      "nonblank_lines": 19,
+      "sha256": "0a51b8b95576de8e82dbcfabd31b71879ac60ef2974c2d45ad321b22523b564f"
+    },
+    {
+      "path": "requirements.txt",
+      "category": "configuration",
+      "lines": 8,
+      "nonblank_lines": 8,
+      "sha256": "bd8d0aa8bcbaa2be5a9b115caf4c4888d3009e7cb2e9519d7603b41d71ce9207"
+    },
+    {
+      "path": "review-provenance.json",
+      "category": "configuration",
+      "lines": 12,
+      "nonblank_lines": 12,
+      "sha256": "11a6f484ed0bd051cf57a77f575ec6bf214156b08b1e3001c7a24a9e879f5192"
+    },
+    {
+      "path": "run_tests.sh",
+      "category": "support_code",
+      "lines": 4,
+      "nonblank_lines": 4,
+      "sha256": "04d15feb5a28484ac3e0c79312d48b2c5bdf21de1c6f8f9f235df1f9414d8027"
+    },
+    {
+      "path": "tests/test_evidence.py",
+      "category": "support_tests",
+      "lines": 191,
+      "nonblank_lines": 170,
+      "sha256": "fecba0d7ee9a6d502338a7de4cda45f0014a9a623f6e4f8a073cb8becec46e67"
+    },
+    {
+      "path": "tests/test_harness.py",
+      "category": "support_tests",
+      "lines": 198,
+      "nonblank_lines": 173,
+      "sha256": "9a10e91384b48d2f2bec15603f639bdda6cfc77f1fbac4af18b09c5196434135"
+    },
+    {
+      "path": "tests/test_independent.py",
+      "category": "substantive_tests",
+      "lines": 126,
+      "nonblank_lines": 103,
+      "sha256": "f6b804ddc562c60bac3960a5c26cec3403a7b349f9dd245bec5a20cbe7922273"
+    },
+    {
+      "path": "tests/test_model.py",
+      "category": "substantive_tests",
+      "lines": 123,
+      "nonblank_lines": 99,
+      "sha256": "0e24ba30b6a5254701ad707318287145c28cc4ab15e63f280c1da963871c207d"
+    },
+    {
+      "path": "tests/test_mutations.py",
+      "category": "support_tests",
+      "lines": 35,
+      "nonblank_lines": 27,
+      "sha256": "88bac351c853eecbdb16840f0c1a9c5278518596bd57cfbd7b8eac651243af73"
+    },
+    {
+      "path": "tools/package_evidence.py",
+      "category": "support_code",
+      "lines": 792,
+      "nonblank_lines": 769,
+      "sha256": "c572e1dd4abe84d2c37735d27be5115293a7705da36c3573e80181d66552d106"
+    },
+    {
+      "path": "tools/run_mutations.py",
+      "category": "support_code",
+      "lines": 240,
+      "nonblank_lines": 229,
+      "sha256": "a0a7861492d88a57ee879d6c80481ee237e4fb8356eb695a924086fcc741e283"
+    },
+    {
+      "path": "tools/run_suite.py",
+      "category": "support_code",
+      "lines": 277,
+      "nonblank_lines": 258,
+      "sha256": "1ce727b5a9aedc2c1ed6f822a844d46dd1330c350825964f1bf1a72c8270e5b0"
+    }
+  ],
+  "totals": {
+    "configuration": {
+      "files": 7,
+      "lines": 454,
+      "nonblank_lines": 449
+    },
+    "documentation": {
+      "files": 4,
+      "lines": 245,
+      "nonblank_lines": 201
+    },
+    "model": {
+      "files": 1,
+      "lines": 68,
+      "nonblank_lines": 58
+    },
+    "schemas": {
+      "files": 4,
+      "lines": 3553,
+      "nonblank_lines": 3553
+    },
+    "substantive_tests": {
+      "files": 2,
+      "lines": 249,
+      "nonblank_lines": 202
+    },
+    "support_code": {
+      "files": 5,
+      "lines": 1354,
+      "nonblank_lines": 1293
+    },
+    "support_tests": {
+      "files": 3,
+      "lines": 424,
+      "nonblank_lines": 370
+    }
+  },
+  "count_scope": "Retained authored project files; generated artifacts/caches excluded. One-off orchestration/report code not retained by original trial cannot be precisely counted."
+}

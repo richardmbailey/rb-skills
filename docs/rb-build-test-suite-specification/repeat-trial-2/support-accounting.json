@@ -1,0 +1,17 @@
+{
+  "embedded_identity": {
+    "path": "examples/numerical-assurance-repeat-2/tests/test_model.py",
+    "first_line": 152,
+    "last_line": 162,
+    "lines": 11
+  },
+  "oneoff_assessment": {
+    "path": "examples/numerical-assurance-repeat-2/evidence/assessment_oneoff.py",
+    "lines": 74,
+    "nonblank_lines": 71,
+    "sha256": "b1333e20096c1aeb40f7b618ffeb393c4578e463fbf725b97e20b0d6bcb00dca",
+    "lines_after_ruff_format": 151
+  },
+  "support_lines_including_oneoff": 85,
+  "substantive_test_lines_excluding_identity": 365
+}

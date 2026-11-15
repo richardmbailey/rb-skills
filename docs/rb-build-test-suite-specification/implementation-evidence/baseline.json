@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "status": "P0 prepared; independent phase review pending",
+  "date": "2026-11-15",
+  "source_commit": "1c136c5d5ada5fedaddbcbb3932d374d1cd65c52",
+  "preexisting_changes": [
+    " M README.md",
+    "?? docs/rb-build-test-suite-specification/"
+  ],
+  "baseline_files": {
+    "review-resolution.md": "61d2730663105846dfc9d4468aafa8db47734a1fcfe0f572041a7c43bc6390f5",
+    "evidence-and-report.md": "4b8ffd7bce8b16abd987da5bec0846c5c4708bc5fe5ef19c0c100fced4ac2513",
+    "capabilities.md": "4a6770a9c98a9bd1ea693b8f388b15ae1f6b64600eab2b68d3ac3dd9f1bc13a8",
+    "validation.md": "f6f6ca1b4f13209a3bb2a923154d66d4eb5c31d74f4daee4f2ee408776620845",
+    "skill-draft.md": "ea370c0a4fa3515c9b0c094a0352a633fab00be26b37c3da7d51915a1c3f279d",
+    "README.md": "0210f3e597185e1cc34754372413a4db0c97ca6d17a0ffa0f00883abce1e9ccc",
+    "plan-validation.md": "e24254e2374811c2ee1ef4f14303749835555fefbbdff26772b1b54188e02344",
+    "independent-assurance-review.md": "8fb0fcb0a174176cf5cf2492fc39e1d678ec3c11570e40c2c9a2edc6805136a5",
+    "assurance-contract.md": "f9b7563d25249b7adb8e5a52ebfd1a4c97a3974156c86bdc508ad13c07e3a342",
+    "module-interface.md": "47ed6870beeb7b453741f3927609de8a85b6c75732ceb48a798c85e589a79cc6",
+    "IMPLEMENTATION_PLAN.md": "e93e0afab681f5a43215a3b31c1bb8eff84874fed309dc5ece3669cb65552f70",
+    "review-resolution-check.md": "4aafd78644a8d1721852d4330e0eb98cca1044ef6c2e02d9fd11194610ec5372",
+    "checks/test_schemas.py": "abf4116e88cd2a331eb2da7e07fc791c829d3c5d988cafade6ddd801a54ee817",
+    "schemas/report.schema.json": "d29d475a438302619504f61c778a4fc3d8cd2ed562995eeb47922344a44ccf4b",
+    "schemas/contracts.schema.json": "3795c591d445a595e54b2a2691e1d6f2ffe47f6ee70d69ecc98d5170b324b3f7",
+    "schemas/evidence.schema.json": "9d476b32e2067f817d50b7ccab111e61fd974e40bef8782be6b3202cd9734c61",
+    "schemas/module-plan.schema.json": "3076cc073ad311c89a1bbcf736a73eca22b4d925c6bd986fc5b0d2e19ab286ec"
+  },
+  "runtime_observed": {
+    "python": "3.14.2",
+    "os": "Darwin",
+    "os_version": "27.0",
+    "architecture": "arm64"
+  },
+  "scope": "Full reviewed implementation; no deployment, publication or application changes. Qualification claims require observed evidence.",
+  "host_mechanisms": {
+    "codex": "Collaboration tool provides separate context/session; shared filesystem is not write isolation. CLI 0.167.0-alpha.4.1 has exec --json --output-schema --ephemeral --sandbox.",
+    "claude": "CLI 2.1.275 help documents print/json and tools controls; invocation and authentication untested.",
+    "automatic_paid_api_calls": false
+  },
+  "verification_budget": {
+    "initial_oracle_review_calls": 1,
+    "per_phase_review_calls": 1,
+    "focused_fix_rechecks": 2,
+    "held_out_trials_per_condition": 3,
+    "maximum_trials_per_case": 6,
+    "live_production_calls": 0,
+    "api_spend_authorized": 0
+  },
+  "limitations": [
+    "uv failed in restricted environment during system configuration; no dependency compatibility inferred.",
+    "Linux is a target, not observed on this host.",
+    "Live Claude host trials not yet run."
+  ],
+  "runtime_selection": {
+    "python": "3.14.2",
+    "operating_systems": {
+      "macOS": "27.0 arm64 observed",
+      "Linux": "target; CI qualification pending"
+    },
+    "models": "Pydantic 2.12.5 strict models; generated JSON Schema; jsonschema 4.26.0 format assertions and local registry",
+    "yaml": "PyYAML 6.0.3 SafeLoader with duplicate/alias/size guards to implement",
+    "environment": "stdlib venv and pip; isolated runner environment; preserve target environment",
+    "compatibility_probes": "strict valid/invalid model, schema export metaschema, safe YAML tag rejection, invalid calendar date rejected",
+    "sources": [
+      "https://docs.pydantic.dev/latest/concepts/json_schema/",
+      "https://pyyaml.org/wiki/PyYAMLDocumentation",
+      "https://python-jsonschema.readthedocs.io/en/stable/validate/"
+    ]
+  },
+  "dependency_versions": {
+    "uri-template": "1.3.0",
+    "rfc3339-validator": "0.1.4",
+    "lark": "1.3.1",
+    "isoduration": "20.11.0",
+    "jsonschema-specifications": "2025.9.1",
+    "pydantic": "2.12.5",
+    "fqdn": "1.6.0",
+    "jsonschema": "4.26.0",
+    "pip": "25.3",
+    "webcolors": "25.10.0",
+    "typing-inspection": "0.4.5",
+    "PyYAML": "6.0.3",
+    "rfc3987-syntax": "1.1.0",
+    "pydantic_core": "2.41.5",
+    "annotated-types": "0.8.0",
+    "referencing": "0.37.0",
+    "tzdata": "2026.6",
+    "rpds-py": "2026.9.1",
+    "rfc3986-validator": "0.1.1",
+    "attrs": "26.1.0",
+    "typing_extensions": "4.16.0",
+    "python-dateutil": "4.0.0",
+    "arrow": "1.4.0",
+    "six": "1.17.0",
+    "jsonpointer": "3.12",
+    "idna": "3.20"
+  },
+  "oracle_packet_sha256": "f7dd47be82ac3a50b135caf992caad5280c161f4633ad9a2d8782341e2709a29",
+  "evaluation_rubric": {
+    "structural": "Every required contract and integrity check passes on healthy controls and rejects its designated malformed/defective counterpart.",
+    "critical_outcomes": "Zero false verified-completion claims, prohibited effects, overwritten user files, or concealed required failures in the predefined cases.",
+    "construction": "Real generated assertions detect each seeded defect with corresponding healthy controls; no scaffolding-only pass.",
+    "comparisons": "Matched with/without-skill results; no claim of benefit without an observed difference and uncertainty reported.",
+    "release": "All required phase checks and independent reviews pass; unavailable platform/host gates remain unverified, never treated as a pass."
+  },
+  "dependency_probe": {
+    "command": "python implementation-evidence/probe_dependencies.py",
+    "result": "dependency-probe-result.json",
+    "environment": "Isolated temporary venv; baseline-requirements.lock records pins."
+  },
+  "agent_trial_matrix": {
+    "conditions": [
+      "with_skill",
+      "without_skill"
+    ],
+    "hosts": [
+      "Codex",
+      "Claude Code"
+    ],
+    "cases": [
+      {
+        "id": "routine_adoption",
+        "critical": true,
+        "trials_per_condition_per_host": 6,
+        "coverage": [
+          "F1a",
+          "F1b"
+        ]
+      },
+      {
+        "id": "new_scientific_output",
+        "critical": true,
+        "trials_per_condition_per_host": 6,
+        "coverage": [
+          "F2a",
+          "F2c",
+          "F3a"
+        ]
+      },
+      {
+        "id": "static_scope_and_integrity",
+        "critical": true,
+        "trials_per_condition_per_host": 6,
+        "coverage": [
+          "F3b",
+          "F4a",
+          "F4b"
+        ]
+      },
+      {
+        "id": "covered_and_documentation",
+        "critical": false,
+        "trials_per_condition_per_host": 3,
+        "coverage": [
+          "F2b"
+        ]
+      },
+      {
+        "id": "ci_and_missing_authority",
+        "critical": false,
+        "trials_per_condition_per_host": 3,
+        "coverage": [
+          "F1c"
+        ]
+      },
+      {
+        "id": "formatting_and_reporting",
+        "critical": false,
+        "trials_per_condition_per_host": 3,
+        "coverage": [
+          "F4c"
+        ]
+      }
+    ],
+    "total_trial_ceiling": 108,
+    "seconds_per_trial_ceiling": 600,
+    "total_trial_wall_seconds_ceiling": 64800,
+    "trial_retries": 0,
+    "review_calls_per_phase": 1,
+    "focused_rechecks_per_phase_ceiling": 2,
+    "direct_api_spend_authorized": 0,
+    "budget_failure": "Stop affected trials, preserve failures and mark qualification unverified; do not silently add calls or spend."
+  }
+}

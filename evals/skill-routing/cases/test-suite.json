@@ -1,0 +1,218 @@
+[
+  {
+    "id": "build-suite-create-suite",
+    "family": "testing-infrastructure",
+    "prompt": "Build a reusable development test suite and evidence report for this project.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+  },
+  {
+    "id": "build-suite-extend-suite",
+    "family": "testing-infrastructure",
+    "prompt": "Extend our existing reusable suite with scientific reference checks and honest HTML reporting.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+  },
+  {
+    "id": "build-suite-standardise-suite",
+    "family": "testing-infrastructure",
+    "prompt": "Standardise this project\u2019s test runner, evidence records and completion rules.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+  },
+  {
+    "id": "build-suite-paraphrase-assurance",
+    "family": "testing-infrastructure",
+    "prompt": "Give this project one repeatable way to check generated changes and see what remains unverified.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+  },
+  {
+    "id": "build-suite-operations-suite",
+    "family": "testing-infrastructure",
+    "prompt": "Construct reusable operational checks and evidence-import procedures; no production actions are authorized.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+  },
+  {
+    "id": "build-suite-run-existing",
+    "family": "testing-infrastructure",
+    "prompt": "Run our existing tests.",
+    "expected": {
+      "outcome": "no_skill"
+    },
+    "forbidden_skills": [
+      "rb-build-test-suite"
+    ],
+    "critical": true,
+    "rationale": "Use existing saved command; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+  },
+  {
+    "id": "build-suite-fix-feature",
+    "family": "testing-infrastructure",
+    "prompt": "Implement this agreed small feature with tests.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-implement-with-tests"
+    },
+    "forbidden_skills": [
+      "rb-build-test-suite"
+    ],
+    "critical": true,
+    "rationale": "Use rb-implement-with-tests; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+  },
+  {
+    "id": "build-suite-diagnose-flake",
+    "family": "testing-infrastructure",
+    "prompt": "Find the cause of this intermittent test failure.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-diagnose"
+    },
+    "forbidden_skills": [
+      "rb-build-test-suite"
+    ],
+    "critical": true,
+    "rationale": "Use rb-diagnose; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+  },
+  {
+    "id": "build-suite-review-diff",
+    "family": "testing-infrastructure",
+    "prompt": "Review this diff for regressions and missing tests.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-review-pr-or-diff"
+    },
+    "forbidden_skills": [
+      "rb-build-test-suite"
+    ],
+    "critical": true,
+    "rationale": "Use rb-review-pr-or-diff; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+  },
+  {
+    "id": "build-suite-skill-evals",
+    "family": "testing-infrastructure",
+    "prompt": "Evaluate whether this agent skill improves outcomes.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-create-skill-evals"
+    },
+    "forbidden_skills": [
+      "rb-build-test-suite"
+    ],
+    "critical": true,
+    "rationale": "Use rb-create-skill-evals; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+  },
+  {
+    "id": "audit-suite-independent",
+    "family": "testing-infrastructure",
+    "prompt": "Independently audit whether our tests catch deliberately wrong implementations.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-audit-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals"
+    ],
+    "critical": true,
+    "rationale": "Direct test-suite sensitivity audit uses independent executable challenges."
+  },
+  {
+    "id": "audit-suite-history",
+    "family": "testing-infrastructure",
+    "prompt": "Check that our new tests still detect every previously confirmed numerical failure.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-audit-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals"
+    ],
+    "critical": true,
+    "rationale": "Preserve exact historical regression protection."
+  },
+  {
+    "id": "build-suite-paired",
+    "family": "testing-infrastructure",
+    "prompt": "Build reliable reusable scientific tests and have an independent agent audit them.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals"
+    ],
+    "critical": true,
+    "rationale": "Builder owns construction and invokes the auditor through the paired route."
+  },
+  {
+    "id": "build-suite-single-invocation",
+    "family": "testing-infrastructure",
+    "prompt": "Use $rb-build-test-suite to build a reusable test suite for this small non-scientific project.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-build-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "One builder invocation owns building, automatic independent auditor dispatch, authorized repairs and final verification; no second user skill call is required."
+  },
+  {
+    "id": "audit-suite-completion-propagation",
+    "family": "testing-infrastructure",
+    "prompt": "Audit our test suite: deliberately fail an early lint check or time out a required tool and verify that a later passing test cannot produce success.",
+    "expected": {
+      "outcome": "select",
+      "skill": "rb-audit-test-suite"
+    },
+    "forbidden_skills": [
+      "rb-create-skill-evals",
+      "rb-diagnose"
+    ],
+    "critical": true,
+    "rationale": "Auditing the suite completion path and failure propagation belongs to the independent test auditor, not routine execution or diagnosis of an unexplained failure."
+  }
+]

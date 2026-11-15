@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+pythonpath = ["."]
+[tool.ruff]
+line-length = 88
+extend-exclude = ["evidence"]
+[tool.mypy]
+strict = true
+[tool.coverage.run]
+branch = true
+source = ["model"]

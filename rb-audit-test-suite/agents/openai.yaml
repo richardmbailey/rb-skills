@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Audit Test Suite"
+  short_description: "Independently challenge tests with known faults"
+  default_prompt: "Use $rb-audit-test-suite to independently assess this project's tests with executable healthy and faulty controls, exact historical regressions and failure-propagation checks. Preserve raw evidence and distinguish missing coverage from invalid challenges. Pair with rb-build-test-suite only when construction or repair is authorized; use the bounded local coordinator without claiming protected acceptance."

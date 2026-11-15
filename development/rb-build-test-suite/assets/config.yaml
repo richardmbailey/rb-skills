@@ -1,0 +1,6 @@
+# Authoring guidance only; deliberately not a runnable project configuration.
+# Supply a complete config validated against schemas/config.schema.json.
+# Include all 43 capability dispositions, selected ModuleRequest records,
+# existing environment command/lock identity, requirement sources and profiles.
+# Requests refer to change-impact/import paths without embedding candidate hashes.
+# scaffold.py saves the supplied validated configuration without selecting checks.

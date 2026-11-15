@@ -1,0 +1,9 @@
+artifacts/
+__pycache__/
+.pytest_cache/
+.hypothesis/
+.ruff_cache/
+.mypy_cache/
+.coverage*
+.venv/
+result.csv

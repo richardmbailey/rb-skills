@@ -1,0 +1,1566 @@
+# Construction guidance is not executable authority. Module plans declare actual effects.
+schema_version: 1.0.0
+entries:
+- number: 1
+  id: unit
+  name: Check isolated logic
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Verify a small function or module whose behaviour can be separated from external systems;
+    useful for calculations, branching and validation.
+  applicability: Verify a small function or module whose behaviour can be separated from external
+    systems; useful for calculations, branching and validation.
+  construction:
+  - Derive cases from the contract; include normal, boundary and invalid inputs; control clocks and
+    randomness; stub only external boundaries.
+  tools:
+  - pytest, unittest, JUnit, Vitest, QuickCheck
+  evidence: Preserve case results, inputs and failures. Required behaviours and invariants must hold;
+    numerical results use justified tolerances and appropriate scientific/reference checks.
+  acceptance: Preserve case results, inputs and failures. Required behaviours and invariants must
+    hold; numerical results use justified tolerances and appropriate scientific/reference checks.
+  cost: Development/full; usually low cost. Quick runs changed logic and essential cases; standard
+    runs the relevant suite; deep adds generated cases.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Keep fixtures local and disposable; require separate authority for external effects.
+    `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 2
+  id: functional
+  name: Check required behaviour
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Establish that a feature delivers its specified result through a public interface, including
+    meaningful failure behaviour.
+  applicability: Establish that a feature delivers its specified result through a public interface,
+    including meaningful failure behaviour.
+  construction:
+  - Turn requirements into inputs and observable outcomes; exercise positive and negative paths and
+    state transitions.
+  tools:
+  - pytest, REST Assured, Playwright, CLI harnesses
+  evidence: Link each scenario to its requirement and actual outputs. Required outcomes, error handling
+    and forbidden side effects must match the contract.
+  acceptance: Link each scenario to its requirement and actual outputs. Required outcomes, error
+    handling and forbidden side effects must match the contract.
+  cost: Development/full; low to moderate cost. Quick covers critical changed paths; standard covers
+    required variants; deep explores combinations.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Isolate accounts, files and service endpoints; sending or changing real user data requires
+    authority. `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 3
+  id: component
+  name: Check a subsystem through its boundary
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Test a cohesive service or subsystem with its internal parts connected while controlling
+    dependencies outside its boundary.
+  applicability: Test a cohesive service or subsystem with its internal parts connected while controlling
+    dependencies outside its boundary.
+  construction:
+  - Start the real component; provide realistic dependency doubles or disposable services; exercise
+    persistence, retries and malformed responses.
+  tools:
+  - Testcontainers, WireMock, framework test servers
+  evidence: Record component versions, dependency contracts and observed state. Behaviour must satisfy
+    the subsystem contract under success and specified failure modes.
+  acceptance: Record component versions, dependency contracts and observed state. Behaviour must
+    satisfy the subsystem contract under success and specified failure modes.
+  cost: Development/full; moderate setup cost. Quick uses existing fixtures; standard covers component
+    boundaries; deep adds recovery combinations.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Use disposable infrastructure and bounded resource limits; prevent accidental production
+    connections. `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 4
+  id: fuzz
+  name: Explore unexpected inputs
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Discover crashes, hangs and invariant violations in parsers, protocols, state machines
+    or other large input spaces.
+  applicability: Discover crashes, hangs and invariant violations in parsers, protocols, state machines
+    or other large input spaces.
+  construction:
+  - Build a harness and oracle; seed valid and malformed examples; set time/resource limits; preserve
+    and minimise discoveries.
+  tools:
+  - libFuzzer, AFL++, cargo-fuzz, Atheris
+  evidence: Save harness, corpus, seeds, budget and reproducing inputs. No unresolved violation of
+    the declared safety properties may remain within the explored scope; absence of findings is not
+    exhaustive proof.
+  acceptance: Save harness, corpus, seeds, budget and reproducing inputs. No unresolved violation
+    of the declared safety properties may remain within the explored scope; absence of findings is
+    not exhaustive proof.
+  cost: Development/full; potentially high compute. Quick replays discoveries; standard uses bounded
+    campaigns; deep expands budgets and states.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Sandbox dangerous parsers and cap filesystem/network effects; live target fuzzing needs
+    explicit scope. `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 5
+  id: property_based
+  name: Check rules across generated cases
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Verify general invariants, round trips and relationships where examples alone poorly cover
+    the input space.
+  applicability: Verify general invariants, round trips and relationships where examples alone poorly
+    cover the input space.
+  construction:
+  - Specify independent properties; generate valid and invalid inputs; shrink failures; persist counterexamples.
+  tools:
+  - Hypothesis, QuickCheck, fast-check, proptest
+  evidence: Record generators, seeds, example budgets and minimal failures. Properties must hold
+    for explored cases; justify generators and scientific/metamorphic assumptions.
+  acceptance: Record generators, seeds, example budgets and minimal failures. Properties must hold
+    for explored cases; justify generators and scientific/metamorphic assumptions.
+  cost: Development/full; low to high depending on the oracle. Quick replays failures; standard generates
+    bounded cases; deep explores wider distributions.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Bound generated sizes and runtime; use disposable state for stateful properties. `executable`.
+  subtypes:
+  - analytical_reference
+  - convergence
+  - metamorphic
+  - differential
+  - empirical_validation
+  qualification: unsupported
+- number: 6
+  id: formal_verification
+  name: Prove a precisely stated property
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  - human_review
+  purpose: Examine critical algorithms, protocols or policies where a formal model can express the
+    important assumptions and guarantees.
+  applicability: Examine critical algorithms, protocols or policies where a formal model can express
+    the important assumptions and guarantees.
+  construction:
+  - Define the model, properties and environment assumptions; check counterexamples; connect the
+    model to implementation obligations.
+  tools:
+  - TLA+/TLC, Alloy, Dafny, Lean, Coq, CBMC
+  evidence: Preserve model, proof/checker output and bounds. Accept only the stated proven or exhaustively
+    checked property within its assumptions; review abstraction and implementation correspondence
+    separately.
+  acceptance: Preserve model, proof/checker output and bounds. Accept only the stated proven or exhaustively
+    checked property within its assumptions; review abstraction and implementation correspondence
+    separately.
+  cost: Development/full; often high expertise cost. Quick checks existing models; standard updates
+    relevant properties; deep broadens modelling or proofs.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Local analysis usually has limited effects; do not describe a proof as authority to
+    deploy. `executable`, `human_review`.
+  subtypes:
+  - analytical_reference
+  - convergence
+  - metamorphic
+  - differential
+  - empirical_validation
+  qualification: unsupported
+- number: 7
+  id: static_analysis
+  name: Find defects without running the program
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  - human_review
+  purpose: Detect type, data-flow, security or API errors visible in source or intermediate representations.
+  applicability: Detect type, data-flow, security or API errors visible in source or intermediate
+    representations.
+  construction:
+  - Select language-aware analyzers; configure actual build context; review suppressions; compare
+    findings with the established baseline.
+  tools:
+  - mypy, Pyright, CodeQL, Semgrep, compiler analyzers
+  evidence: Retain analyzer configuration, version and findings. Resolve or explicitly disposition
+    findings according to the project's reviewed policy; successful analysis does not prove runtime
+    behaviour.
+  acceptance: Retain analyzer configuration, version and findings. Resolve or explicitly disposition
+    findings according to the project's reviewed policy; successful analysis does not prove runtime
+    behaviour.
+  cost: Development/full; low to moderate, sometimes high. Quick targets changed modules; standard
+    covers the relevant graph; deep runs costly analyses.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Treat source upload and hosted scanning as separate data-sharing actions. `executable`,
+    `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 8
+  id: mutation
+  name: Check whether tests detect plausible defects
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  - human_review
+  purpose: Assess test sensitivity by making controlled code changes that should alter behaviour.
+  applicability: Assess test sensitivity by making controlled code changes that should alter behaviour.
+  construction:
+  - Choose meaningful operators and scope; run tests against mutants; inspect survivors and equivalent
+    mutants; add behaviour-focused tests.
+  tools:
+  - PIT, mutmut, Stryker
+  evidence: Record killed, surviving, timed-out and excluded mutants with reasons. Required fault
+    classes must be detected; interpret scores against a justified project target rather than a universal
+    percentage.
+  acceptance: Record killed, surviving, timed-out and excluded mutants with reasons. Required fault
+    classes must be detected; interpret scores against a justified project target rather than a universal
+    percentage.
+  cost: Development/full; high repeated execution cost. Quick targets critical changed code; standard
+    covers risk areas; deep expands operators and modules.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Mutate disposable copies; preserve source and never publish mutants. `executable`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 9
+  id: coverage
+  name: Identify code or requirements not exercised
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  - human_review
+  purpose: Locate gaps in executed paths, conditions or requirement scenarios; coverage is supporting
+    evidence, not proof of useful assertions.
+  applicability: Locate gaps in executed paths, conditions or requirement scenarios; coverage is
+    supporting evidence, not proof of useful assertions.
+  construction:
+  - Instrument relevant suites; map uncovered critical paths to scenarios; distinguish unreachable
+    code from missing tests.
+  tools:
+  - coverage.py, JaCoCo, Istanbul, gcov
+  evidence: Preserve reports and scope exclusions. Review critical gaps against the project's coverage
+    policy and behavioural evidence; meeting a percentage alone does not establish adequacy.
+  acceptance: Preserve reports and scope exclusions. Review critical gaps against the project's coverage
+    policy and behavioural evidence; meeting a percentage alone does not establish adequacy.
+  cost: Development/full; usually low overhead. Quick examines changes; standard measures suites;
+    deep adds branch/condition or requirements coverage.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Instrument disposable builds; prevent sensitive source/report publication. `executable`,
+    `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 10
+  id: benchmark
+  name: Measure a controlled workload repeatedly
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Compare algorithm or component speed and resource use under repeatable conditions.
+  applicability: Compare algorithm or component speed and resource use under repeatable conditions.
+  construction:
+  - Define representative workloads; control warm-up and environment; repeat measurements; retain
+    distributions and baseline identity.
+  tools:
+  - pytest-benchmark, Google Benchmark, JMH, hyperfine
+  evidence: Record hardware, workload, samples and uncertainty. Assess against a requirement or justified
+    baseline comparison; first measurements establish a baseline rather than inventing a pass limit.
+  acceptance: Record hardware, workload, samples and uncertainty. Assess against a requirement or
+    justified baseline comparison; first measurements establish a baseline rather than inventing
+    a pass limit.
+  cost: Development/full; moderate compute. Quick checks established small workloads; standard repeats
+    representative cases; deep explores scale and variability.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Reserve bounded compute and avoid interference with live services. `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 11
+  id: contract
+  name: Check agreements between systems
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Detect incompatible API, event, file or consumer/provider changes, including semantics
+    that schema checks miss.
+  applicability: Detect incompatible API, event, file or consumer/provider changes, including semantics
+    that schema checks miss.
+  construction:
+  - Capture consumer expectations; verify providers; test errors, optional fields and compatibility
+    transitions.
+  tools:
+  - Pact, Schemathesis, OpenAPI validators, JSON Schema validators
+  evidence: Preserve contract versions and provider/consumer results. Every required supported interaction
+    must remain compatible; schema validity alone is insufficient for behavioural promises.
+  acceptance: Preserve contract versions and provider/consumer results. Every required supported
+    interaction must remain compatible; schema validity alone is insufficient for behavioural promises.
+  cost: Development/full; moderate setup. Quick verifies affected contracts; standard covers supported
+    counterparts; deep includes migration/version matrices.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  authority: Publish contracts or invoke external providers only within granted access; use isolated
+    credentials. `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 12
+  id: lint
+  name: Enforce agreed source conventions
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Catch mechanical mistakes and inconsistent conventions that have deterministic rules.
+  applicability: Catch mechanical mistakes and inconsistent conventions that have deterministic rules.
+  construction:
+  - Use repository configuration; apply scoped rules; inspect exceptions; separate style findings
+    from behavioural defects.
+  tools:
+  - Ruff, ESLint, ShellCheck, markdownlint
+  evidence: Retain command and findings. Satisfy the agreed rules or documented exceptions; lint
+    success cannot substitute for behaviour tests.
+  acceptance: Retain command and findings. Satisfy the agreed rules or documented exceptions; lint
+    success cannot substitute for behaviour tests.
+  cost: Development/full; low cost. Quick checks changed files; standard checks repository scope;
+    deep rarely changes lint depth.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Read-only by default; auto-fixes require authorized file edits and diff review. `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 13
+  id: acceptance
+  name: Verify that the delivered result meets user needs
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - human_review
+  - procedure
+  purpose: Establish whether concrete stakeholder requirements and workflows are satisfied.
+  applicability: Establish whether concrete stakeholder requirements and workflows are satisfied.
+  construction:
+  - Agree realistic acceptance scenarios and owners; prepare representative data; execute journeys;
+    collect required human decisions.
+  tools:
+  - Cucumber, Playwright, structured acceptance records
+  evidence: Link observed outcomes and reviewer decisions to criteria. Obtain the specified stakeholder
+    acceptance; automated scenarios cannot replace required human sign-off.
+  acceptance: Link observed outcomes and reviewer decisions to criteria. Obtain the specified stakeholder
+    acceptance; automated scenarios cannot replace required human sign-off.
+  cost: Development/operations/full; moderate coordination cost. Quick checks a narrow change; standard
+    covers agreed criteria; deep exercises wider contexts.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Use authorized participants and datasets; submission, purchase or publication steps
+    need appropriate authority. `executable`, `human_review`, `procedure`.
+  subtypes:
+  - analytical_reference
+  - convergence
+  - metamorphic
+  - differential
+  - empirical_validation
+  qualification: unsupported
+- number: 14
+  id: regression
+  name: Prevent previously correct behaviour from breaking
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - full
+  kinds:
+  - executable
+  purpose: Protect supported behaviour and reproduce reported defects at the boundary where they
+    occur.
+  applicability: Protect supported behaviour and reproduce reported defects at the boundary where
+    they occur.
+  construction:
+  - Reproduce the defect or establish trusted expected behaviour; add the smallest effective test;
+    verify failure before the fix where feasible and success after it.
+  tools:
+  - existing test frameworks, approved snapshots, reference datasets
+  evidence: Retain reproduction and before/after results or explain unavailable pre-fix evidence.
+    The defect must be detected and resolved without weakening expectations or concealing flakiness.
+  acceptance: Retain reproduction and before/after results or explain unavailable pre-fix evidence.
+    The defect must be detected and resolved without weakening expectations or concealing flakiness.
+  cost: Development/full, with operational replay where authorized; low to high. Quick runs affected
+    regressions; standard adds neighbours; deep runs broad history.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Sanitize captured data and avoid replaying real destructive actions. `executable`.
+  subtypes:
+  - analytical_reference
+  - convergence
+  - metamorphic
+  - differential
+  - empirical_validation
+  qualification: unsupported
+- number: 15
+  id: smoke
+  name: Check that essential paths are available
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Quickly detect unusable builds, deployments or environments before investing in broader
+    checks.
+  applicability: Quickly detect unusable builds, deployments or environments before investing in
+    broader checks.
+  construction:
+  - Choose a small set of critical start-up and transaction paths; include a cleanup step and clear
+    failure output.
+  tools:
+  - shell/CLI harnesses, HTTP probes, Playwright
+  evidence: Record actual probes and outputs. Essential paths must complete as specified; success
+    supports readiness for further checking, not full correctness.
+  acceptance: Record actual probes and outputs. Essential paths must complete as specified; success
+    supports readiness for further checking, not full correctness.
+  cost: Development/operations/full; low cost, suitable for all profiles.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Prefer harmless synthetic transactions; real writes need authorized test identities
+    and cleanup. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 16
+  id: usability
+  name: Observe whether people can complete their tasks
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - procedure
+  - human_review
+  - observation
+  purpose: Examine learnability, comprehension, accessibility in use and practical task completion
+    for intended users.
+  applicability: Examine learnability, comprehension, accessibility in use and practical task completion
+    for intended users.
+  construction:
+  - Define representative tasks and participant groups; obtain consent; observe sessions without
+    leading participants; analyse problems and limitations.
+  tools:
+  - moderated sessions, consented recordings, task protocols
+  evidence: Preserve appropriately protected observations and findings. Evaluate against agreed task
+    outcomes and research criteria; small samples and missing groups remain explicit limitations.
+  acceptance: Preserve appropriately protected observations and findings. Evaluate against agreed
+    task outcomes and research criteria; small samples and missing groups remain explicit limitations.
+  cost: Development/operations/full; substantial human coordination. Quick can review existing evidence;
+    standard/deep require suitably scoped participant work.
+  profile_hint: standard
+  effects:
+  - local_read
+  authority: Recruitment, recording and personal data collection require authorization and consent.
+    `procedure`, `human_review`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 17
+  id: ui_ux
+  name: Check interface behaviour and presentation
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - human_review
+  - observation
+  purpose: Verify navigation, interaction states, responsive layouts and accessibility requirements
+    across supported interfaces.
+  applicability: Verify navigation, interaction states, responsive layouts and accessibility requirements
+    across supported interfaces.
+  construction:
+  - Map key screens and states; test keyboard and assistive interactions; compare approved visual
+    references; inspect actual rendering.
+  tools:
+  - Playwright, axe-core, screenshot comparisons, accessibility inspectors
+  evidence: Retain rendered evidence, interaction results and review findings. Satisfy design and
+    accessibility criteria; automated scans alone do not establish usable or accessible experiences.
+  acceptance: Retain rendered evidence, interaction results and review findings. Satisfy design and
+    accessibility criteria; automated scans alone do not establish usable or accessible experiences.
+  cost: Development/operations/full; moderate cost. Quick checks changed views; standard covers supported
+    layouts; deep adds devices and human reviews.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Isolate accounts and prevent sensitive content in screenshots. `executable`, `human_review`,
+    `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 18
+  id: penetration
+  name: Test exploitable security weaknesses
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - procedure
+  - human_review
+  purpose: Investigate whether an explicitly authorized target can be compromised through realistic
+    attack paths.
+  applicability: Investigate whether an explicitly authorized target can be compromised through realistic
+    attack paths.
+  construction:
+  - Agree target scope, exclusions, rate limits and stop conditions; execute controlled probes; verify
+    findings minimally; document remediation and retesting.
+  tools:
+  - OWASP ZAP, Burp Suite, approved specialist tooling
+  evidence: Preserve sanitized reproductions, affected assets and retest results. Apply the agreed
+    security risk policy; an incomplete scope or scan without findings is not a security guarantee.
+  acceptance: Preserve sanitized reproductions, affected assets and retest results. Apply the agreed
+    security risk policy; an incomplete scope or scan without findings is not a security guarantee.
+  cost: Development/operations/full; specialist and potentially high cost. Quick reviews prior evidence;
+    active standard/deep testing requires scoped authority.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - network_write
+  - disruption
+  authority: Require explicit target authorization; exploitation, persistence, data access and production
+    disruption are separately constrained. `executable`, `procedure`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 19
+  id: threat_modelling
+  name: Identify how the system could be abused
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - procedure
+  - human_review
+  - agent_review
+  purpose: Find threats arising from assets, trust boundaries, privileges and realistic adversaries
+    before or after implementation.
+  applicability: Find threats arising from assets, trust boundaries, privileges and realistic adversaries
+    before or after implementation.
+  construction:
+  - Map data flows and dependencies; enumerate abuse cases; assess controls; assign verification
+    and unresolved risk owners.
+  tools:
+  - STRIDE workshops, attack trees, OWASP Threat Dragon
+  evidence: Preserve the reviewed model, assumptions and linked controls/tests. Relevant threats
+    need verified controls or explicitly accepted residual risk; a diagram alone is insufficient.
+  acceptance: Preserve the reviewed model, assumptions and linked controls/tests. Relevant threats
+    need verified controls or explicitly accepted residual risk; a diagram alone is insufficient.
+  cost: Development/operations/full; moderate judgement cost. Quick revisits changed boundaries;
+    standard reviews system scope; deep explores adversarial combinations.
+  profile_hint: standard
+  effects:
+  - local_read
+  authority: Protect sensitive architecture; modelling grants no authority to attack systems. `procedure`,
+    `human_review`, `agent_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 20
+  id: performance
+  name: Check whether the system meets resource and response needs
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Evaluate end-to-end responsiveness, throughput, resource demand and scaling under representative
+    conditions.
+  applicability: Evaluate end-to-end responsiveness, throughput, resource demand and scaling under
+    representative conditions.
+  construction:
+  - Define workloads and service objectives; establish baselines; measure latency distributions and
+    resource use; investigate bottlenecks.
+  tools:
+  - k6, Gatling, Locust, platform metrics
+  evidence: Preserve environment, workload and measurement windows. Meet justified service objectives
+    with uncertainty and workload limits stated; correct output remains required.
+  acceptance: Preserve environment, workload and measurement windows. Meet justified service objectives
+    with uncertainty and workload limits stated; correct output remains required.
+  cost: Development/operations/full; moderate to high cost. Quick runs small established checks;
+    standard measures representative workloads; deep explores scale.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Bound resource spend and traffic; production testing needs approved impact and stop
+    conditions. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 21
+  id: integration
+  name: Check connected parts together
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  purpose: Detect failures in real dependency interactions, state transfer and lifecycle behaviour;
+    useful well before deployment.
+  applicability: Detect failures in real dependency interactions, state transfer and lifecycle behaviour;
+    useful well before deployment.
+  construction:
+  - Assemble representative dependencies; exercise transactions, auth, retries, concurrency and migrations;
+    inject relevant boundary failures.
+  tools:
+  - Testcontainers, Docker Compose, pytest, service harnesses
+  evidence: Record participating versions and resulting state. Cross-boundary behaviours and recovery
+    guarantees must satisfy their contracts without unintended effects.
+  acceptance: Record participating versions and resulting state. Cross-boundary behaviours and recovery
+    guarantees must satisfy their contracts without unintended effects.
+  cost: Development/operations/full; moderate setup/runtime. Quick checks changed boundaries; standard
+    tests dependency paths; deep explores failures and version combinations.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Use isolated data and infrastructure; shared environments require scoped access and
+    cleanup. `executable`.
+  subtypes:
+  - analytical_reference
+  - convergence
+  - metamorphic
+  - differential
+  - empirical_validation
+  qualification: unsupported
+- number: 22
+  id: tap_compare
+  name: Compare corresponding observations at a selected boundary
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - observation
+  - executable
+  purpose: Detect divergence by observing matching messages or outputs from two versions or paths
+    without making the candidate authoritative.
+  applicability: Detect divergence by observing matching messages or outputs from two versions or
+    paths without making the candidate authoritative.
+  construction:
+  - Select a tap point; correlate equivalent inputs/results; normalize only justified nondeterminism;
+    classify differences against a reference.
+  tools:
+  - comparison harnesses, event consumers, proxy capture facilities
+  evidence: Retain sampled scope, correlation losses and discrepancies. Differences must meet the
+    defined compatibility or domain tolerance rules; missing pairs cannot count as agreement.
+  acceptance: Retain sampled scope, correlation losses and discrepancies. Differences must meet the
+    defined compatibility or domain tolerance rules; missing pairs cannot count as agreement.
+  cost: Development/operations/full; moderate data and analysis cost. Quick uses saved sanitized
+    samples; standard/deep expand representative observations.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  authority: Capturing traffic requires data-access authority and retention controls; this entry
+    does not authorize duplication or replay. `observation`, `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 23
+  id: load
+  name: Check behaviour under expected and peak demand
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Establish capacity and failure behaviour as request volume or concurrent work increases.
+  applicability: Establish capacity and failure behaviour as request volume or concurrent work increases.
+  construction:
+  - Model arrival patterns and realistic user mixes; ramp demand; watch saturation, errors and recovery;
+    set stop conditions.
+  tools:
+  - k6, Locust, Gatling, JMeter
+  evidence: Preserve offered versus achieved load and outcome distributions. Meet agreed demand/service
+    objectives and graceful-overload requirements within tested limits.
+  acceptance: Preserve offered versus achieved load and outcome distributions. Meet agreed demand/service
+    objectives and graceful-overload requirements within tested limits.
+  cost: Development/operations/full; high infrastructure cost. Quick uses modest bounded loads; standard
+    tests expected peaks; deep explores capacity boundaries.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - network_write
+  - disruption
+  authority: Require approved target, traffic limits and cost limits; avoid third-party impact. `executable`,
+    `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 24
+  id: shadowing
+  name: Run a candidate beside the serving system
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Observe candidate behaviour on representative live or replayed inputs while the established
+    system remains authoritative.
+  applicability: Observe candidate behaviour on representative live or replayed inputs while the
+    established system remains authoritative.
+  construction:
+  - Isolate candidate side effects; route authorized copies or replays; correlate results; compare
+    correctness and resource use; provide a shutdown path.
+  tools:
+  - service-mesh mirroring, isolated replay harnesses
+  evidence: Preserve input coverage, mismatches and isolation evidence. Candidate results must meet
+    defined rules; traffic representativeness and untested write paths remain explicit.
+  acceptance: Preserve input coverage, mismatches and isolation evidence. Candidate results must
+    meet defined rules; traffic representativeness and untested write paths remain explicit.
+  cost: Development/operations/full; moderate to high duplicated compute. Quick uses recorded inputs;
+    standard/deep require approved observation windows.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - network_write
+  authority: Live duplication and data transfer need authority; suppress email, billing, writes and
+    external calls unless separately approved. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 25
+  id: configuration
+  name: Check valid and invalid operating settings
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Detect unsafe defaults, incompatible combinations, environment drift and missing configuration
+    handling.
+  applicability: Detect unsafe defaults, incompatible combinations, environment drift and missing
+    configuration handling.
+  construction:
+  - Parse schemas; test supported combinations and invalid values; exercise startup, reload and fallback
+    behaviour; inspect secrets handling.
+  tools:
+  - JSON Schema, CUE, policy engines, application harnesses
+  evidence: Preserve sanitized settings and actual behavioural outcomes. Valid settings must produce
+    required behaviour; invalid or unsafe settings must fail as specified. File existence is insufficient.
+  acceptance: Preserve sanitized settings and actual behavioural outcomes. Valid settings must produce
+    required behaviour; invalid or unsafe settings must fail as specified. File existence is insufficient.
+  cost: Development/operations/full; low to moderate. Quick checks changed settings; standard covers
+    supported combinations; deep explores interaction boundaries.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - deployment
+  authority: Read secrets minimally; changing shared or live configuration requires authority and
+    recovery planning. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 26
+  id: soak
+  name: Find faults that emerge over time
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Detect leaks, accumulating state, timer errors and gradual degradation under sustained
+    representative operation.
+  applicability: Detect leaks, accumulating state, timer errors and gradual degradation under sustained
+    representative operation.
+  construction:
+  - Choose duration from suspected failure mechanisms; run stable workloads; track resources and
+    correctness over time; test cleanup and recovery.
+  tools:
+  - load harnesses, process metrics, time-series dashboards
+  evidence: Preserve continuous measurements, interruptions and trends. Meet justified stability
+    criteria across the observed duration; shorter runs cannot establish longer-term stability.
+  acceptance: Preserve continuous measurements, interruptions and trends. Meet justified stability
+    criteria across the observed duration; shorter runs cannot establish longer-term stability.
+  cost: Development/operations/full; high elapsed-time cost. Quick reviews completed evidence; standard/deep
+    schedule bounded runs appropriate to risks.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - network_write
+  authority: Long-lived compute and production exposure require budget and operational authority.
+    `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 27
+  id: canary
+  name: Evaluate a release with limited exposure
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - operations
+  - full
+  kinds:
+  - procedure
+  - executable
+  - observation
+  - human_review
+  purpose: Detect release-specific regressions on an authorized subset before wider rollout.
+  applicability: Detect release-specific regressions on an authorized subset before wider rollout.
+  construction:
+  - Define cohorts, comparable baseline, guardrails and rollback; deploy the candidate within exposure
+    limits; observe enough evidence before deciding.
+  tools:
+  - Argo Rollouts, Flagger, deployment platform controls
+  evidence: Record release identity, exposure, observed metrics and decision. Promotion requires
+    agreed release criteria; insufficient samples remain inconclusive, not successful.
+  acceptance: Record release identity, exposure, observed metrics and decision. Promotion requires
+    agreed release criteria; insufficient samples remain inconclusive, not successful.
+  cost: Operations/full; development can rehearse controls. Standard/deep depend on authorized release
+    windows; quick may inspect existing evidence.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - deployment
+  - live_traffic
+  authority: Deployment, user exposure, promotion and rollback need established authority; profiles
+    do not grant it. `procedure`, `executable`, `observation`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 28
+  id: release_monitoring
+  name: Observe the effects of a particular release
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - operations
+  - full
+  kinds:
+  - observation
+  - procedure
+  - human_review
+  purpose: Connect post-deployment changes in behaviour, incidents and user outcomes to a specific
+    release and decision window.
+  applicability: Connect post-deployment changes in behaviour, incidents and user outcomes to a specific
+    release and decision window.
+  construction:
+  - Mark deployment identity/time; compare suitable baseline and cohorts; track release risks and
+    alerts; assign rollback/escalation ownership.
+  tools:
+  - deployment annotations, Grafana, release dashboards
+  evidence: Retain actual observation windows, signals and decisions. Close release evaluation only
+    when defined criteria and duration are met; a dashboard definition is not evidence of a healthy
+    release.
+  acceptance: Retain actual observation windows, signals and decisions. Close release evaluation
+    only when defined criteria and duration are met; a dashboard definition is not evidence of a
+    healthy release.
+  cost: Operations/full; moderate observation time. Quick reviews existing windows; standard/deep
+    monitor authorized releases with stated limits.
+  profile_hint: standard
+  effects:
+  - local_read
+  - network_read
+  authority: Read-only observation differs from rollback or paging; those actions require existing
+    authority. `observation`, `procedure`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 29
+  id: traffic_shaping
+  name: Verify routing and demand controls
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  - procedure
+  purpose: Check rate limiting, prioritization, routing weights and backpressure under representative
+    demand and failures.
+  applicability: Check rate limiting, prioritization, routing weights and backpressure under representative
+    demand and failures.
+  construction:
+  - Define routing/fairness requirements; test configuration in isolation; generate controlled traffic;
+    measure actual distribution and recovery.
+  tools:
+  - Envoy, NGINX, service meshes, load harnesses
+  evidence: Record realized routing, rejection behaviour and affected clients. Controls must satisfy
+    the agreed policy; configured weights alone do not show actual distribution.
+  acceptance: Record realized routing, rejection behaviour and affected clients. Controls must satisfy
+    the agreed policy; configured weights alone do not show actual distribution.
+  cost: Development/operations/full; moderate cost. Quick validates local behaviour; standard/deep
+    exercise realistic traffic and failures.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - live_traffic
+  - deployment
+  authority: Changing live routes or throttles requires authority, impact bounds and rollback. `executable`,
+    `observation`, `procedure`.
+  subtypes: []
+  qualification: unsupported
+- number: 30
+  id: feature_flags
+  name: Check controlled feature exposure
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  - procedure
+  purpose: Verify targeting, default states, combinations, cached values and safe fallback or disablement.
+  applicability: Verify targeting, default states, combinations, cached values and safe fallback
+    or disablement.
+  construction:
+  - Enumerate supported states and transitions; test evaluations and downstream behaviour; exercise
+    unavailable flag services and kill switches.
+  tools:
+  - OpenFeature SDKs, flag-provider test adapters, application harnesses
+  evidence: Retain evaluated cohorts and behavioural results. Exposure and fallback must match policy,
+    including permission boundaries; configuration alone cannot prove enforcement.
+  acceptance: Retain evaluated cohorts and behavioural results. Exposure and fallback must match
+    policy, including permission boundaries; configuration alone cannot prove enforcement.
+  cost: Development/operations/full; low to moderate. Quick checks changed states; standard covers
+    supported combinations; deep adds transition/failure cases.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - deployment
+  - live_traffic
+  authority: Live flag changes can expose users or change data; require appropriate change authority.
+    `executable`, `observation`, `procedure`.
+  subtypes: []
+  qualification: unsupported
+- number: 31
+  id: exception_tracking
+  name: Verify that failures are captured and actionable
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Check error capture, grouping, context, alerting and redaction across relevant failure
+    paths.
+  applicability: Check error capture, grouping, context, alerting and redaction across relevant failure
+    paths.
+  construction:
+  - Trigger controlled exceptions; trace them through ingestion and grouping; test missing context,
+    rate limiting and sensitive-data handling.
+  tools:
+  - Sentry, Rollbar, OpenTelemetry pipelines
+  evidence: Retain sanitized event receipts and alert outcomes. Required errors must arrive with
+    useful safe context within agreed timing; an installed SDK is insufficient.
+  acceptance: Retain sanitized event receipts and alert outcomes. Required errors must arrive with
+    useful safe context within agreed timing; an installed SDK is insufficient.
+  cost: Development/operations/full; low to moderate. Quick uses a synthetic event; standard/deep
+    cover important failure classes and pipeline failures.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - notification
+  authority: External event submission and notifications need authorized destinations; avoid real
+    secrets and unnecessary paging. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 32
+  id: teeing
+  name: Verify safe duplication of an input stream
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Check that copies sent to a secondary consumer preserve required data without disrupting
+    the primary path; this is transport behaviour, not candidate quality.
+  applicability: Check that copies sent to a secondary consumer preserve required data without disrupting
+    the primary path; this is transport behaviour, not candidate quality.
+  construction:
+  - Define copy semantics, ordering and loss policy; test backpressure, duplicates and secondary
+    failure; verify isolation.
+  tools:
+  - proxies, stream brokers, dedicated duplication harnesses
+  evidence: Record delivery, losses, ordering and primary-path impact. Duplication must meet its
+    contract and preserve primary guarantees; secondary success does not establish semantic agreement.
+  acceptance: Record delivery, losses, ordering and primary-path impact. Duplication must meet its
+    contract and preserve primary guarantees; secondary success does not establish semantic agreement.
+  cost: Development/operations/full; moderate bandwidth/storage cost. Quick uses synthetic streams;
+    standard/deep exercise representative rates and failures.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - network_write
+  authority: Duplication may disclose data or repeat effects; approve destination, retention and
+    suppression of secondary writes. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 33
+  id: profiling
+  name: Locate resource consumption
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  - human_review
+  purpose: Explain CPU, memory, allocation, I/O or contention costs for a specified workload.
+  applicability: Explain CPU, memory, allocation, I/O or contention costs for a specified workload.
+  construction:
+  - Reproduce the workload; select a profiler with known overhead; collect representative samples;
+    relate hotspots to code and verify proposed improvements.
+  tools:
+  - perf, py-spy, cProfile, async-profiler
+  evidence: Preserve profiles, workload and overhead caveats. Findings must support the stated bottleneck
+    claim; resource acceptance comes from project objectives, not the presence of a flame graph.
+  acceptance: Preserve profiles, workload and overhead caveats. Findings must support the stated
+    bottleneck claim; resource acceptance comes from project objectives, not the presence of a flame
+    graph.
+  cost: Development/operations/full; moderate overhead. Quick samples locally; standard targets representative
+    paths; deep investigates sustained or rare events.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - process_attach
+  authority: Production attachment and memory capture require authority and protection of sensitive
+    contents. `executable`, `observation`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 34
+  id: logs_events
+  name: Check diagnostic and domain event records
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Verify that important events are emitted, structured, correlated, retained and safely
+    handled.
+  applicability: Verify that important events are emitted, structured, correlated, retained and safely
+    handled.
+  construction:
+  - Exercise success/failure paths; parse records deterministically; check required fields, ordering
+    assumptions and redaction; simulate sink failure.
+  tools:
+  - structured-log harnesses, Fluent Bit, OpenSearch queries
+  evidence: Retain sanitized observed records and ingestion results. Required events must be accurate
+    and available under the defined contract without prohibited data; configuration alone is insufficient.
+  acceptance: Retain sanitized observed records and ingestion results. Required events must be accurate
+    and available under the defined contract without prohibited data; configuration alone is insufficient.
+  cost: Development/operations/full; low to moderate. Quick checks changed events; standard covers
+    key flows; deep examines loss and retention behaviour.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  authority: Access and export need data authority; tests must not fabricate real business events
+    in authoritative systems. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 35
+  id: chaos
+  name: Test resilience to controlled disruption
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - procedure
+  - observation
+  purpose: Examine recovery and containment under explicitly scoped infrastructure or dependency
+    failures.
+  applicability: Examine recovery and containment under explicitly scoped infrastructure or dependency
+    failures.
+  construction:
+  - State a resilience hypothesis; establish steady state; inject one bounded fault; monitor guardrails;
+    abort and restore; expand only with evidence.
+  tools:
+  - Chaos Mesh, LitmusChaos, Toxiproxy
+  evidence: Preserve fault timing, blast radius, recovery observations and cleanup. Meet defined
+    resilience objectives and restore expected state; an interrupted experiment is reported honestly.
+  acceptance: Preserve fault timing, blast radius, recovery observations and cleanup. Meet defined
+    resilience objectives and restore expected state; an interrupted experiment is reported honestly.
+  cost: Development/operations/full; potentially high risk/cost. Quick can use local fault injection;
+    standard/deep require suitable approved environments.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - disruption
+  - network_write
+  authority: Fault injection needs explicit target and disruption authority with stop and recovery
+    controls. `executable`, `procedure`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 36
+  id: operational_monitoring
+  name: Check continuing service health
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - operations
+  - full
+  kinds:
+  - observation
+  - executable
+  - procedure
+  purpose: Observe ongoing availability, capacity, correctness and service objectives independently
+    of a particular release.
+  applicability: Observe ongoing availability, capacity, correctness and service objectives independently
+    of a particular release.
+  construction:
+  - Define service indicators and owners; validate collection and alert delivery with safe probes;
+    inspect missing data, noise and escalation behaviour.
+  tools:
+  - Prometheus, Grafana, synthetic probes, alert managers
+  evidence: Retain observed windows, probe outcomes and alert receipts. Required signals and response
+    paths must work; silent or missing telemetry cannot establish health.
+  acceptance: Retain observed windows, probe outcomes and alert receipts. Required signals and response
+    paths must work; silent or missing telemetry cannot establish health.
+  cost: Operations/full, with development rehearsals; continuing storage and staffing cost. Profiles
+    bound review windows, not claims about unobserved periods.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - notification
+  authority: Reading metrics differs from changing monitors or paging people; obtain authority for
+    changes and notifications. `observation`, `executable`, `procedure`.
+  subtypes: []
+  qualification: unsupported
+- number: 37
+  id: ab_experiment
+  name: Estimate the effect of a controlled change
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - operations
+  - full
+  kinds:
+  - procedure
+  - executable
+  - observation
+  - human_review
+  purpose: Compare user or system outcomes through a justified experimental design when randomization
+    and measurement are suitable.
+  applicability: Compare user or system outcomes through a justified experimental design when randomization
+    and measurement are suitable.
+  construction:
+  - Specify hypothesis, assignment unit, power assumptions, outcomes and guardrails; validate randomization
+    and instrumentation; define analysis and stopping before exposure.
+  tools:
+  - experimentation platforms, statistical notebooks, assignment tests
+  evidence: Preserve assignment checks, analysis, uncertainty and deviations. Apply the agreed decision
+    rule; inconclusive evidence remains inconclusive and significance alone does not establish practical
+    value.
+  acceptance: Preserve assignment checks, analysis, uncertainty and deviations. Apply the agreed
+    decision rule; inconclusive evidence remains inconclusive and significance alone does not establish
+    practical value.
+  cost: Operations/full, with development design and simulation; potentially high duration/sample
+    cost. Quick reviews prior evidence; standard/deep depend on design needs.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - live_traffic
+  - network_read
+  authority: User exposure, personal data and treatment changes require appropriate authorization
+    and applicable consent. `procedure`, `executable`, `observation`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 38
+  id: tracing
+  name: Follow work across system boundaries
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - observation
+  purpose: Verify that distributed operations can be correlated and diagnosed across services, queues
+    and retries.
+  applicability: Verify that distributed operations can be correlated and diagnosed across services,
+    queues and retries.
+  construction:
+  - Instrument required spans and propagation; run representative flows; test asynchronous boundaries,
+    sampling and redaction; inspect traces.
+  tools:
+  - OpenTelemetry, Jaeger, Tempo
+  evidence: Retain sanitized trace examples and completeness findings. Required paths must be reconstructable
+    within the agreed sampling policy; installed instrumentation alone is insufficient.
+  acceptance: Retain sanitized trace examples and completeness findings. Required paths must be reconstructable
+    within the agreed sampling policy; installed instrumentation alone is insufficient.
+  cost: Development/operations/full; moderate storage/overhead. Quick checks changed paths; standard
+    covers key journeys; deep tests gaps and failure propagation.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  authority: Export destinations and sensitive attributes need authorized handling; live sampling
+    changes can affect cost and privacy. `executable`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 39
+  id: dynamic_exploration
+  name: Investigate behaviour through guided exploration
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - procedure
+  - human_review
+  - agent_review
+  - executable
+  purpose: Discover unanticipated interactions where fixed scenarios leave meaningful uncertainty;
+    includes bounded agent-assisted exploration.
+  applicability: Discover unanticipated interactions where fixed scenarios leave meaningful uncertainty;
+    includes bounded agent-assisted exploration.
+  construction:
+  - Set a charter, environment and action limits; explore states; record actions and observations;
+    convert reproducible findings into tests.
+  tools:
+  - browser/CLI exploration, model-based explorers, approved agent harnesses
+  evidence: Preserve reproducible paths and unresolved hypotheses. Close the scoped exploration only
+    against its coverage/learning objectives; absence of discoveries is not proof of correctness.
+  acceptance: Preserve reproducible paths and unresolved hypotheses. Close the scoped exploration
+    only against its coverage/learning objectives; absence of discoveries is not proof of correctness.
+  cost: Development/operations/full; variable human/compute cost. Quick uses a narrow charter; standard/deep
+    expand bounded areas.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  - network_write
+  authority: Enforce permissions outside the explorer; do not allow inferred permission for destructive
+    or external actions. `procedure`, `human_review`, `agent_review`, `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 40
+  id: real_user_monitoring
+  name: Observe experience in actual use
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - operations
+  - full
+  kinds:
+  - observation
+  - executable
+  - human_review
+  purpose: Measure real-world performance, failures and interaction outcomes across supported user
+    contexts.
+  applicability: Measure real-world performance, failures and interaction outcomes across supported
+    user contexts.
+  construction:
+  - Define necessary signals and privacy constraints; validate instrumentation with controlled sessions;
+    inspect sampling and cohort gaps; analyse actual observations.
+  tools:
+  - browser performance APIs, consent-aware RUM platforms
+  evidence: Preserve aggregate observations, sampling limitations and collection checks. Evaluate
+    against experience objectives across relevant cohorts; absent or biased data cannot establish
+    success.
+  acceptance: Preserve aggregate observations, sampling limitations and collection checks. Evaluate
+    against experience objectives across relevant cohorts; absent or biased data cannot establish
+    success.
+  cost: Operations/full, with development instrumentation checks; ongoing privacy/storage cost. Profiles
+    bound analysis scope and observation duration.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  authority: Collection, identifiers, recordings and external transfers require appropriate authorization
+    and consent; minimize data. `observation`, `executable`, `human_review`.
+  subtypes: []
+  qualification: unsupported
+- number: 41
+  id: auditing
+  name: Verify accountable records and controls
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - observation
+  - procedure
+  - human_review
+  - executable
+  purpose: Establish whether important actions, permissions and changes can be reconstructed and
+    assessed against agreed obligations.
+  applicability: Establish whether important actions, permissions and changes can be reconstructed
+    and assessed against agreed obligations.
+  construction:
+  - Identify required records and controls; sample real authorized transactions; test missing/tampered
+    records and access controls; reconcile independent sources.
+  tools:
+  - audit-log queries, signed records, control checklists
+  evidence: Retain protected evidence references, discrepancies and reviewer conclusions. Required
+    controls need observed supporting evidence; a policy document or logging setting does not prove
+    operation or compliance.
+  acceptance: Retain protected evidence references, discrepancies and reviewer conclusions. Required
+    controls need observed supporting evidence; a policy document or logging setting does not prove
+    operation or compliance.
+  cost: Development/operations/full; moderate to high review cost. Quick inspects narrow changes;
+    standard/deep broaden periods and samples with stated limits.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  - network_read
+  authority: Access confidential records minimally; altering retention, permissions or authoritative
+    records requires separate authority. `observation`, `procedure`, `human_review`, `executable`.
+  subtypes: []
+  qualification: unsupported
+- number: 42
+  id: on_call_experience
+  name: Check whether responders can diagnose and recover
+  original_phase: null
+  original_phase_note: The available source text does not establish the original diagram grouping.
+  focuses:
+  - operations
+  - full
+  kinds:
+  - procedure
+  - human_review
+  - observation
+  purpose: Assess alert clarity, runbook usability, access, escalation and recovery burden for the
+    people who operate the service.
+  applicability: Assess alert clarity, runbook usability, access, escalation and recovery burden
+    for the people who operate the service.
+  construction:
+  - Agree safe drills or review real incidents; involve intended responders; time and observe diagnosis/recovery;
+    record obstacles and follow-up actions.
+  tools:
+  - tabletop exercises, staging drills, incident review records
+  evidence: Preserve responder observations and drill/incident outcomes. Meet agreed response and
+    usability expectations; runbook existence or agent walkthrough alone cannot validate responder
+    experience.
+  acceptance: Preserve responder observations and drill/incident outcomes. Meet agreed response and
+    usability expectations; runbook existence or agent walkthrough alone cannot validate responder
+    experience.
+  cost: Operations/full, with development rehearsals; meaningful staff time. Quick reviews existing
+    evidence; standard/deep require scheduled participation.
+  profile_hint: standard
+  effects:
+  - local_read
+  - notification
+  - disruption
+  authority: Contacting responders, triggering pages or disrupting systems requires explicit authority;
+    simulations must be identified as simulations. `procedure`, `human_review`, `observation`.
+  subtypes: []
+  qualification: unsupported
+- number: 43
+  id: independent_verification
+  name: Obtain a check with credible independence
+  original_phase: cross_cutting
+  original_phase_note: Independent verification is the added cross-cutting capability.
+  focuses:
+  - development
+  - operations
+  - full
+  kinds:
+  - executable
+  - human_review
+  - agent_review
+  - procedure
+  purpose: Reduce shared blind spots for consequential claims through an independent reviewer, implementation,
+    dataset or method.
+  applicability: Reduce shared blind spots for consequential claims through an independent reviewer,
+    implementation, dataset or method.
+  construction:
+  - Define the claim and required independence; provide evidence without prescribing the conclusion;
+    reproduce or challenge results; reconcile disagreements.
+  tools:
+  - separate test harnesses, reference implementations, specialist review, authorized agent review
+  evidence: Record reviewer/method provenance, shared dependencies and findings. Required independent
+    checks must support the claim or leave disagreements unresolved; a second agent is not automatically
+    independent evidence.
+  acceptance: Record reviewer/method provenance, shared dependencies and findings. Required independent
+    checks must support the claim or leave disagreements unresolved; a second agent is not automatically
+    independent evidence.
+  cost: Development/operations/full; moderate to high cost. Quick may check a narrow claim; standard/deep
+    broaden independence and evidence proportionate to consequences.
+  profile_hint: standard
+  effects:
+  - local_read
+  - disposable_write
+  authority: Sharing source or data and engaging reviewers require authorization; required human
+    expertise cannot be replaced by an agent. `executable`, `human_review`, `agent_review`, `procedure`.
+  subtypes:
+  - analytical_reference
+  - convergence
+  - metamorphic
+  - differential
+  - empirical_validation
+  qualification: unsupported

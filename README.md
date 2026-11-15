@@ -8,6 +8,10 @@ The skills are intended for practical coding, modelling, AI/ML, research, review
 
 ## Latest changes
 
+- Added `$rb-build-test-suite` and `$rb-audit-test-suite`. One builder invocation now handles test construction, independent audit, authorized repairs and final verification for every suite build or extension. The default limit is three assessment rounds; missing evidence or unresolved findings remain incomplete. See [building and auditing test suites](#building-and-auditing-test-suites).
+- Added the [periodic heat example](examples/periodic-heat/README.md), with deterministic developer tests, independent mathematical checks and deliberate-fault experiments. Its [recorded results](examples/periodic-heat/EVIDENCE.md) distinguish numerical verification from empirical validity.
+- The narrow local test coordinator now checks retained command-log hashes before acceptance. CI retains raw audit evidence on failure. This coordinator is separate from the deferred full assurance runner; see the [review and repairs](docs/test-suite-system/fresh-review.md).
+
 - Refined `$rb-discuss` into a focused user interview with options, grounded recommendations, and clickable choices where supported. Continuation and handoff skills preserve settled decisions and keep technical investigations out of the interview workflow. See the [change and validation record](docs/discussion-interviews-2026-10-08.md).
 
 - Added a separate Claude profile with generated skill copies, native manual-only controls, and user-selected subagent models. Codex skill sources and model defaults are unchanged.
@@ -61,7 +65,7 @@ Codex detects skill changes automatically. Restart only when a new or changed sk
 
 ## Claude Code compatibility
 
-The Claude profile installs **29 skills**: 28 derived from the shared procedures plus a Claude-specific `rb-delegate`. It excludes the Codex token reporter and the four constrained-runtime/policy skills. Codex continues using the original top-level sources, metadata, model defaults, and symlink installation.
+The Claude profile installs **31 skills**: 30 derived from the shared procedures plus a Claude-specific `rb-delegate`. It excludes the Codex token reporter and the four constrained-runtime/policy skills. Codex continues using the original top-level sources, metadata, model defaults, and symlink installation.
 
 From the repository root, preview and install:
 
@@ -90,12 +94,28 @@ See the [compatibility and maintenance guide](docs/claude-code-compatibility.md)
 
 ## Repository layout
 
-- Active skills are the top-level `rb-*` directories that contain a `SKILL.md` file.
+- The 36 active skills are the top-level `rb-*` directories that contain a `SKILL.md` file.
 - Cross-skill routing cases and consistency checks live in `evals/skill-routing/`.
-- Worked examples and their verification notes live in `examples/`.
-- Detailed shared guidance and generated explanatory material live in `docs/`.
+- Worked examples and their verification notes live in [`examples/`](examples/README.md).
+- Current guides, design baselines and dated validation records are indexed in [`docs/`](docs/README.md).
 - Historical skills live in `retired-skills/` and are excluded from normal installation.
 - `.github/workflows/validate-skills.yml` is the authoritative repository validation workflow.
+
+[`rb-build-test-suite`](rb-build-test-suite/SKILL.md) is available as an
+instructions-and-references edition covering all 43 capabilities, routine adoption,
+change-impact review and module/evidence/HTML contracts. Its default project
+workflow reuses existing tools and native reports with a compact evidence note;
+the full assurance workflow applies when required. It does not bundle an
+executable runner, adapters or renderer. The broader [implementation plan](docs/rb-build-test-suite-specification/IMPLEMENTATION_PLAN.md)
+is deferred; partial executable work is preserved under `development/rb-build-test-suite/`.
+
+One invocation handles every build or extension and automatically invokes
+[`rb-audit-test-suite`](rb-audit-test-suite/SKILL.md). Two reasoning roles write
+and challenge deterministic tests. The auditor skill includes a small local
+coordinator for command failures, candidate-bound review and bounded repair
+rounds. The host dispatches the agents; the coordinator does not call LLMs or
+implement the full assurance runner. The user need not alternate skill calls. See
+[the paired workflow](rb-audit-test-suite/references/paired-workflow.md).
 
 ## Starting Project Work
 
@@ -114,6 +134,7 @@ The routing rule is:
 
 | Task state | Workflow |
 | --- | --- |
+| Scientific, algorithmic or novelty premise needs assessment before planning | `rb-research-question-gate` |
 | Interview about goals or consequential requirements needing user judgement | `rb-discuss` |
 | Product or feature needs a durable requirements document | `rb-create-prd` |
 | Sufficiently understood idea needs a top-level plan | `rb-create-implementation-plan` |
@@ -121,6 +142,8 @@ The routing rule is:
 | Existing plan needs PRD-aligned sprint review and evidence-driven replanning | `rb-sprint` |
 | Agreed bounded ordinary change | `rb-implement-with-tests` |
 | Agreed scientific, numerical, modelling, simulation, stochastic, or domain-sensitive change | `rb-tdd-scientific-code` |
+| Create or extend reusable test infrastructure, including its independent audit and repairs | `rb-build-test-suite` |
+| Independently assess whether existing tests catch specified defects | `rb-audit-test-suite` |
 | Unknown bug, regression, failing test, flaky test, or surprising output | `rb-diagnose` |
 | Neutral repository orientation | `rb-explain-codebase` |
 | Structural critique | `rb-architecture-review` |
@@ -189,6 +212,36 @@ The skills do not impose a universal coverage percentage. They preserve existing
 
 Tests must not be deleted, weakened, skipped, quarantined, or repeatedly rerun until green merely to complete a task. Intermittent failures are defects to diagnose.
 
+## Building and Auditing Test Suites
+
+For a new suite or an extension, invoke one skill:
+
+```text
+Codex: $rb-build-test-suite
+Claude Code: /rb-build-test-suite
+```
+
+Give it the project and the behaviours to verify. The host builds executable
+tests, invokes a separate auditor using `rb-audit-test-suite`, repairs tests and
+test infrastructure within the authorized scope, reruns required checks and obtains
+review of the exact final candidate. You do not need to invoke the second skill
+or request each repair cycle. Claude still requires a model choice when none has
+already been authorized for the task.
+
+The default is three total assessment rounds: the initial assessment and up to
+two repairs. The existing local coordinator or equivalent CI must preserve failures
+and enforce acceptance. Missing delegation, unresolved criteria, insufficient
+authority or exhausted rounds produce an incomplete result. An explicit request
+for planning-only or no audit takes precedence and yields a partial deliverable.
+Application changes and deployment need their own authority.
+
+Invoke `rb-audit-test-suite` directly for an audit of existing tests; that alone
+does not authorize repairs. Routine execution of an adopted suite uses its saved
+command rather than rebuilding it. Scientific checks, failure evidence and exact
+candidate identity remain required even in the lightweight project workflow.
+See the [workflow and current evidence](docs/test-suite-system/README.md) and the
+[new numerical example](examples/periodic-heat/README.md).
+
 ## Cost-Aware Delegation
 
 `$rb-delegate` may be selected automatically alongside the skill that owns a substantial Codex task. It applies only when a subtask has a bounded objective and context, produces an independently verifiable result, and is expected to save more work than briefing and review will add. Users may also invoke it directly in Codex.
@@ -214,6 +267,8 @@ The parent sends the minimum self-contained context, checks the returned artifac
 | `$rb-create-implementation-plan` | A sufficiently understood idea needs a top-level plan with `[ ]`, `[x]`, and `[v]` task states, testing architecture, risks, success criteria, and route choice. |
 | `$rb-execute-plan` | An existing multi-step plan should be followed linearly under standard conditions by default, with `[ ]`, `[x]`, and `[v]` task status, test coverage, independent sub-agent review for substantial/high-risk/cross-cutting work or explicit gates before `[v]`, CI-equivalent checks, and verification. |
 | `$rb-sprint` | An existing plan needs bounded PRD-aligned sprints; it preserves the plan by default and permits only the smallest authorised delta that passes the evidence gate. |
+| `$rb-build-test-suite` | Build reusable tests, automatically invoke the independent auditor, repair issues and verify the final suite from one invocation. |
+| `$rb-audit-test-suite` | Independently challenge test suites with healthy/faulty controls, historical regressions and failure-propagation checks; coordinate bounded repairs when authorized. |
 | `$rb-implement-with-tests` | One agreed ordinary change is ready for automated behavioural tests, appropriate test-level selection, and review+fix. |
 | `$rb-tdd-scientific-code` | Scientific or numerical work needs test-first units, invariants, tolerances, benchmarks, stochastic checks, integration coverage, and review. |
 | `$rb-diagnose` | A bug, regression, flaky test, or surprising output needs evidence-led root-cause work before a fix. |
@@ -266,13 +321,20 @@ The authoritative CI workflow validates:
 
 - Python compilation and JSON syntax;
 - the complete behavioural-eval manifest structure, including cases, evaluator fields, and duplicate IDs;
-- instruction contracts and cross-file consistency;
+- skill metadata, instruction contracts and cross-file consistency;
+- skill/exporter/setup regressions, packaged test-suite reference schemas, and the local test coordinator and numerical audit example;
 - publication hygiene;
 - the full constrained-runtime test suite, including setup and tamper gates, without skipped tests;
 - runtime schema drift and generated-schema mirrors; and
 - constrained-runtime support under Python 3.10 and 3.12.
 
-Run the standard local checks from the repository root with Python 3.10 or newer:
+Manifest validation checks evaluation definitions; it does not execute the model
+trials they describe. The workflow uploads `validation-output/` even on failure,
+including the numerical audit’s child receipts and parent JUnit report. The
+periodic heat example is a separate recorded local trial, not a current CI job.
+
+Run these general local checks from the repository root with Python 3.10 or newer.
+They are a subset of CI; additional test-suite and constrained-runtime checks follow:
 
 ```bash
 python3 evals/skill-routing/validate_instruction_contracts.py \
@@ -281,13 +343,36 @@ python3 evals/skill-routing/validate_consistency_contracts.py \
   evals/skill-routing/consistency-contracts.json
 python3 evals/skill-routing/validate_routing_eval.py \
   evals/skill-routing/eval-plan.json
-for manifest in rb-*/evals/eval-plan.json; do
-  python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest"
+for manifest in rb-*/evals/eval-plan.json platforms/claude/skills/*/evals/eval-plan.json; do
+  python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest" || exit 1
 done
+python3 -m unittest discover -s evals/skill-routing/tests -p 'test_*.py'
 ruby evals/skill-routing/validate_skill_metadata.rb
 python3 evals/skill-routing/validate_publication_hygiene.py
 git diff --check
 ```
+
+For changes to the test-suite skills, run the checks below in a project-local
+virtual environment with the pinned dependencies installed. CI uses Python 3.12
+for these checks. The owned temporary directory retains native evidence and avoids
+clearing unrelated pytest files:
+
+```bash
+python3 -m pip install -r docs/rb-build-test-suite-specification/checks/requirements.txt \
+  -r rb-audit-test-suite/examples/numerical/requirements.txt
+python3 -m unittest discover -s docs/rb-build-test-suite-specification/checks -p 'test_*.py'
+python3 -m unittest discover -s rb-audit-test-suite/tests -p 'test_*.py'
+rb_validation_dir="$(mktemp -d "${TMPDIR:-/tmp}/rb-skills-validation.XXXXXX")"
+python3 -m pytest -c rb-audit-test-suite/examples/numerical/pytest.ini \
+  rb-audit-test-suite/examples/numerical/audit -q \
+  --basetemp="$rb_validation_dir/pytest" --evidence="$rb_validation_dir/audit-evidence" \
+  --junitxml="$rb_validation_dir/audit.xml"
+```
+
+Run the [periodic heat example's saved checks](examples/periodic-heat/README.md)
+when changing that example; its final acceptance also requires actual independent
+review. These examples verify stated requirements and selected fault classes,
+not a universal probability of correctness.
 
 Runtime, schema, launcher, or cross-cutting constrained-workflow changes also require the full constrained-runtime suite and schema checks from `.github/workflows/validate-skills.yml`. Install its exact locked dependencies as the workflow does. The setup and tamper tests also require an approved wheelhouse through `RB_SAFE_OPERATION_TEST_WHEELHOUSE`; repository CI prepares the reviewed Linux wheelhouse automatically.
 

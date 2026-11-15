@@ -1,0 +1,37 @@
+{
+  "status": "verified_local",
+  "round": 2,
+  "candidate_digest": "6094d9b93d23193e32d67050f42f91c2136f3f2135e65bed83e1a6142022eb68",
+  "required_commands_passed": 10,
+  "tests": {
+    "project": 78,
+    "audit": 27,
+    "helper": 14
+  },
+  "selected_faults_detected": 10,
+  "coverage": {
+    "covered_lines": 47,
+    "num_statements": 53,
+    "percent_covered": 89.85507246376811,
+    "percent_covered_display": "90",
+    "missing_lines": 6,
+    "excluded_lines": 0,
+    "percent_statements_covered": 88.67924528301887,
+    "percent_statements_covered_display": "89",
+    "num_branches": 16,
+    "num_partial_branches": 1,
+    "covered_branches": 15,
+    "missing_branches": 1,
+    "percent_branches_covered": 93.75,
+    "percent_branches_covered_display": "94"
+  },
+  "model_sha256": "1f18920c8ba60603d2ca47fc863b79715b56fbc8a9eb67d0110f4bd0dcddc104",
+  "reviewer": "/root/heat_auditor",
+  "limitations": [
+    "bounded local verification, not empirical validation",
+    "selected faults, not exhaustive defect coverage",
+    "CLI tested in subprocesses but excluded from parent coverage",
+    "same model family and shared filesystem",
+    "hosted CI and other environments unrun"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "python": "3.14.2",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "checks": {
+    "strict_integer_accepts": true,
+    "rejects_string": true,
+    "rejects_boolean": true,
+    "rejects_extra_field": true,
+    "model_schema_valid": true,
+    "safe_yaml_mapping": true,
+    "unsafe_yaml_tag_rejected": true,
+    "calendar_format_asserted": true
+  },
+  "versions": {
+    "pydantic": "2.12.5",
+    "PyYAML": "6.0.3",
+    "jsonschema": "4.26.0"
+  }
+}

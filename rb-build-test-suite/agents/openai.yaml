@@ -1,0 +1,4 @@
+interface:
+  display_name: "RB Build Test Suite"
+  short_description: "Build, independently audit and repair project tests"
+  default_prompt: "Use $rb-build-test-suite to build or extend this project's reusable tests and handle the whole loop from one invocation: automatically invoke a separate $rb-audit-test-suite agent, repair authorized test issues, rerun checks and obtain current-candidate review. Do not ask me to invoke each skill or repair cycle. Default to existing tools, native reports and a compact evidence note; use the assurance workflow when required. Enforce the bounded coordinator, three total assessment rounds by default, all 43 capability dispositions and final-candidate safeguards. Report incomplete acceptance when blocked or exhausted. This edition provides instructions and contracts, not a bundled executable runner."

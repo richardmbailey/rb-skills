@@ -1,0 +1,66 @@
+{
+  "kind": "portable_publication_check_summary",
+  "status": "verified_local",
+  "candidate_digest": "3d8a6fdc2e38a0c835a780d6de83841f83cda7bfee706b12e2a054cdef41c84a",
+  "round": 1,
+  "authority": "User requested final check, commit and push after the original completed two-round trial. This new assessment covers a portable documentation spelling change; prior evidence is preserved.",
+  "change_from_original_trial": "AUDIT_PLAN.md interpreter path made portable; numerical source/tests/config/criteria unchanged.",
+  "required_checks": [
+    {
+      "id": "project-tests",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "coverage-json",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "coverage-report",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "ruff",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "format",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "types",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "independent-audit",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "reused-evidence-helper-controls",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "project-identity-and-outcomes",
+      "outcome": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "audit-identity-and-outcomes",
+      "outcome": "passed",
+      "exit_code": 0
+    }
+  ],
+  "project_tests": 78,
+  "audit_checks": 27,
+  "reused_helper_checks": 14,
+  "selected_faults_detected": 10,
+  "independent_review": "Actual original auditor approved this candidate; cooperative host attestation.",
+  "raw_evidence": "Local ignored evidence/release-session and evidence/release-review.json; this summary is not the raw command record."
+}

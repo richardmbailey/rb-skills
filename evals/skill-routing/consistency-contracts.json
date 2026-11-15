@@ -55,7 +55,9 @@
         "allow_implicit_invocation: false",
         "Do not select it automatically"
       ],
-      "forbidden": ["allow_implicit_invocation: true"]
+      "forbidden": [
+        "allow_implicit_invocation: true"
+      ]
     },
     {
       "path": "README.md",
@@ -115,7 +117,7 @@
         "Denied state is recorded as unobserved"
       ],
       "forbidden": [
-        "preserve the model’s ability to solve a bounded coding problem",
+        "preserve the model\u2019s ability to solve a bounded coding problem",
         "preserve the model's ability to solve a bounded coding problem"
       ]
     },
@@ -140,8 +142,12 @@
     },
     {
       "path": "rb-safe-operation/runtime/pyproject.toml",
-      "required": ["requires-python = \">=3.10\""],
-      "forbidden": ["requires-python = \">=3.9\""]
+      "required": [
+        "requires-python = \">=3.10\""
+      ],
+      "forbidden": [
+        "requires-python = \">=3.9\""
+      ]
     },
     {
       "path": "rb-safe-operation/runtime/requirements.lock",
@@ -157,13 +163,31 @@
     },
     {
       "path": "rb-safe-operation/scripts/setup_runtime.py",
-      "required": ["(3, 10, 0)", "expected >=3.10", "PYDANTIC_AI_VERSION = \"2.19.0\"", "OPENAI_VERSION = \"2.45.0\"", "TIKTOKEN_VERSION = \"0.12.0\""],
-      "forbidden": ["(3, 9, 0)", "expected >=3.9"]
+      "required": [
+        "(3, 10, 0)",
+        "expected >=3.10",
+        "PYDANTIC_AI_VERSION = \"2.19.0\"",
+        "OPENAI_VERSION = \"2.45.0\"",
+        "TIKTOKEN_VERSION = \"0.12.0\""
+      ],
+      "forbidden": [
+        "(3, 9, 0)",
+        "expected >=3.9"
+      ]
     },
     {
       "path": "rb-safe-operation/scripts/run_runtime.py",
-      "required": ["(3, 10, 0)", "expected >=3.10", "unsupported_pydantic_ai_version", "unsupported_openai_provider_version", "OpenAIResponsesModel"],
-      "forbidden": ["(3, 9, 0)", "expected >=3.9"]
+      "required": [
+        "(3, 10, 0)",
+        "expected >=3.10",
+        "unsupported_pydantic_ai_version",
+        "unsupported_openai_provider_version",
+        "OpenAIResponsesModel"
+      ],
+      "forbidden": [
+        "(3, 9, 0)",
+        "expected >=3.9"
+      ]
     },
     {
       "path": "rb-safe-operation/references/runtime-contract.md",
@@ -187,7 +211,9 @@
         "Fixed Project Policy",
         "policy-apply"
       ],
-      "forbidden": ["Supported Python: 3.9 or newer"]
+      "forbidden": [
+        "Supported Python: 3.9 or newer"
+      ]
     },
     {
       "path": "rb-create-low-level-plan/SKILL.md",
@@ -198,7 +224,9 @@
         "`runtime_observation`",
         "`external_observation`"
       ],
-      "forbidden": ["exact read and check actions"]
+      "forbidden": [
+        "exact read and check actions"
+      ]
     },
     {
       "path": "rb-assess-plan-safety/SKILL.md",
@@ -238,7 +266,9 @@
         "compare-and-swap",
         "prospective"
       ],
-      "forbidden": ["operating-system sandbox"]
+      "forbidden": [
+        "operating-system sandbox"
+      ]
     },
     {
       "path": "rb-continue-project/SKILL.md",
@@ -267,7 +297,9 @@
     },
     {
       "path": "rb-safe-operation/runtime/src/rb_safe_operation/__init__.py",
-      "required": ["install_policy_guard"],
+      "required": [
+        "install_policy_guard"
+      ],
       "forbidden": []
     },
     {
@@ -318,7 +350,11 @@
         "execution_lease_present",
         "unsupported_verification_mode"
       ],
-      "forbidden": ["os.environ", "getenv(", "pip install"]
+      "forbidden": [
+        "os.environ",
+        "getenv(",
+        "pip install"
+      ]
     },
     {
       "path": "rb-safe-operation/runtime/tests/test_readiness.py",
@@ -341,11 +377,78 @@
       "forbidden": [
         "allow_implicit_invocation: false"
       ]
+    },
+    {
+      "path": "rb-build-test-suite/agents/openai.yaml",
+      "required": [
+        "$rb-build-test-suite",
+        "Default to existing tools, native reports and a compact evidence note",
+        "instructions and contracts, not a bundled executable runner",
+        "whole loop from one invocation",
+        "automatically invoke a separate $rb-audit-test-suite agent",
+        "Do not ask me to invoke each skill or repair cycle."
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-build-test-suite/references/assurance-contract.md",
+      "required": [
+        "completion: incomplete",
+        "unresolved_behavior_ids",
+        "--no-fix --no-fix-only",
+        "same-count substitution"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-audit-test-suite/agents/openai.yaml",
+      "required": [
+        "$rb-audit-test-suite",
+        "historical regressions",
+        "bounded local coordinator"
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-audit-test-suite/references/paired-workflow.md",
+      "required": [
+        "three total assessments",
+        "no automated agent-dispatch integration",
+        "does not reinterpret an arbitrary nonzero exit",
+        "both roles have defined their required commands",
+        "whole workflow, including for non-scientific projects",
+        "The host initiates this cycle; do not wait for another user invocation."
+      ],
+      "forbidden": []
+    },
+    {
+      "path": "rb-audit-test-suite/references/coordinator.md",
+      "required": [
+        "stdout_sha256",
+        "stderr_sha256",
+        "Older sessions without these log hashes are rejected.",
+        "validation-output/test-audit-evidence/"
+      ],
+      "forbidden": []
     }
   ],
   "skill_metadata_contracts": [
-    {"skill": "rb-start-project", "required": ["testing", "CI-equivalent", "route"]},
-    {"skill": "rb-continue-project", "required": ["testing", "CI-equivalent", "route"]},
+    {
+      "skill": "rb-start-project",
+      "required": [
+        "testing",
+        "CI-equivalent",
+        "route"
+      ]
+    },
+    {
+      "skill": "rb-continue-project",
+      "required": [
+        "testing",
+        "CI-equivalent",
+        "route"
+      ]
+    },
     {
       "skill": "rb-create-implementation-plan",
       "required": [
@@ -355,7 +458,15 @@
         "only when requested"
       ]
     },
-    {"skill": "rb-create-prd", "required": ["product requirements document", "implementation planning", "success measures", "decisions"]},
+    {
+      "skill": "rb-create-prd",
+      "required": [
+        "product requirements document",
+        "implementation planning",
+        "success measures",
+        "decisions"
+      ]
+    },
     {
       "skill": "rb-execute-plan",
       "required": [
@@ -379,22 +490,146 @@
         "authorised human decisions"
       ]
     },
-    {"skill": "rb-implement-with-tests", "required": ["automated behavioural tests", "test levels", "CI-equivalent"]},
-    {"skill": "rb-tdd-scientific-code", "required": ["test levels", "invariants", "CI-equivalent"]},
-    {"skill": "rb-diagnose", "required": ["regression test", "flaky"]},
-    {"skill": "rb-review-pr-or-diff", "required": ["wrongly levelled", "flaky", "CI"]},
-    {"skill": "rb-delegate", "required": ["substantial Codex tasks", "bounded", "independently verifiable", "completion judgement"]},
-    {"skill": "rb-multi-agent-systems", "required": ["test", "transition", "held-out"]},
-    {"skill": "rb-language", "required": ["ordinary user-facing prose", "draft or lightly edit", "more specific skill", "substantive revision", "$rb-revise-ai-draft"]},
-    {"skill": "rb-revise-ai-draft", "required": ["substantive revision", "supplied AI-like draft", "preserve its meaning", "detector evasion", "$rb-language"]},
-    {"skill": "rb-simplify-language", "required": ["Manual invocation only", "explicitly requests", "Claude Code", "agent-facing control text", "any text", "Do not select"]},
-    {"skill": "rb-project-language", "required": ["shared project vocabulary", "CONTEXT.md", "domain terms", "general repository orientation", "do not expand terminology work into orchestration design"]},
-    {"skill": "rb-create-low-level-plan", "required": ["static", "mode::description", "unsupported", "proposal"]},
-    {"skill": "rb-assess-plan-safety", "required": ["verification-mode", "safe false", "static-only", "patch"]},
-    {"skill": "rb-safe-operation", "required": ["static_file_state", "static", "stop", "proposal"]},
-    {"skill": "rb-create-safe-operation-policy", "required": ["fixed", "natural-language", "path policy"]},
-    {"skill": "rb-end-session", "required": ["test levels", "CI", "residual"]},
-    {"skill": "rb-working-diary", "required": ["test levels", "CI-equivalent", "residual"]}
+    {
+      "skill": "rb-implement-with-tests",
+      "required": [
+        "automated behavioural tests",
+        "test levels",
+        "CI-equivalent"
+      ]
+    },
+    {
+      "skill": "rb-tdd-scientific-code",
+      "required": [
+        "test levels",
+        "invariants",
+        "CI-equivalent"
+      ]
+    },
+    {
+      "skill": "rb-diagnose",
+      "required": [
+        "regression test",
+        "flaky"
+      ]
+    },
+    {
+      "skill": "rb-review-pr-or-diff",
+      "required": [
+        "wrongly levelled",
+        "flaky",
+        "CI"
+      ]
+    },
+    {
+      "skill": "rb-delegate",
+      "required": [
+        "substantial Codex tasks",
+        "bounded",
+        "independently verifiable",
+        "completion judgement"
+      ]
+    },
+    {
+      "skill": "rb-multi-agent-systems",
+      "required": [
+        "test",
+        "transition",
+        "held-out"
+      ]
+    },
+    {
+      "skill": "rb-language",
+      "required": [
+        "ordinary user-facing prose",
+        "draft or lightly edit",
+        "more specific skill",
+        "substantive revision",
+        "$rb-revise-ai-draft"
+      ]
+    },
+    {
+      "skill": "rb-revise-ai-draft",
+      "required": [
+        "substantive revision",
+        "supplied AI-like draft",
+        "preserve its meaning",
+        "detector evasion",
+        "$rb-language"
+      ]
+    },
+    {
+      "skill": "rb-simplify-language",
+      "required": [
+        "Manual invocation only",
+        "explicitly requests",
+        "Claude Code",
+        "agent-facing control text",
+        "any text",
+        "Do not select"
+      ]
+    },
+    {
+      "skill": "rb-project-language",
+      "required": [
+        "shared project vocabulary",
+        "CONTEXT.md",
+        "domain terms",
+        "general repository orientation",
+        "do not expand terminology work into orchestration design"
+      ]
+    },
+    {
+      "skill": "rb-create-low-level-plan",
+      "required": [
+        "static",
+        "mode::description",
+        "unsupported",
+        "proposal"
+      ]
+    },
+    {
+      "skill": "rb-assess-plan-safety",
+      "required": [
+        "verification-mode",
+        "safe false",
+        "static-only",
+        "patch"
+      ]
+    },
+    {
+      "skill": "rb-safe-operation",
+      "required": [
+        "static_file_state",
+        "static",
+        "stop",
+        "proposal"
+      ]
+    },
+    {
+      "skill": "rb-create-safe-operation-policy",
+      "required": [
+        "fixed",
+        "natural-language",
+        "path policy"
+      ]
+    },
+    {
+      "skill": "rb-end-session",
+      "required": [
+        "test levels",
+        "CI",
+        "residual"
+      ]
+    },
+    {
+      "skill": "rb-working-diary",
+      "required": [
+        "test levels",
+        "CI-equivalent",
+        "residual"
+      ]
+    }
   ],
   "json_case_contracts": [
     {
@@ -407,7 +642,12 @@
         "delegation-user-opt-out",
         "delegation-architecture-negative"
       ],
-      "required_substrings": ["$rb-delegate", "cheaper Codex sub-agents", "Do not use any sub-agents", "multi-agent orchestration layer"],
+      "required_substrings": [
+        "$rb-delegate",
+        "cheaper Codex sub-agents",
+        "Do not use any sub-agents",
+        "multi-agent orchestration layer"
+      ],
       "forbidden_substrings": []
     },
     {
@@ -422,7 +662,12 @@
         "language-project-vocabulary-with-light-wording",
         "language-multi-agent-vocabulary-only"
       ],
-      "required_substrings": ["Lightly edit", "substantive", "CONTEXT.md", "Do not redesign the orchestration architecture"],
+      "required_substrings": [
+        "Lightly edit",
+        "substantive",
+        "CONTEXT.md",
+        "Do not redesign the orchestration architecture"
+      ],
       "forbidden_substrings": []
     },
     {
@@ -437,7 +682,12 @@
         "product-planning-research-gate",
         "product-planning-backlog"
       ],
-      "required_substrings": ["product requirements document", "decision-ready", "implementation plan", "approved"],
+      "required_substrings": [
+        "product requirements document",
+        "decision-ready",
+        "implementation plan",
+        "approved"
+      ],
       "forbidden_substrings": []
     },
     {
@@ -457,32 +707,132 @@
         "constrained-policy-explain-read-only",
         "constrained-policy-tighten-existing"
       ],
-      "required_substrings": ["static_file_state", "executable_test", "strict diff", "patch assessment", "read-only doctor", "exact confirmation statement", "do not read or write x.txt", ".rb-safe-operation-policy.json"],
-      "forbidden_substrings": ["exact read and check actions"]
+      "required_substrings": [
+        "static_file_state",
+        "executable_test",
+        "strict diff",
+        "patch assessment",
+        "read-only doctor",
+        "exact confirmation statement",
+        "do not read or write x.txt",
+        ".rb-safe-operation-policy.json"
+      ],
+      "forbidden_substrings": [
+        "exact read and check actions"
+      ]
     }
   ],
   "behavioural_eval_contracts": [
-    {"path": "rb-review-pr-or-diff/evals/eval-plan.json", "skill": "rb-review-pr-or-diff", "minimum_cases": 3},
-    {"path": "rb-working-diary/evals/eval-plan.json", "skill": "rb-working-diary", "minimum_cases": 2},
-    {"path": "rb-diagnose/evals/eval-plan.json", "skill": "rb-diagnose", "minimum_cases": 3},
-    {"path": "rb-architecture-review/evals/eval-plan.json", "skill": "rb-architecture-review", "minimum_cases": 3},
-    {"path": "rb-delegate/evals/eval-plan.json", "skill": "rb-delegate", "minimum_cases": 16},
-    {"path": "rb-multi-agent-systems/evals/eval-plan.json", "skill": "rb-multi-agent-systems", "minimum_cases": 3},
-    {"path": "rb-language/evals/eval-plan.json", "skill": "rb-language", "minimum_cases": 16},
-    {"path": "rb-revise-ai-draft/evals/eval-plan.json", "skill": "rb-revise-ai-draft", "minimum_cases": 20},
-    {"path": "rb-simplify-language/evals/eval-plan.json", "skill": "rb-simplify-language", "minimum_cases": 21},
-    {"path": "rb-project-language/evals/eval-plan.json", "skill": "rb-project-language", "minimum_cases": 14},
-    {"path": "rb-create-prd/evals/eval-plan.json", "skill": "rb-create-prd", "minimum_cases": 15},
-    {"path": "rb-start-project/evals/eval-plan.json", "skill": "rb-start-project", "minimum_cases": 12},
-    {"path": "rb-implement-with-tests/evals/eval-plan.json", "skill": "rb-implement-with-tests", "minimum_cases": 8},
-    {"path": "rb-tdd-scientific-code/evals/eval-plan.json", "skill": "rb-tdd-scientific-code", "minimum_cases": 7},
-    {"path": "rb-create-implementation-plan/evals/eval-plan.json", "skill": "rb-create-implementation-plan", "minimum_cases": 10},
-    {"path": "rb-execute-plan/evals/eval-plan.json", "skill": "rb-execute-plan", "minimum_cases": 7},
-    {"path": "rb-sprint/evals/eval-plan.json", "skill": "rb-sprint", "minimum_cases": 10},
-    {"path": "rb-create-low-level-plan/evals/eval-plan.json", "skill": "rb-create-low-level-plan", "minimum_cases": 10},
-    {"path": "rb-assess-plan-safety/evals/eval-plan.json", "skill": "rb-assess-plan-safety", "minimum_cases": 12},
-    {"path": "rb-safe-operation/evals/eval-plan.json", "skill": "rb-safe-operation", "minimum_cases": 11},
-    {"path": "rb-create-safe-operation-policy/evals/eval-plan.json", "skill": "rb-create-safe-operation-policy", "minimum_cases": 9}
+    {
+      "path": "rb-review-pr-or-diff/evals/eval-plan.json",
+      "skill": "rb-review-pr-or-diff",
+      "minimum_cases": 3
+    },
+    {
+      "path": "rb-working-diary/evals/eval-plan.json",
+      "skill": "rb-working-diary",
+      "minimum_cases": 2
+    },
+    {
+      "path": "rb-diagnose/evals/eval-plan.json",
+      "skill": "rb-diagnose",
+      "minimum_cases": 3
+    },
+    {
+      "path": "rb-architecture-review/evals/eval-plan.json",
+      "skill": "rb-architecture-review",
+      "minimum_cases": 3
+    },
+    {
+      "path": "rb-delegate/evals/eval-plan.json",
+      "skill": "rb-delegate",
+      "minimum_cases": 16
+    },
+    {
+      "path": "rb-multi-agent-systems/evals/eval-plan.json",
+      "skill": "rb-multi-agent-systems",
+      "minimum_cases": 3
+    },
+    {
+      "path": "rb-language/evals/eval-plan.json",
+      "skill": "rb-language",
+      "minimum_cases": 16
+    },
+    {
+      "path": "rb-revise-ai-draft/evals/eval-plan.json",
+      "skill": "rb-revise-ai-draft",
+      "minimum_cases": 20
+    },
+    {
+      "path": "rb-simplify-language/evals/eval-plan.json",
+      "skill": "rb-simplify-language",
+      "minimum_cases": 21
+    },
+    {
+      "path": "rb-project-language/evals/eval-plan.json",
+      "skill": "rb-project-language",
+      "minimum_cases": 14
+    },
+    {
+      "path": "rb-create-prd/evals/eval-plan.json",
+      "skill": "rb-create-prd",
+      "minimum_cases": 15
+    },
+    {
+      "path": "rb-start-project/evals/eval-plan.json",
+      "skill": "rb-start-project",
+      "minimum_cases": 12
+    },
+    {
+      "path": "rb-implement-with-tests/evals/eval-plan.json",
+      "skill": "rb-implement-with-tests",
+      "minimum_cases": 8
+    },
+    {
+      "path": "rb-tdd-scientific-code/evals/eval-plan.json",
+      "skill": "rb-tdd-scientific-code",
+      "minimum_cases": 7
+    },
+    {
+      "path": "rb-create-implementation-plan/evals/eval-plan.json",
+      "skill": "rb-create-implementation-plan",
+      "minimum_cases": 10
+    },
+    {
+      "path": "rb-execute-plan/evals/eval-plan.json",
+      "skill": "rb-execute-plan",
+      "minimum_cases": 7
+    },
+    {
+      "path": "rb-sprint/evals/eval-plan.json",
+      "skill": "rb-sprint",
+      "minimum_cases": 10
+    },
+    {
+      "path": "rb-create-low-level-plan/evals/eval-plan.json",
+      "skill": "rb-create-low-level-plan",
+      "minimum_cases": 10
+    },
+    {
+      "path": "rb-assess-plan-safety/evals/eval-plan.json",
+      "skill": "rb-assess-plan-safety",
+      "minimum_cases": 12
+    },
+    {
+      "path": "rb-safe-operation/evals/eval-plan.json",
+      "skill": "rb-safe-operation",
+      "minimum_cases": 11
+    },
+    {
+      "path": "rb-create-safe-operation-policy/evals/eval-plan.json",
+      "skill": "rb-create-safe-operation-policy",
+      "minimum_cases": 9
+    },
+    {
+      "path": "rb-audit-test-suite/evals/eval-plan.json",
+      "skill": "rb-audit-test-suite",
+      "minimum_cases": 18
+    }
   ],
   "directory_mirror_contracts": [
     {

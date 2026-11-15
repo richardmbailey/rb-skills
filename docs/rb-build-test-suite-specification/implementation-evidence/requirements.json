@@ -1,0 +1,526 @@
+{
+  "schema_version": 1,
+  "capabilities": [
+    {
+      "number": 1,
+      "id": "unit",
+      "phases": "P3/P4",
+      "required_evidence": "E: known calculation and invalid input",
+      "status": "planned"
+    },
+    {
+      "number": 2,
+      "id": "functional",
+      "phases": "P4",
+      "required_evidence": "E: feature result and forbidden side effect",
+      "status": "planned"
+    },
+    {
+      "number": 3,
+      "id": "component",
+      "phases": "P4",
+      "required_evidence": "E: real subsystem with controlled dependency failure",
+      "status": "planned"
+    },
+    {
+      "number": 4,
+      "id": "fuzz",
+      "phases": "P7",
+      "required_evidence": "E: bounded campaign and saved reproducer",
+      "status": "planned"
+    },
+    {
+      "number": 5,
+      "id": "property_based",
+      "phases": "P4",
+      "required_evidence": "E: generated invariant plus shrinking/replay",
+      "status": "planned"
+    },
+    {
+      "number": 6,
+      "id": "formal_verification",
+      "phases": "P7",
+      "required_evidence": "H/I: model/proof output, assumptions and implementation correspondence",
+      "status": "planned"
+    },
+    {
+      "number": 7,
+      "id": "static_analysis",
+      "phases": "P4",
+      "required_evidence": "E: real diagnostic and malformed-output rejection",
+      "status": "planned"
+    },
+    {
+      "number": 8,
+      "id": "mutation",
+      "phases": "P4",
+      "required_evidence": "E: killed/surviving/equivalent-reviewed/timeout distinction",
+      "status": "planned"
+    },
+    {
+      "number": 9,
+      "id": "coverage",
+      "phases": "P4",
+      "required_evidence": "E: branch/requirement gaps, no assertion-quality inference",
+      "status": "planned"
+    },
+    {
+      "number": 10,
+      "id": "benchmark",
+      "phases": "P4",
+      "required_evidence": "E: repeated samples, comparable baseline and absent-baseline handling",
+      "status": "planned"
+    },
+    {
+      "number": 11,
+      "id": "contract",
+      "phases": "P4",
+      "required_evidence": "E: behavioural interface mismatch beyond schema validity",
+      "status": "planned"
+    },
+    {
+      "number": 12,
+      "id": "lint",
+      "phases": "P4",
+      "required_evidence": "E: repository rules, no automatic source rewrite",
+      "status": "planned"
+    },
+    {
+      "number": 13,
+      "id": "acceptance",
+      "phases": "P4/P7",
+      "required_evidence": "E/H/I: requirement scenario and required stakeholder attestation",
+      "status": "planned"
+    },
+    {
+      "number": 14,
+      "id": "regression",
+      "phases": "P4",
+      "required_evidence": "E: trusted reference and failing-before/fixed-after evidence",
+      "status": "planned"
+    },
+    {
+      "number": 15,
+      "id": "smoke",
+      "phases": "P3/P4",
+      "required_evidence": "E: essential path with limited acceptance claim",
+      "status": "planned"
+    },
+    {
+      "number": 16,
+      "id": "usability",
+      "phases": "P7",
+      "required_evidence": "H/I: participant/task observations, never a fabricated session",
+      "status": "planned"
+    },
+    {
+      "number": 17,
+      "id": "ui_ux",
+      "phases": "P7",
+      "required_evidence": "E/H/I: real interactions/rendering plus human-only limitations",
+      "status": "planned"
+    },
+    {
+      "number": 18,
+      "id": "penetration",
+      "phases": "P7",
+      "required_evidence": "H/I: scoped test evidence, missing authority blocks active work",
+      "status": "planned"
+    },
+    {
+      "number": 19,
+      "id": "threat_modelling",
+      "phases": "P7",
+      "required_evidence": "H/I: reviewed threats and linked verified controls",
+      "status": "planned"
+    },
+    {
+      "number": 20,
+      "id": "performance",
+      "phases": "P4/P7",
+      "required_evidence": "E: resource/latency limits and correct outputs",
+      "status": "planned"
+    },
+    {
+      "number": 21,
+      "id": "integration",
+      "phases": "P4",
+      "required_evidence": "E: real load\u2013compute\u2013save\u2013reload workflow",
+      "status": "planned"
+    },
+    {
+      "number": 22,
+      "id": "tap_compare",
+      "phases": "P7",
+      "required_evidence": "E/I: correlated pairs, mismatches and missing-pair rejection",
+      "status": "planned"
+    },
+    {
+      "number": 23,
+      "id": "load",
+      "phases": "P7",
+      "required_evidence": "E: bounded offered/achieved demand and recovery",
+      "status": "planned"
+    },
+    {
+      "number": 24,
+      "id": "shadowing",
+      "phases": "P7",
+      "required_evidence": "E/I: realistic replay with secondary side effects suppressed",
+      "status": "planned"
+    },
+    {
+      "number": 25,
+      "id": "configuration",
+      "phases": "P7",
+      "required_evidence": "E: valid/invalid settings produce specified behaviour",
+      "status": "planned"
+    },
+    {
+      "number": 26,
+      "id": "soak",
+      "phases": "P7",
+      "required_evidence": "E/I: bounded duration/resource trends, shorter-run limitation",
+      "status": "planned"
+    },
+    {
+      "number": 27,
+      "id": "canary",
+      "phases": "P7",
+      "required_evidence": "H/I: cohort, exposure, guardrails and real release decision evidence",
+      "status": "planned"
+    },
+    {
+      "number": 28,
+      "id": "release_monitoring",
+      "phases": "P7",
+      "required_evidence": "I: release-bound observation window and sufficient samples",
+      "status": "planned"
+    },
+    {
+      "number": 29,
+      "id": "traffic_shaping",
+      "phases": "P7",
+      "required_evidence": "E/I: observed routing/backpressure, not weights alone",
+      "status": "planned"
+    },
+    {
+      "number": 30,
+      "id": "feature_flags",
+      "phases": "P7",
+      "required_evidence": "E/I: targeting, transition and unavailable-provider behaviour",
+      "status": "planned"
+    },
+    {
+      "number": 31,
+      "id": "exception_tracking",
+      "phases": "P7",
+      "required_evidence": "E/I: synthetic exception ingestion and redaction receipt",
+      "status": "planned"
+    },
+    {
+      "number": 32,
+      "id": "teeing",
+      "phases": "P7",
+      "required_evidence": "E/I: copy delivery, loss policy and primary-path isolation",
+      "status": "planned"
+    },
+    {
+      "number": 33,
+      "id": "profiling",
+      "phases": "P7",
+      "required_evidence": "E/I: workload/profile relationship and attachment denial",
+      "status": "planned"
+    },
+    {
+      "number": 34,
+      "id": "logs_events",
+      "phases": "P7",
+      "required_evidence": "E/I: emitted records, sink failure and protected content",
+      "status": "planned"
+    },
+    {
+      "number": 35,
+      "id": "chaos",
+      "phases": "P7",
+      "required_evidence": "E/H/I: local fault, abort and recovery; live action separately scoped",
+      "status": "planned"
+    },
+    {
+      "number": 36,
+      "id": "operational_monitoring",
+      "phases": "P7",
+      "required_evidence": "I: continuing health window and missing-telemetry failure",
+      "status": "planned"
+    },
+    {
+      "number": 37,
+      "id": "ab_experiment",
+      "phases": "P7",
+      "required_evidence": "H/I: predeclared design, allocation checks and inconclusive result",
+      "status": "planned"
+    },
+    {
+      "number": 38,
+      "id": "tracing",
+      "phases": "P7",
+      "required_evidence": "E/I: actual propagation across asynchronous/retry boundaries",
+      "status": "planned"
+    },
+    {
+      "number": 39,
+      "id": "dynamic_exploration",
+      "phases": "P7",
+      "required_evidence": "H/I: bounded charter, recorded actions and reproducible discovery",
+      "status": "planned"
+    },
+    {
+      "number": 40,
+      "id": "real_user_monitoring",
+      "phases": "P7",
+      "required_evidence": "H/I: actual consented aggregate evidence and sampling gaps",
+      "status": "planned"
+    },
+    {
+      "number": 41,
+      "id": "auditing",
+      "phases": "P7",
+      "required_evidence": "E/H/I: attributable records, tamper/missing-record rejection",
+      "status": "planned"
+    },
+    {
+      "number": 42,
+      "id": "on_call_experience",
+      "phases": "P7",
+      "required_evidence": "H/I: real responder/drill evidence; agent walkthrough insufficient",
+      "status": "planned"
+    },
+    {
+      "number": 43,
+      "id": "independent_verification",
+      "phases": "P5/P8",
+      "required_evidence": "A/E/I: separate test design, receipt, oracle and adverse finding",
+      "status": "planned"
+    }
+  ],
+  "common_contracts": {
+    "adoption": "F1a-F1c: P1/P2/P3/P7/P8/P9",
+    "impact": "F2a-F2c: P1/P2/P4/P5/P8",
+    "execution_identity": "F3a-F3b: P1/P4",
+    "static_scope": "F4a-F4c: P1/P4/P6",
+    "science": [
+      "analytical_reference",
+      "units",
+      "conservation",
+      "convergence",
+      "metamorphic",
+      "differential",
+      "stochastic",
+      "empirical_validation"
+    ],
+    "phase_reviews": "Every phase requires non-author independent review and applicable discriminating tests."
+  },
+  "status": "No implementation evidence yet.",
+  "common_requirement_evidence": [
+    {
+      "id": "contracts",
+      "tasks": [
+        "P1.1",
+        "P1.2",
+        "P1.3",
+        "P1.4",
+        "P1.7"
+      ],
+      "evidence": "Model/schema drift and valid/invalid boundary tests; O10/O11."
+    },
+    {
+      "id": "gate",
+      "tasks": [
+        "P1.5",
+        "P1.6",
+        "P3.5"
+      ],
+      "evidence": "Literal expected outcomes O01-O12; replay cannot refresh or change policy."
+    },
+    {
+      "id": "adoption",
+      "tasks": [
+        "P2.7",
+        "P8.8",
+        "P7.8",
+        "P9.1"
+      ],
+      "evidence": "F1a-F1c healthy and failing multi-turn construction/implementation and CI job sets."
+    },
+    {
+      "id": "impact",
+      "tasks": [
+        "P1.4",
+        "P2.1",
+        "P2.2",
+        "P4.6",
+        "P5.4",
+        "P8.8"
+      ],
+      "evidence": "F2a-F2c and O16-O18/O22; exact path reconciliation plus semantic review."
+    },
+    {
+      "id": "execution_identity",
+      "tasks": [
+        "P1.4",
+        "P4.1",
+        "P4.7",
+        "P4.8"
+      ],
+      "evidence": "F3a-F3b; O13-O15 actual imports, clean wheel workflow and frozen selection."
+    },
+    {
+      "id": "static_scope",
+      "tasks": [
+        "P1.4",
+        "P4.3",
+        "P6.1"
+      ],
+      "evidence": "F4a-F4c; O19-O20 real Ruff/type-checker scope and nonmutation receipts."
+    },
+    {
+      "id": "scaffolding_preservation",
+      "tasks": [
+        "P2.3",
+        "P2.4",
+        "P2.5",
+        "P2.6"
+      ],
+      "evidence": "Before/after user-file hashes, conflicting wrapper, upgrade/recovery and relocation fixtures."
+    },
+    {
+      "id": "authority_process_recovery",
+      "tasks": [
+        "P3.2",
+        "P3.3",
+        "P3.4",
+        "P3.7",
+        "P7.3",
+        "P7.6"
+      ],
+      "evidence": "Real bounded process, denied authority, timeout/cancellation, partial effects, replay and concurrency tests."
+    },
+    {
+      "id": "independence",
+      "tasks": [
+        "P5.1",
+        "P5.2",
+        "P5.3",
+        "P5.4",
+        "P5.5",
+        "P5.6",
+        "P5.7"
+      ],
+      "evidence": "O21 plus actual supported-host receipts, shared-files disclosure and seeded wrong code independently detected."
+    },
+    {
+      "id": "reports",
+      "tasks": [
+        "P3.6",
+        "P6.1",
+        "P6.2",
+        "P6.3",
+        "P6.4",
+        "P6.5",
+        "P6.6"
+      ],
+      "evidence": "O25 exact values/counts, malicious payload, offline/JS-disabled and integrated browser checks."
+    },
+    {
+      "id": "release",
+      "tasks": [
+        "P8.1",
+        "P8.2",
+        "P8.3",
+        "P8.4",
+        "P8.5",
+        "P8.6",
+        "P8.7",
+        "P9.1",
+        "P9.2",
+        "P9.3",
+        "P9.4",
+        "P9.5",
+        "P9.6",
+        "P9.7"
+      ],
+      "evidence": "Matched preregistered outcomes, full release validator, independent review and actual host installation/rollback."
+    }
+  ],
+  "scientific_subtype_evidence": [
+    {
+      "id": "analytical_reference",
+      "tasks": [
+        "P4.2",
+        "P4.5",
+        "P4.6",
+        "P5.7"
+      ],
+      "evidence": "O22-O24 independent exact calculations and paired real programs"
+    },
+    {
+      "id": "units",
+      "tasks": [
+        "P4.2",
+        "P4.6",
+        "P8.8"
+      ],
+      "evidence": "F2a/O22 kg-to-tonnes exported-output assertion"
+    },
+    {
+      "id": "conservation",
+      "tasks": [
+        "P4.2",
+        "P4.6"
+      ],
+      "evidence": "O23 total and direction checked separately"
+    },
+    {
+      "id": "convergence",
+      "tasks": [
+        "P4.2",
+        "P4.6"
+      ],
+      "evidence": "O24 exact integral, error decrease and observed order"
+    },
+    {
+      "id": "metamorphic",
+      "tasks": [
+        "P4.2",
+        "P4.6"
+      ],
+      "evidence": "Justified scaling/round-trip transformations with invalid-property controls"
+    },
+    {
+      "id": "differential",
+      "tasks": [
+        "P4.2",
+        "P4.5",
+        "P5.7"
+      ],
+      "evidence": "Independent reference provenance and discriminatory disagreement"
+    },
+    {
+      "id": "stochastic",
+      "tasks": [
+        "P4.2",
+        "P4.6"
+      ],
+      "evidence": "Predeclared variance/power/tolerance with healthy and wrong-distribution controls; no retry-until-green"
+    },
+    {
+      "id": "empirical_validation",
+      "tasks": [
+        "P4.5",
+        "P5.4",
+        "P7.5"
+      ],
+      "evidence": "Domain data/assumption receipts, held-out data and leakage fixture; missing real domain evidence stays unresolved"
+    }
+  ]
+}

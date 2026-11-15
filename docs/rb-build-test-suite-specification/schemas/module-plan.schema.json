@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rb-skills.invalid/rb-build-test-suite/1.0.0/module-plan.schema.json",
+  "title": "Draft rb-build-test-suite ModulePlan",
+  "$ref": "contracts.schema.json#/$defs/ModulePlan"
+}

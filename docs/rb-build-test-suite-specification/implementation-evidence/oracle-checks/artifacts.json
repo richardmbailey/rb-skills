@@ -1,0 +1,161 @@
+[
+  {
+    "id": "O22_healthy",
+    "accepted": true,
+    "artifact": {
+      "case": "O22",
+      "unit": "tonnes",
+      "kg": [
+        0,
+        1,
+        1250
+      ],
+      "values": [
+        0,
+        0.001,
+        1.25
+      ]
+    }
+  },
+  {
+    "id": "O22_unconverted",
+    "accepted": false,
+    "artifact": {
+      "case": "O22",
+      "unit": "tonnes",
+      "kg": [
+        0,
+        1,
+        1250
+      ],
+      "values": [
+        0,
+        1,
+        1250
+      ]
+    }
+  },
+  {
+    "id": "O22_wrong_unit",
+    "accepted": false,
+    "artifact": {
+      "case": "O22",
+      "unit": "kg",
+      "kg": [
+        0,
+        1,
+        1250
+      ],
+      "values": [
+        0,
+        0.001,
+        1.25
+      ]
+    }
+  },
+  {
+    "id": "O23_healthy",
+    "accepted": true,
+    "artifact": {
+      "case": "O23",
+      "unit": "kg",
+      "initial": [
+        10,
+        2
+      ],
+      "transfer": 3,
+      "values": [
+        7,
+        5
+      ]
+    }
+  },
+  {
+    "id": "O23_mass_loss",
+    "accepted": false,
+    "artifact": {
+      "case": "O23",
+      "unit": "kg",
+      "initial": [
+        10,
+        2
+      ],
+      "transfer": 3,
+      "values": [
+        7,
+        4
+      ]
+    }
+  },
+  {
+    "id": "O23_reversed_transfer",
+    "accepted": false,
+    "artifact": {
+      "case": "O23",
+      "unit": "kg",
+      "initial": [
+        10,
+        2
+      ],
+      "transfer": 3,
+      "values": [
+        13,
+        -1
+      ]
+    }
+  },
+  {
+    "id": "O24_healthy",
+    "accepted": true,
+    "artifact": {
+      "case": "O24",
+      "unit": "dimensionless",
+      "grids": [
+        4,
+        8,
+        16
+      ],
+      "integrals": [
+        0.34375,
+        0.3359375,
+        0.333984375
+      ]
+    }
+  },
+  {
+    "id": "O24_first_order",
+    "accepted": false,
+    "artifact": {
+      "case": "O24",
+      "unit": "dimensionless",
+      "grids": [
+        4,
+        8,
+        16
+      ],
+      "integrals": [
+        0.21875,
+        0.2734375,
+        0.302734375
+      ]
+    }
+  },
+  {
+    "id": "O24_constant_error",
+    "accepted": false,
+    "artifact": {
+      "case": "O24",
+      "unit": "dimensionless",
+      "grids": [
+        4,
+        8,
+        16
+      ],
+      "integrals": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+]

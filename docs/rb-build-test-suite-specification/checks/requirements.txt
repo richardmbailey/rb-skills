@@ -1,0 +1,2 @@
+# Reference-schema validation only; not a target-project or runner dependency.
+jsonschema[format-nongpl]==4.26.0

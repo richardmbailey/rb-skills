@@ -1,0 +1,11 @@
+# Independent comparison audit and completion
+
+After the numerical freeze, the separate `repeat2_reviewer` agent audited the parent comparison read-only. It verified all 18 paired records against compact/raw results, candidate and test hashes, selected IDs and executed phases. Healthy controls passed; relevant assertions detected all eight original faults but only six repeat faults. It verified the 68-case original-suite cross-check on the delivered model, the original inventory, and the repeat's 11+74=85 supporting lines (162 after formatting the compact one-off script). No material discrepancies were reported.
+
+The reviewer confirmed that the one-off script records but does not enforce all development-check return codes, and a timeout can bypass normal receipt recording. Those limitations are disclosed; the actual final command receipts showed all required checks succeeded. The script is not a dependable unattended acceptance gate.
+
+The parent corrected report coverage wording to distinguish 69.8% statements, 75% branches and 71.2% combined. Final report links, desktop/mobile rendering and width were checked in offline Chrome with JavaScript disabled; screenshots and report-render-check.json are retained here. The parent inspected desktop and mobile lower-section images. This was a basic rendering check, not a full accessibility audit.
+
+Final numerical hashes and the complete recorded skill hash set remained unchanged. Document inventories were refreshed after report corrections and adding generated-evidence exclusions. Instruction/consistency contracts and git diff --check passed. No additional numerical repair, skill change, constrained-runtime test campaign or publish operation was performed.
+
+During completion the user asked whether tests run deterministically and proposed a separate independent test-audit skill with an iterative builder/auditor loop. That is a design direction for subsequent work, not functionality implemented or validated by this trial. Ordinary pytest assertions and fixed-version deterministic Hypothesis generation already run as code. Overall acceptance automation, test-audit challenges and bounded loop control remain separate concerns.

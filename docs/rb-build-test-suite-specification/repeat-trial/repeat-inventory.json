@@ -1,0 +1,135 @@
+{
+  "files": [
+    {
+      "path": ".gitignore",
+      "category": "configuration",
+      "lines": 6,
+      "nonblank_lines": 6,
+      "sha256": "1835ae72c05350c01c6afeaffc44561ff6e3b8edcb62495c5a373a76dd09938c"
+    },
+    {
+      "path": "README.md",
+      "category": "documentation",
+      "lines": 72,
+      "nonblank_lines": 47,
+      "sha256": "e173e8bc10353e2edac336acd985e4c48838015bf0ef84c4aa01ec8c39e6fca2"
+    },
+    {
+      "path": "REQUIREMENTS.md",
+      "category": "documentation",
+      "lines": 62,
+      "nonblank_lines": 53,
+      "sha256": "0b2d4ae0c7eabbd275a380679f61f355a47be36b6572656d699c8919c61f1bcd"
+    },
+    {
+      "path": "check_mutants.py",
+      "category": "support_code",
+      "lines": 100,
+      "nonblank_lines": 94,
+      "sha256": "62153dac29ea1511fa604ffff19fdd4f67d523c02377963ae180f9680123cd3f"
+    },
+    {
+      "path": "expected-tests.json",
+      "category": "configuration",
+      "lines": 89,
+      "nonblank_lines": 89,
+      "sha256": "4aa9e6b80f06ded6f246730e49b4cf69743dd102360acdc6be9ee383b885bf6f"
+    },
+    {
+      "path": "independent-review.md",
+      "category": "documentation",
+      "lines": 50,
+      "nonblank_lines": 31,
+      "sha256": "4cc361212c548a0656db5b2965bb8bc34b03c0e5dbed0492ae5f843d8b46689e"
+    },
+    {
+      "path": "model.py",
+      "category": "model",
+      "lines": 79,
+      "nonblank_lines": 69,
+      "sha256": "5632ce3105e8ebc4ce4020b60902cd98d7085b3f0122ecc56a44ed845d9f7716"
+    },
+    {
+      "path": "pyproject.toml",
+      "category": "configuration",
+      "lines": 12,
+      "nonblank_lines": 12,
+      "sha256": "bd89530eda69f0cc8498aefb58e9a8f6df3349aa71a04ed1cbda120bc61f4c11"
+    },
+    {
+      "path": "report.html",
+      "category": "documentation",
+      "lines": 7,
+      "nonblank_lines": 7,
+      "sha256": "c4adf8737c77a822f40a50e70290d5e5d52b25b451b8b85c0e5a2375d1b0fb92"
+    },
+    {
+      "path": "run_checks.py",
+      "category": "support_code",
+      "lines": 122,
+      "nonblank_lines": 112,
+      "sha256": "296e8666aebcde15c56597867f4cf49ab69b8d5e5fa62b1ae3782ee044b72d52"
+    },
+    {
+      "path": "tests/conftest.py",
+      "category": "support_code",
+      "lines": 40,
+      "nonblank_lines": 31,
+      "sha256": "43aa76aa2441b1c5c1568e7826dccd1c22d079d48fc0f88e9adefc24897e88c0"
+    },
+    {
+      "path": "tests/test_capture.py",
+      "category": "support_tests",
+      "lines": 86,
+      "nonblank_lines": 67,
+      "sha256": "c0b4a126d5805a3c6775c69c1f93bd6d7c8f4a81d12a4a490bb6353947c56a32"
+    },
+    {
+      "path": "tests/test_independent.py",
+      "category": "substantive_tests",
+      "lines": 191,
+      "nonblank_lines": 160,
+      "sha256": "ece5c1624eb7d11c2ffa8396d3a10c49d6b714fde65445adcd4d6aeb9a354a84"
+    },
+    {
+      "path": "tests/test_model.py",
+      "category": "substantive_tests",
+      "lines": 148,
+      "nonblank_lines": 128,
+      "sha256": "8254e4664a93664b14c59c4fbd8c00f9eed0d17caeab156e5294d564f4b38f8b"
+    }
+  ],
+  "totals": {
+    "configuration": {
+      "files": 3,
+      "lines": 107,
+      "nonblank_lines": 107
+    },
+    "documentation": {
+      "files": 4,
+      "lines": 191,
+      "nonblank_lines": 138
+    },
+    "support_code": {
+      "files": 3,
+      "lines": 262,
+      "nonblank_lines": 237
+    },
+    "model": {
+      "files": 1,
+      "lines": 79,
+      "nonblank_lines": 69
+    },
+    "support_tests": {
+      "files": 1,
+      "lines": 86,
+      "nonblank_lines": 67
+    },
+    "substantive_tests": {
+      "files": 2,
+      "lines": 339,
+      "nonblank_lines": 288
+    }
+  },
+  "count_scope": "Retained authored project source; generated evidence/candidate copies excluded. Disclose unretained orchestration separately."
+}

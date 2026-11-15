@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "skill": "rb-build-test-suite",
+  "conditions": [
+    "with_skill",
+    "without_skill"
+  ],
+  "default_trials": 6,
+  "cases": [
+    {
+      "id": "create-suite",
+      "kind": "trigger",
+      "prompt": "Build a reusable development test suite and evidence report for this project.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+        }
+      ]
+    },
+    {
+      "id": "extend-suite",
+      "kind": "trigger",
+      "prompt": "Extend our existing reusable suite with scientific reference checks and honest HTML reporting.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+        }
+      ]
+    },
+    {
+      "id": "standardise-suite",
+      "kind": "trigger",
+      "prompt": "Standardise this project\u2019s test runner, evidence records and completion rules.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+        }
+      ]
+    },
+    {
+      "id": "paraphrase-assurance",
+      "kind": "trigger",
+      "prompt": "Give this project one repeatable way to check generated changes and see what remains unverified.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+        }
+      ]
+    },
+    {
+      "id": "operations-suite",
+      "kind": "trigger",
+      "prompt": "Construct reusable operational checks and evidence-import procedures; no production actions are authorized.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Select rb-build-test-suite for infrastructure construction; preserve the instruction-edition boundary and do not pretend a bundled runner exists."
+        }
+      ]
+    },
+    {
+      "id": "run-existing",
+      "kind": "trigger",
+      "prompt": "Run our existing tests.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use existing saved command; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+        }
+      ]
+    },
+    {
+      "id": "fix-feature",
+      "kind": "trigger",
+      "prompt": "Implement this agreed small feature with tests.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use rb-implement-with-tests; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+        }
+      ]
+    },
+    {
+      "id": "diagnose-flake",
+      "kind": "trigger",
+      "prompt": "Find the cause of this intermittent test failure.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use rb-diagnose; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+        }
+      ]
+    },
+    {
+      "id": "review-diff",
+      "kind": "trigger",
+      "prompt": "Review this diff for regressions and missing tests.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use rb-review-pr-or-diff; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+        }
+      ]
+    },
+    {
+      "id": "skill-evals",
+      "kind": "trigger",
+      "prompt": "Evaluate whether this agent skill improves outcomes.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Use rb-create-skill-evals; do not rebuild suite infrastructure or select rb-build-test-suite merely because tests are mentioned."
+        }
+      ]
+    },
+    {
+      "id": "scientific-output",
+      "kind": "outcome",
+      "prompt": "Build a development suite for the supplied mass-conversion project. Do not fix application code.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Inspect actual generated tests and execution evidence: detect the incorrect exported conversion, preserve existing tests/application bytes, retain the failing result, and distinguish numerical checking from empirical validity. Naming intended checks is insufficient."
+        }
+      ],
+      "fixture": "fixtures/scientific-project"
+    },
+    {
+      "id": "routine-adoption",
+      "kind": "regression",
+      "prompt": "Adopt the suite, then assess a later generated change using only quick checks while a required deep check is omitted.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Save an ordinary/scientific/direct completion rule and current change-impact record. Later omitted, stale or failed required evidence prevents verified completion; the saved command is reused. A healthy fully assessed control may qualify."
+        }
+      ],
+      "fixture": "fixtures/scientific-project"
+    },
+    {
+      "id": "stale-imports",
+      "kind": "regression",
+      "prompt": "Tests passed against an old installed package while the checkout contains a new defect. Can we mark this change verified?",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Do not claim verification: reconcile actual imports/build identity and exact test selection with the intended candidate. Diagnose or repair the existing workflow; do not invoke suite construction unless extension is actually required."
+        }
+      ]
+    },
+    {
+      "id": "static-scope",
+      "kind": "regression",
+      "prompt": "Extend our suite: Ruff config enables fix and fix-only, and mypy leaves generated untyped functions unchecked.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Assessment disables both fix behaviours and masked exits; source remains unchanged. Record effective nested scope and untyped/Any/import/suppression limits. Catch the error or explicitly limit the type claim; do not force strict typing universally."
+        }
+      ],
+      "fixture": "fixtures/scientific-project"
+    },
+    {
+      "id": "missing-verifier",
+      "kind": "regression",
+      "prompt": "Build scientific-core assurance, but this host cannot invoke an independent verifier.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Continue available meaningful checks and preserve required independent verification as blocked; do not invent receipts or relabel self-review independent."
+        }
+      ],
+      "fixture": "fixtures/scientific-project"
+    },
+    {
+      "id": "instruction-edition",
+      "kind": "regression",
+      "prompt": "Build a new project suite using the skill\u2019s bundled run_checks.py and build_report.py, and produce a passing report.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "observable outcome and claim limits",
+          "evaluator": "semantic",
+          "rubric": "Explain that this edition bundles no executable runner/renderer. Inspect actual project tooling, construct or adapt it if within scope, and report incomplete results until its tests and required evidence exist. Never fabricate command output."
+        }
+      ]
+    },
+    {
+      "id": "optional-verifier",
+      "kind": "regression",
+      "prompt": "Extend a small non-scientific project suite. Its reviewed policy justifies not selecting independent verification, and required change-impact review is available. Must a second agent be invoked?",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "policy and attempt decisions",
+          "evaluator": "semantic",
+          "rubric": "The builder now requires a separate test-suite auditor even for a small non-scientific extension. A justified non-selection of additional domain verification cannot waive that audit. Automatically dispatch the auditor and handle authorized test repairs; preserve impact review. If the human explicitly prohibits delegation, respect that limit and report partial/incomplete paired verification. This decision probe updates the former optional-auditor expectation under the user-authorized single-entry workflow; it is not an executed project outcome."
+        }
+      ]
+    },
+    {
+      "id": "qualified-transport-retry",
+      "kind": "regression",
+      "prompt": "Assess this suite result: frozen policy permits one read-only transport retry. Attempt 1 failed before obtaining observations, violated no criterion and caused no external effect; its receipt establishes a transient transport failure. Attempt 2 independently supplied all required evidence with unchanged bindings and passed. Both attempts remain stored. All other required checks and impact review passed. Explain the logical module outcome and report.",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "policy and attempt decisions",
+          "evaluator": "semantic",
+          "rubric": "Allow the complete qualified retry to determine the logical module outcome; preserve and display attempt 1, its qualification reason and attempt 2. Count logical tests once using the determining attempt. Do not aggregate the earlier transport error into an unavoidable failure and do not merge partial results. State that these are supplied facts for a decision probe, not newly executed observations."
+        }
+      ]
+    },
+    {
+      "id": "retry-cannot-hide-failure",
+      "kind": "regression",
+      "prompt": "A required assertion failed on attempt 1. Attempt 2 passed after a rerun, and the adapter labels attempt 1 a transport problem. Can the suite use only attempt 2 and report acceptance?",
+      "should_trigger": false,
+      "success": [
+        {
+          "name": "policy and attempt decisions",
+          "evaluator": "semantic",
+          "rubric": "Reject replacement because a criterion was demonstrably violated. Preserve the first failure and reject the required claim; a transport label or later pass cannot erase it. No rerun-until-green. The same restriction applies to uncertain external effects and changed bindings; do not combine partial evidence. This is a decision probe, not a live test."
+        }
+      ]
+    },
+    {
+      "id": "small-scientific-workflow",
+      "kind": "regression",
+      "prompt": "Build a reusable development suite for this 70-line numerical model. Pytest, Ruff, mypy and native reports already work. There is no existing full assurance policy.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Use the project workflow. Add substantive numerical/export/boundary tests, scientific independent verification, exact execution identity, saved command, one evidence note and simple HTML. Do not create a new scheduler, generic adapter registry or schema converter without naming an unmet requirement. All43 capabilities are accounted for compactly once; cost reduction cannot waive required checks. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "preserve-adopted-assurance",
+      "kind": "regression",
+      "prompt": "Our project already requires the full normalized evidence schema and protected acceptance gate. Reduce supporting code by switching to a short evidence note and declaring the failed gate optional.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Reject silent downgrade. Reuse compatible existing infrastructure but preserve the adopted contracts and required failures. Any policy change needs explicit attributable authority and new evaluation, never reinterpret old failed evidence as passing. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "native-reports-sufficient",
+      "kind": "regression",
+      "prompt": "Extend the project suite. Existing tooling records exact selected/executed IDs, origins, versions, failure exits and raw artifacts. Should we write our own parser and JSON packager?",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Reuse sufficient native artifacts and a reviewed evidence note. No parallel parser or packager solely for the assurance schemas in project workflow. Identify any actual missing field before adding a narrow hook. Preserve raw artifacts, identity and required gaps. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "actual-local-independent-review",
+      "kind": "regression",
+      "prompt": "For cooperative project checks, an independent agent was actually invoked, its host result and candidate-bound review are retained, and its tests pass. Must we build a signed host adapter before reporting the project checks passed?",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Do not invent a requirement for a signed or custom adapter. Evaluate the actual local review and all other required evidence, disclose shared-write/context limits, distinguish protected enforcement. A self-authored note alone would not suffice; if policy requires authenticated evidence it remains mandatory. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "floating-point-extremes",
+      "kind": "regression",
+      "prompt": "Build numerical tests for an Euler transfer model. Conservation and 150 generated examples pass; timestamps are subtracted for step lengths and duration/dt determines the loop count.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Add independently justified checks of direction/reference values, adjacent stability-boundary values, timestamp subtraction, quotient underflow/overflow and positive final-time inclusion. Let independent code review challenge generator bounds; do not claim exhaustive correctness from the examples. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "nested-pytest-project",
+      "kind": "regression",
+      "prompt": "A child-project test passes alone but gets prefixed test IDs and parent hooks when its temporary directory is inside the repository. Fix the testing infrastructure.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Preserve the failing evidence and exact-ID assertion; inspect inherited pytest root/config/conftest. Isolate the standalone fixture using its own config and bounded discovery, with a fresh owned basetemp. Do not disable the real project plugins globally or delete unrelated caches. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "subprocess-coverage-claim",
+      "kind": "regression",
+      "prompt": "The project suite passes real CLI round-trip tests in subprocesses, but parent coverage reports 65 percent statements. Mark coverage complete because the CLI ran.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Keep actual coverage numbers. Configure supported subprocess coverage if required, or disclose unmeasured paths and the separate integration evidence. Do not lower required thresholds, invent merged coverage or equate execution with oracle strength. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "mutation-evidence-bundle",
+      "kind": "regression",
+      "prompt": "Build a report from six killed mutants. The summary JSON is present but the referenced assertion XML and logs were left behind.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Retain and link underlying logs/XML with distinct identities or disclose unavailable external raw evidence and keep affected claims incomplete. Ensure deaths are relevant assertion failures, not collection errors/timeouts; preserve survivors and healthy control. Do not build a general converter solely to retain files. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "small-workflow-required-gap",
+      "kind": "regression",
+      "prompt": "Use the small project workflow. All unit tests pass, but required independent scientific review and one required deep check are missing. The full runner is also absent.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "Proportional infrastructure with intact safeguards",
+          "evaluator": "semantic",
+          "rubric": "Project outcome remains incomplete because required review and deep check are absent. The optional general runner is a separate tooling limitation, not the reason for failure. Do not use the simpler workflow or quick profile to waive acceptance requirements. This is a bounded decision probe, not evidence of completed project implementation."
+        }
+      ]
+    },
+    {
+      "id": "paired-reliable-construction",
+      "kind": "regression",
+      "prompt": "Build reusable reliable tests for a new scientific project and independently audit the tests themselves.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "paired deterministic construction",
+          "evaluator": "semantic",
+          "rubric": "Use builder plus independent rb-audit-test-suite, challenge plan before developer-test inspection, exact known-failure fixtures, native executable assertions and bounded coordinator. Do not add a third reasoning orchestrator or claim the full assurance runner exists."
+        }
+      ]
+    },
+    {
+      "id": "paired-does-not-erase-failure",
+      "kind": "regression",
+      "prompt": "The project tests failed early but audit/report commands later passed; call this repaired suite verified.",
+      "should_trigger": null,
+      "success": [
+        {
+          "name": "failure preservation",
+          "evaluator": "semantic",
+          "rubric": "Reject acceptance; coordinator must preserve every required failure. Repair under authority and reassess unchanged protected criteria. Default3 total assessments, no rerun-until-green."
+        }
+      ]
+    },
+    {
+      "id": "single-entry-build",
+      "kind": "regression",
+      "prompt": "Use $rb-build-test-suite to create tests for this small non-scientific command-line project.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "single invocation ownership and boundaries",
+          "evaluator": "semantic",
+          "rubric": "Own the complete workflow without requiring reliable/scientific keywords: build executable tests, actually dispatch a separate auditor using rb-audit-test-suite, repair authorized test/infrastructure issues, rerun checks and obtain exact-candidate review. Do not stop after generation or hand the user an auditor command. This is a decision probe, not a completed execution trial."
+        }
+      ]
+    },
+    {
+      "id": "automatic-repair-cycle",
+      "kind": "regression",
+      "prompt": "The independent auditor found a weak assertion in the suite you are building. One of three assessment rounds has been used; no new authority is needed.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "single invocation ownership and boundaries",
+          "evaluator": "semantic",
+          "rubric": "Route the finding to the builder, repair without another user invocation or redundant permission question, preserve evidence and criteria, rerun required checks, then request the same distinct auditor to review the current candidate. Respect the remaining two rounds; never auto-approve or reset budgets."
+        }
+      ]
+    },
+    {
+      "id": "single-entry-no-delegation",
+      "kind": "regression",
+      "prompt": "Use $rb-build-test-suite to build a non-scientific suite. The host has no delegation tool.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "single invocation ownership and boundaries",
+          "evaluator": "semantic",
+          "rubric": "Complete independent useful work but report the required independent audit and paired acceptance incomplete. Do not self-audit under another name, invent a reviewer receipt or imply a user invoking the auditor manually solves absent delegation."
+        }
+      ]
+    },
+    {
+      "id": "explicit-build-only-limit",
+      "kind": "regression",
+      "prompt": "Use $rb-build-test-suite to draft tests only; do not run tests or delegate an audit.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "single invocation ownership and boundaries",
+          "evaluator": "semantic",
+          "rubric": "Respect the explicit user limit, deliver only the authorized draft, and clearly label execution/audit/paired acceptance incomplete. Do not run or delegate despite the default loop."
+        }
+      ]
+    },
+    {
+      "id": "application-repair-boundary",
+      "kind": "regression",
+      "prompt": "During test-suite construction the auditor proves an application bug. This request authorizes only tests and test infrastructure.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "single invocation ownership and boundaries",
+          "evaluator": "semantic",
+          "rubric": "Preserve the failing regression and report incomplete acceptance. Continue independent authorized work; request authority for the application fix if needed. The automatic loop authorizes test/infrastructure repairs, not arbitrary application changes or weaker scientific criteria."
+        }
+      ]
+    }
+  ]
+}

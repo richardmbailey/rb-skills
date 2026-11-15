@@ -12,13 +12,15 @@ Use this skill when the RB workflow setup itself may be missing, stale, or confu
 ## Procedure
 
 1. Confirm the active agent and skills path. For Codex user skills, use `$HOME/.agents/skills`. For repository-scoped Codex skills, use `.agents/skills` from the repository root. For Claude Code, use `~/.claude/skills`.
-2. Locate the versioned flat `rb-skills` source repo when possible. Prefer `RB_AGENT_SKILLS_PACK`, the current directory or its parents, a sibling `rb-skills` directory, or symlink targets from installed RB skills. If only a legacy `_rb-agent-skills` pack is available, read `references/legacy-pack.md` and use that compatibility path.
+2. Locate the versioned flat `rb-skills` source repo when possible. Prefer `RB_AGENT_SKILLS_PACK`, the current directory or its parents, a sibling `rb-skills` directory, or symlink targets from installed RB skills. For Claude generated editions, also check the source path in `.rb-claude-install.json`. If only a legacy `_rb-agent-skills` pack is available, read `references/legacy-pack.md` and use that compatibility path.
 3. Check that the expected global `rb-*` skills exist, especially `$rb-start-project`, `$rb-working-diary`, `$rb-discuss`, `$rb-implement-with-tests`, `$rb-diagnose`, `$rb-project-language`, and `$rb-review-pr-or-diff`.
 4. If the current flat `rb-skills` source repo is available, run or recommend:
 
    ```bash
    python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --dry-run
    ```
+
+   Run this from the source repository and add `--agent codex` or `--agent claude` for the installation being checked. Automatic destination selection prefers Codex on a machine with both hosts. For Claude, verify generated content and permissions with `python3 platforms/claude/install.py . --check`; use `--dest` if the installation has a custom destination. A marker alone does not establish that an installed edition is current.
 
 5. Treat non-RB skills in the active agent skills directory as informational unless they conflict with RB skill names or discovery.
 6. Read `AGENTS.md` if present; otherwise note the absence and continue.

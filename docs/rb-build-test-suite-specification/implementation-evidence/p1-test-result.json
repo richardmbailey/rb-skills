@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "phase": "P1",
+  "result": "32 tests passed; independent focused repair review pending",
+  "command": "PYTHONPATH=rb-build-test-suite/src python -m unittest discover -s rb-build-test-suite/tests -v",
+  "interpreter": "Python3.14.2; isolated environment matching pins",
+  "test_count": 32,
+  "exit_code": 0,
+  "output": "test_bad_references_and_cycles (test_contracts.ContractCases.test_bad_references_and_cycles) ... ok\ntest_catalogue (test_contracts.ContractCases.test_catalogue) ... ok\ntest_documentation_exclusion_does_not_require_new_test (test_contracts.ContractCases.test_documentation_exclusion_does_not_require_new_test) ... ok\ntest_draft_structural_compatibility (test_contracts.ContractCases.test_draft_structural_compatibility) ... ok\ntest_empty_acceptance_policy_is_invalid (test_contracts.ContractCases.test_empty_acceptance_policy_is_invalid) ... ok\ntest_failed_tool_count_overrides_passing_assertion (test_contracts.ContractCases.test_failed_tool_count_overrides_passing_assertion) ... ok\ntest_failure_survives_timeout_and_other_gaps (test_contracts.ContractCases.test_failure_survives_timeout_and_other_gaps) ... ok\ntest_gate_policy_identity_and_derivation (test_contracts.ContractCases.test_gate_policy_identity_and_derivation) ... ok\ntest_generated_schema_drift (test_contracts.ContractCases.test_generated_schema_drift) ... ok\ntest_impact_and_identity_gaps (test_contracts.ContractCases.test_impact_and_identity_gaps) ... ok\ntest_invalid_shapes_and_dates (test_contracts.ContractCases.test_invalid_shapes_and_dates) ... ok\ntest_local_complete_fixture_accepts (test_contracts.ContractCases.test_local_complete_fixture_accepts) ... ok\ntest_missing_artifact_is_gap_tampering_is_error (test_contracts.ContractCases.test_missing_artifact_is_gap_tampering_is_error) ... ok\ntest_predicate_validation (test_contracts.ContractCases.test_predicate_validation) ... ok\ntest_required_inputs_must_be_registered_available_and_consistent (test_contracts.ContractCases.test_required_inputs_must_be_registered_available_and_consistent) ... ok\ntest_revalidation_preserves_derivation_and_rejects_changes (test_contracts.ContractCases.test_revalidation_preserves_derivation_and_rejects_changes) ... ok\ntest_safe_paths (test_contracts.ContractCases.test_safe_paths) ... ok\ntest_static_scope_policy_and_unauthorised_edit (test_contracts.ContractCases.test_static_scope_policy_and_unauthorised_edit) ... ok\ntest_supplied_plan_must_match_frozen_bytes (test_contracts.ContractCases.test_supplied_plan_must_match_frozen_bytes) ... ok\ntest_unbound_authoring_config (test_contracts.ContractCases.test_unbound_authoring_config) ... ok\ntest_json_yaml_duplicate_nonfinite_unknown (test_contracts.ParserCases.test_json_yaml_duplicate_nonfinite_unknown) ... ok\ntest_size_and_depth_limits (test_contracts.ParserCases.test_size_and_depth_limits) ... ok\ntest_xml (test_contracts.ParserCases.test_xml) ... ok\ntest_blocking_finding_rejects_passing_tests (test_cross_record_independent.CrossRecordTable.test_blocking_finding_rejects_passing_tests) ... ok\ntest_later_success_cannot_erase_earlier_failure (test_cross_record_independent.CrossRecordTable.test_later_success_cannot_erase_earlier_failure) ... ok\ntest_optional_failure_stays_visible_without_failing_required_scope (test_cross_record_independent.CrossRecordTable.test_optional_failure_stays_visible_without_failing_required_scope) ... ok\ntest_required_outcome_table (test_cross_record_independent.CrossRecordTable.test_required_outcome_table) ... ok\ntest_boolean_cannot_equal_one (test_policy_independent.IndependentPolicyCases.test_boolean_cannot_equal_one) ... ok\ntest_exit_precedence_preserves_failure (test_policy_independent.IndependentPolicyCases.test_exit_precedence_preserves_failure) ... ok\ntest_inclusive_numeric_boundaries (test_policy_independent.IndependentPolicyCases.test_inclusive_numeric_boundaries) ... ok\ntest_missing_evidence_cannot_satisfy_assertion (test_policy_independent.IndependentPolicyCases.test_missing_evidence_cannot_satisfy_assertion) ... ok\ntest_nonfinite_cannot_satisfy_metric (test_policy_independent.IndependentPolicyCases.test_nonfinite_cannot_satisfy_metric) ... ok\n\n----------------------------------------------------------------------\nRan 32 tests in 2.332s\n\nOK\n",
+  "source_sha256": {
+    "pyproject.toml": "2bbf9478ce8d722cf2cbdff63ab99652dea7023bd5a3601fd11b8341eb904b45",
+    "build-requirements.lock": "12d95d3f58681aa8e07423fd2bf2c164f8d41af73508cbc5bf093c3b6e790f4e",
+    "requirements.lock": "2f3065fa7de6b319d34ffe851873a39055a3d52f2b9f20937f27947c362e21da",
+    "references/catalogue.yaml": "e26764b31f3f8abff31f8767f0cc13d3c6fc7913936ad6e9342f65e1563bd2f6",
+    "tests/test_contracts.py": "a2622c0898322c65f9bac392bde81b053f69a46bfa6faed603a1780b1d8de1ad",
+    "tests/test_policy_independent.py": "602fdf9b605374894794a5f739a392a4d3709cd3e0874cd87400995acbbbab51",
+    "tests/test_cross_record_independent.py": "570fb68f117fb4cdfab48cf1afe68dd88bc962fbc99264740d3cadb6321a0f94",
+    "schemas/execution-manifest.schema.json": "fd64b39a9165972457cfcfddf40d3d69b52008e3f404fa9e38652572f6d92988",
+    "schemas/report.schema.json": "bb28c49e5a2bd29834ce5f8f0efb78fd243b710de2d96019f9b5818af52bffdb",
+    "schemas/change-inventory.schema.json": "4dda9ee6b18d7e2535f9357aa6150cd6c3536db7ed9834196208417460da5f47",
+    "schemas/managed-file.schema.json": "728572d337c8a0af74e8a9e8d33be6b1bad7fa7ff3508d2fba7303aeaf1072c1",
+    "schemas/contracts.schema.json": "8645f67b15f428c5a5a25647b0d9288a06a72d7f801386c1703c718f7fed7368",
+    "schemas/static-policy.schema.json": "75e7b092fa819193a4d5e9a830cc53454fee0ba6bbf411358ebcb247373a34c3",
+    "schemas/config.schema.json": "c166945be16e539245adfe4ccdc585ab0a4ba0f2bdb690ccf7077827fa88368e",
+    "schemas/catalogue.schema.json": "4f3cfd3b635cb39ab783c1b9ff66f2e6a12be25b283f79da31fd3302f20d674e",
+    "schemas/verifier-packet.schema.json": "53b7c5579078d1581c210afd440f0e19f41aaab3ea4e7439a49dbc3ad97e9ac6",
+    "schemas/module-request.schema.json": "d32b943b49fabcdbdc4eddd72993e0b66e400fb2768cbfb9ed8b0c428626d64c",
+    "schemas/evidence.schema.json": "5630e013e436f1e4929f8e12f9eb18a12cd6dbb4bb58da894cc9437dbac6374a",
+    "schemas/event.schema.json": "dde043bb604c493e9fae28ae63eae80b38a422f69110519a9cf119ff8eaf2125",
+    "schemas/module-plan.schema.json": "1a54012b401c4b630498cad04ac8e4c5d909b8ecd9f46712d310bab38aab3ba1",
+    "schemas/criterion.schema.json": "f60987db49664838611143ffbe3b24e7a7766ea11770a1efe4b63774dee0c556",
+    "scripts/export_schemas.py": "ccbf3845976cd693194dc67adaa798052f0258c8ecd2666750dcedc9ce44e964",
+    "src/rb_test_suite/models.py": "0934103f33e5a760973b0b0184c931212916fcbaa34a8d77cb63ae98be5a34d8",
+    "src/rb_test_suite/policy.py": "e69549445ea2491e637e17f05da2cbc6d405c935df91c007492c8cda831b0cc1",
+    "src/rb_test_suite/__init__.py": "6ca3196b70890c2916db1d0aa448bf6ac6c9691aad85629108c4b61af5fef3e8",
+    "src/rb_test_suite/validation.py": "3303dc74dafe9a181938416d481cd96e7159430edc12de1577701d7602879d1b"
+  },
+  "other_checks": [
+    "15 original structural cases passed against generatedschemas",
+    "schema export driftcheck passed in implementing agent",
+    "repository instruction contracts passed",
+    "repository consistency contracts passed"
+  ],
+  "omitted": [
+    "Constrained runtime unchanged; full suite not rerun",
+    "Live adapters/process/renderer/host trials are future phase requirements",
+    "Linux environment not available on this Mac"
+  ]
+}
