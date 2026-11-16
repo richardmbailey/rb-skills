@@ -31,37 +31,91 @@ The skills are intended for practical coding, modelling, AI/ML, research, review
 
 ## Quick Start
 
-Clone the repository to a stable location:
+Clone the repository to a stable location. Keep this clone: the installed Codex skills will link to it.
 
 ```bash
 git clone https://github.com/richardmbailey/rb-skills.git ~/src/rb-skills
 cd ~/src/rb-skills
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --dry-run
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink
 ```
 
-The sync script selects a destination automatically:
+### Ask Codex to install
 
-- Codex user scope: `$HOME/.agents/skills`
-- Codex repository scope: `.agents/skills` from the repository root, when explicitly selected
-- Claude Code: `$HOME/.claude/skills`
+Open the clone in Codex and give it this instruction:
 
-Force an agent destination with:
+```text
+Read README.md and AGENTS.md. Install all active top-level skills from this
+repository globally for Codex, using symlinks to this stable clone so future
+pulls update the installed skills. Use the bundled sync script with
+--agent codex --mode symlink, inspect its dry-run, then install. Verify that
+every installed skill is a symlink resolving to its matching directory in
+this clone and has a readable SKILL.md. If copies or conflicting links already
+exist, report them and preserve them; ask before backing them up and replacing
+them unless I have already authorised that replacement. Report the destination,
+verified link count, and how to install newly added skills after future pulls.
+```
+
+This installs the skills only. For project setup and onboarding, use `rb-install-skills` and `rb-start-project` afterwards as needed.
+
+### Install from the terminal
+
+From the clone's root, preview and install:
 
 ```bash
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink --agent codex
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --agent codex --mode symlink --dry-run
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --agent codex --mode symlink
 ```
 
-For Claude Code, `--agent claude` uses the separate profile described below. It generates adapted copies and excludes unsupported skills; the Codex installation path is unchanged.
+The Codex default is `$HOME/.agents/skills`. If Codex already uses another global skill directory, such as `~/.codex/skills`, pass `--dest /path/to/skills` to both commands and use that same destination for later checks and syncs. Use one installation destination for this pack. Repository-scoped `.agents/skills` requires an explicitly selected `--dest`.
 
-Install selected skills with:
+Install selected skills by adding, for example, `--skills rb-start-project rb-diagnose rb-implement-with-tests` to both commands. Use copy mode only when you deliberately want a standalone installation: copies require syncing again after source updates.
+
+A `skip: ... already exists` message does not verify a repository link. Inspect existing copies or conflicting links before replacing them. Once replacement is authorised, repeat the dry-run and install with `--replace`; the script preserves the previous directories under the destination's `.skill-backups/` folder.
+
+### Verify the Codex links
+
+From the clone's root, run this read-only check after installation. It checks all active skills; if you deliberately installed a subset, restrict `skills` to that selection. For a custom destination, set `RB_SKILL_DEST` to the same directory used with `--dest`.
 
 ```bash
-python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --mode symlink \
-  --skills rb-start-project rb-diagnose rb-implement-with-tests
+python3 - <<'PY'
+import os
+from pathlib import Path
+
+root = Path.cwd().resolve()
+destination = Path(os.environ.get("RB_SKILL_DEST", "~/.agents/skills")).expanduser()
+skills = sorted(p for p in root.glob("rb-*") if p.is_dir() and (p / "SKILL.md").is_file())
+if not skills:
+    raise SystemExit("No active skills found; run from the rb-skills clone root.")
+errors = []
+for source in skills:
+    link = destination / source.name
+    if not link.is_symlink() or link.resolve() != source.resolve():
+        errors.append(f"{source.name}: missing or incorrect repository symlink")
+    elif not (link / "SKILL.md").is_file() or not os.access(link / "SKILL.md", os.R_OK):
+        errors.append(f"{source.name}: SKILL.md is missing or unreadable")
+if errors:
+    raise SystemExit("\n".join(errors))
+print(f"Verified {len(skills)} repository symlinks in {destination}")
+PY
 ```
 
-Codex detects skill changes automatically. Restart only when a new or changed skill does not appear. Claude Code usually detects changes under an existing `~/.claude/skills` directory, but restart it when new skills do not appear.
+Codex detects skill changes automatically. Restart only when a new or changed skill does not appear.
+
+### Update after a pull
+
+Pulling into the same clone updates **existing linked skills** directly; there is no copy to refresh. Keep the clone at its installed path. If you move it, rerun installation for the new location and review replacement of the old links.
+
+**New skill directories need new links.** After a pull that adds skills, rerun sync with the same destination, then run the link check above:
+
+```bash
+cd ~/src/rb-skills
+git pull --ff-only
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --agent codex --mode symlink --dry-run
+python3 rb-sync-skills-repo/scripts/sync_skills_repo.py . --agent codex --mode symlink
+```
+
+Correct existing links are left in place; new links are added. The script does not automatically remove links for deleted or renamed skills; inspect those separately. No Git hook is required for updates to existing linked skills.
+
+For Claude Code, use `--agent claude` and the separate profile below. It generates adapted copies that require refreshing after pulls.
 
 ## Claude Code compatibility
 

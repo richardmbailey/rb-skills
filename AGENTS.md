@@ -12,6 +12,25 @@ The constrained execution skills `$rb-create-low-level-plan`,
 `$rb-assess-plan-safety`, and `$rb-safe-operation` are Codex-only in the
 current release.
 
+## Installing This Pack For Codex
+
+- When asked to install this pack for Codex, use the stable source clone and the
+  bundled `rb-sync-skills-repo/scripts/sync_skills_repo.py` with
+  `--agent codex --mode symlink`. Inspect a dry-run before installing.
+- The default global destination is `$HOME/.agents/skills`. Honour an explicitly
+  selected or established Codex destination using `--dest` consistently; avoid
+  creating a second installation of the same pack.
+- Verify every selected skill is a symlink resolving to its matching active
+  top-level source directory, with a readable `SKILL.md`. A copied directory or
+  a skipped existing destination is not proof of a correct link.
+- Preserve existing copies and conflicting links. Use `--replace` only when
+  backing them up and replacing them is authorised; report the backup location.
+- Explain that pulling updates existing linked skills directly. New skills need
+  another sync to add links; removed or renamed skills need separate inspection.
+  Keep the source clone in place. Follow the README's installation and link check.
+- An installation-only request stops after verification; it does not authorise
+  onboarding or project-resource changes.
+
 ## Skill Authoring
 
 - Keep skill instructions concise, procedural, and focused on decisions another
