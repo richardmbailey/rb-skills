@@ -217,6 +217,19 @@
           "rubric": "Pass only if the response does the following: Reassess the repeated preparation, identify installation as the missing outcome, and proceed through the actual installation preconditions. Do not commission another review of unchanged work, create another sprint for reassessment, skip fresh operational checks, or ask for already granted approval."
         }
       ]
+    },
+    {
+      "id": "sprint-respect-recorded-route-hold",
+      "kind": "regression",
+      "prompt": "Resume the current adaptive sprint. The requirements and sprint are approved. My standing instruction in the plan is to wait for my route choice before building the increment. Route remains undecided.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "sprint respect recorded route hold",
+          "evaluator": "semantic",
+          "rubric": "Keep affected sprint work awaiting the user decision. Do not build on standard or prepare constrained work. Approval of the sprint does not lift the hold."
+        }
+      ]
     }
   ]
 }

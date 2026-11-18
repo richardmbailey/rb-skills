@@ -1,0 +1,286 @@
+{
+  "started_at_utc": "2026-11-18T18:22:27.428543+00:00",
+  "cli": "codex-cli 0.169.0-alpha.11.1",
+  "transport_sha256": "ea84377f0e27cc1026bc86dff249bfdede6dc40116d56480f5ea60376c2d92e1",
+  "wrapper": "This is a text-only simulation. Use no tools. Give the response you would send in the scenario. Show any requested text deliverable directly. Distinguish proposed host actions from actions you can actually perform here.\n",
+  "schema_fields": {
+    "response": "response to the scenario"
+  },
+  "trials": [
+    {
+      "case_id": "execute-respect-recorded-route-hold",
+      "source_manifest": "rb-execute-plan/evals/eval-plan.json",
+      "request": "Pick up the approved plan where we left off. The plan says “Execution Route: undecided. Wait for my choice before changing the application.” I have not selected a route.",
+      "synthetic_context": "The approved next phase is to change a pending job's due-time comparison from < to <=, add an equality-boundary regression and run the focused job tests. The repository has no additional approval requirement.",
+      "workflow_sha256": {
+        "rb-execute-plan/SKILL.md": "96a2fed0936ef162212e57244c3773d500ea382c8a2f49c954a0cc625533c86d"
+      },
+      "prompt_sha256": "e7fe0229fe19f31b62e98e4de144073eaf7b451aee440b4530e254d5f17bf36e",
+      "success": [
+        {
+          "name": "execute respect recorded route hold",
+          "evaluator": "semantic",
+          "rubric": "Preserve the explicit hold. Identify the missing choice and leave application and constrained work unstarted."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 27061,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 139,
+          "reasoning_output_tokens": 0
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "The next phase is on hold until you choose an execution route or explicitly lift the hold. The route is still `undecided`, and the phase remains `[ ]` (planned). In this text-only simulation, I made no repository changes and ran no tests or review.\n\nI recommend **standard** because the approved phase requires running the focused job tests, and the constrained route only supports static checks. If you choose standard or lift the hold, the next steps in the repository are to add a regression test for a pending job due exactly now, change `<` to `<=`, and run the focused job tests."
+        },
+        "seconds": 14.145
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Left the phase planned, identified the user decision, and kept implementation and constrained preparation on hold. The standard route was a recommendation for executable tests."
+      }
+    },
+    {
+      "case_id": "execute-default-standard-undecided-route",
+      "source_manifest": "rb-execute-plan/evals/eval-plan.json",
+      "request": "Continue this approved implementation plan. Its current Execution Route is undecided.",
+      "synthetic_context": "The approved next phase is to change a pending job's due-time comparison from < to <=, add an equality-boundary regression and run the focused job tests. The repository has no additional approval requirement.",
+      "workflow_sha256": {
+        "rb-execute-plan/SKILL.md": "96a2fed0936ef162212e57244c3773d500ea382c8a2f49c954a0cc625533c86d"
+      },
+      "prompt_sha256": "9c86d51a66cf1bc437a644b9c3a8dd87d5b3263087e2cb23b0dfac33177f5ea3",
+      "success": [
+        {
+          "name": "undecided route defaults to standard",
+          "evaluator": "semantic",
+          "rubric": "Pass only if execution treats undecided as standard without asking the human to choose, uses the ordinary tested implementation workflow, and does not enter or prepare the constrained route."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 27043,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 257,
+          "reasoning_output_tokens": 86
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "The approved phase can proceed on the **standard route**. The recorded route is `undecided`, and there’s no instruction to wait or seek another approval.\n\n**Phase status** `[ ]` planned. This text-only simulation made no repository edits and ran no tests, CI checks, or code review.\n\nThe next step on the host is to add a regression test with a fixed clock. Set a pending job’s due time exactly equal to the current time and assert that the job is eligible to run. Confirm the test fails with `<`, change the comparison to `<=`, then run the focused job tests. Inline review is sufficient for this local change. After that review and the applicable repository CI checks pass, mark the phase `[v]`."
+        },
+        "seconds": 16.733
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Selected standard without asking for confirmation. Proposed the cutoff regression, fix and focused tests, and accurately reported that no edits or checks occurred. The final summary jumps from planned to verified without spelling out the intermediate implemented marker; the route decision satisfies this case."
+      }
+    },
+    {
+      "case_id": "end-session-matching-ci-receipt",
+      "source_manifest": "rb-end-session/evals/eval-plan.json",
+      "request": "Close this session and give me the final handoff. The retained Linux CI log for run 417 at commit d350ac shows the import tests passed. The checkout is clean at d350ac and matches the required Linux configuration. No tests ran in this chat. The Windows export check has never run.",
+      "synthetic_context": "Synthetic repository: /example/import. You have only the supplied run and checkout facts.",
+      "workflow_sha256": {
+        "rb-end-session/SKILL.md": "f2c9773420a0e08d9583d170a711b60112d95df5435925e6e6bcd28721d9dc71"
+      },
+      "prompt_sha256": "555a77a4191cd8ef452a367e90de7a3365d603f0a14d82c88096e72b9097ff53",
+      "success": [
+        {
+          "name": "end session matching ci receipt",
+          "evaluator": "semantic",
+          "rubric": "The response itself credits the passing Linux import tests to CI run 417 at d350ac, says they were not run here, and identifies Windows export as unverified. Do not discard valid evidence, claim a local pass or imply all platforms passed."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 19265,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 454,
+          "reasoning_output_tokens": 201
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "# Session handoff\n\nThe retained Linux CI log for run **417** shows that the import tests passed at `d350ac`. You reported that `/example/import` is clean at that commit, with no uncommitted changes, and matches the required Linux configuration. The CI result applies to the current checkout. No tests ran in this chat.\n\nThe **Windows export check has never run**, so Windows export behaviour remains unverified. The recommended next step is to run the project’s Windows export check at `d350ac` on a Windows runner and record the command, environment, and result.\n\nThis handoff is provided in chat. The Windows check is a proposed action for the next session.\n\n## Paste into the next session\n\n> Continue in `/example/import` at `d350ac`. The previous session reported a clean checkout matching the required Linux configuration. The retained Linux CI log for run 417 shows that the import tests passed at that commit. No tests ran in the previous chat. Find and run the project’s Windows export check, which has never run, and record the command, tested revision, Windows environment, and result."
+        },
+        "seconds": 20.626
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Attributed the import pass to Linux run 417 at d350ac, explained why it applies to the clean checkout, stated no checks ran here, and left the Windows export check outstanding in the handoff."
+      }
+    },
+    {
+      "case_id": "end-session-mismatched-ci-receipt",
+      "source_manifest": "rb-end-session/evals/eval-plan.json",
+      "request": "Close this session and give me the final handoff. CI run 417 at d350ac passed the Linux import tests. The checkout is now at f8c115 with an uncommitted Windows path-handling change. The pending acceptance check covers Windows imports. No tests ran here.",
+      "synthetic_context": "Synthetic repository: /example/import. You have only the supplied run and checkout facts.",
+      "workflow_sha256": {
+        "rb-end-session/SKILL.md": "f2c9773420a0e08d9583d170a711b60112d95df5435925e6e6bcd28721d9dc71"
+      },
+      "prompt_sha256": "9b5e42a132ed7ca6be109345913fff12be26b0533f919088c990942b1efc79c8",
+      "success": [
+        {
+          "name": "end session mismatched ci receipt",
+          "evaluator": "semantic",
+          "rubric": "Credit the prior pass only for that Linux revision. State in the response that current Windows imports have not been tested, identify the revision, local edit and platform mismatch, and name the concrete path-handling risk."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 19258,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 392,
+          "reasoning_output_tokens": 0
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "# RB End Session Brief\n\nThe Windows import acceptance check is still pending. The checkout at `/example/import` is at `f8c115` and contains an uncommitted Windows path-handling change. Preserve that edit when resuming.\n\n## Testing and verification\n\nYou reported that CI run `417` passed the Linux import tests at `d350ac`. That result covers Linux on the earlier revision. The current checkout is at a different revision, and run `417` did not exercise Windows imports or the uncommitted edit. Windows imports could still fail on the current working tree.\n\nNo tests ran in this session. The Windows acceptance command, coverage, branch name, and changed files are unverified.\n\n## Recommended next step\n\nIn the next session, inspect the working-tree diff, find the documented Windows import acceptance check, and run it against the tree containing the local edit. That gives you evidence for the behaviour the change is meant to fix. If Windows validation is available only through CI, use the documented CI route and confirm that the run includes the edit.\n\nThis handoff is provided in chat. Repository inspection and test execution are proposed actions for the next host session. No handoff file was written and the chat was not archived.\n\n## Prompt for the next session\n\n> Resume work in `/example/import`. The supplied checkout state is `f8c115` with an uncommitted Windows path-handling change. Inspect and preserve the local edit. Find and run the documented Windows import acceptance check against the code containing that edit, then record the command or CI run, tested state, environment, and result. If the check is unavailable, record the blocker. The user reported that CI run `417` passed Linux import tests at `d350ac`. No tests ran in the handoff session."
+        },
+        "seconds": 16.8
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Limited the earlier pass to Linux at d350ac. Identified the later revision, local path-handling edit, untested Windows imports and remaining risk. Proposed checking the actual edited tree without claiming a local result."
+      }
+    },
+    {
+      "case_id": "unavailable-required-model",
+      "source_manifest": "rb-delegate/evals/eval-plan.json",
+      "request": "Use $rb-delegate for this substantial task. The independent analysis must use GPT-6.2 Astra. The host lists only Sol. Continue the work that is already possible.",
+      "synthetic_context": "The independent Astra-only subtask is a design assessment. The parent can still prepare the authorised handoff index from supplied records: inputs.csv contains the import inputs, and checks.md lists acceptance checks. Give the index as two filename/purpose lines.",
+      "workflow_sha256": {
+        "rb-delegate/SKILL.md": "02a3afbb6011dd606a28131dd40f0799b5fa92f1cc55354be3f5baa1a014fc5d"
+      },
+      "prompt_sha256": "3d00c6b9093b83a76b5f978a38584d60f6b2dbcd85e74622deb76bfed25b4a23",
+      "success": [
+        {
+          "name": "honour requested setting",
+          "evaluator": "semantic",
+          "rubric": "Report that the required worker is unavailable, continue authorised independent work and leave that analysis pending. Substituting Sol, claiming the analysis ran, or inferring a lower price fails."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 18069,
+          "cached_input_tokens": 12416,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 276,
+          "reasoning_output_tokens": 125
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "The handoff index is ready. The independent design assessment is pending because the scenario’s host offers only Sol and you required GPT-6.2 Astra. No agent was launched in this text-only simulation.\n\n`inputs.csv` — Import inputs.  \n`checks.md` — Acceptance checks.\n\nI recommend running the assessment on a host that offers GPT-6.2 Astra so it meets your model requirement. Using Sol on the current host would require your explicit approval."
+        },
+        "seconds": 14.044
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Left the required Astra assessment pending, accurately reported no dispatch, and delivered the independent two-line handoff index. Made no price claim or unauthorised substitution."
+      }
+    },
+    {
+      "case_id": "history-with-model-override",
+      "source_manifest": "rb-delegate/evals/eval-plan.json",
+      "request": "Use a different model from yours for the isolated fixture review. Two decisions from the previous turns are relevant. Codex offers fork_turns none or all; full-history forks inherit model and effort. Prepare the dispatch.",
+      "synthetic_context": "The parent uses Astra. The host offers gpt-6.2-sol at medium effort. The earlier decisions are to include a cutoff-equality fixture and preserve insertion order for equal timestamps. The worker may inspect only tests/fixtures/due.json and may return findings only.",
+      "workflow_sha256": {
+        "rb-delegate/SKILL.md": "02a3afbb6011dd606a28131dd40f0799b5fa92f1cc55354be3f5baa1a014fc5d"
+      },
+      "prompt_sha256": "6b31c00d7462a6c54ac2b3c610b7f47feb1e3a875d18aba05f491b9e51034289",
+      "success": [
+        {
+          "name": "valid history and model arguments",
+          "evaluator": "semantic",
+          "rubric": "Use a fresh fork with the explicit supported model and both relevant decisions in its packet. Reject numeric history or a full-history fork with model or effort overrides."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 18078,
+          "cached_input_tokens": 12416,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 417,
+          "reasoning_output_tokens": 56
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "Use `gpt-6.2-sol` at medium effort with `fork_turns: \"none\"`. A full-history fork would inherit the parent’s Astra model and effort. This is the proposed host dispatch. No agent was launched in this simulation.\n\n```json\n{\n  \"task_name\": \"review_due_fixture\",\n  \"model\": \"gpt-6.2-sol\",\n  \"reasoning_effort\": \"medium\",\n  \"fork_turns\": \"none\",\n  \"message\": \"Objective: Review whether the due fixture covers the two agreed decisions.\\nScope: Inspect only tests/fixtures/due.json.\\nContext: Include a case where a timestamp exactly equals the cutoff. Preserve insertion order for entries with equal timestamps.\\nConstraints: Read-only. Do not inspect other files, make edits, or create sub-agents.\\nDeliverable: Return findings only. For each decision, say whether coverage is present, missing, or unclear. Cite the relevant fixture entries by JSON path or identifier.\\nAcceptance: Identify the timestamp and cutoff that demonstrate exact equality. For the order check, identify distinguishable entries with equal timestamps and show whether their expected relative order matches their insertion order.\\nFailure return: If the file is inaccessible or lacks the information needed for either check, report what is missing and which conclusion remains open.\"\n}\n```\n\nAfter dispatch, the parent should verify the cited entries against `tests/fixtures/due.json` before accepting the findings."
+        },
+        "seconds": 19.404
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Supplied a fresh-fork Sol medium dispatch packet with both prior decisions, limited file scope, findings-only return and acceptance checks. Explained full-history inheritance without claiming a dispatch."
+      }
+    },
+    {
+      "case_id": "responses-continuing-worker-fresh-reviewer",
+      "source_manifest": "rb-multi-agent-systems/evals/eval-plan.json",
+      "request": "Our GPT-6.2 Responses API worker revises an earlier developer message every time a tool returns a correction. Its independent reviewer inherits the worker's conversation. Design the two next requests and the assertions for our adapter tests.",
+      "synthetic_context": "Use a synthetic count correction from 29 to 30. Only the requirement, proposed change and the test receipt may be given to the reviewer.",
+      "workflow_sha256": {
+        "rb-multi-agent-systems/SKILL.md": "b10df89f4495f2c2b159a932f0a9d9e1a576229f7f9f3964fd19254537a83596",
+        "rb-multi-agent-systems/references/openai-responses-continuity.md": "23cd3ae1242d2d882550294bbb38dd44a6d866decbcae8a61756a9f510970317"
+      },
+      "prompt_sha256": "1b5cb62607fd7c881da02c8001ca4e8f7164b2343aa2a6ef7c6e9cb57837bb2b",
+      "success": [
+        {
+          "name": "continuity and independent evidence",
+          "evaluator": "semantic",
+          "rubric": "Keep stable developer guidance first in input, preserve prior items in order for the same worker, append the correction, and use top-level instructions for the current request. Give the independent reviewer a fresh authorised evidence packet. Check both actual request shapes and avoid claiming a cache hit or continued access to reasoning after a downgrade or identity change."
+        }
+      ],
+      "trial": {
+        "model": "gpt-6.2-sol",
+        "effort": "medium",
+        "usage": {
+          "input_tokens": 17003,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1319,
+          "reasoning_output_tokens": 359
+        },
+        "notices": [
+          "other CLI notice"
+        ],
+        "answer": {
+          "response": "Continue the worker by appending the tool result to its existing history. Start the reviewer in a fresh conversation with its own developer instructions and exactly three pieces of evidence: the requirement, the proposed change, and the test receipt.\n\nThese are proposed request bodies for the host adapter. The tool call and receipt are synthetic fixtures. No API requests were sent and no tests were run here.\n\n## 1. Continue the worker\n\nIn this fixture, the first three `input` items are the original developer message, the original user message, and the worker’s tool call. The host replays them in order and appends the tool result with the matching `call_id`. The reply-specific instruction goes in top-level `instructions`.\n\n```json\n{\n  \"model\": \"gpt-6.2-sol\",\n  \"input\": [\n    {\n      \"role\": \"developer\",\n      \"content\": \"Check reported totals against the supplied figures and identify the evidence for each correction.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"July was 12 and August was 18. Check the reported total of 29.\"\n    },\n    {\n      \"type\": \"function_call\",\n      \"call_id\": \"call_check_total\",\n      \"name\": \"check_total\",\n      \"arguments\": \"{\\\"july\\\":12,\\\"august\\\":18,\\\"reported_total\\\":29}\"\n    },\n    {\n      \"type\": \"function_call_output\",\n      \"call_id\": \"call_check_total\",\n      \"output\": \"{\\\"reported_total\\\":29,\\\"corrected_total\\\":30}\"\n    }\n  ],\n  \"instructions\": \"Give the corrected total and show the calculation in this reply.\"\n}\n```\n\n**Adapter assertions**\n\n- Capture the outgoing request after framework defaults are applied. Compare its history prefix item by item against a snapshot taken before the correction arrived. Check the original developer text, roles, order, and tool call. If a fixture includes additional prior output items that the host is authorised to replay, check their content and order too.\n- Assert that the only appended `input` item is the `function_call_output`, that it matches the pending call ID, and that its decoded result changes 29 to 30. Check that the reply-specific guidance appears in top-level `instructions` and that the stored developer message still matches the snapshot.\n\n## 2. Start the independent reviewer\n\n```json\n{\n  \"model\": \"gpt-6.2-sol\",\n  \"input\": [\n    {\n      \"role\": \"developer\",\n      \"content\": \"Independently check whether the proposed change satisfies the requirement using the supplied test receipt. Give a verdict and briefly cite the evidence.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Requirement: Correct the reported total and show the calculation.\\nProposed change: Replace 29 with 30 and show 12 + 18 = 30.\\nTest receipt: The stubbed check_total call returned reported_total=29 and corrected_total=30 for July=12 and August=18.\"\n    }\n  ]\n}\n```\n\n**Adapter assertions**\n\n- Assert that the reviewer’s `input` is exactly its own developer message and a user message built from the three authorised evidence fields. Assert that the request has no worker `previous_response_id`, conversation reference, or inherited top-level instructions. Seed the worker fixture with distinctive private content and verify it is absent from the reviewer’s serialized request, including any injected history or metadata.\n- For both requests, assert that the adapter uses the Responses endpoint and that the final payload omits `temperature`, `top_p`, `top_logprobs`, and the `message.output_text.logprobs` include value.\n\nI’d add these two payload tests first because they catch both regressions without a live model call. If you also want to verify model behaviour, use a separate eval that checks whether the worker gives `12 + 18 = 30` and the reviewer supports its verdict with the supplied evidence."
+        },
+        "seconds": 39.192
+      },
+      "assessment": {
+        "passed": true,
+        "observation": "Provided separate proposed request bodies. The continuing worker retained its ordered prefix and appended the matching call result. The reviewer received only the permitted packet. Assertions target the outgoing payloads and leakage. The response claimed neither API execution nor a cache hit."
+      }
+    }
+  ],
+  "result": "Seven of seven semantic case rubrics passed on the first submission. One Sol medium call per case, no no-skill controls or retries. The answers and index are observed text artifacts. Dispatch, repository actions, validation and API request bodies were proposed or discussed only."
+}

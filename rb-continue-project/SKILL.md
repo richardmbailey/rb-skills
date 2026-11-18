@@ -63,7 +63,8 @@ Use this when the human wants continuity from durable project context rather tha
    - other blockers, assumptions, and stale evidence;
    - recovered pipeline stage, completed gates, active artifact, and next gate;
    - recommended next action and matching RB workflow skill.
-9. Continue into the requested work when the current request or recorded authority covers it. Ask only about a material decision or action outside that authority. Preserve explicit stop points and required permissions for destructive commands, dependency changes, migrations, or broad refactors; a change of skill does not itself require approval.
+9. Recover any explicit instruction to wait for a route choice. Keep affected implementation on hold across a general request to resume. When the user chooses a route or explicitly lifts the hold, apply that decision within existing authority. Follow any approvals required by the chosen route. With no hold, authorised work defaults to standard execution for a missing or `undecided` route.
+10. Continue into the requested work when the current request or recorded authority covers it. Ask only about a material decision or action outside that authority. Preserve explicit stop points and required permissions for destructive commands, dependency changes, migrations, or broad refactors; a change of skill does not itself require approval.
 
 ## Routing
 
@@ -93,7 +94,7 @@ Before entering the selected workflow, update `Pipeline State` if the project us
 - Do not write product code during the continuity pass.
 - Do not invent missing project history. State what was found and what is absent.
 - Do not load every diary file by default. Start with handoff and recent working-diary entries, then expand only as needed.
-- Do not claim tests passed unless they were run in this session or documented in the handoff with dates and context.
+- Attribute a result reported by the user or a prior handoff to that source. For a prior test or CI receipt, cite the run or log, outcome and tested revision. Compare the covered work, including local edits, and the environment that affects the result. Attribute a matching result to that run and say it was not run here. If the evidence is missing or mismatched, identify the affected check, the gap and what could still fail. Rerun affected checks when current evidence is needed.
 - Distinguish passed, failed, not run, unavailable, remote-only, and stale checks.
 - Preserve user changes in the worktree. Report them rather than reverting them.
 

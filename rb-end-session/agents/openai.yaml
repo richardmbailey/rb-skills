@@ -1,4 +1,4 @@
 interface:
   display_name: "RB End Session"
   short_description: "End with evidence-rich continuity notes"
-  default_prompt: "Use $rb-end-session to preserve Git state, test levels, test and CI evidence, residual risks, constraints, agreed decisions, and the authorised next action. Separate pending user choices from agent investigations and nonblocking risks. Do not archive the chat unless I explicitly request archival."
+  default_prompt: "Use $rb-end-session to preserve Git state, test levels, test and CI evidence, residual risks, constraints, agreed decisions, and the authorised next action. Attribute prior test results to their run and revision, and include material verification gaps in the final message. Separate pending user choices from agent investigations and nonblocking risks. Do not archive the chat unless I explicitly request archival."

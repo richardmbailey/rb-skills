@@ -32,7 +32,7 @@ Use this skill to close one working session cleanly and prepare a new agent/sess
    - an existing project-local handoff path when the project already uses one;
    - `.rb-agent/templates/AGENT_BRIEF.md` as a template when present.
 4. Use `$rb-working-diary` for durable continuity when the session had meaningful investigation, decisions, unresolved risks, or compaction-prone context. Update `handoff.md` and, when helpful, `working-diary.md`.
-5. Provide a paste-ready prompt for the next session. Carry forward agreed decisions and the authorised next action. Request a resumed interview only when a consequential choice still needs the user's judgement; name the choice and what depends on it. A new session does not itself require `$rb-discuss`.
+5. Provide a paste-ready prompt for the next session. Carry forward agreed decisions and the authorised next action. If the user told you to wait for a route choice, state which work is on hold and what decision releases it. Request a resumed interview only when a consequential choice still needs the user's judgement; name the choice and what depends on it. A new session does not itself require `$rb-discuss`.
 6. Archive the chat only when the user explicitly requests archival. Ending a work session or preparing a handoff alone does not imply archival. In Codex desktop, use `set_thread_archived` when available.
 
 ## Handoff Brief Shape
@@ -79,7 +79,8 @@ Use this structure unless the project already has a stronger convention. Omit em
 ## Rules
 
 - Do not hide uncommitted changes. Call them out clearly.
-- Do not claim tests passed unless they were run in this session or the user explicitly provided that fact with context.
+- Attribute results supplied by the user to the user and retain their stated context. For an earlier CI or test receipt, cite the run or log, outcome and tested revision. Compare the covered work, including local edits, and any environment differences that affect the check. Attribute matching evidence to that run and say it was not run here. Identify the affected checks and what could still fail when evidence is stale, mismatched or missing.
+- Include the material verification result, its source, outstanding risk and next action in the final handoff message so it can be used without opening another file.
 - Distinguish passed, failed, not run, unavailable, remote-only, and stale evidence.
 - Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence.
 - Keep the next-session prompt short enough to paste, but include the exact repo path and immediate next task.

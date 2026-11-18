@@ -13,6 +13,8 @@ This skill owns sprint selection, PRD alignment, implementation-plan changes, sp
 
 ## Required Inputs
 
+If the user instructed you to wait for a route choice, keep the affected sprint work in `awaiting_human_decision`. Resume it when the user chooses a route or explicitly lifts the hold. Preserve the approvals required by the selected route.
+
 Before starting the first sprint, locate or obtain:
 
 - an authoritative PRD or equivalent requirements artifact, including its decision or approval status;
@@ -186,7 +188,7 @@ Do not declare a sprint or phase complete until every required task is `[v]`, th
 
 ## Optional Constrained Route
 
-- Read the implementation plan's `Execution Route`. A missing route behaves as `standard`; `undecided` also uses `standard`; never select `constrained` implicitly.
+- Read the implementation plan's `Execution Route`. For authorised work with no pending instruction to wait, a missing route behaves as `standard`; `undecided` also uses `standard`; never select `constrained` implicitly.
 - The first-release constrained route accepts only unchanged, statically verifiable phases whose requirements and checks use `static_file_state::<description>`. It cannot execute tests, builds, linting, type checking, application commands, or other runtime-dependent acceptance checks.
 - Before constrained work, read and follow `$rb-execute-plan` and its `references/constrained-execution.md` for readiness, compilation, assessment, unchanged-bundle execution, verification, and phase-status rules. A sprint does not relax those gates.
 - Treat one verified constrained phase as one sprint increment. Perform adaptive review only before a phase is compiled or after it reaches verified and the coordinator handoff is recorded.

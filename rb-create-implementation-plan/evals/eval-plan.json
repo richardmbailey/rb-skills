@@ -87,6 +87,19 @@
       "prompt": "We have not decided who can access the feature, what data it may retain, or what failure behaviour users should see. Create an implementation plan now.",
       "should_trigger": false,
       "success": [{"name": "material ambiguity routes to discussion", "evaluator": "semantic", "rubric": "Pass if rb-discuss is selected before implementation planning because unresolved permissions, data rules, and failure behaviour would materially change the plan."}]
+    },
+    {
+      "id": "plan-wait-for-route",
+      "kind": "regression",
+      "prompt": "Write the implementation plan. Wait until I choose the execution route before implementing anything.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "plan wait for route",
+          "evaluator": "semantic",
+          "rubric": "The completed plan leaves tasks planned, records an undecided route and the explicit hold until my choice, and hands back the plan. No implementation or constrained preparation begins."
+        }
+      ]
     }
   ]
 }

@@ -4,7 +4,7 @@ Read this only after the human explicitly selects the constrained route. These g
 
 ## Required gates
 
-- Read the plan's `Execution Route` before phase work. Use `standard` when the route is missing or `undecided`. Use another route only when the human explicitly specifies it in the current request or the approved plan; never select `constrained` implicitly.
+- Read the plan's `Execution Route` before phase work. For authorised work with no pending instruction to wait, use `standard` when the route is missing or `undecided`. Use another route only when the human explicitly specifies it in the current request or the approved plan; never select `constrained` implicitly.
 - Keep the ordinary procedure in this skill for `standard` plans.
 - The first-release constrained route cannot execute unit tests, integration tests, builds, linting, type checking, application commands, or other behavioural checks because `exec_argv` and `check` are unavailable. Do not choose or continue the constrained route for a phase whose acceptance depends on executing code. Use `standard`, narrow the phase to criteria fully verifiable by static file-state inspection, or stop until reviewed command capability exists.
 - File inspection, hashes, and agent-reported reasoning do not constitute behavioural test evidence. A constrained phase must not be marked `[v]` for runtime behaviour based only on source inspection.

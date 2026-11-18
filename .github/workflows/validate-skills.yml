@@ -56,7 +56,9 @@ jobs:
           set -o pipefail
           python -m compileall -q \
             evals/skill-routing \
+            evals/gpt-6.2-workflows \
             rb-create-skill-evals/scripts \
+            rb-context-tokens/scripts \
             rb-install-skills/scripts \
             rb-sync-skills-repo/scripts \
             platforms/claude \
@@ -76,6 +78,7 @@ jobs:
           patterns = (
               "evals/skill-routing/*.json",
               "evals/skill-routing/cases/*.json",
+              "evals/gpt-6.2-workflows/*.json",
               "rb-*/evals/*.json",
               "platforms/claude/**/*.json",
           )
@@ -111,8 +114,13 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
-          python -m unittest discover -s evals/skill-routing/tests -p 'test_*.py' \
-            2>&1 | tee validation-output/skill-regressions.txt
+          {
+            for suite in evals/skill-routing/tests rb-install-skills/tests rb-context-tokens/tests evals/gpt-6.2-workflows; do
+              python -m unittest discover -s "$suite" -p 'test_*.py' || exit 1
+            done
+            python evals/gpt-6.2-workflows/check.py \
+              evals/gpt-6.2-workflows/trials.jsonl evals/gpt-6.2-workflows/readings.json
+          } 2>&1 | tee validation-output/skill-regressions.txt
 
       - name: Validate packaged test-suite reference schemas
         id: test_suite_schemas

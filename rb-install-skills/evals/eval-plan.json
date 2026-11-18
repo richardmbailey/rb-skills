@@ -9,7 +9,14 @@
       "kind": "regression",
       "prompt": "Verify the full RB installation for this existing repository, including global skill visibility, AGENTS.md, CONTEXT.md, and discovery. This is verification-only; do not begin project onboarding after the check succeeds.",
       "should_trigger": true,
-      "success": [{"name": "verification-only installation boundary", "evaluator": "semantic", "rubric": "Pass only if the workflow reports global installation, project resources, and visibility evidence, stops after verification, and does not start rb-start-project merely because installation or verification succeeded."}]
+      "success": [{"name": "verification-only installation boundary", "evaluator": "semantic", "rubric": "Pass only if the workflow uses --check on the intended target and skills directory, reports global visibility and resource findings, and stops without installing, repairing, writing files, or starting onboarding."}]
+    },
+    {
+      "id": "report-incomplete-installation-without-repair",
+      "kind": "regression",
+      "prompt": "Check the RB installation for this repository. Our Codex skills are in a custom directory and some folders may be copies. Report missing resources and link problems without changing anything.",
+      "should_trigger": true,
+      "success": [{"name": "preserve incomplete setup", "evaluator": "semantic", "rubric": "Pass if the agent identifies the custom destination, runs the read-only check there, reports the gaps and nonzero result, and leaves copies, links, and project resources untouched."}]
     },
     {
       "id": "install-full-setup-and-onboarding",

@@ -24,7 +24,7 @@ Do not select this skill:
 - for a simple request that the parent can complete more cheaply than it can delegate and verify;
 - when a subtask needs most of the parent's conversation or codebase context;
 - when the work is tightly coupled and must be judged continuously as it develops;
-- when the user prohibits delegation or requests a specific execution model;
+- when the user prohibits delegation or requires the parent to do the work;
 - merely because the request mentions agents, models, tokens, or cost;
 - to design, review, or debug a multi-agent product or orchestration architecture; use `$rb-multi-agent-systems` for that work.
 
@@ -49,15 +49,16 @@ A sub-agent owns only the task packet it receives. Its completion message is a p
 
 Before delegating, prefer deterministic code or a direct tool call when stable inputs and outputs make model judgement unnecessary.
 
-Use `gpt-5.6-luna` with `reasoning_effort: max` for bounded work with limited judgement: locating evidence, applying an explicit mechanical edit, adding an already-specified isolated test, or running focused checks.
+Check the model, reasoning effort and history options exposed by the current host before dispatch. Honour the user's model choice. When the user leaves the choice to you, select a starting model for the work.
 
-Use `gpt-6-astra` with `reasoning_effort: medium` for an independent subtask needing difficult reasoning or synthesis, such as a substantial review, mathematical argument, or implementation across several components.
+- Use `gpt-6.2-sol` with `reasoning_effort: medium` for a bounded task with clear acceptance checks, such as adding an isolated regression fixture or checking examples against a documented interface.
+- Use `gpt-6.2-astra` with `reasoning_effort: medium` for a difficult independent proof, design judgement or cross-component diagnosis that the parent can verify.
 
-These are routing defaults, not measured cost guarantees. Follow an explicit user model choice or a project policy backed by task-relevant measurements. Compare accepted outcomes and total effort, including retries and parent review, before changing the defaults.
+Prefer a different supported setting when representative trials show better accepted results for the project. Compare first-pass correctness, elapsed time, retries, parent review effort and measured cost where available.
 
 Keep the work with the parent when it requires the parent's broad context, final synthesis, cross-cutting trade-offs, or continuous integration judgement. Do not move work to Astra merely because it is large; first confirm that it has an independent boundary and acceptance test.
 
-If the selected model or reasoning level is unavailable, use another model only when the platform identifies it as a permitted lower-cost option and the delegation case still holds. Do not infer relative price from a model name. Otherwise, keep the work with the parent. Report a fallback only when it materially affects confidence, cost, or completion.
+If a default is unavailable, use an alternative only when it is permitted, its cost fits the task, and the work still benefits from delegation. Otherwise keep the work with the parent. If the user requires an unavailable model, keep that subtask pending and continue independent authorised work. Ask before substituting another model. Report any fallback that materially affects confidence, cost or completion.
 
 ## Prepare the task packet
 
@@ -71,7 +72,7 @@ Send the smallest self-contained packet that allows the sub-agent to succeed. In
 6. `Acceptance`: observable checks the parent will use.
 7. `Failure return`: what uncertainty, missing input, conflict, or failed check the agent must report.
 
-For routine Luna delegation, use `fork_turns: "none"` and provide the task packet explicitly. Use a small positive `fork_turns` value only when recent conversation turns are necessary and reproducing their relevant content would be less efficient. Do not use `fork_turns: "all"` for routine bounded delegation.
+Use `fork_turns: "none"` and send the task packet when selecting a model or reasoning effort. Codex also accepts `fork_turns: "all"`, which inherits the parent's model and effort. Omit both overrides on a full-history fork. Use it only when sharing the full history is appropriate and necessary. For a few relevant turns, include the needed facts in the packet.
 
 Tell each sub-agent not to create further sub-agents unless the parent explicitly authorises nested delegation for that task.
 
@@ -94,7 +95,7 @@ For every returned result, the parent must:
 4. Run or review the relevant deterministic checks when they are available.
 5. Reject, repair, or escalate incomplete, unsupported, contradictory, or out-of-scope work.
 
-If a Luna result fails because the packet omitted a bounded fact, correct the packet and retry once. If the work instead requires broader context or more judgement than expected, stop repeated Luna retries. Move the subtask to Astra Medium or return it to the parent.
+If the packet omitted a bounded fact, correct it and retry once. If a Sol task now needs difficult independent reasoning, give Astra a fresh, bounded packet where permitted. Return decisions that require broad context or user authority to the parent.
 
 If an Astra result still requires broad parent context, a user decision, unavailable authority, or resolution of conflicting evidence, return control to the parent. Do not let model escalation silently broaden the requested task or its permissions.
 
@@ -102,4 +103,4 @@ If an Astra result still requires broad parent context, a user decision, unavail
 
 The parent may mark the task complete only after it has integrated the accepted sub-agent work and verified the overall result against the user's request. The final response must remain self-contained. Mention delegation details only when the user asks, or when model fallback, omitted verification, cost, or uncertainty materially affects the result.
 
-When usage data is available, record enough information to evaluate the routing policy: assigned model, reasoning level, input and output tokens, latency, retries, verification effort, and whether the parent accepted the first result. Use these measurements to revise the policy instead of assuming that smaller-model delegation always saves resources.
+Record the model and effort actually used, whether the parent accepted the first result, and any corrections. Include available token use, elapsed time, parent review effort and billed cost. Leave unobserved quantities unknown. Use matched tasks when comparing routes.

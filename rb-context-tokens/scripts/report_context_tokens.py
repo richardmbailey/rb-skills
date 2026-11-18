@@ -70,14 +70,81 @@ def token_count_events(path: Path) -> list[dict[str, Any]]:
     return events
 
 
+def object_or_empty(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def token_number(value: Any) -> int | None:
+    return value if type(value) is int and value >= 0 else None
+
+
+def usage_percent(tokens: int | None, window: int | None) -> float | None:
+    return (tokens / window) * 100 if tokens is not None and window else None
+
+
+def event_measurement(event: dict[str, Any]) -> dict[str, Any]:
+    info = object_or_empty(event.get("info"))
+    last = object_or_empty(info.get("last_token_usage"))
+    total = object_or_empty(info.get("total_token_usage"))
+    window = token_number(info.get("model_context_window"))
+    input_tokens = token_number(last.get("input_tokens"))
+    last_total = token_number(last.get("total_tokens"))
+    return {
+        "event_timestamp": event.get("timestamp"),
+        "event_line": event.get("line"),
+        "input_tokens": input_tokens,
+        "context_window_percent": usage_percent(input_tokens, window),
+        "last_call_total_tokens": last_total,
+        "last_token_usage": last,
+        "total_token_usage": total,
+        "model_context_window": window,
+        "last_call_context_window_percent": usage_percent(last_total, window),
+    }
+
+
+def last_recorded_measurement(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+    for event in reversed(events):
+        measurement = event_measurement(event)
+        if measurement["input_tokens"] is not None:
+            return measurement
+    return None
+
+
 def format_int(value: Any) -> str:
-    return f"{value:,}" if isinstance(value, int) else "unknown"
+    number = token_number(value)
+    return f"{number:,}" if number is not None else "unknown"
 
 
-def percent(numerator: Any, denominator: Any) -> str:
-    if not isinstance(numerator, int) or not isinstance(denominator, int) or denominator <= 0:
-        return "unknown"
-    return f"{(numerator / denominator) * 100:.2f}%"
+def format_percent(value: float | None) -> str:
+    return f"{value:.2f}%" if value is not None else "unknown"
+
+
+def print_usage(measurement: dict[str, Any], *, current: bool) -> None:
+    last = measurement["last_token_usage"]
+    total = measurement["total_token_usage"]
+    if current and measurement["input_tokens"] is None:
+        print("Current context: unavailable (latest event lacks a usable input token count)")
+        if not last and not total and measurement["model_context_window"] is None:
+            return
+    else:
+        print("Current context:" if current else "Recorded context:")
+    print(f"  input tokens:             {format_int(measurement['input_tokens'])}")
+    print(f"  cached input tokens:      {format_int(last.get('cached_input_tokens'))}")
+    print(f"  context window:           {format_int(measurement['model_context_window'])}")
+    print(f"  context usage:            {format_percent(measurement['context_window_percent'])}")
+    print()
+    print("Last call:" if current else "Recorded call:")
+    print(f"  output tokens:            {format_int(last.get('output_tokens'))}")
+    print(f"  reasoning output tokens:  {format_int(last.get('reasoning_output_tokens'))}")
+    print(f"  total tokens:             {format_int(measurement['last_call_total_tokens'])}")
+    print(f"  total/window usage:       {format_percent(measurement['last_call_context_window_percent'])}")
+    print()
+    print("Cumulative session usage:" if current else "Cumulative usage at that event:")
+    print(f"  input tokens:             {format_int(total.get('input_tokens'))}")
+    print(f"  cached input tokens:      {format_int(total.get('cached_input_tokens'))}")
+    print(f"  output tokens:            {format_int(total.get('output_tokens'))}")
+    print(f"  reasoning output tokens:  {format_int(total.get('reasoning_output_tokens'))}")
+    print(f"  total tokens:             {format_int(total.get('total_tokens'))}")
 
 
 def main() -> int:
@@ -96,60 +163,45 @@ def main() -> int:
     session = Path(args.session).expanduser() if args.session else latest_session(Path(args.sessions_root).expanduser())
     session = session.resolve()
     events = token_count_events(session)
+    latest = event_measurement(events[-1] if events else {})
+    recorded = None
+    if not events:
+        status = "no_token_count_events"
+    elif latest["input_tokens"] is None:
+        status = "unavailable"
+        recorded = last_recorded_measurement(events[:-1])
+    else:
+        status = "available"
+
+    if args.json:
+        report = {
+            "session": str(session),
+            "current_measurement_status": status,
+            "last_recorded_measurement": recorded,
+            **latest,
+        }
+        report["current_context_tokens"] = report.pop("input_tokens")
+        report["current_context_window_percent"] = report.pop("context_window_percent")
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if events else 1
+
     if not events:
         print(f"No token_count events found in {session}")
         return 1
-
-    latest = events[-1]
-    info = latest["info"]
-    last = info.get("last_token_usage", {})
-    total = info.get("total_token_usage", {})
-    window = info.get("model_context_window")
-    input_tokens = last.get("input_tokens")
-    last_total = last.get("total_tokens")
-
-    report = {
-        "session": str(session),
-        "event_timestamp": latest["timestamp"],
-        "event_line": latest["line"],
-        "current_context_tokens": input_tokens,
-        "current_context_window_percent": (input_tokens / window) * 100
-        if isinstance(input_tokens, int) and isinstance(window, int) and window > 0
-        else None,
-        "last_call_total_tokens": last_total,
-        "last_token_usage": last,
-        "total_token_usage": total,
-        "model_context_window": window,
-        "last_call_context_window_percent": (last_total / window) * 100
-        if isinstance(last_total, int) and isinstance(window, int) and window > 0
-        else None,
-    }
-
-    if args.json:
-        print(json.dumps(report, indent=2, sort_keys=True))
+    print(f"Session: {session}")
+    print(f"Token event: {latest['event_timestamp'] or 'unknown'} (line {latest['event_line']})")
+    print()
+    print_usage(latest, current=True)
+    if status == "available":
         return 0
 
-    print(f"Session: {session}")
-    print(f"Token event: {latest['timestamp']} (line {latest['line']})")
-    print()
-    print("Current context:")
-    print(f"  input tokens:             {format_int(input_tokens)}")
-    print(f"  cached input tokens:      {format_int(last.get('cached_input_tokens'))}")
-    print(f"  context window:           {format_int(window)}")
-    print(f"  context usage:            {percent(input_tokens, window)}")
-    print()
-    print("Last call:")
-    print(f"  output tokens:            {format_int(last.get('output_tokens'))}")
-    print(f"  reasoning output tokens:  {format_int(last.get('reasoning_output_tokens'))}")
-    print(f"  total tokens:             {format_int(last_total)}")
-    print(f"  total/window usage:       {percent(last_total, window)}")
-    print()
-    print("Cumulative session usage:")
-    print(f"  input tokens:             {format_int(total.get('input_tokens'))}")
-    print(f"  cached input tokens:      {format_int(total.get('cached_input_tokens'))}")
-    print(f"  output tokens:            {format_int(total.get('output_tokens'))}")
-    print(f"  reasoning output tokens:  {format_int(total.get('reasoning_output_tokens'))}")
-    print(f"  total tokens:             {format_int(total.get('total_tokens'))}")
+    if recorded is None:
+        print("No earlier token measurement is available")
+    else:
+        timestamp = recorded["event_timestamp"] or "unknown"
+        print()
+        print(f"Last recorded measurement: {timestamp} (line {recorded['event_line']})")
+        print_usage(recorded, current=False)
     return 0
 
 

@@ -19,6 +19,27 @@
       "success": [{"name": "missing measurement remains visible", "evaluator": "semantic", "rubric": "Pass only if the response says the session file does not contain a token_count event and does not estimate usage from transcript text."}]
     },
     {
+      "id": "tokens-latest-event-without-measurement",
+      "kind": "regression",
+      "prompt": "Report current context input tokens for my chat. The reporter shows a token_count event at 2026-01-01T12:01:00Z with no usable input token count, and a last recorded measurement of 1,200 input tokens at 2026-01-01T12:00:00Z.",
+      "should_trigger": true,
+      "success": [{"name": "current and last recorded measurements are distinct", "evaluator": "semantic", "rubric": "Pass only if the response says current context usage is unavailable, identifies 1,200 input tokens as the last recorded measurement with the 12:00:00Z timestamp, and avoids assigning 1,200 tokens to the 12:01:00Z event or claiming the file has no token_count events."}]
+    },
+    {
+      "id": "tokens-partial-latest-call",
+      "kind": "regression",
+      "prompt": "What are my current context input tokens and last call's output tokens? The latest event has 40 output tokens and no input count. The preceding call records 1,200 input and 25 output tokens.",
+      "should_trigger": true,
+      "success": [{"name": "report known current fields separately", "evaluator": "semantic", "rubric": "State that current input is unavailable and the latest call used 40 output tokens. Attribute any figures from the previous event to that earlier call."}]
+    },
+    {
+      "id": "tokens-no-measurable-event",
+      "kind": "outcome",
+      "prompt": "Report context usage for my chat. The reporter found two token_count events, both with null info. There is no last recorded measurement.",
+      "should_trigger": true,
+      "success": [{"name": "events exist without a measurement", "evaluator": "semantic", "rubric": "Pass only if the response says current context usage is unavailable and there is no earlier measurement. It must preserve the distinction between events with missing usage and a file with no token_count events and avoid estimating a count."}]
+    },
+    {
       "id": "tokens-ordinary-project-status-negative",
       "kind": "trigger",
       "prompt": "Tell me what phase this project is in and what work remains.",

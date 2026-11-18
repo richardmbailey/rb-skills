@@ -48,6 +48,7 @@ Logging and tracing provide evidence; they do not enforce permissions, constrain
 6. Define tests at the actual failure boundaries. Use deterministic stubs and fake clocks for runner transitions, permissions, budgets, and retries. Use integration/contract tests for real tool and transport boundaries. Use held-out agent evals for semantic decisions. Neither software tests nor model evals substitutes for the other.
 7. Add durability only when work must survive interruption or delayed continuation. Then define checkpoints, idempotency keys, pending approvals, remaining budgets, replay, and recovery tests that prove side effects are not duplicated.
 8. Capture the evidence needed to debug outcomes: model/tool calls, handoffs, policy decisions, errors, latency, and cost. Respect data policy when retaining prompts and retrieved material. Add retrieval or provider-routing infrastructure only when the requirements call for it.
+   For a system using GPT-6.2 through the OpenAI Responses API, read [conversation history and role boundaries](references/openai-responses-continuity.md) when designing or reviewing a multi-turn worker, model change or independent reviewer.
 9. Review whether every proposed component and gate addresses a concrete requirement. Use `$rb-working-diary` only when the work needs authorised durable continuity; do not write diary entries for an isolated review or diagnosis.
 
 ## Completion material

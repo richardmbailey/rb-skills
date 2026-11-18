@@ -38,6 +38,32 @@
       "prompt": "Close the session while the user has not answered the launch-priority question. A recommended default was shown but never accepted. Preserve the approved independent implementation work, leave the dependent rollout decision pending, and make the next continuation safe.",
       "should_trigger": true,
       "success": [{"name": "unanswered interview decision survives closure", "evaluator": "semantic", "rubric": "Pass only if the handoff says that no human answer was received, does not record the displayed recommendation as agreement, separates independent work from rollout-dependent work, and gives rb-continue-project enough state to resume without redoing the interview or over-blocking the project."}]
+    },
+    {
+      "id": "end-session-matching-ci-receipt",
+      "kind": "regression",
+      "prompt": "Close this session and give me the final handoff. The retained Linux CI log for run 417 at commit d350ac shows the import tests passed. The checkout is clean at d350ac and matches the required Linux configuration. No tests ran in this chat. The Windows export check has never run.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "end session matching ci receipt",
+          "evaluator": "semantic",
+          "rubric": "The response itself credits the passing Linux import tests to CI run 417 at d350ac, says they were not run here, and identifies Windows export as unverified. Do not discard valid evidence, claim a local pass or imply all platforms passed."
+        }
+      ]
+    },
+    {
+      "id": "end-session-mismatched-ci-receipt",
+      "kind": "regression",
+      "prompt": "Close this session and give me the final handoff. CI run 417 at d350ac passed the Linux import tests. The checkout is now at f8c115 with an uncommitted Windows path-handling change. The pending acceptance check covers Windows imports. No tests ran here.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "end session mismatched ci receipt",
+          "evaluator": "semantic",
+          "rubric": "Credit the prior pass only for that Linux revision. State in the response that current Windows imports have not been tested, identify the revision, local edit and platform mismatch, and name the concrete path-handling risk."
+        }
+      ]
     }
   ]
 }

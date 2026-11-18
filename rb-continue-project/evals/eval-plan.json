@@ -38,6 +38,58 @@
       "prompt": "Resume the synthetic project after the previous handoff recorded a pending choice between local-only and cloud-backed storage. I now explicitly choose a hybrid encrypted local cache with cloud synchronisation disabled until consent review. Apply that answer to the continuation, unblock only the work that depends on this choice, and keep the separate agent benchmark and documentation risk visible.",
       "should_trigger": true,
       "success": [{"name": "continuation applies a human override precisely", "evaluator": "semantic", "rubric": "Pass if the response treats the user's free-form answer as the new authoritative decision, updates the affected pending state without forcing the old options or recommendation, resumes the newly unblocked dependent work, and retains the independent investigation and nonblocking risk. It must not restart the completed interview or infer permission for unrelated work."}]
+    },
+    {
+      "id": "resume-route-hold-without-choice",
+      "kind": "regression",
+      "prompt": "Resume this mature project from its handoff. We agreed what to implement, but I said to leave implementation until I choose the route. The plan still says undecided.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "resume route hold without choice",
+          "evaluator": "semantic",
+          "rubric": "Recover the agreed scope, keep implementation on hold, and identify the outstanding route choice. Do not start standard execution, prepare constrained work or reopen scope."
+        }
+      ]
+    },
+    {
+      "id": "resume-route-choice-constrained",
+      "kind": "regression",
+      "prompt": "Resume the mature project from its handoff. I told you to wait for my route choice before implementing the approved static phase. I choose constrained now. No run authority has been prepared.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "resume route choice constrained",
+          "evaluator": "semantic",
+          "rubric": "Apply the route decision without asking for it again. Follow constrained readiness and any exact run-authority requirements. Do not treat this choice as preview-bound confirmation, assessment or permission to execute a bundle."
+        }
+      ]
+    },
+    {
+      "id": "continue-project-matching-ci-receipt",
+      "kind": "regression",
+      "prompt": "Resume the project and tell me what verification still matters before the next task. The retained Linux CI log for run 417 at commit d350ac shows the import tests passed. The checkout is clean at d350ac and matches the required Linux configuration. No tests ran in this chat. The Windows export check has never run.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "continue project matching ci receipt",
+          "evaluator": "semantic",
+          "rubric": "The response itself credits the passing Linux import tests to CI run 417 at d350ac, says they were not run here, and identifies Windows export as unverified. Do not discard valid evidence, claim a local pass or imply all platforms passed."
+        }
+      ]
+    },
+    {
+      "id": "continue-project-mismatched-ci-receipt",
+      "kind": "regression",
+      "prompt": "Resume the project and tell me what verification still matters before the next task. CI run 417 at d350ac passed the Linux import tests. The checkout is now at f8c115 with an uncommitted Windows path-handling change. The pending acceptance check covers Windows imports. No tests ran here.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "continue project mismatched ci receipt",
+          "evaluator": "semantic",
+          "rubric": "Credit the prior pass only for that Linux revision. State in the response that current Windows imports have not been tested, identify the revision, local edit and platform mismatch, and name the concrete path-handling risk."
+        }
+      ]
     }
   ]
 }

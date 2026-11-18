@@ -9,6 +9,15 @@
     "rationale": "The user directly invokes cost-aware execution delegation rather than requesting an orchestration architecture."
   },
   {
+    "id": "delegation-required-model-unavailable",
+    "family": "delegation",
+    "prompt": "Use $rb-delegate for the two independent release checks. The proof must go to Astra, which the host does not list. The second fixture review can go to any available worker. Continue what you can.",
+    "expected": {"outcome": "select", "skill": "rb-delegate"},
+    "forbidden_skills": ["rb-multi-agent-systems", "rb-context-tokens"],
+    "critical": true,
+    "rationale": "An unavailable worker blocks its assigned proof. The parent can still coordinate the independent authorised review."
+  },
+  {
     "id": "delegation-cost-aware-paraphrase",
     "family": "delegation",
     "prompt": "For this substantial task, hand clearly separable mechanical checks to cheaper Codex sub-agents, give them only the context they need, and retain final verification yourself.",

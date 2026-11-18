@@ -6,7 +6,7 @@
 
 ## Execution Route
 
-`standard` by default. Record `constrained` only when explicitly selected, or `undecided` when the human defers the choice; `undecided` does not block standard execution.
+`standard` by default. Record `constrained` only when explicitly selected. Record `undecided` when the human defers the choice. If they also instruct you to wait, state which work must wait for their decision. Otherwise, authorised work can proceed under `standard`.
 
 Only for an explicitly selected constrained phase: read the planning skill's `references/constrained-route.md` and use `static_file_state::<description>` for every acceptance criterion. Do not include constrained-runtime mechanics in a standard plan.
 

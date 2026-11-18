@@ -80,8 +80,10 @@
         "rb-create-prd",
         "rb-sprint",
         "## Cost-Aware Delegation",
-        "`gpt-5.6-luna` with maximum reasoning",
-        "`gpt-6-astra` with medium reasoning",
+        "`gpt-6.2-sol` with medium reasoning",
+        "`gpt-6.2-astra` with medium reasoning",
+        "rb-install-skills/scripts/install_skills.py --check",
+        "evals/gpt-6.2-workflows/README.md",
         "use `$rb-multi-agent-systems` for orchestration architecture"
       ],
       "forbidden": [
@@ -95,8 +97,8 @@
       "required": [
         "## Cost-Aware Sub-Agent Delegation",
         "use `$rb-delegate` alongside the skill that owns the task",
-        "`gpt-5.6-luna` with maximum reasoning",
-        "`gpt-6-astra` with medium reasoning",
+        "rb-delegate/SKILL.md#choose-the-execution-path",
+        "check the current host's model, reasoning effort and history options",
         "decide whether the user's task is complete",
         "`$rb-multi-agent-systems` for that architecture work"
       ],
@@ -636,6 +638,7 @@
       "path": "evals/skill-routing/cases/delegation.json",
       "required_ids": [
         "delegation-direct-invocation",
+        "delegation-required-model-unavailable",
         "delegation-cost-aware-paraphrase",
         "delegation-bounded-review-branches",
         "delegation-simple-task-negative",
@@ -746,12 +749,12 @@
     {
       "path": "rb-delegate/evals/eval-plan.json",
       "skill": "rb-delegate",
-      "minimum_cases": 16
+      "minimum_cases": 18
     },
     {
       "path": "rb-multi-agent-systems/evals/eval-plan.json",
       "skill": "rb-multi-agent-systems",
-      "minimum_cases": 3
+      "minimum_cases": 6
     },
     {
       "path": "rb-language/evals/eval-plan.json",

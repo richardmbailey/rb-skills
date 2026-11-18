@@ -75,18 +75,18 @@
       "success": [{"name": "architecture boundary", "evaluator": "semantic", "rubric": "Pass only if rb-multi-agent-systems owns the architecture request and rb-delegate is not selected merely because the proposed product has agents."}]
     },
     {
-      "id": "outcome-luna-bounded-task",
+      "id": "outcome-bounded-task",
       "kind": "outcome",
-      "prompt": "Use $rb-delegate while updating this package. Delegate the bounded task of locating every reference to the old command and returning file paths and line numbers.",
+      "prompt": "Use $rb-delegate while updating this package. An independent worker can adapt one parser fixture from an agreed example while I verify the remaining CLI changes. This Codex host offers both GPT-6.2 models at medium effort. Choose the worker settings.",
       "should_trigger": true,
-      "success": [{"name": "Luna Max routing", "evaluator": "semantic", "rubric": "Pass if the bounded search is assigned to gpt-5.6-luna with max reasoning, normally with fork_turns none and an explicit task packet."}]
+      "success": [{"name": "bounded worker selection", "evaluator": "semantic", "rubric": "Use gpt-6.2-sol at medium effort with a fresh task packet and independently verify the returned fixture. A named model alone does not satisfy the case."}]
     },
     {
       "id": "outcome-astra-hard-mathematics",
       "kind": "outcome",
-      "prompt": "Use $rb-delegate. Give an independent sub-agent the difficult convergence proof for the bounded theorem in theorem.md, while you check its assumptions and integrate the result into the wider analysis.",
+      "prompt": "Use $rb-delegate. Both GPT-6.2 models and medium effort are available. Give an independent sub-agent the difficult convergence proof for the bounded theorem in theorem.md, while you check its assumptions and integrate the result into the wider analysis.",
       "should_trigger": true,
-      "success": [{"name": "Astra Medium routing", "evaluator": "semantic", "rubric": "Pass if the difficult independent proof is assigned to gpt-6-astra with medium reasoning and the parent verifies the proof rather than trusting its summary."}]
+      "success": [{"name": "difficult independent reasoning", "evaluator": "semantic", "rubric": "Use gpt-6.2-astra at medium effort with a bounded fresh packet. The parent checks the proof and its assumptions and makes the final judgement."}]
     },
     {
       "id": "outcome-minimal-context-packet",
@@ -96,11 +96,25 @@
       "success": [{"name": "minimal context", "evaluator": "semantic", "rubric": "Pass if the parent sends a self-contained objective, scope, constraints, deliverable, acceptance checks, and failure return without forwarding the full conversation."}]
     },
     {
-      "id": "outcome-luna-escalation",
+      "id": "outcome-worker-escalation",
       "kind": "outcome",
-      "prompt": "A Luna sub-agent reports that the supposedly mechanical edit requires choosing between incompatible public API behaviours across several modules. Continue using $rb-delegate.",
+      "prompt": "A Sol worker reports that a supposedly mechanical edit requires choosing between incompatible public API behaviours across several modules. Continue using $rb-delegate.",
       "should_trigger": true,
-      "success": [{"name": "complexity escalation", "evaluator": "semantic", "rubric": "Pass if the parent stops repeated Luna retries and either keeps the decision or sends a newly bounded difficult subtask to gpt-6-astra at medium reasoning. The agent must not invent the product decision."}]
+      "success": [{"name": "complexity escalation", "evaluator": "semantic", "rubric": "Return the product choice to the parent or its authorised decision-maker. A fresh Astra worker may analyse the implications within a bounded packet. Repeated attempts by Sol or a new model deciding the product behaviour fail the case."}]
+    },
+    {
+      "id": "unavailable-required-model",
+      "kind": "regression",
+      "prompt": "Use $rb-delegate for this substantial task. The independent analysis must use GPT-6.2 Astra. The host lists only Sol. Continue the work that is already possible.",
+      "should_trigger": true,
+      "success": [{"name": "honour requested setting", "evaluator": "semantic", "rubric": "Report that the required worker is unavailable, continue authorised independent work and leave that analysis pending. Substituting Sol, claiming the analysis ran, or inferring a lower price fails."}]
+    },
+    {
+      "id": "history-with-model-override",
+      "kind": "regression",
+      "prompt": "Use a different model from yours for the isolated fixture review. Two decisions from the previous turns are relevant. Codex offers fork_turns none or all; full-history forks inherit model and effort. Prepare the dispatch.",
+      "should_trigger": true,
+      "success": [{"name": "valid history and model arguments", "evaluator": "semantic", "rubric": "Use a fresh fork with the explicit supported model and both relevant decisions in its packet. Reject numeric history or a full-history fork with model or effort overrides."}]
     },
     {
       "id": "outcome-parent-verification",

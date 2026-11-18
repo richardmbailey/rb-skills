@@ -32,6 +32,19 @@
           "rubric": "Pass only if the response does the following: Distinguish measured test duration from unmeasured workflow and process costs. Leave percentages and savings unknown or explicitly estimated; use the existing record instead of creating a new telemetry system. Measure progress by delivered outcomes and uncertainties resolved."
         }
       ]
+    },
+    {
+      "id": "diary-retain-hold-and-test-source",
+      "kind": "regression",
+      "prompt": "Record a checkpoint. CI run 92 passed parser tests at the current clean revision e28fe3. No checks ran here. The plan is approved but I said to wait until I choose the route before implementation.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "diary retain hold and test source",
+          "evaluator": "semantic",
+          "rubric": "The continuity note credits run 92 at e28fe3 and distinguishes it from checks run here. It preserves the specific hold on implementation and its release condition without inventing another approval or rerun."
+        }
+      ]
     }
   ]
 }

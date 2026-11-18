@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Context Tokens"
   short_description: "Report current Codex context-window token usage"
-  default_prompt: "Use $rb-context-tokens to report measured Codex context-window token usage, identify the session and event used, and disclose when the newest session cannot be verified as this chat."
+  default_prompt: "Use $rb-context-tokens to report measured Codex context-window usage. Identify the session and event. If the reporter shows a last recorded measurement, label it as earlier and give its timestamp when available. Say when the newest session cannot be verified as this chat."

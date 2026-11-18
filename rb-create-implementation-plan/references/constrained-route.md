@@ -8,7 +8,7 @@ Present the applicable choices:
 
 - `standard`: linear `$rb-execute-plan` or adaptive `$rb-sprint`, including executable tests and CI-equivalent checks.
 - `constrained`: only phases whose complete acceptance criteria are observable from static file state.
-- `undecided`: preserve the user's deferred choice; do not enter constrained execution. Standard execution remains the default.
+- `undecided`: preserve the user's deferred choice; do not enter constrained execution. Use standard execution for authorised work unless the user has told you to wait for the choice.
 
 Constrained criteria and verifier checks must use `static_file_state::<description>`. The other modes `executable_test`, `runtime_observation`, and `external_observation`, and untyped criteria, are rejected by deterministic preflight. Do not narrow required behavioural acceptance merely to fit this route.
 

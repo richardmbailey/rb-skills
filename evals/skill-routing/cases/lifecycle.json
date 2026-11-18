@@ -45,6 +45,15 @@
     "rationale": "First onboarding must establish the repository and pipeline state before handing off to planning; it must not recreate an existing approved PRD."
   },
   {
+    "id": "lifecycle-continue-with-route-hold",
+    "family": "project-lifecycle",
+    "prompt": "Pick up this project from yesterday's handoff. The plan says I will choose the execution route before implementation starts. That choice is still open. Update me on the independent benchmark results and the current handoff.",
+    "expected": {"outcome": "select", "skill": "rb-continue-project"},
+    "forbidden_skills": ["rb-execute-plan", "rb-sprint", "rb-assess-plan-safety"],
+    "critical": true,
+    "rationale": "Resuming a project keeps the recorded route decision pending while independent reporting can proceed."
+  },
+  {
     "id": "lifecycle-continue-handoff",
     "family": "project-lifecycle",
     "prompt": "Resume this mature repository from yesterday's handoff and working diary. Check the Git state, tell me the immediate context, and orient before making the next edit.",

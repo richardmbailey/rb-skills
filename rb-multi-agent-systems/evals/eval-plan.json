@@ -37,6 +37,20 @@
           "rubric": "Pass only if the response does the following: Use the active owner and existing handoff; do not construct or launch a duplicate, replace its state, or restart healthy work. Continue only independent work or observe the current owner as needed. An existing release alone must not be treated as proof that the experiment succeeded."
         }
       ]
+    },
+    {
+      "id": "responses-continuing-worker-fresh-reviewer",
+      "kind": "regression",
+      "prompt": "Our GPT-6.2 Responses API worker revises an earlier developer message every time a tool returns a correction. Its independent reviewer inherits the worker's conversation. Design the two next requests and the assertions for our adapter tests.",
+      "should_trigger": true,
+      "success": [{"name": "continuity and independent evidence", "evaluator": "semantic", "rubric": "Keep stable developer guidance first in input, preserve prior items in order for the same worker, append the correction, and use top-level instructions for the current request. Give the independent reviewer a fresh authorised evidence packet. Check both actual request shapes and avoid claiming a cache hit or continued access to reasoning after a downgrade or identity change."}]
+    },
+    {
+      "id": "responses-profile-migration-boundary",
+      "kind": "outcome",
+      "prompt": "Our multi-agent application's Responses adapter always adds temperature to outgoing requests. We also run an independently qualified RB constrained profile. Review our proposed GPT-6.2 migration and explain what evidence would let us adopt it.",
+      "should_trigger": true,
+      "success": [{"name": "wire settings and profile ownership", "evaluator": "semantic", "rubric": "Test the actual GPT-6.2 Responses request for the absence of unsupported settings including temperature, verify applicable tool-call behaviour, and treat any change to a qualified runtime profile as a separate migration with its own acceptance and authority. Changing a pinned model name alone fails."}]
     }
   ]
 }

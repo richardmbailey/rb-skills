@@ -1,4 +1,4 @@
 interface:
   display_name: "RB Delegate"
   short_description: "Delegate bounded work to cheaper sub-agents"
-  default_prompt: "Use $rb-delegate on substantial Codex tasks to assign bounded, independently verifiable work to cost-appropriate sub-agents, keep context narrow, verify their evidence, and retain final integration and completion judgement in the parent agent."
+  default_prompt: "Use $rb-delegate on substantial Codex tasks to assign bounded, independently verifiable work using supported model and history settings. Give each worker the context it needs. Verify its evidence and retain final integration and completion judgement in the parent agent."

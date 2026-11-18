@@ -76,7 +76,7 @@ Good diary entries include:
 - canonical CI-equivalent command and result, coverage status, fixtures/environment, and checks available only remotely;
 - checks not run, stale evidence, and residual regression or scientific risk.
 
-In continuity notes, distinguish agreed decisions, pending user choices and the work they block, investigations the agent can perform, and nonblocking risks. Keep recommendations separate from user agreements. Preserve the authorised next action so a new session can continue without reopening settled choices.
+In continuity notes, distinguish agreed decisions, pending user choices and the work they block, investigations the agent can perform, and nonblocking risks. Keep recommendations separate from user agreements. If the user asks to wait for a route choice, record which work is on hold and what will release it. Preserve the authorised next action so a new session can continue without reopening settled choices.
 
 For an implementation plan using the optional constrained route, read `references/constrained-continuity.md` before recording its terminal handoff or resuming it. A resume pointer does not authorise execution. Ordinary project notes do not need constrained identities or status overlays.
 
@@ -100,7 +100,7 @@ Prefer one compact update at each natural checkpoint over constant logging.
 
 ## Record progress without creating another verification cycle
 
-At a natural checkpoint, record the user-visible outcome reached, the current blocker and the next authorised action. Link the existing test result, review or execution receipt that supports each important conclusion. Keep reusable evidence identifiable by its relevant version, data, configuration or environment. Record what would invalidate it when that is not obvious, so a later session can decide whether a rerun is needed.
+At a natural checkpoint, record the user-visible outcome reached, the current blocker and the next authorised action. Link the existing test result, review or execution receipt that supports each important conclusion. For prior test or CI evidence, identify the run or log, outcome and tested revision. Say which checks were not run here. Keep reusable evidence identifiable by its relevant version, data, configuration or environment. Record what would invalidate it when that is not obvious, so a later session can decide whether a rerun is needed.
 
 Preserve failures, incomplete outputs, protected state and recovery boundaries. Summarise their significance and link the retained evidence instead of copying the full history into each entry. A new diary entry does not itself require another test, review or evidence report.
 

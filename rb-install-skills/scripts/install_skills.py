@@ -148,7 +148,7 @@ def add_global_skill_link_candidates(candidates: list[Path], agent: str = "auto"
                 continue
             try:
                 target = child.resolve()
-            except OSError:
+            except (OSError, RuntimeError):
                 continue
             if (target / "SKILL.md").is_file():
                 add_candidate(candidates, target.parent)
@@ -157,7 +157,11 @@ def add_global_skill_link_candidates(candidates: list[Path], agent: str = "auto"
 def find_pack_root(explicit: str | None, target: Path, agent: str = "auto") -> PackRoot:
     candidates: list[Path] = []
     if explicit:
-        add_candidate(candidates, Path(explicit))
+        path = Path(explicit).expanduser().resolve()
+        pack = detect_pack_root(path)
+        if pack is None:
+            raise SystemExit(f"No supported RB skills pack at --pack-root {path}")
+        return pack
 
     env = os.environ.get("RB_AGENT_SKILLS_PACK")
     if env:
@@ -265,40 +269,119 @@ Use the installed RB agent skills for matching workflows. Start normal onboardin
     return results
 
 
+def established_codex_directory(pack_root: Path, default: Path) -> Path:
+    legacy = legacy_codex_skills_dest()
+    if not legacy.is_dir() or (default.is_dir() and default.samefile(legacy)):
+        return default
+
+    names = discover_flat_skills(pack_root)
+    occupied = []
+    linked = []
+    for directory in (default, legacy):
+        entries = [directory / name for name in names if os.path.lexists(directory / name)]
+        if entries:
+            occupied.append(directory)
+        for entry in entries:
+            try:
+                if entry.is_symlink() and entry.samefile(pack_root / entry.name):
+                    linked.append(directory)
+                    break
+            except OSError:
+                continue  # Broken links still count as occupied entries.
+
+    candidates = linked or occupied
+    if len(candidates) > 1:
+        raise SystemExit(f"Both {default} and {legacy} contain RB skills. Select one with --dest.")
+    return candidates[0] if candidates else default
+
+
+def flat_destination(pack_root: Path, agent: str, dest: Path | None) -> SkillsDestination:
+    default = default_skills_destination(agent)
+    path = dest if dest is not None else default.path
+    if dest is None and default.agent == "codex":
+        path = established_codex_directory(pack_root, default.path)
+    # Preserve the original path so the Claude installer can inspect its final component.
+    path = path.expanduser().absolute()
+    try:
+        resolved = path.resolve()
+    except (OSError, RuntimeError) as error:
+        raise SystemExit(f"Cannot resolve skills destination {path}: {error}") from None
+    if resolved.is_relative_to(pack_root) or pack_root.is_relative_to(resolved):
+        raise SystemExit(f"Source and destination must not overlap: {pack_root}, {path}")
+    return SkillsDestination(path, default.agent)
+
+
+def readable_file_gap(path: Path) -> str | None:
+    try:
+        if path.is_file():
+            with path.open("rb") as stream:
+                stream.read(1)
+            return None
+    except OSError as error:
+        return f"Cannot read {path}: {error}"
+    return f"Missing or invalid file: {path}"
+
+
 def audit_flat_visibility(pack_root: Path, destination: SkillsDestination) -> None:
     if destination.agent == "claude":
-        run([sys.executable, str(pack_root / "platforms/claude/install.py"),
+        run([sys.executable, "-B", str(pack_root / "platforms/claude/install.py"),
              str(pack_root), "--dest", str(destination.path), "--check"], pack_root)
         return
     skills = discover_flat_skills(pack_root)
-    dest = destination.path
-    missing: list[str] = []
-    not_linked: list[str] = []
-
+    gaps = []
     for skill in skills:
         source_path = (pack_root / skill).resolve()
-        dest_path = dest / skill
-        if not (dest_path.exists() or dest_path.is_symlink()):
-            missing.append(skill)
+        path = destination.path / skill
+        if not path.is_symlink():
+            if path.exists():
+                gaps.append(f"{path} exists but is not a symlink to {source_path}")
+            else:
+                gaps.append(f"Missing link: {path} -> {source_path}")
             continue
-        if not dest_path.is_symlink():
-            not_linked.append(f"{skill} exists but is not a symlink")
+        try:
+            actual = path.resolve(strict=True)
+        except (OSError, RuntimeError) as error:
+            gaps.append(f"Broken link {path}: {error}")
             continue
-        if dest_path.resolve() != source_path:
-            not_linked.append(f"{skill} links to {dest_path.resolve()} instead of {source_path}")
+        if actual != source_path:
+            gaps.append(f"{path} links to {actual} instead of {source_path}")
+            continue
+        gap = readable_file_gap(path / "SKILL.md")
+        if gap:
+            gaps.append(gap)
+    if gaps:
+        raise SystemExit("\n".join(gaps))
+    print(f"Visibility check: {len(skills)} skills link to {pack_root} under {destination.path}")
 
-    if missing or not_linked:
-        details = []
-        if missing:
-            details.append(f"missing: {', '.join(missing)}")
-        if not_linked:
-            details.append("not linked to this repo: " + "; ".join(not_linked))
-        raise SystemExit(
-            "Visibility check failed under "
-            f"{dest}. {'; '.join(details)}. Existing folders are skipped by default; "
-            "rerun with --replace-skills after confirming they should be backed up and replaced."
-        )
-    print(f"Visibility check: {len(skills)} skills link to {pack_root} under {dest}")
+
+def check_flat_setup(pack_root: Path, target: Path, args: argparse.Namespace) -> int:
+    destination = flat_destination(pack_root, args.agent, args.dest)
+    gaps = []
+    try:
+        audit_flat_visibility(pack_root, destination)
+    except SystemExit as error:
+        gaps.append(str(error))
+    except subprocess.CalledProcessError:
+        gaps.append(f"Claude visibility check failed under {destination.path}. Review the finding above.")
+    resources = [target / "AGENTS.md", target / "CONTEXT.md"]
+    if args.claude or destination.agent == "claude":
+        resources.append(target / "CLAUDE.md")
+    if args.cursor:
+        resources.append(target / ".cursor/rules/rb-workflow.mdc")
+    for path in resources:
+        gap = readable_file_gap(path)
+        if gap:
+            gaps.append(gap)
+        else:
+            print(f"Readable project resource: {path}")
+    local = target / ".rb-agent/skills"
+    if os.path.lexists(local):
+        gaps.append(f"Unexpected project-local skills: {local}")
+    if gaps:
+        print("\n".join(gaps), file=sys.stderr)
+        return 1
+    print(f"RB skills check passed for {target}")
+    return 0
 
 
 def run_legacy_install_skills(pack_root: Path, target: Path, args: argparse.Namespace) -> None:
@@ -318,8 +401,9 @@ def run_legacy_install_skills(pack_root: Path, target: Path, args: argparse.Name
 
 def run_flat_install_skills(pack_root: Path, target: Path, args: argparse.Namespace) -> None:
     sync_script = pack_root / "rb-sync-skills-repo" / "scripts" / "sync_skills_repo.py"
-    destination = default_skills_destination(args.agent)
-    sync_cmd = [sys.executable, str(sync_script), str(pack_root), "--mode", "symlink", "--agent", args.agent]
+    destination = flat_destination(pack_root, args.agent, getattr(args, "dest", None))
+    sync_cmd = [sys.executable, str(sync_script), str(pack_root), "--mode", "symlink",
+                "--agent", destination.agent, "--dest", str(destination.path)]
     if args.replace_skills:
         sync_cmd.append("--replace")
 
@@ -343,6 +427,8 @@ def main() -> int:
         default="auto",
         help="Destination agent for global skill install. Auto tries Codex first, then Claude Code.",
     )
+    parser.add_argument("--dest", type=Path, help="Skills directory for flat-pack installation or verification.")
+    parser.add_argument("--check", action="store_true", help="Verify the flat-pack setup without writing files.")
     parser.add_argument("--force", action="store_true", help="Replace existing managed project resources without backups.")
     parser.add_argument(
         "--replace-skills",
@@ -352,6 +438,9 @@ def main() -> int:
     parser.add_argument("--claude", action="store_true", help="Install CLAUDE.md into the target repository.")
     parser.add_argument("--cursor", action="store_true", help="Install Cursor rule file into the target repository.")
     args = parser.parse_args()
+
+    if args.check and (args.force or args.replace_skills):
+        parser.error("--check cannot be combined with --force or --replace-skills")
 
     target = Path(args.target).expanduser().resolve()
     if not target.exists():
@@ -364,14 +453,23 @@ def main() -> int:
     print(f"Pack layout: {pack_root.layout}", flush=True)
 
     if pack_root.layout == "legacy":
+        if args.check:
+            raise SystemExit("Read-only verification is unsupported for legacy packs. Inspect the legacy installation manually.")
+        if args.dest is not None:
+            raise SystemExit("Legacy pack helpers do not support --dest.")
         run_legacy_install_skills(pack_root.path, target, args)
     elif pack_root.layout == "flat":
+        if args.check:
+            try:
+                return check_flat_setup(pack_root.path, target, args)
+            except (OSError, RuntimeError) as error:
+                raise SystemExit(f"Could not verify setup: {error}") from None
         run_flat_install_skills(pack_root.path, target, args)
     else:
         raise AssertionError(f"Unknown pack layout: {pack_root.layout}")
 
     local_skills = target / ".rb-agent" / "skills"
-    if local_skills.exists():
+    if os.path.lexists(local_skills):
         raise SystemExit(f"Unexpected project-local skills folder exists: {local_skills}")
 
     print()

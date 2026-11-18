@@ -161,6 +161,32 @@
           "rubric": "Pass only if the response does the following: Remove the unsupported collection dependency within existing authority and advance A after its actual prerequisites pass. Preserve both histories, quotas and the later combined-analysis barrier. Do not wait for B solely to align accounting stages or invent B completion."
         }
       ]
+    },
+    {
+      "id": "execute-respect-recorded-route-hold",
+      "kind": "regression",
+      "prompt": "Pick up the approved plan where we left off. The plan says \u201cExecution Route: undecided. Wait for my choice before changing the application.\u201d I have not selected a route.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "execute respect recorded route hold",
+          "evaluator": "semantic",
+          "rubric": "Preserve the explicit hold. Identify the missing choice and leave application and constrained work unstarted."
+        }
+      ]
+    },
+    {
+      "id": "execute-released-route-hold",
+      "kind": "regression",
+      "prompt": "The plan says to wait for my route choice before implementing. I choose standard now. Implement the approved first phase.",
+      "should_trigger": true,
+      "success": [
+        {
+          "name": "execute released route hold",
+          "evaluator": "semantic",
+          "rubric": "Apply the choice and proceed directly with the approved standard phase, preserving normal verification and avoiding repeat confirmation or constrained preparation."
+        }
+      ]
     }
   ]
 }

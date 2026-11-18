@@ -100,6 +100,13 @@ PY
 
 Codex detects skill changes automatically. Restart only when a new or changed skill does not appear.
 
+To verify a full project setup, check the global installation and the project's readable `AGENTS.md` and `CONTEXT.md` together. This command reports gaps and leaves the files in place. Pass `--dest` if you chose a custom skills directory. For Claude, use `--agent claude` to check its generated skills and the project's `CLAUDE.md`.
+
+```bash
+python3 rb-install-skills/scripts/install_skills.py --check --agent codex \
+  --pack-root "$PWD" --target /path/to/project
+```
+
 ### Update after a pull
 
 Pulling into the same clone updates **existing linked skills** directly; there is no copy to refresh. Keep the clone at its installed path. If you move it, rerun installation for the new location and review replacement of the old links.
@@ -300,15 +307,15 @@ See the [workflow and current evidence](docs/test-suite-system/README.md) and th
 
 `$rb-delegate` may be selected automatically alongside the skill that owns a substantial Codex task. It applies only when a subtask has a bounded objective and context, produces an independently verifiable result, and is expected to save more work than briefing and review will add. Users may also invoke it directly in Codex.
 
-The default model routing is:
+The Codex skill uses these starting settings when the user delegates the model choice.
 
 | Subtask | Model |
 | --- | --- |
-| Well-defined, discrete work with limited judgement | `gpt-5.6-luna` with maximum reasoning |
-| Independently scoped difficult mathematics, synthesis, coding, review, or investigation | `gpt-6-astra` with medium reasoning |
+| Well-defined, independently checkable work | `gpt-6.2-sol` with medium reasoning |
+| Independently scoped difficult mathematics, synthesis, coding, review, or investigation | `gpt-6.2-astra` with medium reasoning |
 | Final synthesis, cross-cutting decisions, integration, and completion judgement | Parent agent |
 
-The parent sends the minimum self-contained context, checks the returned artifact and evidence, runs or reviews the relevant verification, and alone decides whether the user's task is complete. The skill does not apply to simple work whose delegation overhead would exceed its benefit. It is Codex-only and does not design multi-agent products; use `$rb-multi-agent-systems` for orchestration architecture.
+The parent checks the host's available settings and sends a self-contained task packet when choosing a model. It checks the returned work and alone decides whether the user's task is complete. Compare accepted outcomes, elapsed time, rework and observed cost before changing the defaults. For multi-agent products, use `$rb-multi-agent-systems` for orchestration architecture.
 
 ## Skill Reference
 
@@ -367,7 +374,7 @@ For long-running work, the diary and handoff should preserve:
 - accepted residual regression or scientific risk;
 - current Git state, plan/phase state, and exact next action.
 
-Tests are never reported as passed unless they were run in the current session or clearly documented with date and context in an authoritative handoff.
+Give the outcome of checks run in the current session. When reusing an earlier CI result, cite the dated run or log and tested revision. Check whether it covers the affected files, local edits and relevant environment. Say which checks still need to run if those conditions differ.
 
 ## Repository Validation
 
@@ -387,6 +394,8 @@ trials they describe. The workflow uploads `validation-output/` even on failure,
 including the numerical audit’s child receipts and parent JUnit report. The
 periodic heat example is a separate recorded local trial, not a current CI job.
 
+CI replays the saved Sol and Astra results offline. The trial report gives the prompts, scoring rules, token use and instructions for a fresh comparison. [Matched GPT-6.2 workflow trial](evals/gpt-6.2-workflows/README.md)
+
 Run these general local checks from the repository root with Python 3.10 or newer.
 They are a subset of CI; additional test-suite and constrained-runtime checks follow:
 
@@ -400,10 +409,19 @@ python3 evals/skill-routing/validate_routing_eval.py \
 for manifest in rb-*/evals/eval-plan.json platforms/claude/skills/*/evals/eval-plan.json; do
   python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest" || exit 1
 done
-python3 -m unittest discover -s evals/skill-routing/tests -p 'test_*.py'
+for suite in evals/skill-routing/tests rb-install-skills/tests rb-context-tokens/tests; do
+  python3 -m unittest discover -s "$suite" -p 'test_*.py' || exit 1
+done
 ruby evals/skill-routing/validate_skill_metadata.rb
 python3 evals/skill-routing/validate_publication_hygiene.py
 git diff --check
+```
+
+The GPT-6.2 trial grader uses SQLite controls available in Python 3.11 and newer. To test the grader and replay the saved comparison offline, use that version or newer.
+
+```bash
+python3 -m unittest discover -s evals/gpt-6.2-workflows -p 'test_*.py'
+python3 evals/gpt-6.2-workflows/check.py evals/gpt-6.2-workflows/trials.jsonl evals/gpt-6.2-workflows/readings.json
 ```
 
 For changes to the test-suite skills, run the checks below in a project-local
@@ -451,7 +469,7 @@ A new implementation plan records one of three routes:
 
 - `standard`: normal tested implementation through linear `rb-execute-plan` or adaptive `rb-sprint`, with task delivery through `rb-implement-with-tests` and `rb-tdd-scientific-code`;
 - `constrained`: a Codex-only, first-release static-only workflow for exact read/patch operations and statically observable acceptance criteria;
-- `undecided`: preserve a deferred choice and do not enter the constrained pipeline; ordinary work still defaults to standard execution.
+- `undecided` preserves an open route choice. Already authorised work uses standard execution unless a recorded user decision holds it.
 
 The agent never selects `constrained` automatically. Ordinary planning does not require a route-selection question; explain the specialist route only when requested or compared.
 
@@ -461,7 +479,7 @@ Use the standard route for ordinary software behaviour, scientific code, refacto
 
 In practical terms, runtime-dependent phases must use the standard route in the first release.
 
-Both `$rb-execute-plan` and `$rb-sprint` default to `standard` when the route is missing or `undecided`. They use another route only when the human explicitly specifies that route in the current request or the approved plan.
+Both `$rb-execute-plan` and `$rb-sprint` default to `standard` for authorised work when the route is missing or `undecided`. If the user asks to wait for their route choice, record which work is held and carry that instruction into the handoff. Resume the held work when the user releases it. Selecting the constrained route still requires its own approvals.
 
 ### Constrained Static-Only Route
 

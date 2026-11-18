@@ -9,7 +9,8 @@ Own sequencing, phase status, and completion evidence for an existing multi-step
 
 ## Authority and route
 
-- Execute under the `standard` route unless the human explicitly specifies another route in the current request or approved plan. Treat a missing or `undecided` route as `standard`. Never infer `constrained` from risk, complexity, or safety language.
+- If the user instructed you to wait for a route choice, leave the affected work unstarted until they choose a route or explicitly lift the hold. A general request to resume preserves that condition. Once it is met, continue within existing authority and honour the selected route’s own approvals.
+- Apply the route default only to work authorised to start. Execute under the `standard` route unless the human explicitly specifies another route in the current request or approved plan. Treat a missing or `undecided` route as `standard`. Never infer `constrained` from risk, complexity, or safety language.
 - Continue through the work covered by the current request or recorded authority. Ask only for a missing material decision, an explicitly required approval, or work beyond that authority.
 - Follow the approved phase and task order. Make a local ordering correction only when a dependency or executable verification requirement makes the next task impossible; record the evidence. Preference or learning value alone does not justify reordering this linear plan.
 - If the strategy is no longer credible, stop affected work and report the evidence. Enter `$rb-sprint` only when adaptive work is authorised. Do not silently alter product scope, architecture commitments, acceptance, permissions, migrations, rollout, or accepted risk.

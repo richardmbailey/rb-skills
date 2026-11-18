@@ -2,6 +2,24 @@
   "schema_version": 1,
   "contracts": [
     {
+      "path": "rb-install-skills/SKILL.md",
+      "required": [
+        "--check",
+        "requires readable `AGENTS.md` and `CONTEXT.md`",
+        "A verification request does not authorise installation, repair, or onboarding."
+      ],
+      "max_lines": 500
+    },
+    {
+      "path": "rb-context-tokens/SKILL.md",
+      "required": [
+        "current context usage is unavailable",
+        "Include its own timestamp when available.",
+        "report that no event was found"
+      ],
+      "max_lines": 500
+    },
+    {
       "path": "rb-start-project/SKILL.md",
       "required": [
         "Do not write product code during onboarding.",
@@ -46,6 +64,8 @@
         "recommend `$rb-implement-with-tests` directly",
         "Do not insert `$rb-discuss` merely because a change is substantial.",
         "If the next workflow is already authorised, continue after the brief.",
+        "Keep affected implementation on hold across a general request to resume.",
+        "cite the run or log, outcome and tested revision",
         "Resuming a session, unfinished work, and technical uncertainty are not interview triggers.",
         "A pending user choice blocks only work that depends on it."
       ],
@@ -72,6 +92,8 @@
         "use `$rb-multi-agent-systems`",
         "`$rb-implement-with-tests` directly for one bounded change",
         "## Authority and route",
+        "A general request to resume preserves that condition.",
+        "Apply the route default only to work authorised to start.",
         "applicable behavioural evidence and review pass",
         "closest available repository CI-equivalent command",
         "do not weaken tests or rerun intermittent failures until green",
@@ -114,6 +136,7 @@
         "references/plan-change-gate.md",
         "record only `NO_CHANGE`",
         "Existing explicit authority counts",
+        "keep the affected sprint work in `awaiting_human_decision`",
         "`undecided` also uses `standard`",
         "### Use implementation evidence without repeating its work",
         "One independent review may cover the coherent increment",
@@ -208,11 +231,12 @@
       "required": [
         "substantial Codex tasks",
         "supplements the skill that owns the task",
-        "gpt-5.6-luna",
-        "reasoning_effort: max",
-        "gpt-6-astra",
-        "reasoning_effort: medium",
+        "`gpt-6.2-sol` with `reasoning_effort: medium`",
+        "`gpt-6.2-astra` with `reasoning_effort: medium`",
         "fork_turns: \"none\"",
+        "fork_turns: \"all\"",
+        "Omit both overrides on a full-history fork.",
+        "Ask before substituting another model.",
         "not to create further sub-agents",
         "The parent may mark the task complete only after",
         "Do not claim a saving merely because a smaller model was used",
@@ -220,6 +244,7 @@
       ],
       "forbidden": [
         "Use `fork_turns: \"all\"` for routine bounded delegation.",
+        "small positive",
         "automatically trust"
       ],
       "max_occurrences": {
@@ -245,6 +270,7 @@
         "Do not select this skill for a single-agent system",
         "references/test-and-review-checklists.md",
         "references/agent-boundaries.md",
+        "references/openai-responses-continuity.md",
         "establish which agent currently owns that operation"
       ],
       "forbidden": [
@@ -308,6 +334,8 @@
         "Changed behaviours / test levels",
         "Canonical CI-equivalent result",
         "Checks not run or stale",
+        "cite the run or log, outcome and tested revision",
+        "Compare the covered work, including local edits",
         "Residual regression risk",
         "Do not collapse linting, building, source inspection, or smoke checks into behavioural-test evidence.",
         "Agreed decisions and authority:",
@@ -331,6 +359,7 @@
         "facts and useful synthesis, not a transcript",
         "For an implementation plan using the optional constrained route",
         "A resume pointer does not authorise execution",
+        "record which work is on hold and what will release it",
         "selected test levels",
         "canonical CI-equivalent command",
         "residual regression",
@@ -391,6 +420,8 @@
         "Route an approved plan to `$rb-execute-plan`",
         "Route it to `$rb-sprint`",
         "Record `Execution Route: standard` unless the human explicitly selects",
+        "state in the plan which work must wait",
+        "or explicitly lifts the hold",
         "never infer `constrained`",
         "Define the testing architecture at the top level",
         "constrained static-only route",

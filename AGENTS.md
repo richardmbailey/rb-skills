@@ -75,6 +75,9 @@ python3 evals/skill-routing/validate_consistency_contracts.py \
 for manifest in rb-*/evals/eval-plan.json; do
   python3 rb-create-skill-evals/scripts/validate_eval_manifest.py "$manifest"
 done
+for suite in rb-install-skills/tests rb-context-tokens/tests; do
+  python3 -m unittest discover -s "$suite" -p 'test_*.py' || exit 1
+done
 python3 -m unittest discover -s rb-safe-operation/runtime/tests -p 'test_*.py'
 git diff --check
 ```
@@ -132,9 +135,9 @@ environment is an unrun check, not a pass.
 
 - For a substantial Codex task with bounded, independently verifiable subtasks,
   use `$rb-delegate` alongside the skill that owns the task.
-- Use `gpt-5.6-luna` with maximum reasoning for well-defined discrete work that
-  needs limited judgement. Use `gpt-6-astra` with medium reasoning for an
-  independently scoped subtask that needs difficult reasoning or synthesis.
+- Follow the [Codex model selection rules](rb-delegate/SKILL.md#choose-the-execution-path)
+  and check the current host's model, reasoning effort and history options before
+  dispatch. Honour the user's model choice.
 - Keep simple work, tightly coupled work, final synthesis, cross-cutting
   decisions, integration, and completion judgement with the parent agent.
 - Give each sub-agent the minimum self-contained context. The parent must inspect
