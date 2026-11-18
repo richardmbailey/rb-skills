@@ -75,6 +75,7 @@
         "runtime owns four separate typed semantic roles",
         "An incomplete or uncertain provider call is not replayed",
         "rb-create-safe-operation-policy",
+        "rb-revise-ai-draft",
         ".rb-safe-operation-policy.json",
         "schema-3",
         "rb-create-prd",

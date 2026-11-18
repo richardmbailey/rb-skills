@@ -197,6 +197,7 @@ The routing rule is:
 | --- | --- |
 | Scientific, algorithmic or novelty premise needs assessment before planning | `rb-research-question-gate` |
 | Interview about goals or consequential requirements needing user judgement | `rb-discuss` |
+| Supplied AI-generated, formulaic, or generic prose needs a faithful revision | `rb-revise-ai-draft` |
 | Product or feature needs a durable requirements document | `rb-create-prd` |
 | Sufficiently understood idea needs a top-level plan | `rb-create-implementation-plan` |
 | Existing multi-step plan should be followed linearly | `rb-execute-plan` |
@@ -340,7 +341,7 @@ The parent checks the host's available settings and sends a self-contained task 
 | `$rb-multi-agent-systems` | Design or review multiple agents or orchestration, including deterministic runner control and a transition, denial, contract, recovery, end-to-end, and held-out test matrix. |
 | `$rb-language` | Draft or lightly edit ordinary user-facing prose when no specialist skill owns the task. |
 | `$rb-simplify-language` | Only when explicitly invoked, reduce semantic ambiguity in supplied text; intended primarily for agent-facing control text but available for any text. |
-| `$rb-revise-ai-draft` | Substantively revise supplied AI-generated, formulaic, or generic prose while preserving its meaning, evidence, uncertainty, and citations. |
+| `$rb-revise-ai-draft` | Substantively revise supplied AI-generated, formulaic, or generic prose into plain, natural writing while preserving meaning, evidence, uncertainty, citations, and authorial voice. |
 | `$rb-project-language` | Capture domain terminology, units, invariants, assumptions, and shared vocabulary without expanding terminology work into architecture design. |
 | `$rb-research-question-gate` | Evaluate a scientific, algorithmic, or novelty claim before investing in planning or coding. |
 | `$rb-where-are-we` | Produce a deep evidence-backed HTML project state-of-play report. |
